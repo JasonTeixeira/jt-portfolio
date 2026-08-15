@@ -170,19 +170,19 @@
 
   var SERVICES = [
     {
-      name: 'LLM feature QA & eval harness', color: '#a78bfa',
+      name: 'LLM feature QA & eval harness', color: '#a78bfa', href: 'services/llm-evaluation-qa.html',
       desc: 'Your LLM feature gets a regression suite: golden traces, LLM-as-judge scoring for faithfulness and safety, and a CI gate that blocks the deploy when quality drops.',
       items: ['Promptfoo / DeepEval suite on your real traffic patterns', 'Hallucination, injection & toxicity runners', 'CI gate + scorecard your PM can read'],
       proof: 'nexural-qa-os — 10 AI-safety runners, 13/13 gates'
     },
     {
-      name: 'Test automation + CI setup', color: '#10b981',
+      name: 'Test automation + CI setup', color: '#10b981', href: 'services/test-automation-ci.html',
       desc: 'A risk-scoped Playwright/Pytest suite with the evidence discipline of a release manager: traces, reports, artifacts — wired into GitHub Actions from day one.',
       items: ['Risk model → coverage matrix, not script soup', 'Four reporters, trace-on-retry, artifact retention', 'k6 load baseline on the critical path'],
       proof: 'playwright-sdet-regression-suite — 37/37 in CI'
     },
     {
-      name: 'AI workflow automation build', color: '#0e7490',
+      name: 'AI workflow automation build', color: '#0e7490', href: 'services/ai-workflow-automation.html',
       desc: 'A working automation — intake, triage, routing, RAG-backed answers — built on n8n/Make or LangGraph, with human approval points where they belong and logs you can audit.',
       items: ['n8n / Make / Zapier or code-level LangGraph', 'Human-in-the-loop gates, structured outputs', 'Runbook + handoff so your team owns it'],
       proof: 'sage-agents templates · feedback-triage pipeline'
@@ -526,7 +526,8 @@
       el('div', MONO + 'font-size:11px;color:#6B6560;border-top:1px dashed #DDD6CE;padding-top:12px', [
         document.createTextNode('proof: '),
         txt('span', 'color:#09090B', s.proof)
-      ])
+      ]),
+      txt('a', 'font-size:13px;font-weight:700;color:#0e7490', 'Full details →', { href: s.href })
     ], { class: 'svc-card' }));
   });
 

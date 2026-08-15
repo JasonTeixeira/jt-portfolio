@@ -209,6 +209,36 @@ test.describe('portfolio — SEO', () => {
   });
 });
 
+test.describe('portfolio — service pages', () => {
+  const SLUGS = ['llm-evaluation-qa', 'test-automation-ci', 'ai-workflow-automation'];
+
+  test('all service pages load with schema, symptoms, deliverables, CTA', async ({ page }) => {
+    for (const slug of SLUGS) {
+      await page.goto(`/services/${slug}.html`);
+      await expect(page.locator('h1')).toBeVisible();
+      const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+      const types = schemas.map((s) => JSON.parse(s)['@type']);
+      expect(types, slug).toContain('Service');
+      expect(types, slug).toContain('BreadcrumbList');
+      await expect(page.locator('a[href="../index.html#contact"]').first()).toBeVisible();
+      expect(await page.locator('details.faq').count(), slug).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  test('homepage service cards link to landing pages', async ({ page }) => {
+    await page.goto('/');
+    for (const slug of SLUGS) {
+      await expect(page.locator(`#jt-services a[href="services/${slug}.html"]`)).toHaveCount(1);
+    }
+  });
+
+  test('sitemap covers service pages', async ({ request }) => {
+    const xml = await (await request.get('/sitemap.xml')).text();
+    for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
+    expect((xml.match(/<loc>/g) || []).length).toBe(8);
+  });
+});
+
 test.describe('portfolio — field notes', () => {
   test('index lists 3 notes and links back to portfolio', async ({ page }) => {
     const errors = trackErrors(page);
@@ -253,7 +283,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(5);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(8);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');

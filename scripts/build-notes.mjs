@@ -5,6 +5,7 @@
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { NOTES } from './notes.data.mjs';
+import { SERVICES } from './services.data.mjs';
 import { SITE_URL, AUTHOR } from './site.config.mjs';
 
 const MONO = "font-family:'JetBrains Mono',monospace;";
@@ -169,7 +170,11 @@ ${items}
 `);
 
 /* ── sitemap + robots ── */
-const pages = ['/', '/field-notes.html', ...NOTES.map((n) => `/notes/${n.slug}.html`)];
+const pages = [
+  '/', '/field-notes.html',
+  ...SERVICES.map((s) => `/services/${s.slug}.html`),
+  ...NOTES.map((n) => `/notes/${n.slug}.html`)
+];
 writeFileSync('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages.map((u) => `  <url><loc>${SITE_URL}${u}</loc></url>`).join('\n')}
