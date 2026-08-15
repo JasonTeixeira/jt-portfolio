@@ -25,6 +25,7 @@ export const SERVICES = [
       { t: 'Runbook + handoff', d: 'Your team extends the golden set and owns the gate without me.' }
     ],
     proof: [
+      { name: 'llm-eval-gate (open source)', metric: 'clone the minimum viable gate — first green run in 10 minutes, zero API keys', href: 'https://github.com/JasonTeixeira/llm-eval-gate' },
       { name: 'nexural-qa-os', metric: '85 quality runners, 10 dedicated AI-safety evals — scorecard reproducible by one command', href: '/index.html#work' },
       { name: 'BRIEF/03 — The QA OS that can\'t lie', metric: 'the full engineering brief behind the platform', href: '/index.html#briefs' }
     ],

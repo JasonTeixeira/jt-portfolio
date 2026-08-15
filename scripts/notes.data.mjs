@@ -46,7 +46,7 @@ export const NOTES = [
     color: '#a78bfa',
     title: 'LLM regression testing with Promptfoo in CI: the minimum viable gate',
     dek: '30 golden traces, one judge, one failing exit code. The smallest setup that stops a bad prompt change from reaching production — runnable this afternoon.',
-    artifacts: 'pattern shipped in nexural-qa-os (10 AI-safety runners) · full service: /services/llm-evaluation-qa.html',
+    artifacts: 'clone it: github.com/JasonTeixeira/llm-eval-gate (runs keyless) · pattern shipped in nexural-qa-os · full service: /services/llm-evaluation-qa.html',
     quote: 'Your first eval suite doesn’t need to be good. It needs to exist, run in CI, and be allowed to say no.',
     dropCap: 'E',
     arch: {

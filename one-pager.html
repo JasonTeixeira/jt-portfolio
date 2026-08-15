@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jason Teixeira — one-pager</title>
+<meta name="robots" content="noindex">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  .op { max-width: 760px; margin: 0 auto; padding: 48px clamp(18px,4vw,40px) 64px; }
+  .op h1 { font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-size: clamp(1.9rem,4vw,2.6rem); line-height:1.1; letter-spacing:-0.015em; margin: 14px 0 0; }
+  .op h2 { font-family:'JetBrains Mono',monospace; font-size: 10.5px; letter-spacing:0.14em; text-transform:uppercase; margin: 26px 0 10px; }
+  .op p, .op li { font-size: 13px; line-height: 1.65; color: #A8A29E; }
+  .op-stat { font-family:'Instrument Serif',Georgia,serif; font-size: 1.6rem; line-height:1; color:#F4F2EF; }
+  .op-lbl { font-family:'JetBrains Mono',monospace; font-size: 9.5px; letter-spacing:0.1em; text-transform:uppercase; color:#8E8882; margin-top:6px; }
+  @media print {
+    body { background:#fff !important; color:#111 !important; }
+    .op p, .op li { color:#333; }
+    .op-stat, .cmp tbody th { color:#111 !important; }
+    .op-lbl { color:#666; }
+    a { color:#0e7490 !important; }
+    .no-print { display:none !important; }
+    .op { padding: 0; }
+    .cmp td.n { color:#999; }
+    .cmp thead th:last-child { color:#0a7a55; }
+  }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:#09090B">
+  <main class="op">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">jason.teixeira<span style="color:#10b981">()</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8E8882">agency.sageideas.dev · hello@sageideas.dev · Orlando, FL / remote</span>
+    </div>
+    <h1>I ship AI features — then I <em style="color:#10b981">prove</em> they work.</h1>
+    <p style="margin-top:10px;max-width:62ch">LLM apps, agents, and workflow automation (RAG, LangGraph, n8n/Make) paired with the evaluation and regression harness that keeps them honest in production: Playwright, Pytest, k6, Promptfoo, DeepEval, LLM-as-judge. Most people build the AI <em>or</em> test it. I do both.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-top:22px;border:1px solid #2A2826;padding:16px 18px">
+      <div><div class="op-stat">13+ yrs</div><div class="op-lbl">quality &amp; automation</div></div>
+      <div><div class="op-stat">3,759</div><div class="op-lbl">tests · one platform</div></div>
+      <div><div class="op-stat">85</div><div class="op-lbl">quality runners built</div></div>
+      <div><div class="op-stat">100×4</div><div class="op-lbl">Lighthouse, own site</div></div>
+    </div>
+
+    <h2 style="color:#10b981">The story that says it all</h2>
+    <p style="max-width:64ch">On 2026-08-15 my own quality platform refused its PROVEN verdict — 15 CVEs had drifted into production deps. The gate blocked <em>my</em> release. Patched and green the same afternoon; <strong style="color:#F4F2EF">both runs published verbatim</strong>. A gate that never fires is decoration — mine fires, even on me. <span style="font-family:'JetBrains Mono',monospace;font-size:11px">agency.sageideas.dev/notes/gate-blocked-me.html</span></p>
+
+    <h2 style="color:#a78bfa">What I build (fixed scope, ~4 weeks, your repo)</h2>
+    <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+      <li><strong style="color:#F4F2EF">LLM evaluation &amp; AI quality</strong> — golden sets, LLM-as-judge, safety battery (hallucination · injection · PII · toxicity), a CI gate that blocks bad prompt changes.</li>
+      <li><strong style="color:#F4F2EF">Test automation + CI</strong> — risk-scoped Playwright/Pytest with release-manager evidence discipline; flake protocol that keeps red meaningful.</li>
+      <li><strong style="color:#F4F2EF">AI workflow automation</strong> — n8n/Make/LangGraph builds with human approval points where the risk is, structured outputs, auditable logs.</li>
+    </ul>
+
+    <h2 style="color:#22d3ee">Why me and not a generalist</h2>
+    <div style="overflow-x:auto">
+      <table class="cmp" aria-label="Capability comparison">
+        <thead><tr><th>capability</th><th>AI builder</th><th>QA engineer</th><th>me</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Ships LLM features</th><td class="y">✓</td><td class="n">—</td><td class="y">✓</td></tr>
+          <tr><th scope="row">Builds eval suites &amp; judge gates</th><td class="n">rare</td><td class="n">rare</td><td class="y">✓ shipped</td></tr>
+          <tr><th scope="row">CI regression discipline</th><td class="n">—</td><td class="y">✓</td><td class="y">✓ 13 yrs</td></tr>
+          <tr><th scope="row">Certified (ISTQB CT-AI + TAE)</th><td class="n">—</td><td class="n">rare</td><td class="y">✓ both</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 style="color:#F59E0B">Track record</h2>
+    <p style="max-width:66ch"><strong style="color:#F4F2EF">The Home Depot</strong> (Fortune 50, 2012–21): Selenium framework for 2,300+ stores — regression 4h→75min, 99.5% stability. <strong style="color:#F4F2EF">HighStrike</strong> (fintech, 2021–26): 500+ tests on live trading workflows, flake rate 10%→&lt;1%. <strong style="color:#F4F2EF">Sage Ideas</strong> (2024–): the systems above, published with evidence.</p>
+
+    <div style="margin-top:26px;border:1px solid rgba(16,185,129,0.35);padding:14px 18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:13px;color:#F4F2EF"><strong>Free 30-minute call.</strong> Bring the feature that scares you — leave with a plan either way.</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#10b981">agency.sageideas.dev</span>
+    </div>
+    <p class="no-print" style="margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#837D77">print-ready — <a href="assets/Jason-Teixeira-One-Pager.pdf" download style="color:#22d3ee">download PDF ↓</a> · <a href="index.html" class="dim-link">← portfolio</a></p>
+  </main>
+</div>
+</body>
+</html>

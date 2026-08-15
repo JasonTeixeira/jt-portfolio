@@ -6,6 +6,7 @@
 import { chromium } from '@playwright/test';
 import { resolve } from 'node:path';
 import { NOTES } from './notes.data.mjs';
+import { SERVICES } from './services.data.mjs';
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
@@ -25,5 +26,17 @@ for (const n of NOTES) {
   }, n);
   await page.screenshot({ path: `assets/og-note-${n.slug}.png` });
 }
+for (const s of SERVICES) {
+  await page.evaluate((svc) => {
+    document.querySelector('.kicker span:last-child').innerHTML =
+      '<span class="green">service</span> — ' + svc.keyword + ' · fixed scope · 4 weeks';
+    const h1 = document.querySelector('h1');
+    h1.textContent = svc.h1;
+    h1.style.fontSize = svc.h1.length > 44 ? '76px' : '86px';
+    document.querySelector('.stats').innerHTML =
+      'free 30-min intro call<br>agency.sageideas.dev';
+  }, s);
+  await page.screenshot({ path: `assets/og-service-${s.slug}.png` });
+}
 await browser.close();
-console.log(`✓ rendered assets/og.png + ${NOTES.length} note cards (1200×630)`);
+console.log(`✓ rendered assets/og.png + ${NOTES.length} note cards + ${SERVICES.length} service cards (1200×630)`);

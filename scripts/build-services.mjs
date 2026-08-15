@@ -75,7 +75,7 @@ for (const s of SERVICES) {
 <meta property="og:title" content="${esc(s.title)}">
 <meta property="og:description" content="${esc(s.metaDescription)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${SITE_URL}/assets/og.png">
+<meta property="og:image" content="${SITE_URL}/assets/og-service-${s.slug}.png">
 <link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>

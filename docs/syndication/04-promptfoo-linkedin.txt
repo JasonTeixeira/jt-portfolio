@@ -1,0 +1,16 @@
+Your LLM feature has zero regression tests. Here's the 1-afternoon fix.
+
+Every team I talk to ships prompt changes because they "seemed better" in manual checks. Nobody can prove the last change didn't break something — because nothing is measuring.
+
+The minimum viable gate:
+→ 30 golden traces (real inputs from your logs + expert-approved outputs, committed to the repo)
+→ One LLM-as-judge rubric via Promptfoo
+→ One CI step where a non-zero exit BLOCKS the merge
+
+That's it. Not a platform. Not a migration. One config file.
+
+I open-sourced the whole thing as a cloneable template — it runs green with ZERO API keys (mock provider included), so you can feel the mechanics before spending a cent. First green gate in 10 minutes.
+
+Repo + full write-up in the first comment.
+
+#LLM #AIEngineering #QA #Promptfoo #CICD

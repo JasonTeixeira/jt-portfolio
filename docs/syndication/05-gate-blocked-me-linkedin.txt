@@ -1,0 +1,15 @@
+My own quality gate blocked my release this morning. I'm posting the receipts.
+
+11:39 — ran the proof loop on my QA platform. VERDICT: NOT PROVEN ✗ (12/13 gates). 15 high/critical CVEs had drifted into production deps.
+
+I could have quietly patched. Instead, the red run is published verbatim on my site — because a portfolio that only shows green runs is indistinguishable from one that fakes them.
+
+14:35 — nine dependency security floors later: PROVEN ✓ 13/13. Same day. Both runs published side by side.
+
+The lesson isn't "I fixed CVEs fast." It's this: a dashboard would have shown that number drifting in a tab nobody opens. A GATE stopped the line.
+
+A gate that never fires isn't discipline. It's decoration.
+
+If your LLM feature ships on vibes — no golden set, no judge, no gate that can say no — that's exactly what I build. (Link in first comment.)
+
+#QA #AIEngineering #LLM #TestAutomation #DevOps
