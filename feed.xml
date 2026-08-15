@@ -6,6 +6,20 @@
     <description>Working notes from the proof-first trenches: AI automation, QA, and LLM evaluation.</description>
     <language>en-us</language>
     <item>
+      <title>The day my own quality gate blocked me</title>
+      <link>https://agency.sageideas.dev/notes/gate-blocked-me.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/notes/gate-blocked-me.html</guid>
+      <pubDate>Sat, 15 Aug 2026 12:00:00 GMT</pubDate>
+      <description>At 11:39 my proof loop refused the PROVEN verdict — 15 high/critical CVEs had drifted into production deps. By 14:35 it was green. Both runs are published verbatim.</description>
+    </item>
+    <item>
+      <title>LLM regression testing with Promptfoo in CI: the minimum viable gate</title>
+      <link>https://agency.sageideas.dev/notes/promptfoo-ci-minimum-gate.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/notes/promptfoo-ci-minimum-gate.html</guid>
+      <pubDate>Sat, 15 Aug 2026 12:00:00 GMT</pubDate>
+      <description>30 golden traces, one judge, one failing exit code. The smallest setup that stops a bad prompt change from reaching production — runnable this afternoon.</description>
+    </item>
+    <item>
       <title>No fake green: what a proof ledger taught me about AI agents</title>
       <link>https://agency.sageideas.dev/notes/no-fake-green.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/no-fake-green.html</guid>

@@ -215,6 +215,15 @@ h2.sec-title {
 .xp-points b { color: var(--xc); font-weight: 600; }
 .xp-points li::marker { color: var(--xc); }
 
+/* ─── prose code blocks (note pages) ─── */
+pre.code {
+  margin: 4px 0; padding: 16px 18px; overflow-x: auto;
+  background: #08090c; border: 1px solid #2A2826; border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.75;
+  color: #C9C4BF;
+}
+pre.code code { font-family: inherit; }
+
 /* ─── metric delta bars ─── */
 .delta { display: flex; align-items: center; gap: 12px; margin: 10px 0 0 18px; max-width: 420px; }
 .delta-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #837D77; min-width: 8.5em; }
@@ -352,6 +361,17 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 .fld input:hover, .fld textarea:hover { border-color: #3D3A37; }
 .fld input:focus-visible, .fld textarea:focus-visible { outline: none; border-color: #10b981; box-shadow: 0 0 0 1px rgba(16,185,129,0.4); }
 .hp { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
+/* ─── mobile sticky CTA ─── */
+#jt-mobile-cta {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+  display: none; gap: 10px; padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(9,9,11,0.92); backdrop-filter: blur(12px);
+  border-top: 1px solid #2A2826;
+}
+@media (max-width: 768px) {
+  #jt-mobile-cta:not([hidden]) { display: flex; }
+}
 
 /* ─── toast ─── */
 #jt-toast {

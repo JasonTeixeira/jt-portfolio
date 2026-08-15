@@ -23,7 +23,7 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#jt-projects article')).toHaveCount(5);
     await expect(page.locator('#jt-briefs article')).toHaveCount(3);
     await expect(page.locator('#jt-services article')).toHaveCount(3);
-    await expect(page.locator('#jt-notes a')).toHaveCount(3);
+    await expect(page.locator('#jt-notes a')).toHaveCount(5);
   });
 
   test('dual funnel toggles and persists', async ({ page }) => {
@@ -243,6 +243,36 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#record .delta')).toHaveCount(3);
   });
 
+  test('real UI screenshot in RAG card, zoomable to full size', async ({ page, request }) => {
+    await page.goto('/');
+    const shot = page.locator('#jt-projects img[src="assets/shots/rag-dashboard.jpg"]');
+    await expect(shot).toHaveCount(1);
+    expect((await request.get('/assets/shots/rag-dashboard.jpg')).status()).toBe(200);
+    expect((await request.get('/assets/shots/rag-dashboard-full.png')).status()).toBe(200);
+    await expect(shot).toHaveAttribute('alt', /citation/i);
+  });
+
+  test('notes 4 and 5: diagrams and code blocks render', async ({ page }) => {
+    await page.goto('/notes/promptfoo-ci-minimum-gate.html');
+    await expect(page.locator('svg[role="img"]')).toHaveCount(1);
+    await expect(page.locator('pre.code')).toHaveCount(2);
+    await expect(page.locator('body')).toContainText('llm-rubric');
+    await page.goto('/notes/gate-blocked-me.html');
+    await expect(page.locator('svg[role="img"]')).toHaveCount(1);
+    await expect(page.locator('a[href="../captures/nexural-qa-os-fixed.html"]')).toHaveCount(1);
+  });
+
+  test('mobile sticky CTA appears after hero, hides at contact', async ({ page, browserName }) => {
+    test.skip(browserName !== 'webkit', 'mobile-viewport behavior — run on the mobile project only');
+    await page.goto('/');
+    const cta = page.locator('#jt-mobile-cta');
+    await expect(cta).toBeHidden();
+    await page.locator('#briefs').scrollIntoViewIfNeeded();
+    await expect(cta).toBeVisible({ timeout: 4000 });
+    await page.locator('#contact').scrollIntoViewIfNeeded();
+    await expect(cta).toBeHidden({ timeout: 4000 });
+  });
+
   test('footer year is current', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('footer [data-year]').first()).toHaveText(String(new Date().getFullYear()));
@@ -257,7 +287,7 @@ test.describe('portfolio — SEO', () => {
     await expect(page.locator('#jt-projects article')).toHaveCount(5);
     await expect(page.locator('#jt-briefs article')).toHaveCount(3);
     await expect(page.locator('#jt-services article')).toHaveCount(3);
-    await expect(page.locator('#jt-notes a')).toHaveCount(3);
+    await expect(page.locator('#jt-notes a')).toHaveCount(5);
     await expect(page.locator('body')).toContainText('RAG that cites or shuts up');
     // content must be VISIBLE without JS, not merely present —
     // a baked reveal class once shipped briefs at opacity:0
@@ -306,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(9);
+    expect((xml.match(/<loc>/g) || []).length).toBe(11);
   });
 });
 
@@ -315,7 +345,7 @@ test.describe('portfolio — field notes', () => {
     const errors = trackErrors(page);
     await page.goto('/field-notes.html');
     await expect(page).toHaveTitle(/Field Notes/);
-    await expect(page.locator('a.note-row')).toHaveCount(3);
+    await expect(page.locator('a.note-row')).toHaveCount(5);
     await page.locator('nav a[href="index.html"]').last().click();
     await expect(page).toHaveURL(/index\.html/);
     expect(errors).toEqual([]);
@@ -336,7 +366,7 @@ test.describe('portfolio — field notes', () => {
   test('every note listed on the index resolves to a real page', async ({ page, request }) => {
     await page.goto('/field-notes.html');
     const hrefs = await page.locator('a.note-row').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
-    expect(hrefs.length).toBe(3);
+    expect(hrefs.length).toBe(5);
     for (const href of hrefs) {
       const res = await request.get('/' + href);
       expect(res.status(), href).toBe(200);
@@ -348,13 +378,13 @@ test.describe('portfolio — field notes', () => {
     expect(res.status()).toBe(200);
     const xml = await res.text();
     expect(xml).toContain('<rss');
-    expect((xml.match(/<item>/g) || []).length).toBe(3);
+    expect((xml.match(/<item>/g) || []).length).toBe(5);
   });
 
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(9);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(11);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');

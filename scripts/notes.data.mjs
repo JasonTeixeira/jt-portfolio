@@ -6,6 +6,73 @@
  */
 export const NOTES = [
   {
+    slug: 'gate-blocked-me',
+    num: '05',
+    date: '2026-08-15',
+    dateLabel: '2026·08',
+    read: '4 min',
+    color: '#f43f5e',
+    title: 'The day my own quality gate blocked me',
+    dek: 'At 11:39 my proof loop refused the PROVEN verdict — 15 high/critical CVEs had drifted into production deps. By 14:35 it was green. Both runs are published verbatim.',
+    artifacts: 'red run: /captures/nexural-qa-os.html · green rerun: /captures/nexural-qa-os-fixed.html · fix: 9 pnpm security floors',
+    quote: 'A gate that never fires isn’t discipline. It’s decoration.',
+    dropCap: 'A',
+    arch: {
+      nodes: [
+        { x: 38, y: 75, c: '#f43f5e', l: '11:39 run', s: '15 CVEs found' },
+        { x: 155, y: 75, c: '#f43f5e', l: 'NOT PROVEN', s: 'release blocked' },
+        { x: 272, y: 75, c: '#F59E0B', l: '+9 floors', s: 'pnpm overrides' },
+        { x: 396, y: 75, c: '#10b981', l: '14:35 rerun', s: 'PROVEN 13/13' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [{ d: 'M38,75 H396', c: '#10b981', dur: 4.5, delay: 0.5 }]
+    },
+    archCaption: 'fig. 1 — the arc, one working day, both runs published',
+    body: [
+      't 11:39 this morning I ran the proof loop on my own QA platform — the 85-runner system this site leans on for credibility — and it told me no. <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em;color:#f43f5e">VERDICT: NOT PROVEN ✗ — 12/13 gates</span>. Fifteen high and critical CVEs had drifted into production dependencies while I was busy shipping features. The gate did exactly what I built it to do: it blocked me.',
+      '__DIAGRAM__',
+      'The honest move mattered more than the fix. I could have quietly patched and nobody would ever have known the red run existed. Instead it’s <a href="../captures/nexural-qa-os.html">published verbatim</a> — because a portfolio that only shows green runs is indistinguishable from a portfolio that fakes them.',
+      'The fix itself took one focused hour: nine dependency floors in <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em">pnpm.overrides</span>. Eight were routine version bumps. The ninth was the interesting one — an <em>unpatchable</em> advisory in a transitive dependency (extract-zip, no fixed version exists) that died only because its parent package had replaced it entirely two majors ago. Audit went from 27 vulnerabilities to 2 low. The <a href="../captures/nexural-qa-os-fixed.html">14:35 rerun</a>: <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em;color:#10b981">PROVEN ✓ — 13/13</span>.',
+      '__QUOTE__',
+      'This is the whole argument for gates over dashboards. A dashboard would have shown me a number drifting somewhere in a tab I stopped opening in March. The gate stopped the line. Drift got caught the day it mattered, fixed inside the same working day, and the evidence trail — red run, diff, green run — needs no narrative because you can read it yourself. If your LLM feature or release pipeline has no gate that can tell <em>you</em> no, that’s the gap I close.'
+    ]
+  },
+  {
+    slug: 'promptfoo-ci-minimum-gate',
+    num: '04',
+    date: '2026-08-15',
+    dateLabel: '2026·08',
+    read: '6 min',
+    color: '#a78bfa',
+    title: 'LLM regression testing with Promptfoo in CI: the minimum viable gate',
+    dek: '30 golden traces, one judge, one failing exit code. The smallest setup that stops a bad prompt change from reaching production — runnable this afternoon.',
+    artifacts: 'pattern shipped in nexural-qa-os (10 AI-safety runners) · full service: /services/llm-evaluation-qa.html',
+    quote: 'Your first eval suite doesn’t need to be good. It needs to exist, run in CI, and be allowed to say no.',
+    dropCap: 'E',
+    arch: {
+      nodes: [
+        { x: 38, y: 75, c: '#A8A29E', l: 'PR opened', s: 'prompt change' },
+        { x: 155, y: 75, c: '#a78bfa', l: 'promptfoo eval', s: '30 golden traces' },
+        { x: 272, y: 75, c: '#F59E0B', l: 'judge score', s: 'vs ratcheted floor' },
+        { x: 396, y: 75, c: '#10b981', l: 'merge gate', s: 'pass or block' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [{ d: 'M38,75 H396', c: '#a78bfa', dur: 4.5, delay: 0 }]
+    },
+    archCaption: 'fig. 1 — the minimum viable gate: four stops, no exceptions',
+    body: [
+      'very LLM team I talk to has the same confession: prompt changes ship because they "seemed better" in a couple of manual checks. Nobody can prove the last change didn’t make something else worse, because nothing is measuring. Here is the smallest setup that fixes that — not a platform, not a framework migration. One config file, one CI step, one afternoon.',
+      '__DIAGRAM__',
+      '<strong style="color:#F4F2EF">Step 1 — the golden set.</strong> Collect 30 real inputs from logs or support tickets — not invented ones; real phrasing is weirder than anything you’ll write. For each, record the output your domain expert agrees is good. Commit them next to the code. This file is now the definition of "working," and changing it requires a reviewed diff — which is the entire point.',
+      '<strong style="color:#F4F2EF">Step 2 — the judge.</strong> A minimal <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em">promptfooconfig.yaml</span> that runs every golden input through your prompt and scores the output with an LLM rubric:',
+      '```yaml\nprompts:\n  - file://prompts/support-answer.txt\nproviders:\n  - anthropic:claude-sonnet-5\ntests: file://golden/*.yaml   # 30 cases: vars + assertions\ndefaultTest:\n  assert:\n    - type: llm-rubric\n      value: >-\n        Faithful to the provided context, answers the actual\n        question, no invented policies or prices.\n    - type: cost\n      threshold: 0.02\n```',
+      '<strong style="color:#F4F2EF">Step 3 — the gate.</strong> Promptfoo exits non-zero when assertions fail, so CI needs exactly one honest step:',
+      '```yaml\n# .github/workflows/eval.yml\n- run: npx promptfoo eval --config promptfooconfig.yaml\n  # non-zero exit = merge blocked. that\'s the whole gate.\n```\nWire it to trigger on changes to <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em">prompts/**</span>, <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em">golden/**</span>, and wherever your model or retrieval config lives. A red eval that can’t block a merge is a report, not a gate.',
+      '__QUOTE__',
+      '<strong style="color:#F4F2EF">What I add when teams outgrow the minimum</strong> — in rough order of payoff: a ratcheting floor (every improvement becomes the new minimum, so quality can’t silently regress); safety runners for injection, PII, and toxicity on the same golden set; retrieval-quality metrics in front of generation for RAG; and per-request cost budgets that fail the run like any other assertion. That fuller battery is what my <a href="../services/llm-evaluation-qa.html">LLM evaluation engagement</a> builds — but the 30-trace version above is free, takes an afternoon, and catches the regression you currently can’t see. Start there.'
+    ]
+  },
+  {
     slug: 'no-fake-green',
     num: '01',
     date: '2026-08-04',

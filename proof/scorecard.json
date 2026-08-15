@@ -1,8 +1,8 @@
 {
   "site": "jt-portfolio",
-  "generatedAt": "2026-08-15T18:34:40.408Z",
-  "commit": "0c7f5c2",
-  "durationMs": 19938,
+  "generatedAt": "2026-08-15T19:04:52.553Z",
+  "commit": "433d348",
+  "durationMs": 20001,
   "command": "npm run proof",
   "gates": {
     "a11y-desktop": {
@@ -18,22 +18,22 @@
       "green": true
     },
     "smoke-desktop": {
-      "passed": 32,
+      "passed": 34,
       "failed": 0,
-      "skipped": 0,
+      "skipped": 1,
       "green": true
     },
     "smoke-mobile": {
-      "passed": 31,
+      "passed": 34,
       "failed": 0,
       "skipped": 1,
       "green": true
     }
   },
   "totals": {
-    "passed": 69,
+    "passed": 74,
     "failed": 0,
-    "skipped": 1,
+    "skipped": 2,
     "green": true
   }
 }

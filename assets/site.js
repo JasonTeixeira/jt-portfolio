@@ -62,7 +62,8 @@
       num: '03', fig: '04', dir: 'row', name: 'ai-research-dashboard', kind: 'RAG', color: '#22d3ee',
       badge: 'VERIFIED', badgeColor: '#10b981', badgeBorder: 'rgba(16,185,129,0.4)', priv: true, href: '',
       desc: 'RAG knowledge base where every answer is extractive and cited. Durable ingestion worker, pgvector retrieval, persisted eval runs, and a full audit trail from source to answer.',
-      metric: '100% of answers carry citations to their source chunks — verified: enforced by design, no free generation path',
+      metric: '100% citation coverage — verified 2026-08-15: ran it live, asked a real question, screenshot below is the actual answer',
+      shot: { src: 'assets/shots/rag-dashboard.jpg', full: 'assets/shots/rag-dashboard-full.png', alt: 'The real AI Research Dashboard answering a query with chunk-level citations: retrieval candidates ranked and selected, 100% citation coverage, honest no-evidence abstain rate visible in the metrics row.' },
       tags: ['FastAPI', 'pgvector', 'Gemini', 'React'],
       term: [
         { c: '#8E8882', t: '$ curl -X POST /queries -d "…"' },
@@ -267,6 +268,8 @@
   ];
 
   var NOTES = [
+    { href: 'notes/gate-blocked-me.html', date: '2026·08', color: '#f43f5e', read: '4 min', title: 'The day my own quality gate blocked me', dek: 'At 11:39 the proof loop refused the PROVEN verdict — 15 CVEs had drifted into prod deps. Green by 14:35. Both runs published verbatim.' },
+    { href: 'notes/promptfoo-ci-minimum-gate.html', date: '2026·08', color: '#a78bfa', read: '6 min', title: 'LLM regression testing with Promptfoo in CI: the minimum viable gate', dek: '30 golden traces, one judge, one failing exit code. The smallest setup that stops a bad prompt change — runnable this afternoon.' },
     { href: 'notes/no-fake-green.html', date: '2026·08', color: '#10b981', read: '6 min', title: 'No fake green: what a proof ledger taught me about AI agents', dek: 'Agents will happily report success they never earned. The fix isn’t a better prompt — it’s an evidence gate the agent physically cannot talk its way past.' },
     { href: 'notes/llm-regression-suite.html', date: '2026·07', color: '#a78bfa', read: '5 min', title: 'Your LLM feature needs a regression suite more than a better prompt', dek: 'Prompt tweaks feel like progress because nobody is measuring. Golden traces + LLM-as-judge in CI turn "it seems better" into a diff you can gate on.' },
     { href: 'notes/automation-that-never-talks.html', date: '2026·06', color: '#22d3ee', read: '4 min', title: 'Automation that never talks to your customer', dek: 'The best-converting AI workflow I’ve shipped sends zero AI-written messages. Where to put the human approval point, and why it beats full autonomy.' }
@@ -570,10 +573,22 @@
     ]);
     var rightChildren = [];
     if (ARCH[p.name]) rightChildren.push(buildArch(ARCH[p.name]));
+    if (p.shot) {
+      // real product screenshot beats a synthetic terminal
+      var shotImg = el('img', 'display:block;width:100%;height:auto', [], {
+        src: p.shot.src, alt: p.shot.alt, loading: 'lazy', width: '1680', height: '1050'
+      });
+      var shotLink = el('a', 'display:block;border:1px solid #2A2826;border-radius:10px;overflow:hidden;background:#0A0B0D;margin-top:10px', [shotImg], {
+        href: p.shot.full, target: '_blank', rel: 'noopener', 'data-evt': 'shot-open',
+        'aria-label': 'Open full-size screenshot'
+      });
+      rightChildren.push(shotLink);
+    } else {
+      rightChildren.push(el('div', ARCH[p.name] ? 'margin-top:10px' : '', [termCard]));
+    }
     rightChildren.push(
-      el('div', ARCH[p.name] ? 'margin-top:10px' : '', [termCard]),
       txt('div', MONO + 'font-size:9.5px;letter-spacing:0.1em;color:#837D77;margin-top:8px;text-transform:uppercase',
-        'fig. ' + p.fig + (ARCH[p.name] ? ' — architecture · live output' : ' — live output'))
+        'fig. ' + p.fig + (p.shot ? ' — architecture · real UI, real query, 2026-08-15 · click to zoom' : ARCH[p.name] ? ' — architecture · live output' : ' — live output'))
     );
     var right = el('div', 'width:min(420px,100%);align-self:center', rightChildren);
 
@@ -962,6 +977,25 @@
           '&body=' + encodeURIComponent(fields.message + '\n\n— ' + fields.name + ' (' + fields.email + ')');
       });
     });
+  }
+
+  /* ───────────────────────── mobile sticky CTA ───────────────────────── */
+
+  var mobileCta = document.getElementById('jt-mobile-cta');
+  if (mobileCta && 'IntersectionObserver' in window) {
+    var contactSec = document.getElementById('contact');
+    var heroSec = document.getElementById('top');
+    var heroVisible = true, contactVisible = false;
+    var ctaIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.target === heroSec) heroVisible = en.isIntersecting;
+        if (en.target === contactSec) contactVisible = en.isIntersecting;
+      });
+      // show only between the hero (has its own CTAs) and contact (ditto)
+      mobileCta.hidden = heroVisible || contactVisible;
+    }, { threshold: 0.05 });
+    if (heroSec) ctaIO.observe(heroSec);
+    if (contactSec) ctaIO.observe(contactSec);
   }
 
   /* ───────────────────────── year ───────────────────────── */

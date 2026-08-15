@@ -15,6 +15,39 @@ function esc(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+/** Static architecture diagram — same visual language as the homepage cards
+ *  (nodes, edges, SMIL packets) but rendered to an SVG string at build time
+ *  so note pages need no JS. */
+function archSvg(arch, caption) {
+  const W = 440, H = 150;
+  const parts = [];
+  for (const e of arch.edges) {
+    const a = arch.nodes[e[0]], b = arch.nodes[e[1]];
+    const d = a.y === b.y
+      ? `M${a.x},${a.y} H${b.x}`
+      : `M${a.x},${a.y} C${a.x + 42},${a.y} ${b.x - 42},${b.y} ${b.x},${b.y}`;
+    parts.push(`<path d="${d}" fill="none" stroke="#2A2826" stroke-width="1"/>`);
+  }
+  arch.nodes.forEach((n, i) => {
+    const ly = n.y === 75 ? n.y + 24 : (n.y < 75 ? n.y - 24 : n.y + 24);
+    parts.push(
+      `<circle cx="${n.x}" cy="${n.y}" r="9" fill="none" stroke="${n.c}" stroke-opacity="0.35"/>`,
+      `<circle cx="${n.x}" cy="${n.y}" r="3.5" fill="${n.c}"/>`,
+      `<text x="${n.x}" y="${ly}" fill="${n.c}" font-family="'JetBrains Mono',monospace" font-size="9.5" letter-spacing="0.08em" text-anchor="middle">${esc(n.l)}</text>`
+    );
+    if (n.s) parts.push(`<text x="${n.x}" y="${ly + 12}" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">${esc(n.s)}</text>`);
+  });
+  for (const p of arch.packets || []) {
+    parts.push(`<circle r="2.6" fill="${p.c}" opacity="0.9" class="pkt"><animateMotion dur="${p.dur}s" begin="${p.delay}s" repeatCount="indefinite" path="${p.d}"/></circle>`);
+  }
+  return `<figure style="margin:8px 0 0">
+      <div style="border:1px solid #2A2826;border-radius:10px;overflow:hidden;background:#0A0B0D;padding:4px 0">
+        <svg viewBox="0 0 ${W} ${H}" style="display:block;width:100%;height:auto" role="img" aria-label="${esc(caption)}">${parts.join('')}</svg>
+      </div>
+      <figcaption style="${MONO}font-size:9.5px;letter-spacing:0.1em;color:#837D77;margin-top:8px;text-transform:uppercase">${esc(caption)}</figcaption>
+    </figure>`;
+}
+
 function head({ title, description, canonicalPath, jsonLd, depth, ogImage }) {
   const p = depth === 1 ? '../' : '';
   return `<!DOCTYPE html>
@@ -80,9 +113,13 @@ for (const n of NOTES) {
   const paras = n.body.map((b) =>
     b === '__QUOTE__'
       ? quote
-      : b === n.body[0]
-        ? `<p style="margin:0"><span style="${SERIF}font-size:2.4rem;float:left;line-height:0.8;padding:6px 8px 0 0;color:${n.color}">${n.dropCap}</span>${b}</p>`
-        : `<p style="margin:0">${b}</p>`
+      : b === '__DIAGRAM__'
+        ? archSvg(n.arch, n.archCaption || 'system flow')
+        : b.startsWith('```')
+          ? `<pre class="code"><code>${esc(b.replace(/^```\w*\n?/, '').replace(/```$/, ''))}</code></pre>`
+          : b === n.body[0]
+            ? `<p style="margin:0"><span style="${SERIF}font-size:2.4rem;float:left;line-height:0.8;padding:6px 8px 0 0;color:${n.color}">${n.dropCap}</span>${b}</p>`
+            : `<p style="margin:0">${b}</p>`
   ).join('\n      ');
 
   const html = `${head({ title: `${n.title} — Field Notes`, description: n.dek, canonicalPath: `/notes/${n.slug}.html`, jsonLd, depth: 1, ogImage: `og-note-${n.slug}.png` })}
