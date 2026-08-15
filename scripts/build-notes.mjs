@@ -60,7 +60,8 @@ function footer(depth) {
     <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</span>
     <span><a href="${p}feed.xml" class="dim-link" style="color:#837D77">rss</a> · <a href="${p}index.html" class="dim-link" style="color:#837D77">← portfolio</a></span>
   </footer>
-<script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>`;
+<script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
+<script src="${p}assets/subscribe.js"></script>`;
 }
 
 /* ── individual post pages ── */
@@ -104,6 +105,7 @@ for (const n of NOTES) {
       <a href="../field-notes.html" class="btn-ghost" style="padding:11px 22px;font-size:13px">← All field notes</a>
       <a href="../index.html#contact" class="btn-solid green" style="padding:11px 22px;font-size:13px">Work with me →</a>
     </div>
+    <div data-subscribe style="margin-top:40px"></div>
   </article>
   ${footer(1)}
 </div>
@@ -140,6 +142,8 @@ const indexHtml = `${head({ title: 'Field Notes — Jason Teixeira', description
     <div style="border-top:1px solid #2A2826">
 ${indexItems}
     </div>
+    <p style="margin:20px 0 0;${MONO}font-size:11px;color:#837D77">free artifact: <a href="checklist.html" style="color:#a78bfa">the LLM pre-launch eval checklist →</a></p>
+    <div data-subscribe style="margin-top:32px"></div>
   </section>
   ${footer(0)}
 </div>
@@ -171,7 +175,7 @@ ${items}
 
 /* ── sitemap + robots ── */
 const pages = [
-  '/', '/field-notes.html',
+  '/', '/field-notes.html', '/checklist.html',
   ...SERVICES.map((s) => `/services/${s.slug}.html`),
   ...NOTES.map((n) => `/notes/${n.slug}.html`)
 ];

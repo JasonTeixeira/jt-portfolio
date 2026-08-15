@@ -172,6 +172,30 @@ test.describe('portfolio — index', () => {
     expect(img.status()).toBe(200);
   });
 
+  test('architecture diagrams render for all five projects', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#jt-projects svg[aria-label="architecture diagram"]')).toHaveCount(5);
+    // node labels present in the baked SVG
+    await expect(page.locator('#jt-projects')).toContainText('LLM router');
+    await expect(page.locator('#jt-projects')).toContainText('proof ledger');
+  });
+
+  test('checklist page + PDF exist; subscribe widget renders with fallback', async ({ page, request }) => {
+    const ck = await request.get('/checklist.html');
+    expect(ck.status()).toBe(200);
+    const pdf = await request.get('/assets/llm-eval-checklist.pdf');
+    expect(pdf.status()).toBe(200);
+    expect(pdf.headers()['content-type']).toContain('pdf');
+
+    await page.goto('/notes/no-fake-green.html');
+    const widget = page.locator('[data-subscribe] form');
+    await expect(widget).toBeVisible();
+    await widget.locator('input[name="email"]').fill('reader@example.com');
+    await widget.locator('button[type="submit"]').click();
+    // no /api locally — the manual-subscribe fallback must engage
+    await expect(page.locator('[data-sub-status]')).toContainText('hello@sageideas.dev', { timeout: 5000 });
+  });
+
   test('footer year is current', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('footer [data-year]').first()).toHaveText(String(new Date().getFullYear()));
@@ -235,7 +259,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(8);
+    expect((xml.match(/<loc>/g) || []).length).toBe(9);
   });
 });
 
@@ -283,7 +307,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(8);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(9);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');

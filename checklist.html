@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The LLM Feature Pre-Launch Eval Checklist — Jason Teixeira</title>
+<meta name="description" content="The 18-point evaluation checklist to run before your LLM feature ships — golden sets, LLM-as-judge, safety runners, CI gates, and human approval points. From the engineer behind an 85-runner QA platform.">
+<link rel="canonical" href="https://agency.sageideas.dev/checklist.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The LLM Feature Pre-Launch Eval Checklist">
+<meta property="og:description" content="18 checks before your LLM feature ships — golden sets, judges, safety runners, CI gates, approval points.">
+<meta property="og:url" content="https://agency.sageideas.dev/checklist.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  .ck-group { border: 1px solid #2A2826; background: #0C0C0E; padding: clamp(20px, 3vw, 30px); margin-top: 20px; }
+  .ck-group h2 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 1.35rem; margin: 0 0 4px; }
+  .ck-group .why { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+  .ck { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px dashed #1F1D1B; font-size: 13.5px; line-height: 1.6; color: #C9C4BF; }
+  .ck:last-child { border-bottom: none; }
+  .ck::before { content: '☐'; color: #57534E; font-size: 15px; flex-shrink: 0; }
+  .ck b { color: #F4F2EF; }
+  @media print {
+    body { background: #fff !important; color: #111 !important; }
+    nav, .no-print { display: none !important; }
+    .ck-group { border-color: #ccc; background: #fff; break-inside: avoid; }
+    .ck { color: #333; border-color: #eee; }
+    .ck b, .ck-group h2 { color: #111 !important; }
+    a { color: #0e7490 !important; }
+  }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:#09090B;position:relative">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(18px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
+      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.02em">jason.teixeira<span style="color:#10b981">()</span></span>
+    </a>
+    <div style="display:flex;gap:20px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:12px">
+      <a href="assets/llm-eval-checklist.pdf" class="dim-link" download data-evt="checklist-pdf">download PDF ↓</a>
+      <a href="index.html" class="dim-link">← portfolio</a>
+    </div>
+  </nav>
+
+  <main style="max-width:820px;margin:0 auto;padding:72px clamp(18px,4vw,40px) 88px">
+    <div style="display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882">
+      <span style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:jt-blink 2.4s ease-in-out infinite"></span>
+      <span>free artifact — no email wall</span>
+    </div>
+    <h1 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.4rem,5.4vw,3.8rem);line-height:1.08;letter-spacing:-0.02em;margin:22px 0 0;text-wrap:balance">The LLM Feature Pre-Launch Eval Checklist</h1>
+    <p style="margin:18px 0 0;font-size:15px;line-height:1.75;color:#A8A29E;max-width:60ch">Eighteen checks before your LLM feature meets a customer — distilled from an 85-runner QA platform with ten dedicated AI-safety evals. If you can tick every box, ship. If you can't, you know exactly what to build first.</p>
+
+    <div class="ck-group">
+      <h2>Ground truth</h2>
+      <div class="why" style="color:#22d3ee">without this, every other check is opinion</div>
+      <div class="ck"><span>A <b>golden set</b> exists: 30–200 real inputs with agreed-good outputs, versioned in the repo next to the code — not in someone's spreadsheet.</span></div>
+      <div class="ck"><span>Someone with <b>domain authority signed off</b> on the golden outputs — not the engineer who wrote the prompt.</span></div>
+      <div class="ck"><span>The golden set includes <b>hard cases</b>: ambiguous inputs, adversarial phrasing, out-of-scope requests, and at least one "should refuse" example.</span></div>
+    </div>
+
+    <div class="ck-group">
+      <h2>Measurement</h2>
+      <div class="why" style="color:#a78bfa">"it seems better" is not a metric</div>
+      <div class="ck"><span>An <b>LLM-as-judge</b> (or deterministic scorer) rates faithfulness and relevance against the golden set — imperfect is fine, consistent is mandatory.</span></div>
+      <div class="ck"><span>Judge scores are <b>computed by a command</b>, reproducibly — run it twice, get the same number.</span></div>
+      <div class="ck"><span>A <b>baseline score is recorded</b> so the next prompt/model change produces a diff, not a debate.</span></div>
+      <div class="ck"><span><b>Cost and latency budgets</b> exist per request, and the eval run reports against them.</span></div>
+    </div>
+
+    <div class="ck-group">
+      <h2>Safety battery</h2>
+      <div class="why" style="color:#f43f5e">the failure modes that end up in screenshots</div>
+      <div class="ck"><span><b>Hallucination</b>: claims cross-checked against source data on retrieval-backed answers; uncited generation paths closed or flagged.</span></div>
+      <div class="ck"><span><b>Prompt injection</b>: adversarial inputs that try to override system instructions are tested and blocked.</span></div>
+      <div class="ck"><span><b>Jailbreak & refusal</b>: the feature refuses what it should — and doesn't refuse what it shouldn't.</span></div>
+      <div class="ck"><span><b>Toxicity & bias</b>: outputs scored on your actual user inputs, not just a benchmark set.</span></div>
+      <div class="ck"><span><b>PII leak</b>: the feature cannot echo other users' data or training remnants; logs are scrubbed.</span></div>
+    </div>
+
+    <div class="ck-group">
+      <h2>The gate</h2>
+      <div class="why" style="color:#10b981">a red eval that blocks nothing is decoration</div>
+      <div class="ck"><span>The eval suite runs <b>in CI on every PR</b> that touches prompts, models, retrieval, or tools.</span></div>
+      <div class="ck"><span>A score below the floor <b>blocks the merge</b> — the gate stops the deploy, not the retro.</span></div>
+      <div class="ck"><span>The floor <b>ratchets</b>: every improvement becomes the new minimum.</span></div>
+    </div>
+
+    <div class="ck-group">
+      <h2>Blast-radius control</h2>
+      <div class="why" style="color:#F59E0B">autonomy is earned with evidence, never assumed</div>
+      <div class="ck"><span>A <b>human approval point</b> sits where the risk is: before every send (new), before novel cases (proven), or after-the-fact review (mature).</span></div>
+      <div class="ck"><span>LLM steps emit <b>structured, schema-validated output</b> with a fallback label on parse failure — raw input always logged beside the decision.</span></div>
+      <div class="ck"><span>There is a <b>kill switch</b> a non-engineer can operate, and everyone knows where it is.</span></div>
+    </div>
+
+    <div class="no-print" style="margin-top:44px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.04);padding:clamp(24px,4vw,36px);text-align:center">
+      <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.5rem,3vw,2rem);margin:0">Can't tick every box?</h2>
+      <p style="margin:12px auto 0;font-size:14px;color:#A8A29E;max-width:46ch">That's the gap I close in a 4-week fixed-scope engagement — the suite, the gate, and the runbook, in your repo.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:22px;flex-wrap:wrap">
+        <a href="services/llm-evaluation-qa.html" class="btn-solid green" data-evt="checklist-to-service">How I build this →</a>
+        <a href="assets/llm-eval-checklist.pdf" class="btn-ghost" download data-evt="checklist-pdf">Download the PDF</a>
+      </div>
+    </div>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</span>
+    <span><a href="index.html" class="dim-link" style="color:#837D77">← portfolio</a></span>
+  </footer>
+</div>
+<script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
+</body>
+</html>

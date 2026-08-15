@@ -98,6 +98,79 @@
     }
   ];
 
+  /* per-project architecture diagrams — nodes on a 440×150 grid.
+     y:75 = main line; 35/115 = branch lanes. Packets travel the paths. */
+  var ARCH = {
+    'sage-agents': {
+      nodes: [
+        { x: 38, y: 75, c: '#A8A29E', l: 'intake', s: 'web · phone' },
+        { x: 148, y: 75, c: '#22d3ee', l: 'LLM router', s: 'cost-tracked' },
+        { x: 262, y: 35, c: '#22d3ee', l: 'voice', s: 'TCPA gate' },
+        { x: 262, y: 75, c: '#A8A29E', l: 'SDR', s: '' },
+        { x: 262, y: 115, c: '#a78bfa', l: 'RAG chat', s: '' },
+        { x: 396, y: 75, c: '#10b981', l: 'Langfuse', s: 'every run traced' }
+      ],
+      edges: [[0, 1], [1, 2], [1, 3], [1, 4], [2, 5], [3, 5], [4, 5]],
+      packets: [
+        { d: 'M38,75 H148 C190,75 210,35 262,35 C314,35 350,75 396,75', c: '#22d3ee', dur: 5, delay: 0 },
+        { d: 'M38,75 H396', c: '#A8A29E', dur: 5, delay: 1.6 },
+        { d: 'M38,75 H148 C190,75 210,115 262,115 C314,115 350,75 396,75', c: '#a78bfa', dur: 5, delay: 3.2 }
+      ]
+    },
+    'sage-kernel': {
+      nodes: [
+        { x: 38, y: 75, c: '#A8A29E', l: 'AI agent', s: 'claude · cursor' },
+        { x: 155, y: 75, c: '#F59E0B', l: 'policy', s: 'signed approvals' },
+        { x: 272, y: 75, c: '#22d3ee', l: '140 tools', s: 'MCP' },
+        { x: 396, y: 75, c: '#10b981', l: 'proof ledger', s: 'hash-chained' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [
+        { d: 'M38,75 H396', c: '#10b981', dur: 4.5, delay: 0 },
+        { d: 'M38,75 H396', c: '#22d3ee', dur: 4.5, delay: 2.2 }
+      ]
+    },
+    'ai-research-dashboard': {
+      nodes: [
+        { x: 38, y: 75, c: '#A8A29E', l: 'sources', s: 'durable ingest' },
+        { x: 155, y: 75, c: '#22d3ee', l: 'chunker', s: 'embed' },
+        { x: 272, y: 75, c: '#a78bfa', l: 'pgvector', s: 'cosine top-k' },
+        { x: 396, y: 75, c: '#10b981', l: 'cited answer', s: 'audit trail' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [
+        { d: 'M38,75 H396', c: '#22d3ee', dur: 4.5, delay: 0 },
+        { d: 'M38,75 H396', c: '#a78bfa', dur: 4.5, delay: 2.2 }
+      ]
+    },
+    'playwright-sdet-regression-suite': {
+      nodes: [
+        { x: 38, y: 75, c: '#A8A29E', l: 'push / PR', s: '' },
+        { x: 155, y: 75, c: '#22d3ee', l: 'CI', s: 'GitHub Actions' },
+        { x: 272, y: 75, c: '#a78bfa', l: '37 specs', s: '4 workers · POM' },
+        { x: 396, y: 75, c: '#10b981', l: 'green gate', s: 'traces · 4 reporters' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [
+        { d: 'M38,75 H396', c: '#a78bfa', dur: 4.5, delay: 0 },
+        { d: 'M38,75 H396', c: '#10b981', dur: 4.5, delay: 2.2 }
+      ]
+    },
+    'nexural-qa-os': {
+      nodes: [
+        { x: 38, y: 75, c: '#A8A29E', l: 'qa run', s: 'one CLI' },
+        { x: 155, y: 75, c: '#22d3ee', l: 'DAG', s: 'plugin runners' },
+        { x: 272, y: 75, c: '#a78bfa', l: '85 runners', s: '10 AI-safety' },
+        { x: 396, y: 75, c: '#10b981', l: 'verdict', s: 'ed25519 signed' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [
+        { d: 'M38,75 H396', c: '#a78bfa', dur: 4.5, delay: 0 },
+        { d: 'M38,75 H396', c: '#10b981', dur: 4.5, delay: 2.2 }
+      ]
+    }
+  };
+
   var BRIEFS = [
     {
       num: 'BRIEF/01', fig: '07', color: '#22d3ee', title: 'Feedback triage that runs itself', repo: 'Make + Gemini workflow',
@@ -385,6 +458,60 @@
     }
   }
 
+  /* ───────────────────────── architecture diagram builder ───────────────────────── */
+
+  function buildArch(arch) {
+    var W = 440, H = 150;
+    var NS = 'http://www.w3.org/2000/svg';
+    function sv(tag, attrs, children) {
+      var n = document.createElementNS(NS, tag);
+      Object.keys(attrs || {}).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+      (children || []).forEach(function (c) { n.appendChild(c); });
+      return n;
+    }
+    var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, style: 'display:block;width:100%;height:auto', role: 'img', 'aria-label': 'architecture diagram' });
+
+    arch.edges.forEach(function (e) {
+      var a = arch.nodes[e[0]], b = arch.nodes[e[1]];
+      var d = a.y === b.y
+        ? 'M' + a.x + ',' + a.y + ' H' + b.x
+        : 'M' + a.x + ',' + a.y + ' C' + (a.x + 42) + ',' + a.y + ' ' + (b.x - 42) + ',' + b.y + ' ' + b.x + ',' + b.y;
+      svg.appendChild(sv('path', { d: d, fill: 'none', stroke: '#2A2826', 'stroke-width': '1' }));
+    });
+
+    arch.nodes.forEach(function (n, i) {
+      svg.appendChild(sv('circle', { cx: n.x, cy: n.y, r: 9, fill: 'none', stroke: n.c, 'stroke-opacity': '0.35' }));
+      svg.appendChild(sv('circle', { cx: n.x, cy: n.y, r: 3.5, fill: n.c }));
+      var ring = sv('circle', { cx: n.x, cy: n.y, r: 9, fill: 'none', stroke: n.c, 'stroke-opacity': '0.5', style: 'transform-origin:' + n.x + 'px ' + n.y + 'px;animation:jt-ringpulse 3s ease-out infinite;animation-delay:' + (i * 0.55) + 's' });
+      svg.appendChild(ring);
+      var above = n.y < 75; // branch-lane labels flip to avoid the midline
+      var ly = n.y === 75 ? n.y + 24 : (above ? n.y - 24 : n.y + 24);
+      var l = sv('text', { x: n.x, y: ly, fill: n.c, 'font-family': "'JetBrains Mono',monospace", 'font-size': '9.5', 'letter-spacing': '0.08em', 'text-anchor': 'middle' });
+      l.textContent = n.l;
+      svg.appendChild(l);
+      if (n.s) {
+        var s = sv('text', { x: n.x, y: ly + 12, fill: '#8E8882', 'font-family': "'JetBrains Mono',monospace", 'font-size': '8', 'text-anchor': 'middle' });
+        s.textContent = n.s;
+        svg.appendChild(s);
+      }
+    });
+
+    // packets ride SMIL animateMotion so they scale with the viewBox
+    // (and are simply omitted under reduced motion — SMIL ignores the media query)
+    if (!REDUCED) {
+      (arch.packets || []).forEach(function (p) {
+        var dot = sv('circle', { r: '2.6', fill: p.c, opacity: '0.9', class: 'pkt' });
+        var mo = sv('animateMotion', { dur: p.dur + 's', begin: p.delay + 's', repeatCount: 'indefinite', path: p.d });
+        dot.appendChild(mo);
+        svg.appendChild(dot);
+      });
+    }
+
+    var wrap = el('div', 'border:1px solid #2A2826;border-radius:10px;overflow:hidden;background:#0A0B0D;padding:4px 0');
+    wrap.appendChild(svg);
+    return wrap;
+  }
+
   /* ───────────────────────── project index ───────────────────────── */
 
   var projMount = document.getElementById('jt-projects');
@@ -435,10 +562,14 @@
         termLines
       ])
     ]);
-    var right = el('div', 'width:min(420px,100%);align-self:center', [
-      termCard,
-      txt('div', MONO + 'font-size:9.5px;letter-spacing:0.1em;color:#837D77;margin-top:8px;text-transform:uppercase', 'fig. ' + p.fig + ' — live output')
-    ]);
+    var rightChildren = [];
+    if (ARCH[p.name]) rightChildren.push(buildArch(ARCH[p.name]));
+    rightChildren.push(
+      el('div', ARCH[p.name] ? 'margin-top:10px' : '', [termCard]),
+      txt('div', MONO + 'font-size:9.5px;letter-spacing:0.1em;color:#837D77;margin-top:8px;text-transform:uppercase',
+        'fig. ' + p.fig + (ARCH[p.name] ? ' — architecture · live output' : ' — live output'))
+    );
+    var right = el('div', 'width:min(420px,100%);align-self:center', rightChildren);
 
     projMount.appendChild(el('article',
       '--pc:' + p.color + ';display:flex;flex-direction:' + p.dir + ';flex-wrap:wrap;gap:clamp(20px,3vw,44px);padding:44px 0;border-bottom:1px solid #2A2826',
@@ -582,6 +713,8 @@
 
   // defense in depth: clear any reveal state that leaked into static HTML
   document.querySelectorAll('.rise-pre').forEach(function (n) { n.classList.remove('rise-pre'); });
+  // SMIL packets ignore prefers-reduced-motion — remove baked ones outright
+  if (REDUCED) document.querySelectorAll('.pkt').forEach(function (n) { n.remove(); });
   if (!REDUCED && 'IntersectionObserver' in window) {
     var riseEls = document.querySelectorAll('.rise');
     var riseIO = new IntersectionObserver(function (entries) {
