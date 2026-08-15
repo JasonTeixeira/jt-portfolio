@@ -106,18 +106,43 @@ test.describe('portfolio — SEO', () => {
 });
 
 test.describe('portfolio — field notes', () => {
-  test('loads with 3 articles and working back link', async ({ page }) => {
+  test('index lists 3 notes and links back to portfolio', async ({ page }) => {
     const errors = trackErrors(page);
     await page.goto('/field-notes.html');
     await expect(page).toHaveTitle(/Field Notes/);
-    await expect(page.locator('article')).toHaveCount(3);
+    await expect(page.locator('a.note-row')).toHaveCount(3);
     await page.locator('nav a[href="index.html"]').last().click();
     await expect(page).toHaveURL(/index\.html/);
     expect(errors).toEqual([]);
   });
 
-  test('note anchors from index resolve', async ({ page }) => {
-    await page.goto('/field-notes.html#note-2');
-    await expect(page.locator('#note-2')).toBeVisible();
+  test('note post page has content, Article schema, and canonical', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/notes/no-fake-green.html');
+    await expect(page.locator('h1')).toContainText('No fake green');
+    await expect(page.locator('article .prose p')).not.toHaveCount(0);
+    const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    expect(ld['@type']).toBe('Article');
+    expect(ld.author.name).toBe('Jason Teixeira');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /notes\/no-fake-green/);
+    expect(errors).toEqual([]);
+  });
+
+  test('every note listed on the index resolves to a real page', async ({ page, request }) => {
+    await page.goto('/field-notes.html');
+    const hrefs = await page.locator('a.note-row').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
+    expect(hrefs.length).toBe(3);
+    for (const href of hrefs) {
+      const res = await request.get('/' + href);
+      expect(res.status(), href).toBe(200);
+    }
+  });
+
+  test('RSS feed exists and contains all notes', async ({ request }) => {
+    const res = await request.get('/feed.xml');
+    expect(res.status()).toBe(200);
+    const xml = await res.text();
+    expect(xml).toContain('<rss');
+    expect((xml.match(/<item>/g) || []).length).toBe(3);
   });
 });

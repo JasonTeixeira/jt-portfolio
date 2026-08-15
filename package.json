@@ -8,6 +8,7 @@
     "serve": "python3 -m http.server 8242",
     "test": "playwright test",
     "prerender": "node scripts/prerender.mjs",
+    "build:notes": "node scripts/build-notes.mjs",
     "proof": "node scripts/proof.mjs",
     "lighthouse": "lhci autorun"
   },

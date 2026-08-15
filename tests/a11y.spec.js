@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const PAGES = ['/', '/field-notes.html'];
+const PAGES = ['/', '/field-notes.html', '/notes/no-fake-green.html'];
 
 for (const path of PAGES) {
   test(`axe scan — ${path} has no serious/critical violations`, async ({ page }) => {

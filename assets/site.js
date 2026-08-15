@@ -187,9 +187,9 @@
   ];
 
   var NOTES = [
-    { href: 'field-notes.html#note-1', date: '2026·08', color: '#10b981', read: '6 min', title: 'No fake green: what a proof ledger taught me about AI agents', dek: 'Agents will happily report success they never earned. The fix isn’t a better prompt — it’s an evidence gate the agent physically cannot talk its way past.' },
-    { href: 'field-notes.html#note-2', date: '2026·07', color: '#a78bfa', read: '5 min', title: 'Your LLM feature needs a regression suite more than a better prompt', dek: 'Prompt tweaks feel like progress because nobody is measuring. Golden traces + LLM-as-judge in CI turn "it seems better" into a diff you can gate on.' },
-    { href: 'field-notes.html#note-3', date: '2026·06', color: '#22d3ee', read: '4 min', title: 'Automation that never talks to your customer', dek: 'The best-converting AI workflow I’ve shipped sends zero AI-written messages. Where to put the human approval point, and why it beats full autonomy.' }
+    { href: 'notes/no-fake-green.html', date: '2026·08', color: '#10b981', read: '6 min', title: 'No fake green: what a proof ledger taught me about AI agents', dek: 'Agents will happily report success they never earned. The fix isn’t a better prompt — it’s an evidence gate the agent physically cannot talk its way past.' },
+    { href: 'notes/llm-regression-suite.html', date: '2026·07', color: '#a78bfa', read: '5 min', title: 'Your LLM feature needs a regression suite more than a better prompt', dek: 'Prompt tweaks feel like progress because nobody is measuring. Golden traces + LLM-as-judge in CI turn "it seems better" into a diff you can gate on.' },
+    { href: 'notes/automation-that-never-talks.html', date: '2026·06', color: '#22d3ee', read: '4 min', title: 'Automation that never talks to your customer', dek: 'The best-converting AI workflow I’ve shipped sends zero AI-written messages. Where to put the human approval point, and why it beats full autonomy.' }
   ];
 
   var PIPELINE_LOGS = ['eval:faithfulness 0.94 PASS', 'ci:typecheck exit 0', 'eval:injection blocked 12/12', 'deploy:staging ok 8.2s', 'regression 37/37 green', 'judge:toxicity 0.00 PASS', 'proof:ledger +1 entry sha256 ok', 'k6 p95 210ms < 400ms budget', 'eval:pii-leak 0 findings', 'retry: prompt v2 → faithfulness 0.96', 'gate:coverage 91.25% ≥ 90.03%', 'verdict PROVEN — evidence signed'];
