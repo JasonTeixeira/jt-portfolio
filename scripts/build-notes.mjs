@@ -179,9 +179,10 @@ const pages = [
   ...SERVICES.map((s) => `/services/${s.slug}.html`),
   ...NOTES.map((n) => `/notes/${n.slug}.html`)
 ];
+const today = new Date().toISOString().slice(0, 10);
 writeFileSync('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.map((u) => `  <url><loc>${SITE_URL}${u}</loc></url>`).join('\n')}
+${pages.map((u) => `  <url><loc>${SITE_URL}${u}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
 </urlset>
 `);
 writeFileSync('robots.txt', `User-agent: *

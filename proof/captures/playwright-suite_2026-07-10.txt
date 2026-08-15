@@ -1,0 +1,62 @@
+
+> playwright-sdet-regression-suite@0.1.0 test
+> playwright test
+
+
+Running 37 tests using 8 workers
+
+(node:54672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54671) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54677) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54673) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54674) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54675) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54670) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [chromium] › tests/auth.spec.ts:27:7 › Authentication › @negative @auth missing username shows validation (671ms)
+  ✓   7 [chromium] › tests/auth.spec.ts:34:7 › Authentication › @negative @auth missing password shows validation (673ms)
+  ✓   5 [chromium] › tests/auth.spec.ts:13:7 › Authentication › @negative @auth invalid password is rejected (780ms)
+  ✓   3 [chromium] › tests/auth.spec.ts:59:7 › Authentication › @regression @auth authenticated user reaches inventory page (839ms)
+  ✓   2 [chromium] › tests/auth.spec.ts:9:7 › Authentication › @regression @auth valid standard user can log in (929ms)
+  ✓   1 [chromium] › tests/auth.spec.ts:42:7 › Authentication › @regression @auth user can recover from a visible login error (1.9s)
+  ✓  10 [chromium] › tests/cart.spec.ts:11:7 › Cart behavior › @regression @cart user can remove an item from the product page (1.8s)
+  ✓   6 [chromium] › tests/auth.spec.ts:53:7 › Authentication › @regression @auth logout returns user to login screen (2.9s)
+  ✓  13 [chromium] › tests/cart.spec.ts:32:7 › Cart behavior › @regression @cart user can remove item from cart page (2.0s)
+  ✓  15 [chromium] › tests/cart.spec.ts:45:7 › Cart behavior › @regression @cart multiple items persist on cart page (1.1s)
+  ✓   9 [chromium] › tests/cart.spec.ts:5:7 › Cart behavior › @regression @cart user can add one item to the cart (3.1s)
+  ✓  12 [chromium] › tests/cart.spec.ts:27:7 › Cart behavior › @regression @cart cart page shows selected item (3.6s)
+  ✓  16 [chromium] › tests/checkout.spec.ts:6:7 › Checkout › @negative @checkout checkout requires first name (1.6s)
+  ✓   4 [chromium] › tests/auth.spec.ts:20:7 › Authentication › @negative @auth locked-out user is rejected (4.9s)
+  ✓  20 [chromium] › tests/checkout.spec.ts:38:7 › Checkout › @regression @checkout overview shows selected item (1.7s)
+  ✓  19 [chromium] › tests/checkout.spec.ts:27:7 › Checkout › @regression @checkout valid checkout reaches overview (2.8s)
+  ✓  17 [chromium] › tests/checkout.spec.ts:12:7 › Checkout › @negative @checkout checkout requires last name (3.8s)
+  ✓  11 [chromium] › tests/cart.spec.ts:20:7 › Cart behavior › @regression @cart cart badge updates when multiple items are added (6.6s)
+  ✓  14 [chromium] › tests/cart.spec.ts:39:7 › Cart behavior › @regression @cart continue shopping returns to product listing (5.6s)
+  ✓  21 [chromium] › tests/checkout.spec.ts:50:7 › Checkout › @regression @checkout cancel checkout returns to cart (3.5s)
+  ✓  24 [chromium] › tests/navigation-session.spec.ts:8:7 › Navigation and session behavior › @regression menu opens and closes (2.6s)
+  ✓  22 [chromium] › tests/checkout.spec.ts:56:7 › Checkout › @regression @checkout finish checkout shows confirmation (4.3s)
+  ✓  27 [chromium] › tests/navigation-session.spec.ts:29:7 › Navigation and session behavior › @regression cart navigation is available after login (1.7s)
+  ✓  18 [chromium] › tests/checkout.spec.ts:19:7 › Checkout › @negative @checkout checkout requires postal code (5.8s)
+  ✓  29 [chromium] › tests/products.spec.ts:15:7 › Product listing › @regression product prices are visible (1.6s)
+  ✓  23 [chromium] › tests/checkout.spec.ts:68:7 › Checkout › @regression @checkout checkout complete returns home (4.8s)
+  ✓  25 [chromium] › tests/navigation-session.spec.ts:14:7 › Navigation and session behavior › @regression logout clears the active session (4.4s)
+  ✓  32 [chromium] › tests/products.spec.ts:36:7 › Product listing › @regression product sort Z-A orders names descending (1.8s)
+  ✓  28 [chromium] › tests/products.spec.ts:6:7 › Product listing › @regression product list loads all expected product names (3.6s)
+  ✓  26 [chromium] › tests/navigation-session.spec.ts:23:7 › Navigation and session behavior › @negative unauthenticated inventory access is blocked (4.8s)
+  ✓  35 [chromium] › tests/smoke.spec.ts:6:7 › Smoke coverage › @smoke @auth user can log in and see products (1.8s)
+  ✓  31 [chromium] › tests/products.spec.ts:28:7 › Product listing › @regression product sort A-Z orders names ascending (3.8s)
+  ✓  30 [chromium] › tests/products.spec.ts:22:7 › Product listing › @regression product images are visible (4.1s)
+  ✓  37 [chromium] › tests/smoke.spec.ts:17:7 › Smoke coverage › @smoke @checkout user can complete checkout (1.9s)
+  ✓  34 [chromium] › tests/products.spec.ts:52:7 › Product listing › @regression product sort price high-low orders prices descending (2.8s)
+  ✓  36 [chromium] › tests/smoke.spec.ts:11:7 › Smoke coverage › @smoke @cart user can add an item to cart (2.8s)
+  ✓  33 [chromium] › tests/products.spec.ts:44:7 › Product listing › @regression product sort price low-high orders prices ascending (3.9s)
+
+  37 passed (15.3s)

@@ -215,6 +215,25 @@ h2.sec-title {
 .xp-points b { color: var(--xc); font-weight: 600; }
 .xp-points li::marker { color: var(--xc); }
 
+/* ─── metric delta bars ─── */
+.delta { display: flex; align-items: center; gap: 12px; margin: 10px 0 0 18px; max-width: 420px; }
+.delta-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #837D77; min-width: 8.5em; }
+.delta-bars { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.delta-bars i { display: block; height: 4px; border-radius: 2px; }
+.delta-bars .before { background: #2A2826; }
+.delta-nums { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #A8A29E; white-space: nowrap; }
+
+/* ─── comparison table ─── */
+.cmp { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 13px; }
+.cmp th, .cmp td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #2A2826; }
+.cmp thead th { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #8E8882; font-weight: 500; }
+.cmp thead th:last-child { color: #10b981; }
+.cmp tbody th { font-weight: 600; color: #F4F2EF; font-size: 13px; }
+.cmp td { color: #8E8882; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.cmp td.y { color: #10b981; }
+.cmp td.n { color: #837D77; }
+.cmp tbody tr:hover { background: #0C0C0E; }
+
 /* ─── credential chips ─── */
 .cred-chip {
   --cc: #10b981;

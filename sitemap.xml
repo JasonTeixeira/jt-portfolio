@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://agency.sageideas.dev/</loc></url>
-  <url><loc>https://agency.sageideas.dev/field-notes.html</loc></url>
-  <url><loc>https://agency.sageideas.dev/checklist.html</loc></url>
-  <url><loc>https://agency.sageideas.dev/services/llm-evaluation-qa.html</loc></url>
-  <url><loc>https://agency.sageideas.dev/services/test-automation-ci.html</loc></url>
-  <url><loc>https://agency.sageideas.dev/services/ai-workflow-automation.html</loc></url>
-  <url><loc>https://agency.sageideas.dev/notes/no-fake-green.html</loc></url>
-  <url><loc>https://agency.sageideas.dev/notes/llm-regression-suite.html</loc></url>
-  <url><loc>https://agency.sageideas.dev/notes/automation-that-never-talks.html</loc></url>
+  <url><loc>https://agency.sageideas.dev/</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/field-notes.html</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/checklist.html</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/services/llm-evaluation-qa.html</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/services/test-automation-ci.html</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/services/ai-workflow-automation.html</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/notes/no-fake-green.html</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/notes/llm-regression-suite.html</loc><lastmod>2026-08-15</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/notes/automation-that-never-talks.html</loc><lastmod>2026-08-15</lastmod></url>
 </urlset>

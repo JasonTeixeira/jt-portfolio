@@ -196,6 +196,47 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('[data-sub-status]')).toContainText('hello@sageideas.dev', { timeout: 5000 });
   });
 
+  test('real-run captures: linked from cards, honest red gate visible', async ({ page, request }) => {
+    await page.goto('/');
+    await expect(page.locator('#jt-projects a[href="captures/nexural-qa-os.html"]')).toHaveCount(1);
+    await expect(page.locator('#jt-projects a[href="captures/playwright-suite.html"]')).toHaveCount(1);
+    const cap = await request.get('/captures/nexural-qa-os.html');
+    expect(cap.status()).toBe(200);
+    const text = await cap.text();
+    expect(text).toContain('NOT PROVEN');       // the honest red verdict ships verbatim
+    expect(text).toContain('12/13 gates');
+    expect(text).toContain('noindex');
+    // hero terminal transcript matches the real run, red gate included
+    await page.locator('#jt-term').scrollIntoViewIfNeeded();
+    await expect(page.locator('#jt-term-body')).toContainText('15 high/critical', { timeout: 8000 });
+  });
+
+  test('scored diagnostic: score bar updates and adapts CTA to weakest group', async ({ page }) => {
+    await page.goto('/checklist.html');
+    const bar = page.locator('#ck-score');
+    await expect(bar).toContainText('0/18');
+    // tick everything except the safety battery
+    const groups = page.locator('.ck-group');
+    for (let g = 0; g < 5; g++) {
+      if ((await groups.nth(g).locator('h2').textContent()) === 'Safety battery') continue;
+      for (const box of await groups.nth(g).locator('[data-ck]').all()) await box.check();
+    }
+    await expect(bar).toContainText('13/18');
+    await expect(bar).toContainText('safety battery');
+    await expect(bar.locator('a')).toHaveAttribute('href', /llm-evaluation-qa/);
+    // persists across reload
+    await page.reload();
+    await expect(page.locator('#ck-score')).toContainText('13/18');
+  });
+
+  test('404 page and comparison table and delta bars', async ({ page, request }) => {
+    const nf = await request.get('/404.html');
+    expect(nf.status()).toBe(200);
+    await page.goto('/');
+    await expect(page.locator('table.cmp tbody tr')).toHaveCount(6);
+    await expect(page.locator('#record .delta')).toHaveCount(3);
+  });
+
   test('footer year is current', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('footer [data-year]').first()).toHaveText(String(new Date().getFullYear()));

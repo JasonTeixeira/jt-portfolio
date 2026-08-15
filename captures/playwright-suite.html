@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real run — playwright-sdet-regression-suite — full run</title>
+<meta name="robots" content="noindex">
+<link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<div style="min-height:100vh;background:#09090B;padding:40px clamp(14px,3vw,40px)">
+  <div style="max-width:980px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882">real run · captured 2026-07-10 · <span style="color:#22d3ee">npx playwright test</span></span>
+      <a href="../index.html#work" class="dim-link" style="font-family:'JetBrains Mono',monospace;font-size:12px">← back to portfolio</a>
+    </div>
+    <div style="background:#08090c;border:1px solid #2A2826;border-radius:12px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #2A2826;background:#0C0C0E">
+        <span style="width:10px;height:10px;border-radius:50%;background:#f43f5e;opacity:0.7"></span>
+        <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;opacity:0.7"></span>
+        <span style="width:10px;height:10px;border-radius:50%;background:#10b981;opacity:0.7"></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;margin-left:8px">playwright-sdet-regression-suite — full run</span>
+      </div>
+      <pre style="margin:0;padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto"><span style="color:#C9C4BF"></span>
+<span style="color:#22d3ee">&gt; playwright-sdet-regression-suite@0.1.0 test</span>
+<span style="color:#22d3ee">&gt; playwright test</span>
+<span style="color:#C9C4BF"></span>
+<span style="color:#C9C4BF"></span>
+<span style="color:#C9C4BF">Running 37 tests using 8 workers</span>
+<span style="color:#C9C4BF"></span>
+<span style="color:#F59E0B">(node:54672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#F59E0B">(node:54671) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#F59E0B">(node:54677) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#F59E0B">(node:54673) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#F59E0B">(node:54674) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#F59E0B">(node:54675) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#F59E0B">(node:54670) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#F59E0B">(node:54676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.</span>
+<span style="color:#C9C4BF">(Use `node --trace-warnings ...` to show where the warning was created)</span>
+<span style="color:#10b981">  ✓   8 [chromium] › tests/auth.spec.ts:27:7 › Authentication › @negative @auth missing username shows validation (671ms)</span>
+<span style="color:#10b981">  ✓   7 [chromium] › tests/auth.spec.ts:34:7 › Authentication › @negative @auth missing password shows validation (673ms)</span>
+<span style="color:#10b981">  ✓   5 [chromium] › tests/auth.spec.ts:13:7 › Authentication › @negative @auth invalid password is rejected (780ms)</span>
+<span style="color:#10b981">  ✓   3 [chromium] › tests/auth.spec.ts:59:7 › Authentication › @regression @auth authenticated user reaches inventory page (839ms)</span>
+<span style="color:#10b981">  ✓   2 [chromium] › tests/auth.spec.ts:9:7 › Authentication › @regression @auth valid standard user can log in (929ms)</span>
+<span style="color:#10b981">  ✓   1 [chromium] › tests/auth.spec.ts:42:7 › Authentication › @regression @auth user can recover from a visible login error (1.9s)</span>
+<span style="color:#10b981">  ✓  10 [chromium] › tests/cart.spec.ts:11:7 › Cart behavior › @regression @cart user can remove an item from the product page (1.8s)</span>
+<span style="color:#10b981">  ✓   6 [chromium] › tests/auth.spec.ts:53:7 › Authentication › @regression @auth logout returns user to login screen (2.9s)</span>
+<span style="color:#10b981">  ✓  13 [chromium] › tests/cart.spec.ts:32:7 › Cart behavior › @regression @cart user can remove item from cart page (2.0s)</span>
+<span style="color:#10b981">  ✓  15 [chromium] › tests/cart.spec.ts:45:7 › Cart behavior › @regression @cart multiple items persist on cart page (1.1s)</span>
+<span style="color:#10b981">  ✓   9 [chromium] › tests/cart.spec.ts:5:7 › Cart behavior › @regression @cart user can add one item to the cart (3.1s)</span>
+<span style="color:#10b981">  ✓  12 [chromium] › tests/cart.spec.ts:27:7 › Cart behavior › @regression @cart cart page shows selected item (3.6s)</span>
+<span style="color:#10b981">  ✓  16 [chromium] › tests/checkout.spec.ts:6:7 › Checkout › @negative @checkout checkout requires first name (1.6s)</span>
+<span style="color:#10b981">  ✓   4 [chromium] › tests/auth.spec.ts:20:7 › Authentication › @negative @auth locked-out user is rejected (4.9s)</span>
+<span style="color:#10b981">  ✓  20 [chromium] › tests/checkout.spec.ts:38:7 › Checkout › @regression @checkout overview shows selected item (1.7s)</span>
+<span style="color:#10b981">  ✓  19 [chromium] › tests/checkout.spec.ts:27:7 › Checkout › @regression @checkout valid checkout reaches overview (2.8s)</span>
+<span style="color:#10b981">  ✓  17 [chromium] › tests/checkout.spec.ts:12:7 › Checkout › @negative @checkout checkout requires last name (3.8s)</span>
+<span style="color:#10b981">  ✓  11 [chromium] › tests/cart.spec.ts:20:7 › Cart behavior › @regression @cart cart badge updates when multiple items are added (6.6s)</span>
+<span style="color:#10b981">  ✓  14 [chromium] › tests/cart.spec.ts:39:7 › Cart behavior › @regression @cart continue shopping returns to product listing (5.6s)</span>
+<span style="color:#10b981">  ✓  21 [chromium] › tests/checkout.spec.ts:50:7 › Checkout › @regression @checkout cancel checkout returns to cart (3.5s)</span>
+<span style="color:#10b981">  ✓  24 [chromium] › tests/navigation-session.spec.ts:8:7 › Navigation and session behavior › @regression menu opens and closes (2.6s)</span>
+<span style="color:#10b981">  ✓  22 [chromium] › tests/checkout.spec.ts:56:7 › Checkout › @regression @checkout finish checkout shows confirmation (4.3s)</span>
+<span style="color:#10b981">  ✓  27 [chromium] › tests/navigation-session.spec.ts:29:7 › Navigation and session behavior › @regression cart navigation is available after login (1.7s)</span>
+<span style="color:#10b981">  ✓  18 [chromium] › tests/checkout.spec.ts:19:7 › Checkout › @negative @checkout checkout requires postal code (5.8s)</span>
+<span style="color:#10b981">  ✓  29 [chromium] › tests/products.spec.ts:15:7 › Product listing › @regression product prices are visible (1.6s)</span>
+<span style="color:#10b981">  ✓  23 [chromium] › tests/checkout.spec.ts:68:7 › Checkout › @regression @checkout checkout complete returns home (4.8s)</span>
+<span style="color:#10b981">  ✓  25 [chromium] › tests/navigation-session.spec.ts:14:7 › Navigation and session behavior › @regression logout clears the active session (4.4s)</span>
+<span style="color:#10b981">  ✓  32 [chromium] › tests/products.spec.ts:36:7 › Product listing › @regression product sort Z-A orders names descending (1.8s)</span>
+<span style="color:#10b981">  ✓  28 [chromium] › tests/products.spec.ts:6:7 › Product listing › @regression product list loads all expected product names (3.6s)</span>
+<span style="color:#10b981">  ✓  26 [chromium] › tests/navigation-session.spec.ts:23:7 › Navigation and session behavior › @negative unauthenticated inventory access is blocked (4.8s)</span>
+<span style="color:#10b981">  ✓  35 [chromium] › tests/smoke.spec.ts:6:7 › Smoke coverage › @smoke @auth user can log in and see products (1.8s)</span>
+<span style="color:#10b981">  ✓  31 [chromium] › tests/products.spec.ts:28:7 › Product listing › @regression product sort A-Z orders names ascending (3.8s)</span>
+<span style="color:#10b981">  ✓  30 [chromium] › tests/products.spec.ts:22:7 › Product listing › @regression product images are visible (4.1s)</span>
+<span style="color:#10b981">  ✓  37 [chromium] › tests/smoke.spec.ts:17:7 › Smoke coverage › @smoke @checkout user can complete checkout (1.9s)</span>
+<span style="color:#10b981">  ✓  34 [chromium] › tests/products.spec.ts:52:7 › Product listing › @regression product sort price high-low orders prices descending (2.8s)</span>
+<span style="color:#10b981">  ✓  36 [chromium] › tests/smoke.spec.ts:11:7 › Smoke coverage › @smoke @cart user can add an item to cart (2.8s)</span>
+<span style="color:#10b981">  ✓  33 [chromium] › tests/products.spec.ts:44:7 › Product listing › @regression product sort price low-high orders prices ascending (3.9s)</span>
+<span style="color:#C9C4BF"></span>
+<span style="color:#10b981">  37 passed (15.3s)</span>
+<span style="color:#C9C4BF"></span></pre>
+    </div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;color:#8E8882;max-width:76ch;margin:16px 0 0">Verbatim output from the evidence/ folder committed in the public repo — 37 specs, 8 workers, 15.3 seconds, zero flakes.</p>
+  </div>
+</div>
+</body>
+</html>

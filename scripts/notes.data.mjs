@@ -34,7 +34,7 @@ export const NOTES = [
     color: '#a78bfa',
     title: 'Your LLM feature needs a regression suite more than a better prompt',
     dek: 'Prompt tweaks feel like progress because nobody is measuring. Golden traces + LLM-as-judge in CI turn "it seems better" into a diff you can gate on.',
-    artifacts: 'nexural-qa-os: 85 runners, 13/13 proof gates · sage-agents: @sage/eval golden-trace runner',
+    artifacts: 'nexural-qa-os: 85 runners, gate-scored proof loop · sage-agents: @sage/eval golden-trace runner',
     quote: 'A prompt change without an eval run is a schema migration without a backup.',
     dropCap: 'E',
     body: [
