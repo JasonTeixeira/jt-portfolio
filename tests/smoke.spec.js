@@ -145,4 +145,18 @@ test.describe('portfolio — field notes', () => {
     expect(xml).toContain('<rss');
     expect((xml.match(/<item>/g) || []).length).toBe(3);
   });
+
+  test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
+    const sm = await request.get('/sitemap.xml');
+    expect(sm.status()).toBe(200);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(5);
+    const rb = await request.get('/robots.txt');
+    expect(rb.status()).toBe(200);
+    const og = await request.get('/assets/og.png');
+    expect(og.status()).toBe(200);
+    await page.goto('/');
+    const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
+    expect(ld['@type']).toBe('Person');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og\.png/);
+  });
 });

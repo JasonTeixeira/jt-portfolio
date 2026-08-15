@@ -24,7 +24,8 @@ function head({ title, description, canonicalPath, jsonLd, depth }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${SITE_URL}${canonicalPath}">
-<meta property="og:type" content="article">
+<meta property="og:type" content="${jsonLd ? 'article' : 'website'}">
+<meta property="og:image" content="${SITE_URL}/assets/og.png">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${SITE_URL}${canonicalPath}">
@@ -167,4 +168,16 @@ ${items}
 </rss>
 `);
 
-console.log(`✓ built ${NOTES.length} note pages, field-notes.html index, feed.xml`);
+/* ── sitemap + robots ── */
+const pages = ['/', '/field-notes.html', ...NOTES.map((n) => `/notes/${n.slug}.html`)];
+writeFileSync('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map((u) => `  <url><loc>${SITE_URL}${u}</loc></url>`).join('\n')}
+</urlset>
+`);
+writeFileSync('robots.txt', `User-agent: *
+Allow: /
+Sitemap: ${SITE_URL}/sitemap.xml
+`);
+
+console.log(`✓ built ${NOTES.length} note pages, field-notes.html index, feed.xml, sitemap.xml, robots.txt`);

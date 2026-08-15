@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Instrument Serif'; src: url('../assets/fonts/instrument-serif.woff2') format('woff2'); }
+  @font-face { font-family: 'Instrument Serif'; font-style: italic; src: url('../assets/fonts/instrument-serif-italic.woff2') format('woff2'); }
+  @font-face { font-family: 'JetBrains Mono'; font-weight: 100 800; src: url('../assets/fonts/jetbrains-mono-var.woff2') format('woff2'); }
+  * { margin: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; background: #09090B; color: #F4F2EF; overflow: hidden; position: relative; font-family: 'Instrument Serif', Georgia, serif; }
+  .grid { position: absolute; inset: 0; background-image: repeating-linear-gradient(90deg, #141311 0, #141311 1px, transparent 1px, transparent 100px); opacity: 0.5; }
+  .grain { position: absolute; inset: 0; opacity: 0.06; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/%3E%3C/filter%3E%3Crect width=%22160%22 height=%22160%22 filter=%22url(%23n)%22/%3E%3C/svg%3E'); }
+  .wrap { position: relative; padding: 72px 80px; height: 100%; display: flex; flex-direction: column; }
+  .kicker { font-family: 'JetBrains Mono', monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #8E8882; display: flex; align-items: center; gap: 16px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: #10b981; box-shadow: 0 0 18px rgba(16,185,129,0.8); }
+  .cyan { color: #22d3ee; } .violet { color: #a78bfa; } .green { color: #10b981; }
+  h1 { font-weight: 400; font-size: 92px; line-height: 1.02; letter-spacing: -0.02em; margin-top: 44px; max-width: 20ch; }
+  h1 .stroke { -webkit-text-stroke: 2px #F4F2EF; color: transparent; }
+  h1 em { color: #10b981; }
+  .bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-family: 'JetBrains Mono', monospace; }
+  .name { font-size: 24px; font-weight: 600; }
+  .name .paren { color: #10b981; }
+  .stats { font-size: 18px; color: #8E8882; text-align: right; line-height: 1.8; }
+  .stats b { color: #10b981; font-weight: 600; }
+  .rule { position: absolute; left: 80px; right: 80px; bottom: 170px; height: 1px; background: #2A2826; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="grain"></div>
+  <div class="wrap">
+    <div class="kicker"><span class="dot"></span><span><span class="cyan">AI automation</span> × <span class="violet">QA / LLM eval</span> engineer</span></div>
+    <h1>I ship <span class="stroke">AI features</span> — then I <em>prove</em> they work.</h1>
+    <div class="rule"></div>
+    <div class="bottom">
+      <div class="name">jason.teixeira<span class="paren">()</span></div>
+      <div class="stats"><b>3,750</b> tests · <b>13/13</b> proof gates · <b>100</b>×4 Lighthouse<br>every number verified or labeled estimated</div>
+    </div>
+  </div>
+</body>
+</html>
