@@ -4,3 +4,4 @@ playwright-report/
 .lighthouseci/
 .DS_Store
 .prerender-input.html
+.vercel
