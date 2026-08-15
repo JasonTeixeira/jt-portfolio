@@ -14,7 +14,7 @@ function esc(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function head({ title, description, canonicalPath, jsonLd, depth }) {
+function head({ title, description, canonicalPath, jsonLd, depth, ogImage }) {
   const p = depth === 1 ? '../' : '';
   return `<!DOCTYPE html>
 <html lang="en">
@@ -25,7 +25,7 @@ function head({ title, description, canonicalPath, jsonLd, depth }) {
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${SITE_URL}${canonicalPath}">
 <meta property="og:type" content="${jsonLd ? 'article' : 'website'}">
-<meta property="og:image" content="${SITE_URL}/assets/og.png">
+<meta property="og:image" content="${SITE_URL}/assets/${ogImage || 'og.png'}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${SITE_URL}${canonicalPath}">
@@ -83,7 +83,7 @@ for (const n of NOTES) {
         : `<p style="margin:0">${b}</p>`
   ).join('\n      ');
 
-  const html = `${head({ title: `${n.title} — Field Notes`, description: n.dek, canonicalPath: `/notes/${n.slug}.html`, jsonLd, depth: 1 })}
+  const html = `${head({ title: `${n.title} — Field Notes`, description: n.dek, canonicalPath: `/notes/${n.slug}.html`, jsonLd, depth: 1, ogImage: `og-note-${n.slug}.png` })}
 <body>
 <div style="min-height:100vh;background:#09090B;position:relative">
   ${nav(1)}

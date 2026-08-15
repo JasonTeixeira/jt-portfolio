@@ -3,7 +3,7 @@
  * flagged TODO until the domain decision is made; everything that needs
  * an absolute URL (canonical, OG, RSS) reads it from here only.
  */
-export const SITE_URL = 'https://jasonteixeira.dev'; // TODO: confirm final domain before deploy
+export const SITE_URL = 'https://agency.sageideas.dev';
 export const SITE_NAME = 'Jason Teixeira — AI Automation × QA / LLM Eval Engineer';
 export const AUTHOR = 'Jason Teixeira';
 export const AUTHOR_EMAIL = 'hello@sageideas.dev';

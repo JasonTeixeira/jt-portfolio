@@ -143,6 +143,35 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('.quote-band blockquote')).toContainText('Build the gate');
   });
 
+  test('no circular links to own domain; FAQPage schema present', async ({ page }) => {
+    await page.goto('/');
+    const circular = await page.locator('a[href*="agency.sageideas.dev"]').count();
+    expect(circular).toBe(0);
+    const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const types = schemas.map((s) => JSON.parse(s)['@type']);
+    expect(types).toContain('Person');
+    expect(types).toContain('FAQPage');
+  });
+
+  test('contact form validates and falls back to mailto when API is absent', async ({ page }) => {
+    await page.goto('/');
+    const form = page.locator('#jt-contact-form');
+    await form.scrollIntoViewIfNeeded();
+    await form.locator('[name="name"]').fill('Test Client');
+    await form.locator('[name="email"]').fill('client@example.com');
+    await form.locator('[name="message"]').fill('We ship an LLM feature with no evals.');
+    await form.locator('button[type="submit"]').click();
+    // local static server has no /api — the fallback path must engage
+    await expect(page.locator('#jt-form-status')).toContainText('email app', { timeout: 5000 });
+  });
+
+  test('per-post OG images exist and are referenced', async ({ page, request }) => {
+    await page.goto('/notes/no-fake-green.html');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og-note-no-fake-green\.png/);
+    const img = await request.get('/assets/og-note-no-fake-green.png');
+    expect(img.status()).toBe(200);
+  });
+
   test('footer year is current', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('footer [data-year]').first()).toHaveText(String(new Date().getFullYear()));

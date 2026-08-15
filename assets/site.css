@@ -318,6 +318,22 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 #jt-palette .item.sel { background: #1A1917; color: #F4F2EF; }
 #jt-palette .item.sel .k { color: #10b981; border-color: rgba(16,185,129,0.4); }
 
+/* ─── contact form ─── */
+.fld { display: flex; flex-direction: column; gap: 6px; }
+.fld > span {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+  letter-spacing: 0.12em; text-transform: uppercase; color: #8E8882;
+}
+.fld input, .fld textarea {
+  background: #0C0C0E; border: 1px solid #2A2826; border-radius: 8px;
+  color: #F4F2EF; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+  padding: 12px 14px; transition: border-color 150ms ease; resize: vertical;
+}
+.fld input::placeholder, .fld textarea::placeholder { color: #57534E; }
+.fld input:hover, .fld textarea:hover { border-color: #3D3A37; }
+.fld input:focus-visible, .fld textarea:focus-visible { outline: none; border-color: #10b981; box-shadow: 0 0 0 1px rgba(16,185,129,0.4); }
+.hp { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
 /* ─── toast ─── */
 #jt-toast {
   position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);

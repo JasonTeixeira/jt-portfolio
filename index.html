@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jason Teixeira — AI Automation × QA / LLM Eval Engineer</title>
 <meta name="description" content="I ship AI features — then I prove they work. LLM apps, agents, and workflow automation paired with the eval and regression harness that keeps them honest in production.">
-<link rel="canonical" href="https://jasonteixeira.dev/">
+<link rel="canonical" href="https://agency.sageideas.dev/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Jason Teixeira — AI Automation × QA / LLM Eval Engineer">
 <meta property="og:description" content="I ship AI features — then I prove they work. Every claim links to an artifact; every number is verified or labeled estimated.">
-<meta property="og:url" content="https://jasonteixeira.dev/">
-<meta property="og:image" content="https://jasonteixeira.dev/assets/og.png">
+<meta property="og:url" content="https://agency.sageideas.dev/">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<link rel="alternate" type="application/rss+xml" title="Field Notes — Jason Teixeira" href="https://jasonteixeira.dev/feed.xml">
+<link rel="alternate" type="application/rss+xml" title="Field Notes — Jason Teixeira" href="https://agency.sageideas.dev/feed.xml">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Jason Teixeira",
-  "url": "https://jasonteixeira.dev/",
+  "url": "https://agency.sageideas.dev/",
   "email": "hello@sageideas.dev",
   "jobTitle": "AI Automation & QA Automation Engineer",
   "worksFor": { "@type": "Organization", "name": "Sage Ideas LLC" },
@@ -28,6 +28,20 @@
     "https://www.linkedin.com/in/jason-teixeira"
   ],
   "knowsAbout": ["LLM evaluation", "AI agents", "RAG systems", "workflow automation", "test automation", "Playwright", "LangGraph", "n8n", "Promptfoo", "DeepEval"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "We already have QA. Why bring in an AI quality consultant?", "acceptedAnswer": { "@type": "Answer", "text": "Most QA teams cover the deterministic surface. The gap is the LLM feature: no golden set, no judge, no gate — prompt changes ship unmeasured. I add the evaluation layer to your existing pipeline; your team owns it afterward." } },
+    { "@type": "Question", "name": "Do you work in our stack or yours?", "acceptedAnswer": { "@type": "Answer", "text": "Yours. Your repo, your CI, your conventions. Every engagement ends with a runbook and a walkthrough so your team runs the system without me." } },
+    { "@type": "Question", "name": "What does an engagement cost?", "acceptedAnswer": { "@type": "Answer", "text": "Fixed scope, quoted after a week-1 risk map, so the price is attached to agreed deliverables rather than open-ended hours. The 30-minute intro call is free." } },
+    { "@type": "Question", "name": "How fast can you start?", "acceptedAnswer": { "@type": "Answer", "text": "One engagement at a time. Week 1 is scoping, so you know exactly what you're getting before the build starts." } },
+    { "@type": "Question", "name": "What if evals show our AI feature is already fine?", "acceptedAnswer": { "@type": "Answer", "text": "Then you ship with evidence instead of hope, and the suite stays in CI to catch the regression that would have landed later." } },
+    { "@type": "Question", "name": "Are you open to full-time roles?", "acceptedAnswer": { "@type": "Answer", "text": "Open to the right one — the site has a dedicated hiring view and a downloadable résumé." } }
+  ]
 }
 </script>
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
@@ -87,7 +101,7 @@
     </div>
     <div style="position:relative;display:flex;gap:14px;margin-top:24px;flex-wrap:wrap">
       <span class="only-client" style="display:contents">
-        <a href="https://agency.sageideas.dev" class="btn-solid green">Book a call →</a>
+        <a href="#contact" class="btn-solid green" data-evt="book-call">Book a call →</a>
         <a href="#work" class="btn-ghost">See the proof ↓</a>
       </span>
       <span class="only-hire" style="display:contents">
@@ -141,7 +155,7 @@
         <span style="display:inline-flex;align-items:center;gap:8px;color:#10b981;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#10b981;animation:jt-blink 2.4s ease-in-out infinite"></span>this site runs its own QA</span>
         <span id="jt-selfproof-detail"></span>
         <span style="flex:1"></span>
-        <a href="https://github.com/JasonTeixeira/JasonTeixeira/actions" class="dim-link" style="font-size:11px">pipeline ↗</a>
+        <a href="https://github.com/JasonTeixeira/jt-portfolio/actions" class="dim-link" style="font-size:11px">pipeline ↗</a>
       </div>
     </div>
     <!-- TOOL TAPE -->
@@ -407,14 +421,37 @@
         <p style="margin:22px auto 0;font-size:15px;color:#A8A29E;max-width:48ch">The engineer who ships the LLM feature and the harness that guards it. Let's talk about your team.</p>
       </span>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:36px;flex-wrap:wrap">
-        <a href="https://agency.sageideas.dev" class="btn-solid green" style="padding:14px 30px">Book a call →</a>
+        <a href="mailto:hello@sageideas.dev?subject=Intro%20call%20—%20via%20portfolio" class="btn-solid green" style="padding:14px 30px" data-evt="book-call">Book an intro call →</a>
         <a href="mailto:hello@sageideas.dev" class="btn-ghost" style="padding:14px 30px">Email me</a>
         <button type="button" id="jt-copy-email" class="btn-ghost" style="padding:14px 20px;cursor:pointer;background:transparent;font-family:'Plus Jakarta Sans',sans-serif" aria-label="Copy email address">⧉ copy</button>
       </div>
-      <div style="display:flex;gap:24px;justify-content:center;margin-top:32px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
+      <!-- CONTACT FORM -->
+      <form id="jt-contact-form" style="max-width:560px;margin:44px auto 0;text-align:left;display:flex;flex-direction:column;gap:14px" novalidate>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px">
+          <label class="fld">
+            <span>name</span>
+            <input type="text" name="name" required autocomplete="name" placeholder="Ada Lovelace">
+          </label>
+          <label class="fld">
+            <span>email</span>
+            <input type="email" name="email" required autocomplete="email" placeholder="ada@company.com">
+          </label>
+        </div>
+        <label class="fld">
+          <span>what are you shipping?</span>
+          <textarea name="message" rows="4" required placeholder="The feature, the stack, and what 'working' needs to mean…"></textarea>
+        </label>
+        <!-- honeypot — humans never see or fill this -->
+        <label class="hp" aria-hidden="true"><span>company website</span><input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <button type="submit" class="btn-solid green" style="border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Send it →</button>
+          <span id="jt-form-status" role="status" aria-live="polite" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8E8882"></span>
+        </div>
+      </form>
+      <div style="display:flex;gap:24px;justify-content:center;margin-top:36px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
         <a href="https://github.com/JasonTeixeira" class="dim-link">github/JasonTeixeira</a>
         <a href="https://www.linkedin.com/in/jason-teixeira" class="dim-link">linkedin</a>
-        <a href="https://agency.sageideas.dev" class="dim-link">agency.sageideas.dev</a>
+        <a href="https://sageideas.dev" class="dim-link">sageideas.dev</a>
       </div>
     </div>
     <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(64px,12.5vw,190px);line-height:0.82;text-align:center;color:transparent;-webkit-text-stroke:1px #1F1D1B;user-select:none;pointer-events:none;white-space:nowrap;margin-top:24px">TEIXEIRA</div>

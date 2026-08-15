@@ -226,6 +226,7 @@
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     try { localStorage.setItem('jt-funnel', f); } catch (e) { /* private mode */ }
+    if (typeof window.va === 'function') window.va('event', { name: 'funnel-' + f });
   }
   document.querySelectorAll('.funnel-btn').forEach(function (b) {
     b.addEventListener('click', function () { setFunnel(b.getAttribute('data-set')); });
@@ -692,7 +693,7 @@
       { label: 'Go to Contact', k: 'section', run: function () { location.hash = '#contact'; } },
       { label: 'Copy email address', k: 'action', run: copyEmail },
       { label: 'Download résumé (PDF)', k: 'action', run: function () { location.href = 'assets/Jason-Teixeira-Resume.pdf'; } },
-      { label: 'Book a call', k: 'link', run: function () { window.open('https://agency.sageideas.dev', '_blank', 'noopener'); } },
+      { label: 'Book a call', k: 'link', run: function () { location.hash = '#contact'; } },
       { label: 'Open GitHub profile', k: 'link', run: function () { window.open('https://github.com/JasonTeixeira', '_blank', 'noopener'); } },
       { label: 'Open LinkedIn', k: 'link', run: function () { window.open('https://www.linkedin.com/in/jason-teixeira', '_blank', 'noopener'); } },
       { label: 'Read all field notes', k: 'link', run: function () { location.href = 'field-notes.html'; } },
@@ -756,6 +757,71 @@
     });
     var openBtn = document.getElementById('jt-palette-open');
     if (openBtn) openBtn.addEventListener('click', openPalette);
+  }
+
+  /* ───────────────────────── analytics (production only) ───────────────────────── */
+
+  // Vercel Web Analytics — loaded dynamically so local/CI runs stay 404-free.
+  if (/\.sageideas\.dev$/.test(location.hostname)) {
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    var vaScript = document.createElement('script');
+    vaScript.defer = true;
+    vaScript.src = '/_vercel/insights/script.js';
+    document.head.appendChild(vaScript);
+  }
+
+  function track(name, data) {
+    if (typeof window.va === 'function') window.va('event', { name: name, data: data || {} });
+  }
+  document.addEventListener('click', function (e) {
+    var evtEl = e.target.closest && e.target.closest('[data-evt]');
+    if (evtEl) track(evtEl.getAttribute('data-evt'));
+    var resume = e.target.closest && e.target.closest('a[href$="Jason-Teixeira-Resume.pdf"]');
+    if (resume) track('resume-download');
+  });
+  document.addEventListener('toggle', function (e) {
+    if (e.target.classList && e.target.classList.contains('brief-more') && e.target.open) track('brief-expand');
+    if (e.target.classList && e.target.classList.contains('faq') && e.target.open) track('faq-open');
+  }, true);
+
+  /* ───────────────────────── contact form ───────────────────────── */
+
+  var form = document.getElementById('jt-contact-form');
+  if (form) {
+    var statusEl = document.getElementById('jt-form-status');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      var fields = {
+        name: form.elements.name.value.trim(),
+        email: form.elements.email.value.trim(),
+        message: form.elements.message.value.trim(),
+        website: form.elements.website.value
+      };
+      statusEl.textContent = 'sending…';
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields)
+      }).then(function (r) {
+        if (r.ok) {
+          form.reset();
+          statusEl.textContent = '';
+          toast('sent — I read every one. talk soon.');
+          track('contact-submit', { via: 'api' });
+        } else {
+          throw new Error('api ' + r.status);
+        }
+      }).catch(function () {
+        // delivery not configured or network issue — never lose the lead:
+        // hand off to the visitor's mail client with everything prefilled
+        statusEl.textContent = 'opening your email app instead…';
+        track('contact-submit', { via: 'mailto-fallback' });
+        location.href = 'mailto:' + EMAIL +
+          '?subject=' + encodeURIComponent('Portfolio inquiry — ' + fields.name) +
+          '&body=' + encodeURIComponent(fields.message + '\n\n— ' + fields.name + ' (' + fields.email + ')');
+      });
+    });
   }
 
   /* ───────────────────────── year ───────────────────────── */

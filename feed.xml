@@ -2,27 +2,27 @@
 <rss version="2.0">
   <channel>
     <title>Field Notes — Jason Teixeira</title>
-    <link>https://jasonteixeira.dev/field-notes.html</link>
+    <link>https://agency.sageideas.dev/field-notes.html</link>
     <description>Working notes from the proof-first trenches: AI automation, QA, and LLM evaluation.</description>
     <language>en-us</language>
     <item>
       <title>No fake green: what a proof ledger taught me about AI agents</title>
-      <link>https://jasonteixeira.dev/notes/no-fake-green.html</link>
-      <guid isPermaLink="true">https://jasonteixeira.dev/notes/no-fake-green.html</guid>
+      <link>https://agency.sageideas.dev/notes/no-fake-green.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/notes/no-fake-green.html</guid>
       <pubDate>Tue, 04 Aug 2026 12:00:00 GMT</pubDate>
       <description>Agents will happily report success they never earned. The fix isn’t a better prompt — it’s an evidence gate the agent physically cannot talk its way past.</description>
     </item>
     <item>
       <title>Your LLM feature needs a regression suite more than a better prompt</title>
-      <link>https://jasonteixeira.dev/notes/llm-regression-suite.html</link>
-      <guid isPermaLink="true">https://jasonteixeira.dev/notes/llm-regression-suite.html</guid>
+      <link>https://agency.sageideas.dev/notes/llm-regression-suite.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/notes/llm-regression-suite.html</guid>
       <pubDate>Sat, 18 Jul 2026 12:00:00 GMT</pubDate>
       <description>Prompt tweaks feel like progress because nobody is measuring. Golden traces + LLM-as-judge in CI turn &quot;it seems better&quot; into a diff you can gate on.</description>
     </item>
     <item>
       <title>Automation that never talks to your customer</title>
-      <link>https://jasonteixeira.dev/notes/automation-that-never-talks.html</link>
-      <guid isPermaLink="true">https://jasonteixeira.dev/notes/automation-that-never-talks.html</guid>
+      <link>https://agency.sageideas.dev/notes/automation-that-never-talks.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/notes/automation-that-never-talks.html</guid>
       <pubDate>Mon, 22 Jun 2026 12:00:00 GMT</pubDate>
       <description>The best-converting AI workflow I’ve shipped sends zero AI-written messages. Where to put the human approval point, and why it beats full autonomy.</description>
     </item>
