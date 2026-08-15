@@ -1,0 +1,26 @@
+[proof] running full test + coverage suite …
+[proof] running runner-conformance gate …
+[proof] running honest-skip integrity gate …
+[proof] running security gate (CVEs) …
+[proof] running secret scan …
+[proof] running build gate …
+[proof] running typecheck gate …
+[proof] running performance gate …
+
+┌─ PROOF SCORECARD ──────────────────────────────────────────────────────
+│ ✓ Tests green                                    3759 passed / 0 failed (suite exit 0)
+│ ✓ Coverage: lines                                91.12% (≥ 90.45% ratcheted; best 91.45%)
+│ ✓ Coverage: statements                           89.26% (≥ 88.59% ratcheted; best 89.59%)
+│ ✓ Coverage: functions                            87.93% (≥ 87.4% ratcheted; best 88.4%)
+│ ✓ Coverage: branches                             82.55% (≥ 81.86% ratcheted; best 82.86%)
+│ ✓ Runner conformance (all wired + honest contract) every registered runner has a valid plugin contract + install guidance
+│ ✓ Honest-skip integrity (no faked passes)        false-pass regression tests all green
+│ ✓ Security: no high/critical CVEs (shipped deps) 0 high/critical in production deps
+│ ✓ Security: no committed secrets                 no secret patterns in tracked source
+│ ✓ Build green                                    113/113 tasks built (exit 0)
+│ ✓ Typecheck green                                exit 0
+│ ✓ Perf: CLI startup time                         414ms (budget 3000ms)
+│ ✓ Perf: CLI bundle size                          2.7MB (budget 10MB)
+└────────────────────────────────────────────────────────────────────────
+⚠ advisory: 4 high/critical CVE(s) in dev/test tooling (not shipped) — e.g. vitest's bundled vite dev server
+VERDICT: PROVEN ✓  —  13/13 gates passed  (evidence: .nexural/proof-ledger.json)

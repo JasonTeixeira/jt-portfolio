@@ -13,10 +13,18 @@ const CAPTURES = [
   {
     slug: 'nexural-qa-os',
     file: 'proof/captures/nexural-qa-os_2026-08-15.txt',
-    title: 'nexural-qa-os — proof-loop.mjs',
+    title: 'nexural-qa-os — proof-loop.mjs (morning run: RED)',
     cmd: 'node scripts/proof-loop.mjs',
-    date: '2026-08-15',
-    note: 'Verbatim output. Note the red gate: the harness found 15 high/critical CVEs in its own production deps and refused the PROVEN verdict. It blocks me too — that is the product.'
+    date: '2026-08-15 · 11:39',
+    note: 'Verbatim output. The harness found 15 high/critical CVEs in its own production deps and refused the PROVEN verdict — it blocks me too. The fix and the green rerun from the same afternoon: /captures/nexural-qa-os-fixed.html'
+  },
+  {
+    slug: 'nexural-qa-os-fixed',
+    file: 'proof/captures/nexural-qa-os-fixed_2026-08-15.txt',
+    title: 'nexural-qa-os — proof-loop.mjs (afternoon rerun: GREEN)',
+    cmd: 'node scripts/proof-loop.mjs',
+    date: '2026-08-15 · 14:35',
+    note: 'Same command, same day, after 9 dependency security floors (15 high/critical → 0; the unpatchable extract-zip advisory eliminated by moving @puppeteer/browsers to 3.x). Caught → blocked → patched → proven, inside one working day. The morning red run stays published: /captures/nexural-qa-os.html'
   },
   {
     slug: 'playwright-suite',

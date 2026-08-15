@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Real run — nexural-qa-os — proof-loop.mjs (morning run: RED)</title>
+<title>Real run — nexural-qa-os — proof-loop.mjs (afternoon rerun: GREEN)</title>
 <meta name="robots" content="noindex">
 <link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/site.css">
@@ -13,7 +13,7 @@
 <div style="min-height:100vh;background:#09090B;padding:40px clamp(14px,3vw,40px)">
   <div style="max-width:980px;margin:0 auto">
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:18px">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882">real run · captured 2026-08-15 · 11:39 · <span style="color:#22d3ee">node scripts/proof-loop.mjs</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882">real run · captured 2026-08-15 · 14:35 · <span style="color:#22d3ee">node scripts/proof-loop.mjs</span></span>
       <a href="../index.html#work" class="dim-link" style="font-family:'JetBrains Mono',monospace;font-size:12px">← back to portfolio</a>
     </div>
     <div style="background:#08090c;border:1px solid #2A2826;border-radius:12px;overflow:hidden">
@@ -21,7 +21,7 @@
         <span style="width:10px;height:10px;border-radius:50%;background:#f43f5e;opacity:0.7"></span>
         <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;opacity:0.7"></span>
         <span style="width:10px;height:10px;border-radius:50%;background:#10b981;opacity:0.7"></span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;margin-left:8px">nexural-qa-os — proof-loop.mjs (morning run: RED)</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;margin-left:8px">nexural-qa-os — proof-loop.mjs (afternoon rerun: GREEN)</span>
       </div>
       <pre style="margin:0;padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto"><span style="color:#C9C4BF">[proof] running full test + coverage suite …</span>
 <span style="color:#C9C4BF">[proof] running runner-conformance gate …</span>
@@ -40,19 +40,18 @@
 <span style="color:#10b981">│ ✓ Coverage: branches                             82.55% (≥ 81.86% ratcheted; best 82.86%)</span>
 <span style="color:#10b981">│ ✓ Runner conformance (all wired + honest contract) every registered runner has a valid plugin contract + install guidance</span>
 <span style="color:#10b981">│ ✓ Honest-skip integrity (no faked passes)        false-pass regression tests all green</span>
-<span style="color:#f43f5e">│ ✗ Security: no high/critical CVEs (shipped deps) 15 high/critical in production deps</span>
+<span style="color:#10b981">│ ✓ Security: no high/critical CVEs (shipped deps) 0 high/critical in production deps</span>
 <span style="color:#10b981">│ ✓ Security: no committed secrets                 no secret patterns in tracked source</span>
 <span style="color:#10b981">│ ✓ Build green                                    113/113 tasks built (exit 0)</span>
 <span style="color:#10b981">│ ✓ Typecheck green                                exit 0</span>
-<span style="color:#10b981">│ ✓ Perf: CLI startup time                         431ms (budget 3000ms)</span>
+<span style="color:#10b981">│ ✓ Perf: CLI startup time                         414ms (budget 3000ms)</span>
 <span style="color:#10b981">│ ✓ Perf: CLI bundle size                          2.7MB (budget 10MB)</span>
 <span style="color:#C9C4BF">└────────────────────────────────────────────────────────────────────────</span>
-<span style="color:#F59E0B">⚠ advisory: 19 high/critical CVE(s) in dev/test tooling (not shipped) — e.g. vitest's bundled vite dev server</span>
-<span style="color:#f43f5e">VERDICT: NOT PROVEN ✗  —  12/13 gates passed  (evidence: .nexural/proof-ledger.json)</span>
-<span style="color:#f43f5e">OUTSTANDING: security-cves</span>
+<span style="color:#F59E0B">⚠ advisory: 4 high/critical CVE(s) in dev/test tooling (not shipped) — e.g. vitest's bundled vite dev server</span>
+<span style="color:#10b981">VERDICT: PROVEN ✓  —  13/13 gates passed  (evidence: .nexural/proof-ledger.json)</span>
 <span style="color:#C9C4BF"></span></pre>
     </div>
-    <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;color:#8E8882;max-width:76ch;margin:16px 0 0">Verbatim output. The harness found 15 high/critical CVEs in its own production deps and refused the PROVEN verdict — it blocks me too. The fix and the green rerun from the same afternoon: /captures/nexural-qa-os-fixed.html</p>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;color:#8E8882;max-width:76ch;margin:16px 0 0">Same command, same day, after 9 dependency security floors (15 high/critical → 0; the unpatchable extract-zip advisory eliminated by moving @puppeteer/browsers to 3.x). Caught → blocked → patched → proven, inside one working day. The morning red run stays published: /captures/nexural-qa-os.html</p>
   </div>
 </div>
 </body>

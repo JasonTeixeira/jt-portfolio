@@ -6,21 +6,20 @@
 
   /* ───────────────────────── data ───────────────────────── */
 
-  // verbatim from a real run on 2026-08-15 — full output at captures/nexural-qa-os.html
+  // verbatim from two real runs on 2026-08-15 — full outputs at captures/nexural-qa-os*.html
   var TERM_LINES = [
-    { c: '#22d3ee', t: '$ node scripts/proof-loop.mjs' },
-    { c: '#8E8882', t: '┌─ PROOF SCORECARD ────────────────────────────────────────────────────' },
-    { c: '#d4d4d8', t: '│ ✓ Tests green            3759 passed / 0 failed (suite exit 0)' },
+    { c: '#22d3ee', t: '$ node scripts/proof-loop.mjs          # 11:39' },
+    { c: '#d4d4d8', t: '│ ✓ Tests green            3759 passed / 0 failed' },
     { c: '#d4d4d8', t: '│ ✓ Coverage: lines        91.12%  (≥ 90.45% ratcheted)' },
-    { c: '#d4d4d8', t: '│ ✓ Coverage: branches     82.55%  (≥ 81.86% ratcheted)' },
-    { c: '#d4d4d8', t: '│ ✓ Honest-skip integrity  false-pass regression tests all green' },
     { c: '#f43f5e', t: '│ ✗ Security: prod CVEs    15 high/critical in production deps' },
-    { c: '#d4d4d8', t: '│ ✓ Security: secrets      no secret patterns in tracked source' },
-    { c: '#d4d4d8', t: '│ ✓ Build / Typecheck      113/113 tasks · exit 0' },
-    { c: '#d4d4d8', t: '│ ✓ Perf: startup / bundle 431ms · 2.7 MB' },
-    { c: '#8E8882', t: '└────────────────────────────────────────────────────' },
     { c: '#f43f5e', t: 'VERDICT: NOT PROVEN ✗ — 12/13 gates   (outstanding: security-cves)' },
-    { c: '#10b981', t: '# it just blocked MY release over dependency drift. no fake green — not even mine.' }
+    { c: '#8E8882', t: '# the gate just blocked my own release over dependency drift.' },
+    { c: '#8E8882', t: ' ' },
+    { c: '#22d3ee', t: '$ vim package.json                     # +9 security floors' },
+    { c: '#22d3ee', t: '$ pnpm install && node scripts/proof-loop.mjs   # 14:35' },
+    { c: '#d4d4d8', t: '│ ✓ Security: prod CVEs    0 high/critical in production deps' },
+    { c: '#10b981', t: 'VERDICT: PROVEN ✓ — 13/13 gates   (evidence: .nexural/proof-ledger.json)' },
+    { c: '#10b981', t: '# caught → blocked → patched → proven. same day. that\'s the loop I sell.' }
   ];
 
   var TOOLS = ['LangGraph', 'Mastra', 'n8n', 'Make', 'Zapier', 'pgvector', 'Supabase', 'FastAPI', 'Next.js', 'Playwright', 'Pytest', 'k6', 'Promptfoo', 'DeepEval', 'LLM-as-judge', 'Langfuse', 'GitHub Actions'];
@@ -90,14 +89,15 @@
       num: '05', fig: '06', dir: 'row', name: 'nexural-qa-os', kind: 'LLM-eval suite', color: '#a78bfa',
       badge: 'VERIFIED', badgeColor: '#10b981', badgeBorder: 'rgba(16,185,129,0.4)', priv: true, href: '',
       desc: '85 quality runners under one CLI — including hallucination, jailbreak, prompt-injection, toxicity, and PII-leak evals for LLM features. Every score is computed from a real command and packaged as ed25519-signed evidence.',
-      metric: '3,759 tests · 91% line coverage — verified 2026-08-15: today\'s run is 12/13, the CVE gate is honestly RED and blocking release',
+      metric: '3,759 tests · 91% coverage · 13/13 — verified 2026-08-15: the CVE gate went red at 11:39, blocked release, and was green by 14:35. Both runs published.',
       capture: 'captures/nexural-qa-os.html',
+      capture2: 'captures/nexural-qa-os-fixed.html',
       tags: ['Turbo + pnpm', 'vitest', 'DAG orchestrator', 'ed25519'],
       term: [
-        { c: '#8E8882', t: '$ node scripts/proof-loop.mjs' },
-        { c: '#f43f5e', t: '✗ Security: 15 high/critical CVEs in prod deps' },
-        { c: '#f43f5e', t: 'VERDICT: NOT PROVEN — 12/13 · release blocked' },
-        { c: '#10b981', t: '# no fake green. it blocks me too.' }
+        { c: '#f43f5e', t: '11:39  ✗ 15 high/critical CVEs → NOT PROVEN 12/13' },
+        { c: '#d4d4d8', t: '       +9 security floors · pnpm install' },
+        { c: '#10b981', t: '14:35  ✓ 0 high/critical → PROVEN 13/13' },
+        { c: '#10b981', t: '# caught → blocked → patched → proven. same day.' }
       ]
     }
   ];
@@ -223,7 +223,7 @@
     },
     {
       num: 'BRIEF/03', fig: '09', color: '#a78bfa', title: 'The QA OS that can’t lie', repo: 'nexural-qa-os',
-      outcome: '3,759 tests. A red gate that blocks even me. Run it twice — identical output.',
+      outcome: '3,759 tests. On publish day the gate caught real CVE drift, blocked me, and was green again by afternoon.',
       stack: 'TypeScript · Turbo/pnpm · vitest · Playwright · k6 · ed25519',
       flow: [
         { t: 'qa init — detect stack', c: '#A8A29E', b: '#2A2826', arrow: true },
@@ -239,7 +239,7 @@
         { label: 'Retrieval / memory', text: 'Evidence ledger instead of memory: every run’s exact command, exit code, and parsed metric recorded to a proof ledger, re-verifiable offline.' },
         { label: 'Human approval points', text: 'The autonomous fix loop is bounded — fixes only what the harness can verify, commits on improvement, reverts on regression, stops on an honest stall for human review.' },
         { label: 'Production safeguards', text: 'Anti-hallucination contract: no score without a backing artifact. Ratcheting coverage floors, honest-skip discipline, ed25519-signed redacted evidence.' },
-        { label: 'Measured results', text: '3,759 tests, 91.12% line coverage — and on 2026-08-15 the CVE gate went honestly red (15 high/critical in deps), blocking its own release. One command regenerates the scorecard; running it twice produces identical output.' },
+        { label: 'Measured results', text: '3,759 tests, 91.12% line coverage, 13/13 gates. On 2026-08-15 the CVE gate went honestly red (15 high/critical in deps) and blocked its own release — patched and PROVEN again the same afternoon, both runs published verbatim. One command regenerates the scorecard.' },
         { label: 'LLM-eval coverage', text: 'Ten dedicated AI-safety runners: bias, consistency, hallucination, jailbreak, prompt-injection, refusal, toxicity, PII-leak, cost, latency — the harness I bring to client LLM features.' }
       ]
     }
@@ -398,7 +398,7 @@
     }, 3200);
   }
 
-  var GATES_T = 12, TESTS_T = 3759, COV_T = 91;
+  var GATES_T = 13, TESTS_T = 3759, COV_T = 91;
   function paintStats(g, t, c) {
     document.querySelectorAll('[data-stat="gates"]').forEach(function (n) { n.textContent = g + '/13'; });
     document.querySelectorAll('[data-stat="tests"]').forEach(function (n) { n.textContent = t.toLocaleString('en-US'); });
@@ -525,7 +525,8 @@
     // video: set p.video to a YouTube watch URL to replace the "on request"
     // label with a public walkthrough link (the demo lane for private repos)
     if (p.video) links.appendChild(txt('a', 'color:' + p.color, '▶ watch the walkthrough', { href: p.video, target: '_blank', rel: 'noopener' }));
-    if (p.capture) links.appendChild(txt('a', 'color:#10b981', 'verbatim real run ↗', { href: p.capture, 'data-evt': 'capture-open' }));
+    if (p.capture) links.appendChild(txt('a', 'color:' + (p.capture2 ? '#f43f5e' : '#10b981'), p.capture2 ? 'red run ↗' : 'verbatim real run ↗', { href: p.capture, 'data-evt': 'capture-open' }));
+    if (p.capture2) links.appendChild(txt('a', 'color:#10b981', 'green rerun ↗', { href: p.capture2, 'data-evt': 'capture-open' }));
     if (p.priv && !p.video) links.appendChild(txt('span', 'color:#8E8882;font-weight:500', 'Private — walkthrough on request'));
 
     var tags = el('div', 'display:flex;flex-wrap:wrap;gap:6px', p.tags.map(function (tag) {

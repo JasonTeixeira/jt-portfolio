@@ -206,9 +206,15 @@ test.describe('portfolio — index', () => {
     expect(text).toContain('NOT PROVEN');       // the honest red verdict ships verbatim
     expect(text).toContain('12/13 gates');
     expect(text).toContain('noindex');
-    // hero terminal transcript matches the real run, red gate included
+    // the same-day green rerun is published beside it
+    await expect(page.locator('#jt-projects a[href="captures/nexural-qa-os-fixed.html"]')).toHaveCount(1);
+    const fixed = await request.get('/captures/nexural-qa-os-fixed.html');
+    expect(fixed.status()).toBe(200);
+    expect(await fixed.text()).toContain('PROVEN ✓  —  13/13 gates');
+    // hero terminal replays the full arc: red verdict then green verdict
     await page.locator('#jt-term').scrollIntoViewIfNeeded();
-    await expect(page.locator('#jt-term-body')).toContainText('15 high/critical', { timeout: 8000 });
+    await expect(page.locator('#jt-term-body')).toContainText('NOT PROVEN', { timeout: 10000 });
+    await expect(page.locator('#jt-term-body')).toContainText('PROVEN ✓ — 13/13', { timeout: 10000 });
   });
 
   test('scored diagnostic: score bar updates and adapts CTA to weakest group', async ({ page }) => {
