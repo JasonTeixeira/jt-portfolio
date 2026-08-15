@@ -218,7 +218,9 @@
   function setFunnel(f) {
     root.setAttribute('data-funnel', f);
     document.querySelectorAll('.funnel-btn').forEach(function (b) {
-      b.classList.toggle('active', b.getAttribute('data-set') === f);
+      var on = b.getAttribute('data-set') === f;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     try { localStorage.setItem('jt-funnel', f); } catch (e) { /* private mode */ }
   }
@@ -371,7 +373,7 @@
   /* ───────────────────────── tool tape ───────────────────────── */
 
   var tape = document.getElementById('jt-tape');
-  if (tape) {
+  if (tape && tape.children.length === 0) {
     for (var rep = 0; rep < 2; rep++) {
       var row = el('div', 'display:flex;gap:0;padding:12px 0;' + MONO + 'font-size:12px;color:#8E8882;white-space:nowrap');
       TOOLS.forEach(function (t) { row.appendChild(txt('span', 'padding:0 22px;border-right:1px solid #1A1917', t)); });
@@ -382,7 +384,7 @@
   /* ───────────────────────── project index ───────────────────────── */
 
   var projMount = document.getElementById('jt-projects');
-  if (projMount) PROJECTS.forEach(function (p) {
+  if (projMount && projMount.children.length === 0) PROJECTS.forEach(function (p) {
     var links = el('div', 'display:flex;gap:16px;font-size:12.5px;font-weight:600;margin-top:2px');
     if (p.href) links.appendChild(txt('a', 'color:#22d3ee', 'GitHub ↗', { href: p.href, target: '_blank', rel: 'noopener' }));
     if (p.priv) links.appendChild(txt('span', 'color:#8E8882;font-weight:500', 'Private — walkthrough on request'));
@@ -439,7 +441,7 @@
   /* ───────────────────────── engineering briefs ───────────────────────── */
 
   var briefMount = document.getElementById('jt-briefs');
-  if (briefMount) BRIEFS.forEach(function (b) {
+  if (briefMount && briefMount.children.length === 0) BRIEFS.forEach(function (b) {
     var corners = ['top:-1px;left:-1px;border-top:1px solid #8E8882;border-left:1px solid #8E8882',
       'top:-1px;right:-1px;border-top:1px solid #8E8882;border-right:1px solid #8E8882',
       'bottom:-1px;left:-1px;border-bottom:1px solid #8E8882;border-left:1px solid #8E8882',
@@ -489,7 +491,7 @@
   /* ───────────────────────── services + timeline ───────────────────────── */
 
   var svcMount = document.getElementById('jt-services');
-  if (svcMount) SERVICES.forEach(function (s) {
+  if (svcMount && svcMount.children.length === 0) SERVICES.forEach(function (s) {
     svcMount.appendChild(el('article', '', [
       el('span', 'width:34px;height:3px;border-radius:2px;background:' + s.color),
       txt('h3', SERIF + 'font-weight:400;font-size:1.4rem;margin:0;color:#09090B', s.name),
@@ -505,7 +507,7 @@
   });
 
   var tlMount = document.getElementById('jt-timeline');
-  if (tlMount) TIMELINE.forEach(function (w) {
+  if (tlMount && tlMount.children.length === 0) TIMELINE.forEach(function (w) {
     tlMount.appendChild(el('div', 'flex:1;min-width:min(200px,100%);display:flex;flex-direction:column;gap:10px;position:relative;padding-right:24px', [
       el('div', 'display:flex;align-items:center;gap:10px', [
         el('span', 'width:10px;height:10px;border-radius:50%;background:' + w.color + ';flex-shrink:0;animation:jt-nodepulse 3.2s ease-in-out infinite;animation-delay:' + w.delay),
@@ -520,7 +522,7 @@
   /* ───────────────────────── field notes ───────────────────────── */
 
   var notesMount = document.getElementById('jt-notes');
-  if (notesMount) NOTES.forEach(function (n) {
+  if (notesMount && notesMount.children.length === 0) NOTES.forEach(function (n) {
     notesMount.appendChild(el('a', 'display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826', [
       txt('span', MONO + 'font-size:11px;color:#837D77;min-width:5.5em', n.date),
       el('span', 'flex:1;min-width:min(300px,100%)', [
@@ -530,6 +532,26 @@
       txt('span', MONO + 'font-size:11px;color:' + n.color + ';white-space:nowrap', n.read + ' · read →')
     ], { href: n.href, class: 'note-row' }));
   });
+
+  /* ───────────────────────── scrollspy nav ───────────────────────── */
+
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('nav a.nav-link[href^="#"]'));
+  if (navLinks.length && 'IntersectionObserver' in window) {
+    var sectionFor = {}; // section id → nav link
+    navLinks.forEach(function (a) { sectionFor[a.getAttribute('href').slice(1)] = a; });
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        navLinks.forEach(function (a) { a.classList.remove('active'); });
+        var link = sectionFor[en.target.id];
+        if (link) link.classList.add('active');
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    Object.keys(sectionFor).forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (sec) spy.observe(sec);
+    });
+  }
 
   /* ───────────────────────── section reveals (cross-browser) ───────────────────────── */
 

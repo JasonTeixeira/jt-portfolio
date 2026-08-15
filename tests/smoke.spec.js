@@ -91,6 +91,20 @@ test.describe('portfolio — index', () => {
   });
 });
 
+test.describe('portfolio — SEO', () => {
+  test('all content is present with JavaScript disabled', async ({ browser }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    await expect(page.locator('#jt-projects article')).toHaveCount(5);
+    await expect(page.locator('#jt-briefs article')).toHaveCount(3);
+    await expect(page.locator('#jt-services article')).toHaveCount(3);
+    await expect(page.locator('#jt-notes a')).toHaveCount(3);
+    await expect(page.locator('body')).toContainText('RAG that cites or shuts up');
+    await ctx.close();
+  });
+});
+
 test.describe('portfolio — field notes', () => {
   test('loads with 3 articles and working back link', async ({ page }) => {
     const errors = trackErrors(page);
