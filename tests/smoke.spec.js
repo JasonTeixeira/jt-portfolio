@@ -85,6 +85,31 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#jt-selfproof-detail')).toContainText('npm run proof');
   });
 
+  test('command palette opens, filters, and navigates', async ({ page }) => {
+    await page.goto('/');
+    await page.keyboard.press('ControlOrMeta+k');
+    const paletteInput = page.locator('#jt-palette input');
+    await expect(paletteInput).toBeFocused();
+    await paletteInput.fill('briefs');
+    await expect(page.locator('#jt-palette .item')).toHaveCount(1);
+    await paletteInput.press('Enter');
+    await expect(page.locator('#jt-palette')).not.toHaveClass(/open/);
+    await expect(page).toHaveURL(/#briefs/);
+    // esc closes
+    await page.keyboard.press('ControlOrMeta+k');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#jt-palette')).not.toHaveClass(/open/);
+  });
+
+  test('copy-email button shows toast', async ({ page, context, browserName }) => {
+    test.skip(browserName === 'webkit', 'clipboard permission prompt blocks headless webkit');
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto('/');
+    await page.locator('#jt-copy-email').click();
+    await expect(page.locator('#jt-toast')).toHaveClass(/show/);
+    await expect(page.locator('#jt-toast')).toContainText('hello@sageideas.dev');
+  });
+
   test('footer year is current', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('footer [data-year]').first()).toHaveText(String(new Date().getFullYear()));

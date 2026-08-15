@@ -26,9 +26,11 @@ function walk(suite, file) {
       const project = t.projectName ?? 'default';
       const kind = (spec.file ?? file ?? '').includes('a11y') ? 'a11y' : 'smoke';
       const key = `${kind}-${project}`;
-      gates[key] ??= { passed: 0, failed: 0 };
+      gates[key] ??= { passed: 0, failed: 0, skipped: 0 };
+      const skipped = t.results?.every((r) => r.status === 'skipped');
       const ok = t.results?.every((r) => r.status === 'passed' || r.status === 'skipped');
-      if (ok) gates[key].passed += 1;
+      if (skipped) gates[key].skipped += 1;
+      else if (ok) gates[key].passed += 1;
       else gates[key].failed += 1;
     }
   }
@@ -42,6 +44,7 @@ try {
 
 const totalPassed = Object.values(gates).reduce((a, g) => a + g.passed, 0);
 const totalFailed = Object.values(gates).reduce((a, g) => a + g.failed, 0);
+const totalSkipped = Object.values(gates).reduce((a, g) => a + g.skipped, 0);
 
 const scorecard = {
   site: 'jt-portfolio',
@@ -52,10 +55,10 @@ const scorecard = {
   gates: Object.fromEntries(
     Object.entries(gates).map(([k, g]) => [k, { ...g, green: g.failed === 0 }])
   ),
-  totals: { passed: totalPassed, failed: totalFailed, green: totalFailed === 0 }
+  totals: { passed: totalPassed, failed: totalFailed, skipped: totalSkipped, green: totalFailed === 0 }
 };
 
 mkdirSync('proof', { recursive: true });
 writeFileSync('proof/scorecard.json', JSON.stringify(scorecard, null, 2) + '\n');
-console.log(`✓ proof/scorecard.json written — ${totalPassed} passed / ${totalFailed} failed @ ${commit}`);
+console.log(`✓ proof/scorecard.json written — ${totalPassed} passed / ${totalFailed} failed / ${totalSkipped} honest-skipped @ ${commit}`);
 process.exit(totalFailed === 0 ? 0 : 1);

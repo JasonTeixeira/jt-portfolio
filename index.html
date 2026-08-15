@@ -56,6 +56,7 @@
       <a href="#about" class="nav-link">About</a>
       <a href="#contact" class="nav-link">Contact</a>
     </div>
+    <button type="button" class="palette-hint" id="jt-palette-open" aria-label="Open command palette">⌘K</button>
     <div class="funnel-toggle" role="group" aria-label="Audience mode">
       <button type="button" class="funnel-btn" data-set="hire" aria-pressed="false">Hire me</button>
       <button type="button" class="funnel-btn active" data-set="client" aria-pressed="true">Work with me</button>
@@ -81,7 +82,10 @@
         <div style="color:#8E8882;font-size:11px">verified — reproducible by one command</div>
       </div>
     </div>
-    <div style="position:relative;display:flex;gap:14px;margin-top:40px;flex-wrap:wrap">
+    <div style="position:relative;margin-top:28px">
+      <span class="avail-chip"><span class="pulse"></span>open for new engagements — booking Q4 2026</span>
+    </div>
+    <div style="position:relative;display:flex;gap:14px;margin-top:24px;flex-wrap:wrap">
       <span class="only-client" style="display:contents">
         <a href="https://agency.sageideas.dev" class="btn-solid green">Book a call →</a>
         <a href="#work" class="btn-ghost">See the proof ↓</a>
@@ -295,6 +299,7 @@
       <div style="display:flex;gap:14px;justify-content:center;margin-top:36px;flex-wrap:wrap">
         <a href="https://agency.sageideas.dev" class="btn-solid green" style="padding:14px 30px">Book a call →</a>
         <a href="mailto:hello@sageideas.dev" class="btn-ghost" style="padding:14px 30px">Email me</a>
+        <button type="button" id="jt-copy-email" class="btn-ghost" style="padding:14px 20px;cursor:pointer;background:transparent;font-family:'Plus Jakarta Sans',sans-serif" aria-label="Copy email address">⧉ copy</button>
       </div>
       <div style="display:flex;gap:24px;justify-content:center;margin-top:32px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
         <a href="https://github.com/JasonTeixeira" class="dim-link">github/JasonTeixeira</a>
@@ -311,6 +316,14 @@
     <span>every number labeled verified or estimated. no fake green.</span>
   </footer>
 </div>
+<div id="jt-palette" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="backdrop"></div>
+  <div class="panel">
+    <input type="text" placeholder="Jump to… (↑↓ navigate · ↵ select · esc close)" aria-label="Search commands">
+    <div class="items" role="listbox"></div>
+  </div>
+</div>
+<div id="jt-toast" role="status" aria-live="polite">copied</div>
 <script src="assets/site.js"></script>
 </body>
 </html>

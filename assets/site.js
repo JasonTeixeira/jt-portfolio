@@ -385,9 +385,12 @@
 
   var projMount = document.getElementById('jt-projects');
   if (projMount && projMount.children.length === 0) PROJECTS.forEach(function (p) {
-    var links = el('div', 'display:flex;gap:16px;font-size:12.5px;font-weight:600;margin-top:2px');
+    var links = el('div', 'display:flex;gap:16px;font-size:12.5px;font-weight:600;margin-top:2px;flex-wrap:wrap');
     if (p.href) links.appendChild(txt('a', 'color:#22d3ee', 'GitHub ↗', { href: p.href, target: '_blank', rel: 'noopener' }));
-    if (p.priv) links.appendChild(txt('span', 'color:#8E8882;font-weight:500', 'Private — walkthrough on request'));
+    // video: set p.video to a YouTube watch URL to replace the "on request"
+    // label with a public walkthrough link (the demo lane for private repos)
+    if (p.video) links.appendChild(txt('a', 'color:' + p.color, '▶ watch the walkthrough', { href: p.video, target: '_blank', rel: 'noopener' }));
+    if (p.priv && !p.video) links.appendChild(txt('span', 'color:#8E8882;font-weight:500', 'Private — walkthrough on request'));
 
     var tags = el('div', 'display:flex;flex-wrap:wrap;gap:6px', p.tags.map(function (tag) {
       return txt('span', MONO + 'font-size:10.5px;color:#8E8882;padding:3px 8px;background:#1A1917;border-radius:4px', tag);
@@ -585,7 +588,9 @@
         var greenGates = gateNames.filter(function (k) { return sc.gates[k].green; }).length;
         var when = sc.generatedAt ? sc.generatedAt.slice(0, 10) : '';
         var detail = document.getElementById('jt-selfproof-detail');
-        detail.textContent = sc.totals.passed + ' checks passed · ' + greenGates + '/' + gateNames.length +
+        detail.textContent = sc.totals.passed + ' checks passed' +
+          (sc.totals.skipped ? ' (' + sc.totals.skipped + ' honest-skip)' : '') +
+          ' · ' + greenGates + '/' + gateNames.length +
           ' gates green · smoke + a11y on desktop & mobile · ' + when +
           (sc.commit && sc.commit !== 'uncommitted' ? ' @ ' + sc.commit : '') +
           ' · regenerate: ' + sc.command;
@@ -596,6 +601,109 @@
         selfProof.hidden = false;
       })
       .catch(function () { /* strip stays hidden — never fake green */ });
+  }
+
+  /* ───────────────────────── toast + copy email ───────────────────────── */
+
+  var toastEl = document.getElementById('jt-toast');
+  var toastTimer = null;
+  function toast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1800);
+  }
+  var EMAIL = 'hello@sageideas.dev';
+  function copyEmail() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(EMAIL).then(
+        function () { toast('email copied — ' + EMAIL); },
+        function () { toast(EMAIL); }
+      );
+    } else { toast(EMAIL); }
+  }
+  var copyBtn = document.getElementById('jt-copy-email');
+  if (copyBtn) copyBtn.addEventListener('click', copyEmail);
+
+  /* ───────────────────────── command palette ───────────────────────── */
+
+  var palette = document.getElementById('jt-palette');
+  if (palette) {
+    var pInput = palette.querySelector('input');
+    var pItems = palette.querySelector('.items');
+    var ACTIONS = [
+      { label: 'Go to Project index', k: 'section', run: function () { location.hash = '#work'; } },
+      { label: 'Go to Engineering briefs', k: 'section', run: function () { location.hash = '#briefs'; } },
+      { label: 'Go to Field notes', k: 'section', run: function () { location.hash = '#notes'; } },
+      { label: 'Go to Services', k: 'section', run: function () { location.hash = '#services'; } },
+      { label: 'Go to About', k: 'section', run: function () { location.hash = '#about'; } },
+      { label: 'Go to Contact', k: 'section', run: function () { location.hash = '#contact'; } },
+      { label: 'Copy email address', k: 'action', run: copyEmail },
+      { label: 'Book a call', k: 'link', run: function () { window.open('https://agency.sageideas.dev', '_blank', 'noopener'); } },
+      { label: 'Open GitHub profile', k: 'link', run: function () { window.open('https://github.com/JasonTeixeira', '_blank', 'noopener'); } },
+      { label: 'Open LinkedIn', k: 'link', run: function () { window.open('https://www.linkedin.com/in/jasonteixeira', '_blank', 'noopener'); } },
+      { label: 'Read all field notes', k: 'link', run: function () { location.href = 'field-notes.html'; } },
+      { label: 'Switch to: Hire me', k: 'mode', run: function () { setFunnel('hire'); toast('viewing as: hiring'); } },
+      { label: 'Switch to: Work with me', k: 'mode', run: function () { setFunnel('client'); toast('viewing as: client'); } }
+    ];
+    var filtered = ACTIONS;
+    var sel = 0;
+    var lastFocus = null;
+
+    function renderPalette() {
+      pItems.innerHTML = '';
+      filtered.forEach(function (a, i) {
+        var row = document.createElement('div');
+        row.className = 'item' + (i === sel ? ' sel' : '');
+        row.setAttribute('role', 'option');
+        row.setAttribute('aria-selected', i === sel ? 'true' : 'false');
+        var lbl = document.createElement('span');
+        lbl.textContent = a.label;
+        var kind = document.createElement('span');
+        kind.className = 'k';
+        kind.textContent = a.k;
+        row.appendChild(lbl);
+        row.appendChild(kind);
+        row.addEventListener('click', function () { runAction(a); });
+        row.addEventListener('mousemove', function () {
+          if (sel !== i) { sel = i; renderPalette(); }
+        });
+        pItems.appendChild(row);
+      });
+    }
+    function openPalette() {
+      lastFocus = document.activeElement;
+      filtered = ACTIONS; sel = 0;
+      pInput.value = '';
+      palette.classList.add('open');
+      renderPalette();
+      pInput.focus();
+    }
+    function closePalette() {
+      palette.classList.remove('open');
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    function runAction(a) { closePalette(); a.run(); }
+
+    pInput.addEventListener('input', function () {
+      var q = pInput.value.toLowerCase();
+      filtered = ACTIONS.filter(function (a) { return a.label.toLowerCase().indexOf(q) !== -1; });
+      sel = 0;
+      renderPalette();
+    });
+    pInput.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel + 1, filtered.length - 1); renderPalette(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel - 1, 0); renderPalette(); }
+      else if (e.key === 'Enter' && filtered[sel]) { e.preventDefault(); runAction(filtered[sel]); }
+    });
+    palette.querySelector('.backdrop').addEventListener('click', closePalette);
+    document.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); }
+      else if (e.key === 'Escape' && palette.classList.contains('open')) closePalette();
+    });
+    var openBtn = document.getElementById('jt-palette-open');
+    if (openBtn) openBtn.addEventListener('click', openPalette);
   }
 
   /* ───────────────────────── year ───────────────────────── */
