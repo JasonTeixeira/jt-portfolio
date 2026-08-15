@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jason Teixeira — AI Automation × QA / LLM Eval Engineer</title>
+<meta name="description" content="I ship AI features — then I prove they work. LLM apps, agents, and workflow automation paired with the eval and regression harness that keeps them honest in production.">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<div id="jt-root" data-funnel="client" style="min-height:100vh;background:#09090B;position:relative;overflow-x:clip">
+  <!-- grain -->
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:60;opacity:0.05;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/%3E%3C/filter%3E%3Crect width=%22160%22 height=%22160%22 filter=%22url(%23n)%22/%3E%3C/svg%3E')"></div>
+
+  <!-- NAV -->
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(18px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
+    <a href="#top" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
+      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.02em">jason.teixeira<span style="color:#10b981">()</span></span>
+    </a>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:12.5px;font-weight:500">
+      <a href="#work" class="nav-link">Index</a>
+      <a href="#briefs" class="nav-link">Briefs</a>
+      <a href="#notes" class="nav-link">Notes</a>
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </div>
+    <div class="funnel-toggle">
+      <button type="button" class="funnel-btn" data-set="hire">Hire me</button>
+      <button type="button" class="funnel-btn active" data-set="client">Work with me</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header id="top" style="position:relative;max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 72px;animation:jt-fadeup 500ms ease-out">
+    <div style="position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(90deg,#141311 0,#141311 1px,transparent 1px,transparent calc(100% / 12));opacity:0.35;-webkit-mask-image:linear-gradient(to bottom,transparent,black 34%);mask-image:linear-gradient(to bottom,transparent,black 34%)"></div>
+    <div style="position:absolute;top:96px;right:clamp(4px,1vw,12px);writing-mode:vertical-rl;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#3D3A37;text-transform:uppercase">Portfolio — 2026 edition · built &amp; proven</div>
+    <div style="position:relative;display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882">
+      <span style="width:8px;height:8px;border-radius:50%;background:#10b981;animation:jt-blink 2.4s ease-in-out infinite"></span>
+      <span><span style="color:#22d3ee">AI automation</span> × <span style="color:#a78bfa">QA / LLM eval</span> engineer</span>
+      <span style="flex:1;height:1px;background:#2A2826"></span>
+      <span style="color:#3D3A37">N 41.8781° W 87.6298°</span>
+    </div>
+    <h1 style="position:relative;font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(3rem,7.8vw,6.6rem);line-height:1;letter-spacing:-0.02em;margin:30px 0 0;max-width:20ch;text-wrap:balance">I ship <span style="-webkit-text-stroke:1.5px #F4F2EF;color:transparent">AI features</span> — then I <em style="font-style:italic;color:#10b981">prove</em> they work.</h1>
+    <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:40px;margin-top:38px;align-items:start">
+      <p style="margin:0;font-size:1.05rem;line-height:1.75;color:#A8A29E;max-width:56ch"><span style="font-family:'Instrument Serif',Georgia,serif;font-size:2.2rem;float:left;line-height:0.8;padding:6px 8px 0 0;color:#F4F2EF">L</span>LM apps, agents, and workflow automation — RAG, LangGraph, n8n/Make — paired with the regression and eval harness that keeps them honest in production: Playwright, Pytest, k6, Promptfoo, DeepEval, LLM-as-judge. Most people build the AI <em>or</em> test it. I do both, and every claim below links to an artifact.</p>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:2;color:#A8A29E;border-left:1px solid #2A2826;padding-left:20px">
+        <div><span data-stat="gates" style="color:#10b981;font-size:15px">0/13</span> proof gates green</div>
+        <div><span data-stat="tests" style="color:#10b981;font-size:15px">0</span> tests passing · <span data-stat="cov" style="color:#10b981;font-size:15px">0%</span> line coverage</div>
+        <div style="color:#8E8882;font-size:11px">verified — reproducible by one command</div>
+      </div>
+    </div>
+    <div style="position:relative;display:flex;gap:14px;margin-top:40px;flex-wrap:wrap">
+      <span class="only-client" style="display:contents">
+        <a href="https://agency.sageideas.dev" class="btn-solid green">Book a call →</a>
+        <a href="#work" class="btn-ghost">See the proof ↓</a>
+      </span>
+      <span class="only-hire" style="display:contents">
+        <a href="https://github.com/JasonTeixeira" class="btn-solid cyan">Résumé &amp; GitHub →</a>
+        <a href="#briefs" class="btn-ghost">Read the briefs ↓</a>
+      </span>
+    </div>
+    <div id="jt-pipeline" tabindex="0" role="img" aria-label="Animated pipeline diagram: build, deploy, then three eval gates — faithfulness, injection, regression — ending in a signed pass verdict. A failing packet visibly returns to the build stage." style="position:relative;margin-top:64px;overflow-x:auto"></div>
+    <div style="position:relative;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8E8882;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span id="jt-runline"></span>
+      <span style="color:#837D77">fig. 01 — a feature fails eval → it goes back. that's the whole point.</span>
+    </div>
+  </header>
+
+  <!-- PROOF -->
+  <section id="proof" style="border-top:1px solid #2A2826;background:#0C0C0E;position:relative">
+    <div style="max-width:1240px;margin:0 auto;padding:72px clamp(18px,4vw,40px) 56px;position:relative">
+      <div style="position:absolute;top:34px;right:clamp(18px,4vw,40px);font-family:'Instrument Serif',Georgia,serif;font-size:clamp(90px,14vw,180px);line-height:0.8;color:transparent;-webkit-text-stroke:1px #1F1D1B;user-select:none;pointer-events:none">01</div>
+      <div class="sec-rule">
+        <span class="sec-label" style="color:#10b981">01 — proof surface</span>
+        <span class="line"></span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,72px);margin-top:44px;align-items:baseline">
+        <div>
+          <div data-stat="tests" style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(3.4rem,6vw,5.4rem);line-height:1;color:#F4F2EF">0</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:10px">tests passing · <span style="color:#10b981">verified</span></div>
+        </div>
+        <div>
+          <div data-stat="cov" style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(3.4rem,6vw,5.4rem);line-height:1;color:#F4F2EF">0%</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:10px">line coverage · <span style="color:#10b981">ratcheted</span></div>
+        </div>
+        <div>
+          <div data-stat="gates" style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(3.4rem,6vw,5.4rem);line-height:1;color:#F4F2EF">0/13</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:10px">proof gates · <span style="color:#10b981">reproducible</span></div>
+        </div>
+      </div>
+      <div id="jt-term" style="margin-top:48px;background:#08090c;border:1px solid #2A2826;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px rgba(16,185,129,0.08), 0 12px 40px rgba(0,0,0,0.4)">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #2A2826;background:#0C0C0E">
+          <span style="width:10px;height:10px;border-radius:50%;background:#f43f5e;opacity:0.7"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;opacity:0.7"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#10b981;opacity:0.7"></span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;margin-left:8px">nexural-qa-os — proof-loop.mjs · real output, regenerated by one command</span>
+        </div>
+        <div style="padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.85;min-height:280px">
+          <div id="jt-term-body"></div>
+          <span id="jt-term-cursor" style="display:none;width:8px;height:15px;background:#10b981;vertical-align:middle;animation:jt-cursor 1s step-end infinite"></span>
+        </div>
+      </div>
+      <!-- SELF-PROOF STRIP — populated from proof/scorecard.json, generated by this repo's own QA suite -->
+      <div id="jt-selfproof" hidden style="margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:12px 16px;background:rgba(16,185,129,0.04);font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#A8A29E">
+        <span style="display:inline-flex;align-items:center;gap:8px;color:#10b981;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#10b981;animation:jt-blink 2.4s ease-in-out infinite"></span>this site runs its own QA</span>
+        <span id="jt-selfproof-detail"></span>
+        <span style="flex:1"></span>
+        <a href="https://github.com/JasonTeixeira/JasonTeixeira/actions" class="dim-link" style="font-size:11px">pipeline ↗</a>
+      </div>
+    </div>
+    <!-- TOOL TAPE -->
+    <div style="border-top:1px solid #2A2826;border-bottom:1px solid #2A2826;overflow:hidden;background:#09090B">
+      <div id="jt-tape" class="tape"></div>
+    </div>
+  </section>
+
+  <!-- PROJECT INDEX -->
+  <section id="work" class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 24px;position:relative">
+    <div class="sec-ghost-num">02</div>
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#22d3ee">02 — the index</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="sec-title" style="max-width:20ch">Five systems, one thesis.</h2>
+    <div id="jt-projects" style="margin-top:44px;border-top:1px solid #2A2826"></div>
+  </section>
+
+  <!-- ENGINEERING BRIEFS -->
+  <section id="briefs" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 40px;position:relative">
+    <div class="sec-ghost-num">03</div>
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#a78bfa">03 — engineering briefs</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="sec-title" style="max-width:24ch">How the work actually went — spec sheets, not stories.</h2>
+    <p style="margin:16px 0 0;font-size:14px;color:#8E8882;max-width:64ch">Same eight sections every time, including the parts most case studies hide. Every headline number states how it was measured.</p>
+    <div id="jt-briefs" style="display:flex;flex-direction:column;gap:36px;margin-top:40px"></div>
+  </section>
+
+  <!-- SERVICES — LIGHT BAND -->
+  <section id="services" style="background:#F4F2EF;color:#09090B;margin-top:120px;position:relative">
+    <div style="position:absolute;top:0;right:clamp(18px,4vw,40px);transform:translateY(-52%);font-family:'Instrument Serif',Georgia,serif;font-size:clamp(90px,14vw,180px);line-height:0.8;color:transparent;-webkit-text-stroke:1.5px rgba(120,113,108,0.55);user-select:none;pointer-events:none;z-index:1">04</div>
+    <div class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px);position:relative">
+      <div class="sec-rule">
+        <span class="sec-label" style="color:#0e7490">04 — work with me</span>
+        <span class="line" style="background:#DDD6CE"></span>
+      </div>
+      <h2 class="sec-title" style="color:#09090B">Packaged engagements</h2>
+      <p class="only-client" style="margin:16px 0 0;font-size:14px;color:#57534E;max-width:60ch">Fixed scope, fixed deliverables, evidence included. Each offer is a productized version of something in the briefs above.</p>
+      <p class="only-hire" style="margin:16px 0 0;font-size:14px;color:#57534E;max-width:60ch">Hiring full-time? These are the three capabilities I'd bring to your team on day one — each backed by a shipped system above.</p>
+      <div id="jt-services" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:20px;margin-top:36px"></div>
+      <div style="margin-top:44px;border:1px solid #DDD6CE;padding:clamp(20px,3vw,32px);background:#FFFFFF">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#6B6560;margin-bottom:22px">how a typical 4-week engagement runs</div>
+        <div id="jt-timeline" style="display:flex;align-items:flex-start;gap:0;flex-wrap:wrap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 40px;position:relative">
+    <div class="sec-ghost-num">05</div>
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#10b981">05 — about</span>
+      <span class="line"></span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:32px;margin-top:32px">
+      <div style="flex:1;min-width:min(480px,100%)">
+        <p style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.4rem,2.4vw,1.8rem);line-height:1.45;letter-spacing:-0.01em;margin:0;color:#F4F2EF;max-width:30ch;text-wrap:balance">I run Sage Ideas, an AI-native studio, and I've spent years building the same thing at every layer: <em style="color:#10b981">systems that refuse to say "done" without evidence.</em></p>
+        <p style="margin:24px 0 0;font-size:14.5px;line-height:1.8;color:#A8A29E;max-width:62ch">That thesis shows up as an engineering OS with a hash-chained proof ledger, a QA platform where every score is computed from a real command, and agent pipelines with golden-trace evals wired into CI. The pattern is always the same: ship the feature, then ship the machinery that catches it when it regresses.</p>
+        <p style="margin:18px 0 0;font-size:14.5px;line-height:1.8;color:#A8A29E;max-width:62ch">If your team is shipping LLM features on vibes — no eval suite, no regression gate, no idea whether last week's prompt change made things worse — that's exactly the gap I close.</p>
+        <div style="display:flex;align-items:stretch;gap:0;margin-top:40px;flex-wrap:wrap">
+          <div style="flex:1;min-width:min(240px,100%);border:1px solid rgba(34,211,238,0.3);padding:24px;background:rgba(34,211,238,0.03)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:14px">I build</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2.1;color:#A8A29E">
+              <div>LangGraph · Mastra agents</div>
+              <div>RAG — pgvector · citations</div>
+              <div>n8n · Make · Zapier flows</div>
+              <div>Next.js · FastAPI · Supabase</div>
+              <div>voice agents — Retell · Vapi</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 18px;gap:6px;border-top:1px solid #2A2826;border-bottom:1px solid #2A2826;background:#0C0C0E">
+            <span style="width:46px;height:46px;border-radius:50%;border:1px solid #10b981;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#10b981;box-shadow:0 0 24px rgba(16,185,129,0.2)">JT</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#8E8882;text-align:center">one<br>engineer</span>
+          </div>
+          <div style="flex:1;min-width:min(240px,100%);border:1px solid rgba(167,139,250,0.3);padding:24px;background:rgba(167,139,250,0.03)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:14px">I prove</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2.1;color:#A8A29E">
+              <div>Playwright · Pytest · k6</div>
+              <div>Promptfoo · DeepEval</div>
+              <div>LLM-as-judge — faithfulness</div>
+              <div>jailbreak · injection · PII evals</div>
+              <div>CI gates · signed evidence</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BY THE NUMBERS -->
+  <section id="numbers" class="rise" style="max-width:1240px;margin:0 auto;padding:64px clamp(18px,4vw,40px) 40px">
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#F59E0B">06 — by the numbers</span>
+      <span class="line"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:1px;background:#2A2826;border:1px solid #2A2826;margin-top:32px">
+      <div style="background:#09090B;padding:28px 24px">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1">170+</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">repositories on GitHub</div>
+      </div>
+      <div style="background:#09090B;padding:28px 24px">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;color:#a78bfa">85</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">quality runners built</div>
+      </div>
+      <div style="background:#09090B;padding:28px 24px">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;color:#22d3ee">140</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">MCP tools shipped</div>
+      </div>
+      <div style="background:#09090B;padding:28px 24px">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;color:#10b981">78</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">release gates, all green</div>
+      </div>
+    </div>
+    <p style="margin:14px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">client &amp; colleague quotes appear here with written attribution only — references available on request</p>
+  </section>
+
+  <!-- FIELD NOTES -->
+  <section id="notes" class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 24px;position:relative">
+    <div class="sec-ghost-num">07</div>
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#22d3ee">07 — field notes</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="sec-title" style="max-width:22ch">Working notes from the proof-first trenches.</h2>
+    <div id="jt-notes" style="margin-top:40px;border-top:1px solid #2A2826"></div>
+    <p style="margin:14px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">longer-form writing lives at <a href="https://sageafterdark.com" class="dim-link">sageafterdark.com</a></p>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" style="border-top:1px solid #2A2826;margin-top:64px;position:relative;overflow:hidden">
+    <div class="rise" style="max-width:1240px;margin:0 auto;padding:110px clamp(18px,4vw,40px) 40px;text-align:center;position:relative">
+      <span class="only-client" style="display:contents">
+        <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.6rem,6vw,4.6rem);letter-spacing:-0.02em;margin:0;line-height:1.05">Let's make your AI <em style="color:#10b981">provable</em>.</h2>
+        <p style="margin:22px auto 0;font-size:15px;color:#A8A29E;max-width:48ch">30 minutes. Bring the feature that scares you — leave with a concrete eval-and-automation plan.</p>
+      </span>
+      <span class="only-hire" style="display:contents">
+        <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.6rem,6vw,4.6rem);letter-spacing:-0.02em;margin:0;line-height:1.05">One hire, <em style="color:#22d3ee">two</em> disciplines.</h2>
+        <p style="margin:22px auto 0;font-size:15px;color:#A8A29E;max-width:48ch">The engineer who ships the LLM feature and the harness that guards it. Let's talk about your team.</p>
+      </span>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:36px;flex-wrap:wrap">
+        <a href="https://agency.sageideas.dev" class="btn-solid green" style="padding:14px 30px">Book a call →</a>
+        <a href="mailto:hello@sageideas.dev" class="btn-ghost" style="padding:14px 30px">Email me</a>
+      </div>
+      <div style="display:flex;gap:24px;justify-content:center;margin-top:32px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
+        <a href="https://github.com/JasonTeixeira" class="dim-link">github/JasonTeixeira</a>
+        <a href="https://www.linkedin.com/in/jasonteixeira" class="dim-link">linkedin</a>
+        <a href="https://agency.sageideas.dev" class="dim-link">agency.sageideas.dev</a>
+      </div>
+    </div>
+    <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(64px,12.5vw,190px);line-height:0.82;text-align:center;color:transparent;-webkit-text-stroke:1px #1F1D1B;user-select:none;pointer-events:none;white-space:nowrap;margin-top:24px">TEIXEIRA</div>
+  </section>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</span>
+    <span>set in Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>every number labeled verified or estimated. no fake green.</span>
+  </footer>
+</div>
+<script src="assets/site.js"></script>
+</body>
+</html>
