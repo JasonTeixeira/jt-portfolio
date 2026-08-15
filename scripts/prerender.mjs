@@ -8,26 +8,41 @@
  * Idempotent: replaces the innerHTML of each mount div in place.
  */
 import { chromium } from '@playwright/test';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const MOUNTS = ['jt-tape', 'jt-projects', 'jt-briefs', 'jt-services', 'jt-timeline', 'jt-notes'];
 const FILE = resolve('index.html');
 
-// Strip any previously-baked content so the runtime renderer repopulates from data.
 let source = readFileSync(FILE, 'utf8');
 for (const id of MOUNTS) {
   const start = source.indexOf(`id="${id}"`);
   if (start === -1) throw new Error(`mount #${id} not found in index.html`);
 }
 
+// The runtime renderer skips mounts that already have children, so a
+// previously-baked file would replay its own stale markup. Strip every
+// mount into a temp copy first and render THAT — the extraction is then
+// always a fresh product of the current renderer + data.
+let stripped = source;
+for (const id of MOUNTS) stripped = bake(stripped, id, '');
+const TMP = resolve('.prerender-input.html');
+writeFileSync(TMP, stripped);
+
 const browser = await chromium.launch();
 const page = await browser.newPage();
 // file:// is fine: site.js renders from inline data; the scorecard fetch
 // fails silently and the strip simply stays hidden during prerender.
-await page.goto('file://' + FILE);
+await page.goto('file://' + TMP);
 await page.waitForSelector('#jt-projects article');
 
+// Reveal state (rise-pre/rise-in) is a runtime concern — never bake it,
+// or below-fold content ships opacity:0 for no-JS and reduced-motion users.
+await page.evaluate(() => {
+  document.querySelectorAll('.rise-pre, .rise-in').forEach((n) => {
+    n.classList.remove('rise-pre', 'rise-in');
+  });
+});
 const rendered = {};
 for (const id of MOUNTS) {
   rendered[id] = await page.evaluate(
@@ -36,6 +51,7 @@ for (const id of MOUNTS) {
   );
 }
 await browser.close();
+unlinkSync(TMP);
 
 /** Replace innerHTML of <div id="X" ...>…</div> in source, tracking nested divs. */
 function bake(html, id, inner) {

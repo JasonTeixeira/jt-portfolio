@@ -196,6 +196,85 @@ h2.sec-title {
   font-size: clamp(2.2rem, 4.5vw, 3.4rem); letter-spacing: -0.02em; margin: 26px 0 0;
 }
 
+/* ─── experience timeline ─── */
+.xp-row { display: flex; gap: clamp(16px, 3vw, 32px); }
+.xp-rail { display: flex; flex-direction: column; align-items: center; width: 14px; flex-shrink: 0; padding-top: 8px; }
+.xp-dot {
+  width: 12px; height: 12px; border-radius: 50%; background: var(--xc);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--xc) 45%, transparent);
+  animation: jt-nodepulse 3.2s ease-in-out infinite;
+}
+.xp-line { flex: 1; width: 1px; background: #2A2826; margin-top: 8px; }
+.xp-body { flex: 1; padding-bottom: 40px; min-width: 0; }
+.xp-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.xp-org { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: clamp(1.4rem, 2.2vw, 1.8rem); letter-spacing: -0.01em; margin: 0; }
+.xp-role { font-size: 13px; font-weight: 600; color: #A8A29E; }
+.xp-dates { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #837D77; margin-left: auto; }
+.xp-points { margin: 12px 0 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 8px; }
+.xp-points li { font-size: 13.5px; line-height: 1.7; color: #A8A29E; max-width: 72ch; }
+.xp-points b { color: var(--xc); font-weight: 600; }
+.xp-points li::marker { color: var(--xc); }
+
+/* ─── credential chips ─── */
+.cred-chip {
+  --cc: #10b981;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+  color: #C9C4BF; border: 1px solid color-mix(in srgb, var(--cc) 35%, transparent);
+  border-radius: 6px; padding: 6px 12px; background: color-mix(in srgb, var(--cc) 5%, transparent);
+  white-space: nowrap;
+}
+
+/* ─── pull-quote band ─── */
+.quote-band { border-top: 1px solid #2A2826; border-bottom: 1px solid #2A2826; background: #0C0C0E; position: relative; overflow: hidden; }
+.quote-band .q-mark {
+  position: absolute; top: -30px; left: clamp(18px, 4vw, 60px);
+  font-family: 'Instrument Serif', Georgia, serif; font-size: 280px; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1px #1F1D1B; user-select: none; pointer-events: none;
+}
+.quote-band blockquote {
+  max-width: 1000px; margin: 0 auto; padding: clamp(64px, 9vw, 110px) clamp(18px, 4vw, 40px);
+  font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+  font-size: clamp(1.7rem, 3.6vw, 2.9rem); line-height: 1.3; letter-spacing: -0.015em;
+  color: #F4F2EF; text-wrap: balance; position: relative;
+}
+.quote-band cite {
+  display: block; margin-top: 22px; font-style: normal;
+  font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #837D77;
+}
+
+/* ─── brief spec expander ─── */
+.brief-outcome {
+  font-family: 'Instrument Serif', Georgia, serif; font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  line-height: 1.3; letter-spacing: -0.01em; color: #F4F2EF; max-width: 40ch; margin: 4px 0 18px;
+}
+details.brief-more > summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #8E8882; padding: 10px 0; user-select: none;
+  transition: color 150ms ease;
+}
+details.brief-more > summary::-webkit-details-marker { display: none; }
+details.brief-more > summary:hover { color: #F4F2EF; }
+details.brief-more > summary .chev { transition: transform 200ms ease; display: inline-block; }
+details.brief-more[open] > summary .chev { transform: rotate(90deg); }
+details.brief-more > summary:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
+
+/* ─── FAQ (light band) ─── */
+details.faq { border-bottom: 1px solid #DDD6CE; }
+details.faq > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
+  padding: 16px 0; font-size: 14.5px; font-weight: 600; color: #09090B; user-select: none;
+}
+details.faq > summary::-webkit-details-marker { display: none; }
+details.faq > summary::before {
+  content: '+'; font-family: 'JetBrains Mono', monospace; color: #0e7490;
+  font-size: 16px; width: 18px; flex-shrink: 0; transition: transform 200ms ease;
+}
+details.faq[open] > summary::before { transform: rotate(45deg); }
+details.faq > summary:focus-visible { outline: 2px solid #0e7490; outline-offset: 3px; }
+details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; color: #57534E; max-width: 58ch; }
+
 /* ─── availability chip ─── */
 .avail-chip {
   display: inline-flex; align-items: center; gap: 8px;
@@ -250,4 +329,5 @@ h2.sec-title {
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
+  .rise-pre { opacity: 1 !important; transform: none !important; }
 }

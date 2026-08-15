@@ -101,6 +101,7 @@
   var BRIEFS = [
     {
       num: 'BRIEF/01', fig: '07', color: '#22d3ee', title: 'Feedback triage that runs itself', repo: 'Make + Gemini workflow',
+      outcome: 'Negative feedback now surfaces in seconds — not at the Friday review.',
       stack: 'Make · Gemini 2.5 Flash · Google Forms · Sheets · Gmail',
       flow: [
         { t: 'Google Forms', c: '#A8A29E', b: '#2A2826', arrow: true },
@@ -122,6 +123,7 @@
     },
     {
       num: 'BRIEF/02', fig: '08', color: '#10b981', title: 'RAG that cites or shuts up', repo: 'ai-research-dashboard',
+      outcome: '100% of answers cite their source. Not by prompt — by design.',
       stack: 'FastAPI · pgvector · SQLite/Postgres · Gemini · React',
       flow: [
         { t: 'source', c: '#A8A29E', b: '#2A2826', arrow: true },
@@ -144,6 +146,7 @@
     },
     {
       num: 'BRIEF/03', fig: '09', color: '#a78bfa', title: 'The QA OS that can’t lie', repo: 'nexural-qa-os',
+      outcome: '3,750 tests. 13/13 gates. Run it twice — identical output.',
       stack: 'TypeScript · Turbo/pnpm · vitest · Playwright · k6 · ed25519',
       flow: [
         { t: 'qa init — detect stack', c: '#A8A29E', b: '#2A2826', arrow: true },
@@ -465,29 +468,46 @@
       flowChips.appendChild(wrap);
     });
 
-    var sections = el('div', 'display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;border-top:1px solid #2A2826;padding-top:24px',
-      b.sections.map(function (s) {
-        return el('div', '', [
-          txt('div', MONO + 'font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:' + b.color + ';margin-bottom:8px', s.label),
-          txt('p', 'margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty', s.text)
-        ]);
-      }));
+    function sectionCell(s) {
+      return el('div', '', [
+        txt('div', MONO + 'font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:' + b.color + ';margin-bottom:8px', s.label),
+        txt('p', 'margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty', s.text)
+      ]);
+    }
+    // outcome-first: Problem + Measured results stay visible; the deep spec
+    // (architecture, safeguards, approval points…) lives behind an expander.
+    var KEY_LABELS = ['Problem', 'Measured results'];
+    var keySections = b.sections.filter(function (s) { return KEY_LABELS.indexOf(s.label) !== -1; });
+    var deepSections = b.sections.filter(function (s) { return KEY_LABELS.indexOf(s.label) === -1; });
+
+    var visibleGrid = el('div', 'display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;border-top:1px solid #2A2826;padding-top:24px',
+      keySections.map(sectionCell));
+
+    var deepGrid = el('div', 'display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;padding-top:20px',
+      deepSections.map(sectionCell));
+    var stackLine = el('div', 'margin-top:26px;padding-top:20px;border-top:1px dashed #2A2826;' + MONO + 'font-size:12px;color:#8E8882', [
+      document.createTextNode('stack — '),
+      txt('span', 'color:#F4F2EF', b.stack)
+    ]);
+    var summary = el('summary', '', [
+      el('span', 'color:' + b.color, [document.createTextNode('▸')], { class: 'chev' }),
+      document.createTextNode('view full spec — ' + deepSections.length + ' more sections')
+    ]);
+    var more = el('details', 'border-top:1px solid #2A2826;margin-top:24px', [summary, deepGrid, stackLine], { class: 'brief-more' });
 
     briefMount.appendChild(el('article', 'position:relative;background:#0C0C0E;border:1px solid #2A2826;padding:clamp(26px,4vw,44px)',
       corners.concat([
         txt('div', 'position:absolute;top:14px;right:18px;' + MONO + 'font-size:9.5px;letter-spacing:0.14em;color:#837D77;text-transform:uppercase;white-space:nowrap', 'spec ' + b.num + ' · rev A'),
-        el('div', 'display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding-bottom:20px', [
+        el('div', 'display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding-bottom:8px', [
           txt('span', MONO + 'font-size:12px;color:' + b.color, b.num),
           txt('h3', SERIF + 'font-weight:400;font-size:clamp(1.6rem,2.6vw,2.1rem);margin:0;letter-spacing:-0.01em;flex:1;min-width:240px', b.title),
           txt('span', MONO + 'font-size:11px;color:#8E8882', b.repo)
         ]),
+        el('p', 'border-left:2px solid ' + b.color + ';padding-left:16px', [document.createTextNode(b.outcome)], { class: 'brief-outcome' }),
         el('div', 'padding:18px 20px 14px;background:#08090c;border:1px solid #1A1917;margin-bottom:8px', [flowChips]),
         txt('div', MONO + 'font-size:9.5px;letter-spacing:0.1em;color:#837D77;text-transform:uppercase;margin-bottom:24px', 'fig. ' + b.fig + ' — system flow, left to right'),
-        sections,
-        el('div', 'margin-top:26px;padding-top:20px;border-top:1px dashed #2A2826;' + MONO + 'font-size:12px;color:#8E8882', [
-          document.createTextNode('stack — '),
-          txt('span', 'color:#F4F2EF', b.stack)
-        ])
+        visibleGrid,
+        more
       ]), { class: 'rise' }));
   });
 
@@ -558,6 +578,8 @@
 
   /* ───────────────────────── section reveals (cross-browser) ───────────────────────── */
 
+  // defense in depth: clear any reveal state that leaked into static HTML
+  document.querySelectorAll('.rise-pre').forEach(function (n) { n.classList.remove('rise-pre'); });
   if (!REDUCED && 'IntersectionObserver' in window) {
     var riseEls = document.querySelectorAll('.rise');
     var riseIO = new IntersectionObserver(function (entries) {
@@ -603,6 +625,35 @@
       .catch(function () { /* strip stays hidden — never fake green */ });
   }
 
+  /* ───────────────────────── numbers count-up ───────────────────────── */
+
+  var countEls = document.querySelectorAll('[data-countup]');
+  if (countEls.length) {
+    var animateCount = function (n) {
+      var target = parseInt(n.getAttribute('data-countup'), 10);
+      var suffix = n.getAttribute('data-suffix') || '';
+      var step = 0, steps = 28;
+      var iv = setInterval(function () {
+        step++;
+        var e = 1 - Math.pow(1 - step / steps, 3);
+        n.textContent = Math.round(target * e) + suffix;
+        if (step >= steps) clearInterval(iv);
+      }, 34);
+    };
+    if (REDUCED || !('IntersectionObserver' in window)) {
+      countEls.forEach(function (n) {
+        n.textContent = n.getAttribute('data-countup') + (n.getAttribute('data-suffix') || '');
+      });
+    } else {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { animateCount(en.target); cio.unobserve(en.target); }
+        });
+      }, { threshold: 0.6 });
+      countEls.forEach(function (n) { cio.observe(n); });
+    }
+  }
+
   /* ───────────────────────── toast + copy email ───────────────────────── */
 
   var toastEl = document.getElementById('jt-toast');
@@ -640,9 +691,10 @@
       { label: 'Go to About', k: 'section', run: function () { location.hash = '#about'; } },
       { label: 'Go to Contact', k: 'section', run: function () { location.hash = '#contact'; } },
       { label: 'Copy email address', k: 'action', run: copyEmail },
+      { label: 'Download résumé (PDF)', k: 'action', run: function () { location.href = 'assets/Jason-Teixeira-Resume.pdf'; } },
       { label: 'Book a call', k: 'link', run: function () { window.open('https://agency.sageideas.dev', '_blank', 'noopener'); } },
       { label: 'Open GitHub profile', k: 'link', run: function () { window.open('https://github.com/JasonTeixeira', '_blank', 'noopener'); } },
-      { label: 'Open LinkedIn', k: 'link', run: function () { window.open('https://www.linkedin.com/in/jasonteixeira', '_blank', 'noopener'); } },
+      { label: 'Open LinkedIn', k: 'link', run: function () { window.open('https://www.linkedin.com/in/jason-teixeira', '_blank', 'noopener'); } },
       { label: 'Read all field notes', k: 'link', run: function () { location.href = 'field-notes.html'; } },
       { label: 'Switch to: Hire me', k: 'mode', run: function () { setFunnel('hire'); toast('viewing as: hiring'); } },
       { label: 'Switch to: Work with me', k: 'mode', run: function () { setFunnel('client'); toast('viewing as: client'); } }

@@ -110,6 +110,39 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#jt-toast')).toContainText('hello@sageideas.dev');
   });
 
+  test('track record: 3 roles, credentials, downloadable résumé', async ({ page, request }) => {
+    await page.goto('/');
+    await expect(page.locator('#record .xp-row')).toHaveCount(3);
+    await expect(page.locator('#record')).toContainText('The Home Depot');
+    await expect(page.locator('#record')).toContainText('HighStrike');
+    await expect(page.locator('#record .cred-chip')).toHaveCount(6);
+    await expect(page.locator('#record')).toContainText('ISTQB CT-AI');
+    const pdf = await request.get('/assets/Jason-Teixeira-Resume.pdf');
+    expect(pdf.status()).toBe(200);
+    expect(pdf.headers()['content-type']).toContain('pdf');
+  });
+
+  test('briefs: outcome-first with working full-spec expander', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#jt-briefs .brief-outcome')).toHaveCount(3);
+    const first = page.locator('#jt-briefs details.brief-more').first();
+    await expect(first.locator('summary')).toContainText('view full spec');
+    // deep sections hidden until opened
+    const arch = page.locator('#jt-briefs article').first().getByText('Why not a chatbot');
+    await expect(arch).toBeHidden();
+    await first.locator('summary').click();
+    await expect(arch).toBeVisible();
+  });
+
+  test('FAQ expands and pull-quote band present', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('details.faq')).toHaveCount(6);
+    const q = page.locator('details.faq').first();
+    await q.locator('summary').click();
+    await expect(q.locator('p')).toBeVisible();
+    await expect(page.locator('.quote-band blockquote')).toContainText('Build the gate');
+  });
+
   test('footer year is current', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('footer [data-year]').first()).toHaveText(String(new Date().getFullYear()));
@@ -126,6 +159,23 @@ test.describe('portfolio — SEO', () => {
     await expect(page.locator('#jt-services article')).toHaveCount(3);
     await expect(page.locator('#jt-notes a')).toHaveCount(3);
     await expect(page.locator('body')).toContainText('RAG that cites or shuts up');
+    // content must be VISIBLE without JS, not merely present —
+    // a baked reveal class once shipped briefs at opacity:0
+    for (const art of await page.locator('#jt-briefs article').all()) {
+      expect(await art.evaluate((n) => getComputedStyle(n).opacity)).toBe('1');
+    }
+    await ctx.close();
+  });
+
+  test('all content visible under prefers-reduced-motion', async ({ browser }) => {
+    const ctx = await browser.newContext({ reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    for (const sel of ['#jt-projects article', '#jt-briefs article', '#record .xp-row']) {
+      for (const n of await page.locator(sel).all()) {
+        expect(await n.evaluate((e) => getComputedStyle(e).opacity), sel).toBe('1');
+      }
+    }
     await ctx.close();
   });
 });
