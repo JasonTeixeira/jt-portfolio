@@ -23,7 +23,7 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#jt-projects article')).toHaveCount(5);
     await expect(page.locator('#jt-briefs article')).toHaveCount(3);
     await expect(page.locator('#jt-services article')).toHaveCount(3);
-    await expect(page.locator('#jt-notes a')).toHaveCount(5);
+    await expect(page.locator('#jt-notes a')).toHaveCount(7);
   });
 
   test('dual funnel toggles and persists', async ({ page }) => {
@@ -287,7 +287,7 @@ test.describe('portfolio — SEO', () => {
     await expect(page.locator('#jt-projects article')).toHaveCount(5);
     await expect(page.locator('#jt-briefs article')).toHaveCount(3);
     await expect(page.locator('#jt-services article')).toHaveCount(3);
-    await expect(page.locator('#jt-notes a')).toHaveCount(5);
+    await expect(page.locator('#jt-notes a')).toHaveCount(7);
     await expect(page.locator('body')).toContainText('RAG that cites or shuts up');
     // content must be VISIBLE without JS, not merely present —
     // a baked reveal class once shipped briefs at opacity:0
@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(11);
+    expect((xml.match(/<loc>/g) || []).length).toBe(13);
   });
 });
 
@@ -345,7 +345,7 @@ test.describe('portfolio — field notes', () => {
     const errors = trackErrors(page);
     await page.goto('/field-notes.html');
     await expect(page).toHaveTitle(/Field Notes/);
-    await expect(page.locator('a.note-row')).toHaveCount(5);
+    await expect(page.locator('a.note-row')).toHaveCount(7);
     await page.locator('nav a[href="index.html"]').last().click();
     await expect(page).toHaveURL(/index\.html/);
     expect(errors).toEqual([]);
@@ -366,7 +366,7 @@ test.describe('portfolio — field notes', () => {
   test('every note listed on the index resolves to a real page', async ({ page, request }) => {
     await page.goto('/field-notes.html');
     const hrefs = await page.locator('a.note-row').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
-    expect(hrefs.length).toBe(5);
+    expect(hrefs.length).toBe(7);
     for (const href of hrefs) {
       const res = await request.get('/' + href);
       expect(res.status(), href).toBe(200);
@@ -378,13 +378,13 @@ test.describe('portfolio — field notes', () => {
     expect(res.status()).toBe(200);
     const xml = await res.text();
     expect(xml).toContain('<rss');
-    expect((xml.match(/<item>/g) || []).length).toBe(5);
+    expect((xml.match(/<item>/g) || []).length).toBe(7);
   });
 
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(11);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(13);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');

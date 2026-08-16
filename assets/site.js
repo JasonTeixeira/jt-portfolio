@@ -268,6 +268,8 @@
   ];
 
   var NOTES = [
+    { href: 'notes/eighteen-agent-audit-gauntlet.html', date: '2026·08', color: '#F59E0B', read: '5 min', title: 'Eighteen agents audited a live curriculum. One lesson was teaching a false error.', dek: 'Six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.' },
+    { href: 'notes/five-pages-five-agents.html', date: '2026·08', color: '#22d3ee', read: '4 min', title: 'Five pages, five agents, one design file — zero merge conflicts', dek: 'A parallel fleet shipped five production pages in five minutes of wall clock. The speed is the demo; the three rules that made it shippable are the product.' },
     { href: 'notes/gate-blocked-me.html', date: '2026·08', color: '#f43f5e', read: '4 min', title: 'The day my own quality gate blocked me', dek: 'At 11:39 the proof loop refused the PROVEN verdict — 15 CVEs had drifted into prod deps. Green by 14:35. Both runs published verbatim.' },
     { href: 'notes/promptfoo-ci-minimum-gate.html', date: '2026·08', color: '#a78bfa', read: '6 min', title: 'LLM regression testing with Promptfoo in CI: the minimum viable gate', dek: '30 golden traces, one judge, one failing exit code. The smallest setup that stops a bad prompt change — runnable this afternoon.' },
     { href: 'notes/no-fake-green.html', date: '2026·08', color: '#10b981', read: '6 min', title: 'No fake green: what a proof ledger taught me about AI agents', dek: 'Agents will happily report success they never earned. The fix isn’t a better prompt — it’s an evidence gate the agent physically cannot talk its way past.' },

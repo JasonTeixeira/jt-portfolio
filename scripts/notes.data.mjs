@@ -6,6 +6,71 @@
  */
 export const NOTES = [
   {
+    slug: 'eighteen-agent-audit-gauntlet',
+    num: '07',
+    date: '2026-08-16',
+    dateLabel: '2026·08',
+    read: '5 min',
+    color: '#F59E0B',
+    title: 'Eighteen agents audited a live curriculum. One lesson was teaching a false error.',
+    dek: 'I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.',
+    artifacts: 'public report: sageideas.dev/academy/how-we-audit · full quoted-evidence ledger in the repo · pattern available as an engagement',
+    quote: 'An agent that grades by reading will tell you what sounds right. An agent that grades by executing tells you what is right.',
+    dropCap: 'T',
+    arch: {
+      nodes: [
+        { x: 38, y: 75, c: '#F59E0B', l: '6 auditors', s: 'run every claim' },
+        { x: 155, y: 75, c: '#f43f5e', l: '73 defects', s: 'verbatim quotes' },
+        { x: 272, y: 75, c: '#a78bfa', l: '6 rewriters', s: 'fix + re-run' },
+        { x: 396, y: 75, c: '#10b981', l: '6 verifiers', s: '34/34 ≥95' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [{ d: 'M38,75 H396', c: '#F59E0B', dur: 4.5, delay: 0.3 }]
+    },
+    archCaption: 'fig. 1 — audit → rewrite → verify, pipelined per file, no shared state',
+    body: [
+      'he headline defect makes the case by itself. Lesson one of a programming course taught that <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em">print(Hello, world!)</span> fails because Python looks up "Hello" as a command and can\'t find it. Plausible. Confident. Wrong — the <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em">!</span> makes the line unparseable, so Python dies with a <em>SyntaxError</em> before any lookup happens. A beginner following the lesson\'s own advice ("read the error message") would watch their screen contradict their teacher. No human reviewer had caught it, because it reads fine. The auditor caught it because it doesn\'t <em>run</em> fine — and my auditors are required to run everything.',
+      '__DIAGRAM__',
+      'The architecture is three fleets with enforced independence. Six <strong style="color:#F4F2EF">auditors</strong> (one per content file) execute every runnable claim with real Python — labs get run twice, because a teaching lab must fail for exactly the stated reason and pass after the stated fix. Every defect they file must carry a verbatim quote from the source; no paraphrases, because the quotes double as edit anchors. Six <strong style="color:#F4F2EF">rewriters</strong> apply fixes — with a standing rule that they re-verify each defect themselves and are rewarded for <em>refusing</em> a fix that turns out to be wrong. Six <strong style="color:#F4F2EF">verifiers</strong> then re-score everything cold, having never seen the first audit. Their score is the score of record, not the rewriters\' claim about their own work.',
+      'The numbers, verbatim from the run: 34 lessons, 73 defects (17 critical or high — including nine lab starters whose indented placeholder comment would throw <span style="font-family:\'JetBrains Mono\',monospace;font-size:0.9em">IndentationError</span> at absolute beginners before indentation is taught), 47 fixes, and a final independent verdict of 34/34 lessons at the 95+ bar with zero critical and zero high remaining. Wall clock: about thirteen minutes for the fleet, plus one human hour on the residuals the verifiers surfaced. The full quoted-evidence ledger is published, red findings included — same rule as everything else I ship.',
+      '__QUOTE__',
+      'This pattern — execution-gated review, verbatim anchors, adversarially independent verification — is not specific to lessons. It audits documentation against the API it describes, runbooks against the systems they operate, marketing claims against the product. If you have a large body of content whose correctness you\'re currently taking on faith, this is the <a href="../services/ai-workflow-automation.html">engagement</a> that replaces faith with a ledger.'
+    ]
+  },
+  {
+    slug: 'five-pages-five-agents',
+    num: '06',
+    date: '2026-08-16',
+    dateLabel: '2026·08',
+    read: '4 min',
+    color: '#22d3ee',
+    title: 'Five pages, five agents, one design file — zero merge conflicts',
+    dek: 'A parallel agent fleet implemented five production marketing pages 1:1 from design files in about five minutes of wall clock. The interesting part isn\'t the speed — it\'s the three rules that made the output shippable.',
+    artifacts: 'the pages are live: sageideas.dev/academy/pricing · /academy/catalog · /how-it-works · /field-notes · /academy/why-proof',
+    quote: 'Parallel agents don\'t need genius. They need non-overlapping files, a shared rulebook, and a gate they can\'t talk their way past.',
+    dropCap: 'F',
+    arch: {
+      nodes: [
+        { x: 38, y: 75, c: '#22d3ee', l: '5 agents', s: 'one page each' },
+        { x: 155, y: 75, c: '#a78bfa', l: 'shared rules', s: 'honesty + conventions' },
+        { x: 272, y: 75, c: '#F59E0B', l: 'tsc gate', s: 'must exit 0' },
+        { x: 396, y: 75, c: '#10b981', l: '5 pages live', s: 'same deploy' }
+      ],
+      edges: [[0, 1], [1, 2], [2, 3]],
+      packets: [{ d: 'M38,75 H396', c: '#22d3ee', dur: 4.5, delay: 0 }]
+    },
+    archCaption: 'fig. 1 — file-ownership partitioning: parallel work, sequential integration',
+    body: [
+      'ive marketing pages needed to go from design file to production the same afternoon — a pricing page from scratch, a catalog rebuild, and fidelity passes on three more. One agent per page, run in parallel, done in roughly five minutes of wall clock. Every page shipped in the next deploy. The speed is the demo; the discipline is the product. Three rules did the work.',
+      '__DIAGRAM__',
+      '<strong style="color:#F4F2EF">Rule 1 — partition by file ownership.</strong> Each agent owned its route\'s files and was explicitly forbidden from touching shared ones (layout, nav, middleware). Shared-file changes happened once, by the orchestrator, before the fleet launched. Merge conflicts didn\'t get resolved — they got made impossible.',
+      '<strong style="color:#F4F2EF">Rule 2 — a shared rulebook beats clever prompts.</strong> Every agent got the same contract: the reference implementation to imitate, the design-to-route link map, and a hard honesty rule — never ship the mock\'s invented numbers; wire real data with honest fallbacks; label sample UI as sample. One agent\'s report came back listing seven places where it had replaced fabricated stats with real ones. That list is the deliverable a human reviewer actually wants.',
+      '<strong style="color:#F4F2EF">Rule 3 — a gate they can\'t negotiate with.</strong> Each agent had to leave the TypeScript compiler exiting zero and report it honestly; the orchestrator re-ran the gate across the merged result before shipping. Agents report what they did; compilers report what is true. Only one of those goes in the release decision.',
+      '__QUOTE__',
+      'The same shape ships migrations, refactors, and audit sweeps: scout the shared surface first, partition the rest, contract the rules, gate the merge. If you\'ve got a backlog that parallelizes and a team that doesn\'t scale, that\'s the <a href="../services/ai-workflow-automation.html">system I build</a>.'
+    ]
+  },
+  {
     slug: 'gate-blocked-me',
     num: '05',
     date: '2026-08-15',

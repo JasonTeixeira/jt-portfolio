@@ -1,8 +1,8 @@
 {
   "site": "jt-portfolio",
-  "generatedAt": "2026-08-15T19:26:20.839Z",
-  "commit": "e427f3a",
-  "durationMs": 20481,
+  "generatedAt": "2026-08-16T16:29:23.538Z",
+  "commit": "85e9eab",
+  "durationMs": 15574,
   "command": "npm run proof",
   "gates": {
     "a11y-desktop": {

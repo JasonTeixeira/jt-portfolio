@@ -5,7 +5,7 @@
  * targeting, proof links back into the portfolio.
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { SERVICES } from './services.data.mjs';
+import { SERVICES, AUDIT_CHECKOUT, BOOK_URL } from './services.data.mjs';
 import { SITE_URL, AUTHOR } from './site.config.mjs';
 
 const MONO = "font-family:'JetBrains Mono',monospace;";
@@ -28,7 +28,19 @@ for (const s of SERVICES) {
       url,
       provider: { '@type': 'Person', name: AUTHOR, url: SITE_URL },
       areaServed: 'Remote (US)',
-      serviceType: s.keyword
+      serviceType: s.keyword,
+      ...(s.packages
+        ? {
+            offers: s.packages.map((p) => ({
+              '@type': 'Offer',
+              name: `${s.keyword} — ${p.name}`,
+              price: p.price.replace(/[^0-9.]/g, ''),
+              priceCurrency: 'USD',
+              url: p.cta === 'checkout' ? AUDIT_CHECKOUT : BOOK_URL,
+              description: p.d
+            }))
+          }
+        : {})
     },
     {
       '@context': 'https://schema.org',
@@ -105,7 +117,8 @@ ${jsonLd.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</sc
     <h1 style="${SERIF}font-weight:400;font-size:clamp(2.4rem,5.4vw,4rem);line-height:1.08;letter-spacing:-0.02em;margin:24px 0 0;text-wrap:balance">${s.h1}</h1>
     <p style="margin:20px 0 0;font-size:15.5px;line-height:1.75;color:#A8A29E;max-width:62ch">${s.sub}</p>
     <div style="display:flex;gap:14px;margin-top:32px;flex-wrap:wrap">
-      <a href="../index.html#contact" class="btn-solid green" data-evt="book-call">Book an intro call →</a>
+      <a href="${BOOK_URL}" class="btn-solid green" data-evt="book-call">Book an intro call →</a>
+        <a href="../index.html#contact" class="btn-ghost" data-evt="contact-form">or use the contact form</a>
       <a href="../index.html#briefs" class="btn-ghost">Read the engineering briefs</a>
     </div>
   </header>
@@ -122,7 +135,20 @@ ${jsonLd.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</sc
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-top:24px">
 ${deliverables}
     </div>
-    <p style="margin:20px 0 0;${MONO}font-size:11.5px;color:#837D77">fixed scope · quoted after a week-1 risk map · runs ~4 weeks · your repo, your CI</p>
+    <p style="margin:20px 0 0;${MONO}font-size:11.5px;color:#837D77">fixed scope · quoted after a week-1 risk map · your repo, your CI</p>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px" id="packages">
+    <div class="sec-rule"><span class="sec-label" style="color:${s.color}">engagement paths · real numbers</span><span class="line"></span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px;margin-top:24px">
+${(s.packages || []).map((p, i) => `      <div style="border:1px solid ${i === 0 ? s.color : '#2A2826'};background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <div style="${MONO}font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:${s.color}">${esc(p.name)}</div>
+        <div><span style="${SERIF}font-size:2rem;letter-spacing:-0.02em;color:#F4F2EF">${esc(p.price)}</span> <span style="${MONO}font-size:11px;color:#837D77">· ${esc(p.timing)}</span></div>
+        <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">${esc(p.d)}</p>
+        <a href="${p.cta === 'checkout' ? AUDIT_CHECKOUT : BOOK_URL}" class="${i === 0 ? 'btn-solid green' : 'btn-ghost'}" data-evt="${p.cta === 'checkout' ? 'pkg-checkout' : 'pkg-book'}" style="align-self:flex-start">${p.cta === 'checkout' ? 'Start the audit →' : 'Book a scoping call →'}</a>
+      </div>`).join('\n')}
+    </div>
+    <p style="margin:18px 0 0;${MONO}font-size:11px;color:#837D77">the $750 audit checks out through a live Stripe link · credited in full toward any larger engagement · no retainers, no surprises</p>
   </section>
 
   <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px">
@@ -141,7 +167,8 @@ ${faq}
       <h2 style="${SERIF}font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-0.015em;margin:0">30 minutes. Bring the feature that scares you.</h2>
       <p style="margin:14px auto 0;font-size:14px;color:#A8A29E;max-width:44ch">You leave with a concrete plan either way — the call is free and the plan is yours.</p>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:24px;flex-wrap:wrap">
-        <a href="../index.html#contact" class="btn-solid green" data-evt="book-call">Book the call →</a>
+        <a href="${BOOK_URL}" class="btn-solid green" data-evt="book-call">Book the call →</a>
+        <a href="#packages" class="btn-ghost" data-evt="see-packages">see the engagement paths ↑</a>
       </div>
     </div>
   </section>
