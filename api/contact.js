@@ -6,7 +6,7 @@
  */
 const TO = 'hello@sageideas.dev';
 const FROM = 'portfolio@agency.sageideas.dev';
-const MAX = { name: 200, email: 320, message: 5000 };
+const MAX = { name: 200, email: 320, message: 5000, company: 300, stage: 40 };
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'method not allowed' });
   }
 
-  const { name, email, message, website } = req.body ?? {};
+  const { name, email, message, website, company, stage } = req.body ?? {};
 
   // honeypot: bots fill every field — humans never see this one
   if (website) return res.status(200).json({ ok: true });
@@ -22,7 +22,9 @@ export default async function handler(req, res) {
   if (
     typeof name !== 'string' || !name.trim() || name.length > MAX.name ||
     typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > MAX.email ||
-    typeof message !== 'string' || !message.trim() || message.length > MAX.message
+    typeof message !== 'string' || !message.trim() || message.length > MAX.message ||
+    (company != null && (typeof company !== 'string' || company.length > MAX.company)) ||
+    (stage != null && (typeof stage !== 'string' || stage.length > MAX.stage))
   ) {
     return res.status(400).json({ ok: false, error: 'invalid input' });
   }
@@ -38,7 +40,7 @@ export default async function handler(req, res) {
       to: [TO],
       reply_to: email,
       subject: `Portfolio inquiry — ${name.trim().slice(0, 80)}`,
-      text: `From: ${name.trim()} <${email}>\n\n${message.trim()}`
+      text: `From: ${name.trim()} <${email}>\nCompany: ${(company || '—').toString().trim()}\nStage: ${(stage || '—').toString().trim()}\n\n${message.trim()}`
     })
   });
 

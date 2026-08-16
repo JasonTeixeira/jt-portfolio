@@ -927,8 +927,18 @@
     document.head.appendChild(vaScript);
   }
 
+  /* capture UTM params once per session so outreach links attribute cleanly */
+  try {
+    var q = new URLSearchParams(location.search);
+    var utm = ['utm_source', 'utm_medium', 'utm_campaign', 'src'].map(function (k) {
+      return q.get(k) ? k + '=' + q.get(k) : null;
+    }).filter(Boolean).join('&');
+    if (utm && !sessionStorage.getItem('jt-utm')) sessionStorage.setItem('jt-utm', utm);
+  } catch (err) {}
   function track(name, data) {
-    if (typeof window.va === 'function') window.va('event', { name: name, data: data || {} });
+    var payload = data || {};
+    try { var u = sessionStorage.getItem('jt-utm'); if (u) payload.utm = u; } catch (err) {}
+    if (typeof window.va === 'function') window.va('event', { name: name, data: payload });
   }
   document.addEventListener('click', function (e) {
     var evtEl = e.target.closest && e.target.closest('[data-evt]');
@@ -953,8 +963,11 @@
         name: form.elements.name.value.trim(),
         email: form.elements.email.value.trim(),
         message: form.elements.message.value.trim(),
+        company: (form.elements.company && form.elements.company.value.trim()) || '',
+        stage: (form.elements.stage && form.elements.stage.value) || '',
         website: form.elements.website.value
       };
+      try { var u = sessionStorage.getItem('jt-utm'); if (u) fields.message += '\n\n[source: ' + u + ']'; } catch (err) {}
       statusEl.textContent = 'sending…';
       fetch('/api/contact', {
         method: 'POST',

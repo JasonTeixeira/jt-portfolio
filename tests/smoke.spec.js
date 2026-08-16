@@ -136,7 +136,7 @@ test.describe('portfolio — index', () => {
 
   test('FAQ expands and pull-quote band present', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('details.faq')).toHaveCount(6);
+    await expect(page.locator('details.faq')).toHaveCount(8);
     const q = page.locator('details.faq').first();
     await q.locator('summary').click();
     await expect(q.locator('p')).toBeVisible();
@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(13);
+    expect((xml.match(/<loc>/g) || []).length).toBe(16);
   });
 });
 
@@ -384,7 +384,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(13);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(16);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -393,5 +393,24 @@ test.describe('portfolio — field notes', () => {
     const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
     expect(ld['@type']).toBe('Person');
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og\.png/);
+  });
+});
+
+test.describe('portfolio — what-i-build + legal', () => {
+  test('what-i-build page: dual flagships with verbatim prices and booking CTAs', async ({ page }) => {
+    await page.goto('/what-i-build.html');
+    await expect(page.locator('h1')).toContainText('prove they work');
+    await expect(page.locator('body')).toContainText('$3,000');
+    await expect(page.locator('body')).toContainText('from $8,000');
+    expect(await page.locator('a[href*="sageideas.dev/book"]').count()).toBeGreaterThanOrEqual(2);
+    await expect(page.locator('body')).not.toContainText('[DEMO_LINE');
+    await expect(page.locator('body')).not.toContainText('_TBD');
+  });
+  test('privacy and terms stubs load with real content', async ({ page }) => {
+    for (const p of ['/privacy.html', '/terms.html']) {
+      await page.goto(p);
+      await expect(page.locator('h1')).toBeVisible();
+      await expect(page.locator('main p').first()).toBeVisible();
+    }
   });
 });

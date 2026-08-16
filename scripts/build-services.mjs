@@ -148,7 +148,7 @@ ${(s.packages || []).map((p, i) => `      <div style="border:1px solid ${i === 0
         <a href="${p.cta === 'checkout' ? AUDIT_CHECKOUT : BOOK_URL}" class="${i === 0 ? 'btn-solid green' : 'btn-ghost'}" data-evt="${p.cta === 'checkout' ? 'pkg-checkout' : 'pkg-book'}" style="align-self:flex-start">${p.cta === 'checkout' ? 'Start the audit →' : 'Book a scoping call →'}</a>
       </div>`).join('\n')}
     </div>
-    <p style="margin:18px 0 0;${MONO}font-size:11px;color:#837D77">the $750 audit checks out through a live Stripe link · credited in full toward any larger engagement · no retainers, no surprises</p>
+    <p style="margin:18px 0 0;${MONO}font-size:11px;color:#837D77">the $750 audit checks out through a live Stripe link · credited in full toward any larger engagement · every engagement ends with evidence you keep — and if the week-1 scoping shows I can’t help, I’ll say so and it costs nothing</p>
   </section>
 
   <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px">
