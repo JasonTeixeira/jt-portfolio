@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(16);
+    expect((xml.match(/<loc>/g) || []).length).toBe(17);
   });
 });
 
@@ -384,7 +384,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(16);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(17);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -412,5 +412,30 @@ test.describe('portfolio — what-i-build + legal', () => {
       await expect(page.locator('h1')).toBeVisible();
       await expect(page.locator('main p').first()).toBeVisible();
     }
+  });
+});
+
+test.describe('portfolio — live demos', () => {
+  test('demos page: AI receptionist chat books a job end-to-end', async ({ page }) => {
+    await page.goto('/demos.html');
+    await page.click('.chip:has-text("kitchen sink")');
+    await page.waitForTimeout(700);
+    await page.fill('#cin', 'emergency'); await page.click('#csend'); await page.waitForTimeout(700);
+    await page.fill('#cin', 'Jane Doe'); await page.click('#csend'); await page.waitForTimeout(700);
+    await page.fill('#cin', '555 111 2222 morning'); await page.click('#csend'); await page.waitForTimeout(700);
+    await expect(page.locator('.m.bot').last()).toContainText('booked');
+  });
+  test('demos page: matrix filters and pipeline runs', async ({ page }) => {
+    await page.goto('/demos.html');
+    await page.click('.catchip:has-text("Quality")');
+    await expect(page.locator('.tile')).toHaveCount(4);
+    await page.click('#pipe-play');
+    await page.waitForTimeout(4300);
+    await expect(page.locator('#pipe-status')).toContainText('booked');
+  });
+  test('demos page: honest demo framing present, no fake claims', async ({ page }) => {
+    await page.goto('/demos.html');
+    await expect(page.locator('body')).toContainText('scripted brain');
+    await expect(page.locator('body')).toContainText('What the real one does');
   });
 });
