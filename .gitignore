@@ -5,3 +5,6 @@ playwright-report/
 .DS_Store
 .prerender-input.html
 .vercel
+.env.local
+out/
+.env*.local
