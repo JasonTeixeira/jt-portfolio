@@ -103,7 +103,7 @@
 
   <!-- AI RECEPTIONIST: chat + voice -->
   <section id="receptionist"><div class="wrap">
-    <span class="demoTag">◆ demo · scripted brain, real flow</span>
+    <span class="demoTag" id="rectag">◆ demo · connecting…</span>
     <h2 style="margin-top:16px">The AI receptionist. Two ways to try it.</h2>
     <p class="subtle" style="margin-top:12px;max-width:60ch">This is the missed-call killer for a service business. It answers, qualifies the job, and books it. Type to it, or click the mic and <b style="color:var(--ink)">actually talk to it</b> &mdash; your browser does the listening and speaking.</p>
     <div class="duo">
@@ -214,21 +214,47 @@
     }
   };
 
+  /* ===== real-AI bridge (falls back to scripted brain when no key is set) ===== */
+  var realAI = null; // null=unknown, true=live model, false=scripted fallback
+  function setTag(){
+    var el=document.getElementById('rectag');
+    if(realAI===true){ el.textContent='◆ live · real AI · demo business'; el.style.color='var(--green)'; el.style.borderColor='rgba(16,185,129,0.4)'; }
+    else if(realAI===false){ el.textContent='◆ demo · scripted brain, real flow'; el.style.color='var(--amber)'; el.style.borderColor='rgba(245,158,11,0.35)'; }
+  }
+  function askAI(history){
+    return fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messages:history}) })
+      .then(function(r){ if(!r.ok) return null; return r.json(); })
+      .then(function(d){ return (d && d.ok && d.reply) ? d.reply : null; })
+      .catch(function(){ return null; });
+  }
+
   /* ===== CHAT ===== */
   var cbrain = new Brain();
   var cm = document.getElementById('cmsgs'), cin = document.getElementById('cin');
+  var chatMode = null, chatHist = [];
   function add(cls, txt){ var d=document.createElement('div'); d.className='m '+cls; d.textContent=txt; cm.appendChild(d); cm.scrollTop=cm.scrollHeight; return d; }
-  function botTyping(txt){ var d=add('bot','…'); setTimeout(function(){ d.textContent=txt; cm.scrollTop=cm.scrollHeight; }, 480); }
-  function csend(v){ v=(v||'').trim(); if(!v) return; add('me',v); cin.value=''; botTyping(cbrain.reply(v)); track('demo-chat-msg'); }
+  function csend(v){
+    v=(v||'').trim(); if(!v) return; add('me',v); cin.value=''; chatHist.push({role:'user',content:v}); track('demo-chat-msg');
+    var typing=add('bot','…');
+    function done(txt){ typing.textContent=txt; cm.scrollTop=cm.scrollHeight; chatHist.push({role:'assistant',content:txt}); }
+    if(chatMode==='script'){ setTimeout(function(){ done(cbrain.reply(v)); }, 420); return; }
+    askAI(chatHist).then(function(reply){
+      if(reply){ if(realAI!==true){ realAI=true; setTag(); } chatMode='ai'; done(reply); }
+      else if(chatMode==='ai'){ done('Sorry — could you say that once more?'); }
+      else { chatMode='script'; if(realAI===null){ realAI=false; setTag(); } setTimeout(function(){ done(cbrain.reply(v)); }, 300); }
+    });
+  }
   document.getElementById('csend').onclick=function(){ csend(cin.value); };
   cin.addEventListener('keydown',function(e){ if(e.key==='Enter') csend(cin.value); });
   var CHIPS=['My kitchen sink is leaking','Emergency — pipe burst!','I need a new water heater'];
   var chipWrap=document.getElementById('cchips');
   CHIPS.forEach(function(c){ var b=document.createElement('button'); b.className='chip'; b.textContent=c; b.onclick=function(){ csend(c); }; chipWrap.appendChild(b); });
-  add('bot', cbrain.greeting());
+  var GREET = cbrain.greeting();
+  add('bot', GREET); chatHist.push({role:'assistant',content:GREET});
 
   /* ===== VOICE (Web Speech API) ===== */
   var vbrain = new Brain();
+  var vMode = null, vHist = [];
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var synth = window.speechSynthesis;
   var orb=document.getElementById('orb'), vbtn=document.getElementById('vbtn'), vstat=document.getElementById('vstat'), vtx=document.getElementById('vtx'), vnote=document.getElementById('vnote');
@@ -254,18 +280,23 @@
       orb.classList.remove('live');
       var said=(finalT||'').trim();
       if(!said){ if(listening){ vstat.textContent='(silence — tap to talk again)'; } return; }
-      var resp=vbrain.reply(said);
-      vtx.textContent='"'+said+'"';
-      speak(resp, function(){ vtx.textContent=resp.split('\n')[0]; if(listening){ setTimeout(listenOnce, 250); } });
+      vtx.textContent='"'+said+'"'; vstat.textContent='thinking…'; vHist.push({role:'user',content:said});
       track('demo-voice-turn');
+      function respondVoice(resp){ vHist.push({role:'assistant',content:resp}); speak(resp, function(){ vtx.textContent=resp.split('\n')[0]; if(listening){ setTimeout(listenOnce, 250); } }); }
+      if(vMode==='script'){ respondVoice(vbrain.reply(said)); return; }
+      askAI(vHist).then(function(reply){
+        if(reply){ if(realAI!==true){ realAI=true; setTag(); } vMode='ai'; respondVoice(reply); }
+        else if(vMode==='ai'){ respondVoice('Sorry — could you say that once more?'); }
+        else { vMode='script'; if(realAI===null){ realAI=false; setTag(); } respondVoice(vbrain.reply(said)); }
+      });
     };
     try { rec.start(); } catch(e){}
   }
   vbtn.onclick=function(){
     if(!SR || !synth){ vstat.textContent='Voice needs Chrome or Safari — try the chat on the left.'; vnote.textContent='your browser doesn\'t support in-browser speech'; return; }
     if(listening){ listening=false; if(rec) rec.stop(); synth.cancel(); orb.classList.remove('live'); vbtn.textContent='🎙 Start talking'; vbtn.classList.remove('stop'); vstat.textContent='paused — tap to resume'; return; }
-    listening=true; vbtn.textContent='◼ Stop'; vbtn.classList.add('stop'); vbrain.reset();
-    var g=vbrain.greeting(); vtx.textContent=g;
+    listening=true; vbtn.textContent='◼ Stop'; vbtn.classList.add('stop'); vbrain.reset(); vMode=null; vHist=[];
+    var g=vbrain.greeting(); vtx.textContent=g; vHist.push({role:'assistant',content:g});
     speak(g, function(){ if(listening) listenOnce(); });
     track('demo-voice-start');
   };

@@ -435,7 +435,12 @@ test.describe('portfolio — live demos', () => {
   });
   test('demos page: honest demo framing present, no fake claims', async ({ page }) => {
     await page.goto('/demos.html');
-    await expect(page.locator('body')).toContainText('scripted brain');
+    // static honest note is always present
     await expect(page.locator('body')).toContainText('What the real one does');
+    // with no /api key on the static test server, a message must fall back to
+    // the scripted brain AND the tag must honestly relabel itself as such
+    await page.fill('#cin', 'my sink is leaking');
+    await page.click('#csend');
+    await expect(page.locator('#rectag')).toContainText('scripted brain', { timeout: 5000 });
   });
 });
