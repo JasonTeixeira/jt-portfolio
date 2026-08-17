@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Operator Cockpit — Sage Ideas</title>
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:var(--cyan); text-decoration:none; }
+  .wrap { max-width:1180px; margin:0 auto; padding:28px clamp(16px,4vw,40px) 100px; }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(1.9rem,4vw,2.8rem); letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:1.5rem; letter-spacing:-0.015em; margin:0; }
+  .kick { font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  .card { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:22px; }
+  section { margin-top:26px; }
+  .sechead { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .mono { font-family:var(--mono); }
+  input, select, textarea { background:#0F0F13; border:1px solid var(--line); border-radius:8px; padding:8px 10px; color:var(--ink); font-family:inherit; font-size:13px; outline:none; }
+  input:focus, select:focus, textarea:focus { border-color:rgba(34,211,238,0.5); }
+  button { cursor:pointer; font-family:inherit; }
+  .btn { background:transparent; border:1px solid var(--line); border-radius:8px; padding:8px 14px; color:var(--dim); font-size:12.5px; }
+  .btn:hover { border-color:#3a3632; color:var(--ink); }
+  .btn.green { background:var(--green); color:#052e22; border-color:var(--green); font-weight:600; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; font-family:var(--mono); font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); padding:8px 8px; border-bottom:1px solid var(--line); }
+  td { padding:6px 8px; border-bottom:1px solid #1a1815; vertical-align:middle; }
+  td input, td select { width:100%; }
+  .scoregrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; }
+  .score { border:1px solid var(--line); border-radius:10px; padding:14px; }
+  .score label { display:block; font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .score .row { display:flex; align-items:baseline; gap:8px; }
+  .score input { width:64px; font-family:var(--serif); font-size:1.5rem; text-align:center; padding:2px 4px; }
+  .score .target { font-family:var(--mono); font-size:10px; color:var(--faint); }
+  .stage { font-family:var(--mono); font-size:10px; padding:3px 8px; border-radius:5px; white-space:nowrap; }
+  .contentrow { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid #1a1815; font-size:13px; }
+  .contentrow input[type=checkbox] { margin-top:3px; width:15px; height:15px; accent-color:var(--green); }
+  .pill { display:inline-block; font-family:var(--mono); font-size:9px; letter-spacing:0.06em; text-transform:uppercase; padding:2px 7px; border-radius:4px; border:1px solid var(--line); }
+  .assetgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+  .asset { border:1px solid var(--line); border-radius:8px; padding:12px 14px; font-size:12.5px; }
+  .asset b { display:block; color:var(--ink); font-weight:600; margin-bottom:2px; }
+  .muted { color:var(--faint); font-size:11.5px; }
+  .del { color:var(--red); background:none; border:none; font-size:15px; padding:2px 6px; }
+  .addbar { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .rulehint { font-family:var(--mono); font-size:10.5px; color:var(--faint); line-height:1.7; }
+  .flex { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  @media print { .btn, .addbar, .del { display:none; } body { background:#fff; color:#000; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="flex" style="justify-content:space-between;align-items:flex-end">
+    <div>
+      <div class="kick">Sage Ideas · operator cockpit · private</div>
+      <h1>Run the week.</h1>
+      <p class="mono" style="margin:8px 0 0;font-size:12px;color:var(--dim)">I test and prove AI features for teams shipping LLM products.</p>
+    </div>
+    <div class="flex">
+      <span class="mono" style="font-size:11px;color:var(--faint)">week of</span>
+      <input id="weekof" type="date" style="font-size:12px">
+    </div>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <section>
+    <div class="sechead"><h2>The scoreboard</h2><span class="mono" style="font-size:10.5px;color:var(--faint)">the only score — not commits, not coverage</span></div>
+    <div class="card">
+      <div class="scoregrid" id="scoreboard"></div>
+      <p class="rulehint" style="margin:16px 0 0">Friday, 30 min: fill this, then one retro line below — "what advanced or killed deals this week."</p>
+      <textarea id="retro" placeholder="This week's retro line…" style="width:100%;margin-top:10px;min-height:44px"></textarea>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section>
+    <div class="sechead"><h2>Pipeline</h2><span class="mono" style="font-size:10.5px;color:var(--faint)" id="pipe-summary"></span></div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th style="min-width:130px">prospect</th><th style="min-width:120px">company</th><th>lane</th><th>stage</th><th>value</th><th style="min-width:150px">next action</th><th>by</th><th></th></tr></thead>
+        <tbody id="pipe-body"></tbody>
+      </table>
+      <div class="addbar"><button class="btn green" onclick="addProspect()">+ add prospect</button><span class="muted">min 5 touches before a prospect is dead · proposal within 24h of every call</span></div>
+    </div>
+  </section>
+
+  <!-- MINI-EVAL QUEUE -->
+  <section>
+    <div class="sechead"><h2>Mini-eval queue</h2><span class="mono" style="font-size:10.5px;color:var(--faint)">the wedge — do the work first, then reach out</span></div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th style="min-width:140px">target</th><th style="min-width:150px">feature url</th><th>eval</th><th>touch 1</th><th>touch 2</th><th>touch 3</th><th></th></tr></thead>
+        <tbody id="eval-body"></tbody>
+      </table>
+      <div class="addbar"><button class="btn green" onclick="addEval()">+ add target</button><span class="muted">5–10 mini-evals/week · touch 2 day 3 · touch 3 day 7 · process → docs/sales-kit/mini-eval/</span></div>
+    </div>
+  </section>
+
+  <!-- CONTENT QUEUE -->
+  <section>
+    <div class="sechead"><h2>This month's content</h2><span class="mono" style="font-size:10.5px;color:var(--faint)">Mon / Wed / Fri · publishing is the primary engine</span></div>
+    <div class="card"><div id="content-list"></div>
+      <p class="rulehint" style="margin:14px 0 0">Reply to every comment in hour one. Comment on 5 target-buyer posts/day. The channel takes 3–9 months to crack — don't quit at week 6.</p>
+    </div>
+  </section>
+
+  <!-- ASSETS -->
+  <section>
+    <div class="sechead"><h2>The kit</h2></div>
+    <div class="assetgrid">
+      <div class="asset"><b>GTM playbook</b><span class="muted">docs/sales-kit/GTM-PLAYBOOK.md</span></div>
+      <div class="asset"><b>Mini-eval product</b><span class="muted">docs/sales-kit/mini-eval/</span></div>
+      <div class="asset"><b>Objection sheet (living)</b><span class="muted">docs/sales-kit/objection-answer-sheet.md</span></div>
+      <div class="asset"><b>Proposal template</b><span class="muted">docs/sales-kit/proposal-template.md</span></div>
+      <div class="asset"><b>SOW / contract</b><span class="muted">docs/sales-kit/sow-contract-template.md</span></div>
+      <div class="asset"><b>Outreach sequences</b><span class="muted">docs/sales-kit/outreach-sequences.md</span></div>
+      <div class="asset"><b>LinkedIn / GitHub rewrite</b><span class="muted">docs/sales-kit/linkedin-github-rewrite.md</span></div>
+      <div class="asset"><b>Live audit checkout</b><a href="https://www.sageideas.dev/checkout/audit?src=cockpit">$750 · Stripe →</a></div>
+      <div class="asset"><b>Booking</b><a href="https://www.sageideas.dev/book?src=cockpit">/book →</a></div>
+    </div>
+    <p class="muted" style="margin-top:14px">All data on this page lives in your browser (localStorage) — private, never uploaded. <button class="btn" style="font-size:11px;padding:5px 10px" onclick="exportData()">export JSON</button> <button class="btn" style="font-size:11px;padding:5px 10px" onclick="window.print()">print week</button></p>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var LS = {
+    get: function(k, d){ try { var v = localStorage.getItem('jt-ops-'+k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+    set: function(k, v){ try { localStorage.setItem('jt-ops-'+k, JSON.stringify(v)); } catch(e){} }
+  };
+
+  /* ---- scoreboard ---- */
+  var METRICS = [
+    ['posts','posts published','3'], ['comments','buyer comments','25'],
+    ['minievals','mini-evals run','5–10'], ['touches','outreach touches','25'],
+    ['conversations','conversations','—'], ['calls','calls booked','—'],
+    ['proposals','proposals sent','—'], ['collected','$ collected','—']
+  ];
+  var sb = LS.get('scoreboard', {});
+  var sbEl = document.getElementById('scoreboard');
+  METRICS.forEach(function(m){
+    var d = document.createElement('div'); d.className='score';
+    d.innerHTML = '<label>'+m[1]+'</label><div class="row"><input type="'+(m[0]==='collected'?'text':'number')+'" data-k="'+m[0]+'" value="'+(sb[m[0]]||'')+'" placeholder="0"><span class="target">/ '+m[2]+'</span></div>';
+    sbEl.appendChild(d);
+  });
+  sbEl.addEventListener('input', function(e){
+    var k = e.target.getAttribute('data-k'); if(!k) return;
+    sb[k] = e.target.value; LS.set('scoreboard', sb);
+  });
+  var weekEl = document.getElementById('weekof');
+  weekEl.value = LS.get('weekof', '');
+  weekEl.addEventListener('change', function(){ LS.set('weekof', weekEl.value); });
+  var retroEl = document.getElementById('retro');
+  retroEl.value = LS.get('retro', '');
+  retroEl.addEventListener('input', function(){ LS.set('retro', retroEl.value); });
+
+  /* ---- pipeline ---- */
+  var STAGES = [
+    ['cold','#8E8882'], ['contacted','#22d3ee'], ['conversation','#a78bfa'],
+    ['call','#F59E0B'], ['proposal','#10b981'], ['closed','#10b981'], ['dead','#f43f5e']
+  ];
+  var LANES = ['remote', 'local'];
+  var pipe = LS.get('pipeline', []);
+  var pipeBody = document.getElementById('pipe-body');
+  function savePipe(){ LS.set('pipeline', pipe); renderPipeSummary(); }
+  function renderPipeSummary(){
+    var open = pipe.filter(function(p){ return p.stage!=='dead' && p.stage!=='closed'; }).length;
+    var closed = pipe.filter(function(p){ return p.stage==='closed'; }).length;
+    document.getElementById('pipe-summary').textContent = pipe.length+' total · '+open+' open · '+closed+' closed';
+  }
+  function stageOpts(sel){ return STAGES.map(function(s){ return '<option '+(s[0]===sel?'selected':'')+'>'+s[0]+'</option>'; }).join(''); }
+  function laneOpts(sel){ return LANES.map(function(l){ return '<option '+(l===sel?'selected':'')+'>'+l+'</option>'; }).join(''); }
+  function renderPipe(){
+    pipeBody.innerHTML='';
+    pipe.forEach(function(p, i){
+      var color = (STAGES.filter(function(s){return s[0]===p.stage;})[0]||['','#8E8882'])[1];
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input data-i="'+i+'" data-f="name" value="'+esc(p.name)+'" placeholder="name"></td>'+
+        '<td><input data-i="'+i+'" data-f="company" value="'+esc(p.company)+'" placeholder="company"></td>'+
+        '<td><select data-i="'+i+'" data-f="lane">'+laneOpts(p.lane)+'</select></td>'+
+        '<td><select data-i="'+i+'" data-f="stage" style="color:'+color+'">'+stageOpts(p.stage)+'</select></td>'+
+        '<td><input data-i="'+i+'" data-f="value" value="'+esc(p.value)+'" placeholder="$" style="width:70px"></td>'+
+        '<td><input data-i="'+i+'" data-f="nextAction" value="'+esc(p.nextAction)+'" placeholder="next action"></td>'+
+        '<td><input data-i="'+i+'" data-f="nextDate" type="date" value="'+esc(p.nextDate)+'" style="width:130px"></td>'+
+        '<td><button class="del" data-del="'+i+'" title="remove">×</button></td>';
+      pipeBody.appendChild(tr);
+    });
+    renderPipeSummary();
+  }
+  pipeBody.addEventListener('input', function(e){
+    var i = e.target.getAttribute('data-i'), f = e.target.getAttribute('data-f');
+    if(i===null||!f) return; pipe[+i][f] = e.target.value; savePipe();
+    if(f==='stage'){ var c=(STAGES.filter(function(s){return s[0]===e.target.value;})[0]||['','#8E8882'])[1]; e.target.style.color=c; }
+  });
+  pipeBody.addEventListener('click', function(e){
+    var d = e.target.getAttribute('data-del'); if(d===null) return;
+    pipe.splice(+d,1); savePipe(); renderPipe();
+  });
+  window.addProspect = function(){ pipe.push({name:'',company:'',lane:'remote',stage:'cold',value:'',nextAction:'',nextDate:''}); savePipe(); renderPipe(); };
+
+  /* ---- mini-eval queue ---- */
+  var evals = LS.get('evals', []);
+  var evalBody = document.getElementById('eval-body');
+  function saveEvals(){ LS.set('evals', evals); }
+  var EVAL_STATUS = ['queued','running','done','sent'];
+  function esOpts(sel){ return EVAL_STATUS.map(function(s){return '<option '+(s===sel?'selected':'')+'>'+s+'</option>';}).join(''); }
+  function renderEvals(){
+    evalBody.innerHTML='';
+    evals.forEach(function(v,i){
+      var tr=document.createElement('tr');
+      tr.innerHTML=
+        '<td><input data-i="'+i+'" data-f="target" value="'+esc(v.target)+'" placeholder="target"></td>'+
+        '<td><input data-i="'+i+'" data-f="url" value="'+esc(v.url)+'" placeholder="feature url"></td>'+
+        '<td><select data-i="'+i+'" data-f="status">'+esOpts(v.status)+'</select></td>'+
+        '<td><input data-i="'+i+'" data-f="t1" type="date" value="'+esc(v.t1)+'" style="width:130px"></td>'+
+        '<td><input data-i="'+i+'" data-f="t2" type="date" value="'+esc(v.t2)+'" style="width:130px"></td>'+
+        '<td><input data-i="'+i+'" data-f="t3" type="date" value="'+esc(v.t3)+'" style="width:130px"></td>'+
+        '<td><button class="del" data-del="'+i+'">×</button></td>';
+      evalBody.appendChild(tr);
+    });
+  }
+  evalBody.addEventListener('input', function(e){
+    var i=e.target.getAttribute('data-i'), f=e.target.getAttribute('data-f');
+    if(i===null||!f) return; evals[+i][f]=e.target.value; saveEvals();
+  });
+  evalBody.addEventListener('click', function(e){
+    var d=e.target.getAttribute('data-del'); if(d===null) return;
+    evals.splice(+d,1); saveEvals(); renderEvals();
+  });
+  window.addEval = function(){ evals.push({target:'',url:'',status:'queued',t1:'',t2:'',t3:''}); saveEvals(); renderEvals(); };
+
+  /* ---- content queue ---- */
+  var POSTS = [
+    ['week-01-mon','Proof','My own release gate blocked me at 11:39am'],
+    ['week-01-wed','Contrarian','Your LLM feature needs a regression suite more than a better prompt'],
+    ['week-01-fri','How-to','A minimum viable eval gate in one afternoon'],
+    ['week-02-mon','Proof','One of my published lessons taught a factually false error'],
+    ['week-02-wed','Manifesto','Most who build AI can’t verify it; most who verify can’t build AI'],
+    ['week-02-fri','Contrarian','Grade by reading vs grade by executing'],
+    ['week-03-mon','Proof','A test suite that failed 1 in 10 runs → under 1%'],
+    ['week-03-wed','How-to','The golden set most teams fill with the wrong examples'],
+    ['week-03-fri','Contrarian','No fake green: passing CI nobody trusts is theater'],
+    ['week-04-mon','Proof','My site runs 78 checks against itself on every deploy'],
+    ['week-04-wed','How-to','The hardest question: where does a human sign off'],
+    ['week-04-fri','Manifesto','The demo is the easy 80%'],
+    ['week-05-mon','Proof','85 runners — ten do nothing but try to make AI misbehave'],
+    ['week-05-wed','Offer','If the honest answer is a shrug, I’ll show you yours free']
+  ];
+  var posted = LS.get('posted', {});
+  var clist = document.getElementById('content-list');
+  var pillColor = {Proof:'#F59E0B',Contrarian:'#22d3ee','How-to':'#a78bfa',Manifesto:'#10b981',Offer:'#f43f5e'};
+  POSTS.forEach(function(p){
+    var row=document.createElement('label'); row.className='contentrow';
+    row.innerHTML='<input type="checkbox" data-p="'+p[0]+'" '+(posted[p[0]]?'checked':'')+'>'+
+      '<span style="flex:1"><span class="pill" style="color:'+(pillColor[p[1]]||'#888')+';border-color:'+(pillColor[p[1]]||'#333')+'">'+p[1]+'</span> '+
+      '<span class="mono" style="font-size:11px;color:var(--faint)">'+p[0]+'</span><br><span style="color:var(--dim)">'+p[2]+'</span></span>';
+    clist.appendChild(row);
+  });
+  clist.addEventListener('change', function(e){
+    var p=e.target.getAttribute('data-p'); if(!p) return;
+    posted[p]=e.target.checked; LS.set('posted', posted);
+  });
+
+  /* ---- utils ---- */
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  window.exportData = function(){
+    var data = { weekof:LS.get('weekof',''), scoreboard:sb, retro:retroEl.value, pipeline:pipe, evals:evals, posted:posted };
+    var blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'sage-ops-'+(LS.get('weekof','')||'week')+'.json'; a.click();
+  };
+
+  renderPipe(); renderEvals();
+  if(!pipe.length){ addProspect(); }
+})();
+</script>
+</body>
+</html>
