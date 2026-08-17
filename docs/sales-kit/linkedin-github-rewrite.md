@@ -19,7 +19,7 @@ Every claim below is a listed proof point. No invented clients, no invented metr
 
 > I test and prove AI features for teams shipping LLM products.
 >
-> "Prove" is the operative word. My portfolio site runs 74 automated tests against itself — if the proof breaks, the site says so. That's the standard I hold my own work to before asking anyone to pay for it: agency.sageideas.dev
+> "Prove" is the operative word. My portfolio site runs 78 automated tests against itself — if the proof breaks, the site says so. That's the standard I hold my own work to before asking anyone to pay for it: agency.sageideas.dev
 >
 > What that looks like in practice:
 >
@@ -45,7 +45,7 @@ Every claim below is a listed proof point. No invented clients, no invented metr
 
 Everything I claim is backed by something you can run or inspect. Start here:
 **[agency.sageideas.dev](https://agency.sageideas.dev)** — a portfolio that runs
-74 automated tests against itself. If a proof breaks, the page says so.
+78 automated tests against itself. If a proof breaks, the page says so.
 
 ## Proof, not claims
 
