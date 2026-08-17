@@ -212,7 +212,7 @@ ${items}
 
 /* ── sitemap + robots ── */
 const pages = [
-  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/demos.html', '/privacy.html', '/terms.html',
+  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/demos.html', '/eval.html', '/privacy.html', '/terms.html',
   ...SERVICES.map((s) => `/services/${s.slug}.html`),
   ...NOTES.map((n) => `/notes/${n.slug}.html`)
 ];

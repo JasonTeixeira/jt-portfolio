@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(17);
+    expect((xml.match(/<loc>/g) || []).length).toBe(18);
   });
 });
 
@@ -384,7 +384,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(17);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(18);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -442,5 +442,17 @@ test.describe('portfolio — live demos', () => {
     await page.fill('#cin', 'my sink is leaking');
     await page.click('#csend');
     await expect(page.locator('#rectag')).toContainText('scripted brain', { timeout: 5000 });
+  });
+});
+
+test.describe('portfolio — live eval', () => {
+  test('eval page loads with honest framing and degrades gracefully offline', async ({ page }) => {
+    await page.goto('/eval.html');
+    await expect(page.locator('h1')).toContainText('grade one');
+    // honest demo-target labeling is static and must always be present
+    await expect(page.locator('body')).toContainText('deliberately naive demo assistant');
+    // with no /api engine on the static test server, it must show the offline
+    // state (not a broken/blank run button)
+    await expect(page.locator('#run-status')).toContainText('offline', { timeout: 6000 });
   });
 });
