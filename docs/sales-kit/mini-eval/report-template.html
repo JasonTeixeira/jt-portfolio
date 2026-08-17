@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!--
+  MINI-EVAL REPORT TEMPLATE (branded, printable / PDF-able)
+  Fill every {PLACEHOLDER}. Replace .is-fail / .is-pass classes to match real results.
+  Print to PDF from a browser (Cmd/Ctrl-P) for the deliverable. Fonts fall back to
+  system serif/mono/sans if the /assets/fonts files aren't reachable at open time.
+  DO NOT ship placeholder text to a prospect — every {curly} token is a fill-in.
+  Voice: engineer-to-engineer. Findings, not pitch.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mini-evaluation — {TARGET_FEATURE_NAME}</title>
+<style>
+  @font-face { font-family:'Plus Jakarta Sans'; font-style:normal; font-weight:200 800; font-display:swap; src:url('../../../assets/fonts/plus-jakarta-var.woff2') format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-style:normal; font-weight:100 800; font-display:swap; src:url('../../../assets/fonts/jetbrains-mono-var.woff2') format('woff2'); }
+  @font-face { font-family:'Instrument Serif'; font-style:normal; font-weight:400; font-display:swap; src:url('../../../assets/fonts/instrument-serif.woff2') format('woff2'); }
+
+  :root{
+    --bg:#09090B; --card:#0C0C0E; --border:#2A2826; --border-lit:#3D3A37;
+    --ink:#F4F2EF; --muted:#A8A29E; --dim:#8E8882; --faint:#837D77;
+    --green:#10b981; --cyan:#22d3ee; --violet:#a78bfa; --amber:#F59E0B;
+    --fail:#f43f5e;
+    --serif:'Instrument Serif',Georgia,serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:'Plus Jakarta Sans',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--bg)}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:56px clamp(18px,5vw,44px) 72px}
+  a{color:var(--cyan);text-decoration:none}
+
+  /* header */
+  .kicker{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--violet)}
+  .kicker .line{flex:1;height:1px;background:var(--border)}
+  h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,5vw,3.2rem);line-height:1.08;letter-spacing:-0.02em;margin:22px 0 0;text-wrap:balance}
+  .meta{margin:18px 0 0;font-family:var(--mono);font-size:12px;line-height:1.9;color:var(--muted)}
+  .meta b{color:var(--ink);font-weight:600}
+  .method{margin:26px 0 0;padding:18px 20px;border-left:2px solid var(--violet);background:var(--card);font-size:14px;line-height:1.75;color:var(--muted)}
+  .method b{color:var(--ink);font-weight:600}
+
+  /* section rule */
+  .sec{display:flex;align-items:center;gap:16px;margin:52px 0 22px}
+  .sec .label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--violet)}
+  .sec .line{flex:1;height:1px;background:var(--border)}
+
+  /* scorecard */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  thead th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:0 12px 10px;border-bottom:1px solid var(--border)}
+  thead th.c{text-align:center}
+  tbody td{padding:12px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+  tbody td.dim{color:var(--ink);font-weight:600}
+  tbody td.c{text-align:center;white-space:nowrap}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 10px;border-radius:999px}
+  .is-pass{color:var(--green);background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35)}
+  .is-fail{color:var(--fail);background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.38)}
+  .is-na{color:var(--faint);background:rgba(131,125,119,.12);border:1px solid var(--border)}
+  .headline{margin:18px 0 0;font-size:14px;line-height:1.7;color:var(--muted)}
+  .headline b{color:var(--ink)}
+
+  /* findings */
+  .finding{border:1px solid var(--border);background:var(--card);border-radius:10px;padding:22px 22px 20px;margin:16px 0}
+  .finding .ftitle{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+  .finding .ftitle .n{font-family:var(--serif);font-size:1.5rem;color:var(--fail);line-height:1}
+  .finding .ftitle .t{font-family:var(--serif);font-size:1.4rem;color:var(--ink);letter-spacing:-.01em}
+  .finding .ftitle .tag{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);border:1px solid var(--border);border-radius:999px;padding:3px 9px;align-self:center}
+  .xchg{margin:10px 0}
+  .xlabel{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+  .verbatim{font-family:var(--mono);font-size:12.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;padding:12px 14px;border-radius:7px;border:1px solid var(--border)}
+  .prompt{background:rgba(34,211,238,.05);border-color:rgba(34,211,238,.22);color:#cfeaf0}
+  .response{background:rgba(244,63,94,.05);border-color:rgba(244,63,94,.22);color:#f2d6dc}
+  .why{margin:14px 0 0;font-size:13.5px;line-height:1.7;color:var(--muted)}
+  .why b{color:var(--ink);font-weight:600}
+
+  /* gates + strong */
+  ol.gates{margin:0;padding:0;list-style:none;counter-reset:g}
+  ol.gates li{counter-increment:g;position:relative;padding:14px 0 14px 44px;border-bottom:1px solid var(--border);font-size:13.5px;line-height:1.7;color:var(--muted)}
+  ol.gates li::before{content:counter(g);position:absolute;left:0;top:12px;width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--amber);font-family:var(--mono);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.gates li b{color:var(--ink);font-weight:600}
+  ul.strong{margin:0;padding:0;list-style:none}
+  ul.strong li{padding:12px 0 12px 26px;border-bottom:1px solid var(--border);font-size:13.5px;line-height:1.7;color:var(--muted);position:relative}
+  ul.strong li::before{content:'✓';position:absolute;left:0;top:12px;color:var(--green);font-weight:700}
+  ul.strong li b{color:var(--ink);font-weight:600}
+  .posture{margin:18px 0 0;font-size:14px;line-height:1.75;color:var(--muted);font-style:italic}
+
+  /* close */
+  .close{margin-top:16px;border:1px solid var(--border);background:var(--card);border-radius:12px;padding:clamp(22px,4vw,34px)}
+  .close p{margin:0 0 18px;font-size:14px;line-height:1.75;color:var(--muted)}
+  .close p b{color:var(--ink);font-weight:600}
+  .tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:12px;margin:0 0 20px}
+  .tier{border:1px solid var(--border);border-radius:9px;padding:16px;background:var(--bg)}
+  .tier.lead{border-color:var(--green)}
+  .tier .price{font-family:var(--serif);font-size:1.5rem;color:var(--ink);letter-spacing:-.02em}
+  .tier .name{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin:0 0 6px}
+  .tier .desc{font-size:12px;line-height:1.6;color:var(--muted);margin:8px 0 0}
+  .cta{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#09090B;font-weight:700;font-size:14px;padding:12px 24px;border-radius:10px}
+
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);font-family:var(--mono);font-size:10.5px;line-height:1.8;color:var(--faint)}
+
+  @media print{
+    body{background:#fff;color:#111}
+    html{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .finding,.close,.tier{break-inside:avoid}
+    a{color:#0e7490}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ─── HEADER ─── -->
+  <header>
+    <div class="kicker"><span class="dot"></span><span>Independent mini-evaluation</span><span class="line"></span></div>
+    <h1>{TARGET_FEATURE_NAME}, under real evaluation.</h1>
+    <p class="meta">
+      <b>Target:</b> {TARGET_FEATURE_NAME} — {ONE_LINE_WHAT_IT_IS} · {PUBLIC_URL}<br>
+      <b>Run:</b> {N_PROBES} probes · run live against the public interface · {DATE}<br>
+      <b>By:</b> Jason Teixeira · Sage Ideas LLC · independent, unsolicited, no affiliation
+    </p>
+    <p class="method">
+      <b>Method.</b> I ran {N_PROBES} probes against your live {feature type} across eight
+      failure dimensions — grounding, hallucination, prompt-injection, data leakage, refusal
+      correctness, consistency, scope, and (where observable) cost/latency — capturing every
+      transcript verbatim. This is a spot-check, not a statistical sample: a failing probe
+      proves a failure mode <b>exists</b>, not how often it fires — that's what a full battery
+      in CI measures.
+    </p>
+  </header>
+
+  <!-- ─── SCORECARD ─── -->
+  <div class="sec"><span class="label">scorecard</span><span class="line"></span></div>
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th class="c">Probes</th><th class="c">Result</th><th>Note</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="dim">Faithfulness / Grounding</td><td class="c">{n}</td><td class="c"><span class="pill is-fail">FAIL</span></td><td>{one-line note}</td></tr>
+      <tr><td class="dim">Hallucination under pressure</td><td class="c">{n}</td><td class="c"><span class="pill is-pass">PASS</span></td><td>{one-line note}</td></tr>
+      <tr><td class="dim">Prompt-injection resistance</td><td class="c">{n}</td><td class="c"><span class="pill is-pass">PASS</span></td><td>{one-line note}</td></tr>
+      <tr><td class="dim">PII / Data leakage</td><td class="c">{n}</td><td class="c"><span class="pill is-pass">PASS</span></td><td>{one-line note}</td></tr>
+      <tr><td class="dim">Refusal correctness</td><td class="c">{n}</td><td class="c"><span class="pill is-fail">FAIL</span></td><td>{one-line note}</td></tr>
+      <tr><td class="dim">Consistency</td><td class="c">{n}</td><td class="c"><span class="pill is-fail">FAIL</span></td><td>{one-line note}</td></tr>
+      <tr><td class="dim">Scope / Off-topic</td><td class="c">{n}</td><td class="c"><span class="pill is-pass">PASS</span></td><td>{one-line note}</td></tr>
+      <tr><td class="dim">Cost / Latency</td><td class="c">{n}</td><td class="c"><span class="pill is-na">N/A</span></td><td>not observable on public interface</td></tr>
+    </tbody>
+  </table>
+  <p class="headline"><b>Headline:</b> {e.g. "5 of 8 dimensions clean; 3 reproduced failures below, all in the grounding/scope family."}</p>
+
+  <!-- ─── FAILURE TRANSCRIPTS ─── -->
+  <div class="sec"><span class="label">failure transcripts — verbatim, reproduced</span><span class="line"></span></div>
+
+  <div class="finding">
+    <div class="ftitle"><span class="n">1</span><span class="t">{SHORT_TITLE}</span><span class="tag">{DIMENSION}</span></div>
+    <div class="xchg"><p class="xlabel">Prompt — verbatim</p><div class="verbatim prompt">{EXACT_PROMPT_SENT}</div></div>
+    <div class="xchg"><p class="xlabel">Response — verbatim</p><div class="verbatim response">{EXACT_RESPONSE_RECEIVED}</div></div>
+    <p class="why"><b>Why it's a problem.</b> {2-4 sentences: what the grounded answer was, what it did instead, the business risk, and that it reproduced on a second phrasing.}</p>
+  </div>
+
+  <div class="finding">
+    <div class="ftitle"><span class="n">2</span><span class="t">{SHORT_TITLE}</span><span class="tag">{DIMENSION}</span></div>
+    <div class="xchg"><p class="xlabel">Prompt — verbatim</p><div class="verbatim prompt">{EXACT_PROMPT_SENT}</div></div>
+    <div class="xchg"><p class="xlabel">Response — verbatim</p><div class="verbatim response">{EXACT_RESPONSE_RECEIVED}</div></div>
+    <p class="why"><b>Why it's a problem.</b> {2-4 sentences.}</p>
+  </div>
+
+  <div class="finding">
+    <div class="ftitle"><span class="n">3</span><span class="t">{SHORT_TITLE}</span><span class="tag">{DIMENSION}</span></div>
+    <div class="xchg"><p class="xlabel">Prompt — verbatim</p><div class="verbatim prompt">{EXACT_PROMPT_SENT}</div></div>
+    <div class="xchg"><p class="xlabel">Response — verbatim</p><div class="verbatim response">{EXACT_RESPONSE_RECEIVED}</div></div>
+    <p class="why"><b>Why it's a problem.</b> {2-4 sentences.}</p>
+  </div>
+  <!-- Found fewer than 3 reproduced failures? Delete a card. Never pad. -->
+
+  <!-- ─── GATES ─── -->
+  <div class="sec"><span class="label">what I'd gate before release</span><span class="line"></span></div>
+  <ol class="gates">
+    <li><b>{Gate name}</b> — {the specific eval, its ground truth, and the failure it blocks. e.g. "Faithfulness judge on pricing/refund answers, scored against your published policy; a contradicting answer fails the PR."}</li>
+    <li><b>{Gate name}</b> — {...}</li>
+    <li><b>{Gate name}</b> — {...}</li>
+  </ol>
+  <p class="why" style="margin-top:16px">Each is a runner that executes on every pull request and blocks the merge on a score below an agreed floor — so the regression stops at the gate, not in front of a customer.</p>
+
+  <!-- ─── WHAT'S ALREADY STRONG ─── -->
+  <div class="sec"><span class="label">what's already strong</span><span class="line"></span></div>
+  <ul class="strong">
+    <li><b>{Dimension / behavior that passed}</b> — {specific — e.g. "every prompt-injection probe was refused in-role; it never dumped its instructions or dropped scope."}</li>
+    <li><b>{Dimension / behavior that passed}</b> — {specific.}</li>
+    <li><b>{Dimension / behavior that passed}</b> — {specific.}</li>
+  </ul>
+  <p class="posture">{One honest closing line on overall posture — e.g. "A solid feature with a couple of grounding gaps that are entirely gate-able."}</p>
+
+  <!-- ─── SOFT CLOSE ─── -->
+  <div class="sec"><span class="label">where this goes next</span><span class="line"></span></div>
+  <div class="close">
+    <p>This is ~{N_PROBES} probes in an afternoon, run by hand against your public interface.
+    A real engagement runs <b>hundreds</b> of these in your CI — versioned against your actual
+    source of truth, scored automatically, blocking the merge when a change makes things worse.
+    Happy to show you exactly how.</p>
+    <div class="tiers">
+      <div class="tier lead">
+        <p class="name">Eval Audit</p>
+        <div class="price">$750</div>
+        <p class="desc">Maps your full failure surface across every dimension above, with a costed plan. <b>Credited in full</b> toward any build.</p>
+      </div>
+      <div class="tier">
+        <p class="name">Pilot</p>
+        <div class="price">from $2,500</div>
+        <p class="desc">A minimum viable gate: golden traces, one judge, one CI step that blocks a bad merge — live in weeks.</p>
+      </div>
+      <div class="tier">
+        <p class="name">Build</p>
+        <div class="price">from $9,500</div>
+        <p class="desc">The full eval battery — safety runners, ratcheting floors, runbook and handoff — owned by your team.</p>
+      </div>
+    </div>
+    <p style="margin-bottom:20px">The $750 audit maps your full failure surface and is credited toward any build. Reply here or grab a slot — I'll walk you through these findings and where the rest of the failure surface likely sits.</p>
+    <a class="cta" href="https://www.sageideas.dev/book?src=mini-eval">Book 30 minutes →</a>
+  </div>
+
+  <footer>
+    Independent mini-evaluation. Not affiliated with or endorsed by {TARGET_COMPANY}.
+    All transcripts captured verbatim from the live public interface on {DATE}.
+    A spot-check of {N_PROBES} probes is not a statistical measure of failure rate.<br>
+    © <span id="yr">2026</span> Jason Teixeira · Sage Ideas LLC
+  </footer>
+</div>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+</body>
+</html>
