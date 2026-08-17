@@ -401,7 +401,7 @@ test.describe('portfolio — what-i-build + legal', () => {
     await page.goto('/what-i-build.html');
     await expect(page.locator('h1')).toContainText('prove they work');
     await expect(page.locator('body')).toContainText('$3,000');
-    await expect(page.locator('body')).toContainText('from $8,000');
+    await expect(page.locator('body')).toContainText('from $9,500');
     expect(await page.locator('a[href*="sageideas.dev/book"]').count()).toBeGreaterThanOrEqual(2);
     await expect(page.locator('body')).not.toContainText('[DEMO_LINE');
     await expect(page.locator('body')).not.toContainText('_TBD');
