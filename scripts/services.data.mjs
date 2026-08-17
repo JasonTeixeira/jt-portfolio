@@ -7,8 +7,8 @@
  * (data/services/tiers.ts there) — the audit checkout is a real payment
  * link, not a mock. Never quote a price here that Stripe can't charge.
  */
-export const AUDIT_CHECKOUT = 'https://www.sageideas.dev/checkout/audit?src=agency';
-export const BOOK_URL = 'https://www.sageideas.dev/book?src=agency';
+export const AUDIT_CHECKOUT = '../book.html#audit';
+export const BOOK_URL = '../book.html';
 
 export const SERVICES = [
   {

@@ -204,7 +204,7 @@ a{color:#22d3ee;text-decoration:none}
 <div class="bar"><i></i></div>
 <div class="note">Each result below is a real, reproducible probe run against the live feature — verbatim prompt and verbatim response. A failing probe proves a failure mode <b>exists</b>; it is not a statistical rate. This is a fast ${battery.length}-probe pass; a full engagement runs hundreds and wires the gate into your CI.</div>
 ${rows}
-<div class="cta"><b style="color:var(--ink)">What I'd do next.</b> Map the full failure surface, reproduce each finding, and build the eval gate that blocks these regressions before they ship — scored, in your CI, owned by your team. The audit is $750 (one week, credited toward any build); pilots from $2,500; full harness from $9,500.<br><br><a href="https://www.sageideas.dev/book?src=eval-report">Book a 15-minute call →</a></div>
+<div class="cta"><b style="color:var(--ink)">What I'd do next.</b> Map the full failure surface, reproduce each finding, and build the eval gate that blocks these regressions before they ship — scored, in your CI, owned by your team. The audit is $750 (one week, credited toward any build); pilots from $2,500; full harness from $9,500.<br><br><a href="https://agency.sageideas.dev/book.html">Book a 15-minute call →</a></div>
 <div class="foot">© ${new Date().getFullYear()} Jason Teixeira · Sage Ideas LLC · agency.sageideas.dev · proof, not vibes</div>
 </div></body></html>`;
 

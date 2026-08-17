@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(18);
+    expect((xml.match(/<loc>/g) || []).length).toBe(19);
   });
 });
 
@@ -384,7 +384,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(18);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(19);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -402,7 +402,7 @@ test.describe('portfolio — what-i-build + legal', () => {
     await expect(page.locator('h1')).toContainText('prove they work');
     await expect(page.locator('body')).toContainText('$3,000');
     await expect(page.locator('body')).toContainText('from $9,500');
-    expect(await page.locator('a[href*="sageideas.dev/book"]').count()).toBeGreaterThanOrEqual(2);
+    expect(await page.locator('a[href*="book.html"]').count()).toBeGreaterThanOrEqual(2);
     await expect(page.locator('body')).not.toContainText('[DEMO_LINE');
     await expect(page.locator('body')).not.toContainText('_TBD');
   });
@@ -454,5 +454,21 @@ test.describe('portfolio — live eval', () => {
     // with no /api engine on the static test server, it must show the offline
     // state (not a broken/blank run button)
     await expect(page.locator('#run-status')).toContainText('offline', { timeout: 6000 });
+  });
+});
+
+test.describe('portfolio — standalone booking', () => {
+  test('book.html loads with a working form and audit section', async ({ page }) => {
+    await page.goto('/book.html');
+    await expect(page.locator('h1')).toContainText('slipping through the cracks');
+    await expect(page.locator('#book-form [name="email"]')).toBeVisible();
+    await expect(page.locator('#audit')).toContainText('$750');
+  });
+  test('no booking/checkout links leak to the academy site', async ({ page }) => {
+    for (const p of ['/', '/what-i-build.html', '/demos.html', '/eval.html', '/book.html']) {
+      await page.goto(p);
+      const leak = await page.locator('a[href*="www.sageideas.dev/book"], a[href*="www.sageideas.dev/checkout"]').count();
+      expect(leak, p).toBe(0);
+    }
   });
 });
