@@ -7,6 +7,7 @@
   "scripts": {
     "serve": "python3 -m http.server 8242",
     "test": "playwright test",
+    "test:unit": "node --test tests/unit/*.mjs",
     "prerender": "node scripts/prerender.mjs",
     "build:notes": "node scripts/build-notes.mjs",
     "build:services": "node scripts/build-services.mjs",
