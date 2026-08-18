@@ -74,7 +74,8 @@
   .capgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr)); gap:12px; margin-top:22px; align-items:start; }
   .cap { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; opacity:0; animation:rise .4s ease-out forwards; transition:border-color .25s; cursor:pointer; }
   .cap .cr { display:flex; align-items:center; gap:10px; }
-  .cap .ic { font-size:18px; }
+  .cap .ic { display:inline-flex; align-items:center; }
+  .cap .ic svg { display:block; }
   .cap .track { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; margin-left:auto; }
   .cap h4 { font-family:var(--serif); font-weight:400; font-size:1.2rem; margin:11px 0 5px; }
   .cap .blurb { margin:0; font-size:12.5px; line-height:1.55; color:var(--dim); }
@@ -108,8 +109,8 @@
 
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(20px,3vw,32px)">
     <div class="kick">Services &middot; the full stack, one operator</div>
-    <h1 style="margin-top:20px;max-width:16ch">Everything I build — <em style="color:var(--green)">scoped &amp; quoted for you.</em></h1>
-    <p class="subtle lead" style="margin-top:20px">No agency, no handoff, no fixed price list padded to cover overhead you don't have. Three flagship engagements, a 30+ capability matrix, and one path from a short audit to a shipped system. Tell me the problem and you leave with a plan and a real number — you pay for your problem, not a package.</p>
+    <h1 style="margin-top:20px;max-width:16ch">Everything I build: <em style="color:var(--green)">scoped &amp; quoted for you.</em></h1>
+    <p class="subtle lead" style="margin-top:20px">No agency, no handoff, no fixed price list padded to cover overhead you don't have. Three flagship engagements, a 30+ capability matrix, and one path from a short audit to a shipped system. Tell me the problem and you leave with a plan and a real number. You pay for your problem, priced to it.</p>
     <div style="display:flex;gap:14px;margin-top:26px;flex-wrap:wrap">
       <a href="book.html" class="cta" data-evt="svc-hero-book">Start a conversation &rarr;</a>
       <a href="#matrix" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">jump to the full matrix &darr;</a>
@@ -118,7 +119,7 @@
 
   <!-- ENGAGEMENT PATH -->
   <section><div class="wrap">
-    <div class="kick" style="color:#8FA0FF">01 — how an engagement goes</div>
+    <div class="kick" style="color:#8FA0FF">01: how an engagement goes</div>
     <h2 style="margin-top:12px">A fixed path. A real quote. Evidence at every step.</h2>
     <div class="path" id="path"></div>
     <p class="mono" style="margin-top:16px;font-size:11px;color:var(--faint)">no fixed price list — every engagement is scoped and quoted after a short call &middot; your repo, your CI, nothing retained after handoff &middot; if the scoping shows I can't help, I'll say so and it costs nothing</p>
@@ -126,16 +127,16 @@
 
   <!-- FLAGSHIP -->
   <section><div class="wrap">
-    <div class="kick" style="color:var(--purple)">02 — flagship engagements</div>
+    <div class="kick" style="color:var(--purple)">02: flagship engagements</div>
     <h2 style="margin-top:12px">The three I'm known for. Click to open one up.</h2>
     <div class="svcgrid" id="svcgrid"></div>
   </div></section>
 
   <!-- MATRIX -->
   <section id="matrix"><div class="wrap">
-    <div class="kick" style="color:var(--cyan)">03 — the full capability matrix</div>
+    <div class="kick" style="color:var(--cyan)">03: the full capability matrix</div>
     <h2 style="margin-top:12px">30+ things I can build for you.</h2>
-    <p class="subtle" style="margin-top:12px;max-width:56ch">Filter by track. Click any card for the explainer — what it is, what you get, and the outcome. Every one ends in a quote, not a checkout.</p>
+    <p class="subtle" style="margin-top:12px;max-width:56ch">Filter by track. Click any card for the explainer: what it is, what you get, and the outcome. Every one ends in a quote, worked out on a call.</p>
     <div class="cat-filter" id="cats"></div>
     <div class="capgrid" id="capgrid"></div>
   </div></section>
@@ -143,7 +144,7 @@
   <!-- CTA -->
   <section><div class="wrap" style="text-align:center;max-width:680px;margin:0 auto">
     <h2>Not sure which one? That's what the call is for.</h2>
-    <p class="subtle" style="margin:14px auto 0;max-width:46ch">15 minutes. You describe the problem; I tell you honestly which of these it needs, what it takes, and what it costs — or that it doesn't need me at all.</p>
+    <p class="subtle" style="margin:14px auto 0;max-width:46ch">15 minutes. You describe the problem; I tell you honestly which of these it needs, what it takes, what it costs, or that it doesn't need me at all.</p>
     <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
       <a href="book.html" class="cta" data-evt="svc-book">Book a 15-minute call &rarr;</a>
       <a href="demos.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">see it work first &rarr;</a>
@@ -156,6 +157,7 @@
   </footer>
 </div>
 
+<script src="assets/icons.js"></script>
 <script>
 (function(){
   var GREEN='#10b981', CYAN='#22d3ee', PURPLE='#a78bfa', AMBER='#F59E0B', ROSE='#f43f5e', BLUE='#8FA0FF';
@@ -164,7 +166,7 @@
   /* engagement path — no prices */
   var PATH=[
     {n:'01', t:'Audit', price:'~1 week · start here', c:BLUE, d:"I map your highest-leverage failure — the AI surface, the test gap, the automation ROI — and hand you a prioritized plan and a concrete quote you own."},
-    {n:'02', t:'Sprint', price:'~2 weeks · scoped', c:CYAN, d:'One visible, production-grade improvement — real code, deployed, measured. A minimum viable gate or a shipped workflow.'},
+    {n:'02', t:'Sprint', price:'~2 weeks · scoped', c:CYAN, d:'One visible, production-grade improvement: real code, deployed, measured. A minimum viable gate, or a shipped workflow.'},
     {n:'03', t:'Build', price:'~4–8 weeks · scoped', c:PURPLE, d:'The full system: the eval battery, the CI gate, the automation, the runbook — owned by your team at handoff.'},
     {n:'04', t:'Operate', price:'ongoing · optional', c:GREEN, d:'Measure, improve, publish. The system stays green and compounds instead of quietly decaying.'}
   ];
@@ -178,20 +180,20 @@
   /* flagship services — no prices */
   var SERVICES=[
     { cat:'AI quality & evaluation', ac:PURPLE, name:'LLM Evaluation & Eval Harness',
-      sub:"You shipped an AI feature. I build the evaluation and regression system that proves it works — scoring, safety gates, and a CI gate that blocks a bad change before customers see it.",
-      deliv:['Golden dataset + LLM-as-judge scoring for faithfulness, relevance, safety','Safety runner battery: injection, jailbreak, PII, toxicity, hallucination, consistency','CI quality gate — a score below the ratcheted floor blocks the merge','Runbook + handoff so your team owns the gate'],
+      sub:"You shipped an AI feature. I build the evaluation and regression system that proves it works: scoring, safety gates, and a CI gate that blocks a bad change before customers see it.",
+      deliv:['Golden dataset + LLM-as-judge scoring for faithfulness, relevance, safety','Safety runner battery: injection, jailbreak, PII, toxicity, hallucination, consistency','CI quality gate: a score below the ratcheted floor blocks the merge','Runbook + handoff so your team owns the gate'],
       phases:[['Eval Audit','~1 wk'],['MV Gate','~2 wks'],['Full Battery','~4–8 wks']],
       proof:'llm-eval-gate (public, keyless) · nexural-qa-os — 85 runners, 10 AI-safety evals',
       href:'services/llm-evaluation-qa.html' },
     { cat:'Quality engineering', ac:GREEN, name:'Test Automation & CI',
-      sub:"A regression suite a release manager can trust: risk-scoped coverage with traces, reporters, artifacts, and a green gate that actually means something — in your repo, your CI.",
-      deliv:['Risk model → coverage matrix (coverage by release risk, not habit)','Playwright/Pytest suite: POM, fixtures, trace-on-retry, four reporters','CI wiring on every push/PR with artifact retention','Flake protocol: quarantine lane, retry policy, weekly triage'],
+      sub:"A regression suite a release manager can trust: risk-scoped coverage with traces, reporters, artifacts, and a green gate that actually means something. In your repo, your CI.",
+      deliv:['Risk model → coverage matrix (coverage scoped to release risk)','Playwright/Pytest suite: POM, fixtures, trace-on-retry, four reporters','CI wiring on every push/PR with artifact retention','Flake protocol: quarantine lane, retry policy, weekly triage'],
       phases:[['Suite Audit','~1 wk'],['Stabilize','~2 wks'],['Regression Build','~4–8 wks']],
       proof:'playwright-sdet-regression-suite — 37/37 in CI · HighStrike flake 10% → <1%',
       href:'services/test-automation-ci.html' },
     { cat:'AI automation', ac:CYAN, name:'AI Workflow Automation',
-      sub:"Automation that ships work, not surprises: intake, triage, routing, RAG-backed answers — with human approval points where the risk is, and logs you can audit.",
-      deliv:['One scoped workflow end-to-end — intake → classify → route → act','Human approval points placed by risk, earned down with evidence','Structured outputs + schema validation + fallbacks; raw inputs logged','Cost model per run + runbook + handoff'],
+      sub:"Automation that ships finished work: intake, triage, routing, RAG-backed answers, with human approval points where the risk is, and logs you can audit.",
+      deliv:['One scoped workflow, end-to-end: intake → classify → route → act','Human approval points placed by risk, earned down with evidence','Structured outputs + schema validation + fallbacks; raw inputs logged','Cost model per run + runbook + handoff'],
       phases:[['Automation Audit','~1 wk'],['One Workflow','~2 wks'],['System Build','~4–8 wks']],
       proof:'BRIEF/01 — feedback triage that runs itself · sage-agents with a hard consent gate',
       href:'services/ai-workflow-automation.html' },
@@ -226,42 +228,42 @@
 
   var CAPS=[
     // ── AI Build ──
-    {track:'AI Build', ic:'💬', name:'Conversational assistant / chatbot', blurb:'A support or product chatbot grounded in your own docs.', detail:'A retrieval-augmented assistant that answers from your documentation, policies, and past tickets — not the open internet. Streaming UI, source citations, and a scope guard so it stays on-topic.', out:'→ support deflection + instant internal Q&A'},
-    {track:'AI Build', ic:'📞', name:'AI voice agent', blurb:'Inbound + outbound voice that gets tasks done.', detail:'A phone agent that answers 24/7, qualifies the caller, books the job, and texts you a summary — or makes outbound reminder and follow-up calls. Human-sounding, with a hard consent gate on outbound.', out:'→ zero missed calls, zero missed jobs'},
-    {track:'AI Build', ic:'📄', name:'Document intake & extraction', blurb:'Invoices, forms, PDFs → clean structured data.', detail:'An extraction pipeline that turns messy documents into validated structured records — schema-enforced, with confidence scoring and a human-review lane for the low-confidence cases.', out:'→ no more manual data entry'},
-    {track:'AI Build', ic:'🧠', name:'Internal copilot / knowledge assistant', blurb:'An AI that knows how your company works.', detail:'A private assistant wired into your wiki, code, and tickets so your team gets answers in seconds instead of pinging the one person who knows. Access-scoped and auditable.', out:'→ onboarding + tribal knowledge, solved'},
-    {track:'AI Build', ic:'🔎', name:'RAG pipeline engineering', blurb:'Retrieval that actually retrieves the right thing.', detail:'The unglamorous core that makes AI features trustworthy: chunking strategy, embeddings, hybrid retrieval, reranking, and grounding — with retrieval-quality evals (context precision/recall, citation coverage) in front.', out:'→ answers that cite their sources'},
-    {track:'AI Build', ic:'🕸', name:'Multi-agent workflow / orchestration', blurb:'Agents that plan, call tools, and hand off — safely.', detail:'When the logic is genuinely agentic, a LangGraph-style orchestration with explicit state, tool-use boundaries, retries, and approval checkpoints — instrumented so you can see every step it took.', out:'→ complex flows, kept auditable'},
-    {track:'AI Build', ic:'🔌', name:'Structured-output & function-calling', blurb:'Make the LLM a reliable part of your backend.', detail:'Schema-validated LLM steps with function/tool calling, fallback labels on parse failure, and raw inputs logged beside every decision — the difference between a demo and production.', out:'→ AI you can call from code'},
+    {track:'AI Build', ic:'chat', name:'Conversational assistant / chatbot', blurb:'A support or product chatbot grounded in your own docs.', detail:'A retrieval-augmented assistant that answers from your documentation, policies, and past tickets, never the open internet. Streaming UI, source citations, and a scope guard keep it on-topic.', out:'→ support deflection + instant internal Q&A'},
+    {track:'AI Build', ic:'phone', name:'AI voice agent', blurb:'Inbound + outbound voice that gets tasks done.', detail:'A phone agent that answers 24/7, qualifies the caller, books the job, and texts you a summary — or makes outbound reminder and follow-up calls. Human-sounding, with a hard consent gate on outbound.', out:'→ zero missed calls, zero missed jobs'},
+    {track:'AI Build', ic:'doc', name:'Document intake & extraction', blurb:'Invoices, forms, PDFs → clean structured data.', detail:'An extraction pipeline that turns messy documents into validated structured records — schema-enforced, with confidence scoring and a human-review lane for the low-confidence cases.', out:'→ no more manual data entry'},
+    {track:'AI Build', ic:'copilot', name:'Internal copilot / knowledge assistant', blurb:'An AI that knows how your company works.', detail:'A private assistant wired into your wiki, code, and tickets so your team gets answers in seconds instead of pinging the one person who knows. Access-scoped and auditable.', out:'→ onboarding + tribal knowledge, solved'},
+    {track:'AI Build', ic:'search', name:'RAG pipeline engineering', blurb:'Retrieval that actually retrieves the right thing.', detail:'The unglamorous core that makes AI features trustworthy: chunking strategy, embeddings, hybrid retrieval, reranking, and grounding — with retrieval-quality evals (context precision/recall, citation coverage) in front.', out:'→ answers that cite their sources'},
+    {track:'AI Build', ic:'nodes', name:'Multi-agent workflow / orchestration', blurb:'Agents that plan, call tools, and hand off safely.', detail:'When the logic is genuinely agentic, a LangGraph-style orchestration with explicit state, tool-use boundaries, retries, and approval checkpoints. It\'s instrumented so you can see every step it took.', out:'→ complex flows, kept auditable'},
+    {track:'AI Build', ic:'plug', name:'Structured-output & function-calling', blurb:'Make the LLM a reliable part of your backend.', detail:'Schema-validated LLM steps with function/tool calling, fallback labels on parse failure, and raw inputs logged beside every decision — the difference between a demo and production.', out:'→ AI you can call from code'},
     // ── Eval & QA ──
-    {track:'Eval & QA', ic:'⚖️', name:'LLM evaluation harness', blurb:'Golden set + LLM-as-judge scoring for your feature.', detail:'50–200 real inputs with agreed-good outputs, versioned next to the code, scored by an LLM judge for faithfulness, relevance, and safety. The regression signal you don\'t have yet.', out:'→ ship prompt changes on proof, not vibes'},
-    {track:'Eval & QA', ic:'🛡', name:'AI red-team & safety battery', blurb:'Adversarial probes: injection, jailbreak, PII, toxicity.', detail:'A battery of adversarial runners that try to break your assistant the way a real user (or attacker) would — prompt injection, jailbreaks, PII leakage, toxicity, over-refusal — with verbatim transcripts of every failure.', out:'→ find the embarrassing failure first'},
-    {track:'Eval & QA', ic:'🚦', name:'CI quality gate for AI', blurb:'A bad AI change blocks the merge, not the retro.', detail:'Your eval suite wired into CI so it runs on every PR. A score below the ratcheted floor fails the build — with a scorecard your PM can actually read.', out:'→ regressions caught before customers'},
-    {track:'Eval & QA', ic:'📌', name:'Hallucination / grounding gate', blurb:'Stop it inventing facts and policies.', detail:'A grounding layer that binds answers to a source of truth and an eval that fails when the model states unverifiable specifics — the fix for "it made up a refund policy."', out:'→ facts, or a clean "I don\'t know"'},
-    {track:'Eval & QA', ic:'🔁', name:'Prompt & model regression testing', blurb:'Know exactly what the model bump broke.', detail:'A/B and before/after evaluation across prompt and model versions, so a provider update or a prompt tweak comes with a diff of what improved and what regressed — not a shrug.', out:'→ safe upgrades, measured'},
-    {track:'Eval & QA', ic:'🎯', name:'Agent evaluation', blurb:'Did the agent use the right tool and finish the task?', detail:'Task-success and tool-use-correctness evals for agentic systems: did it call the right function, with the right args, and complete the job — scored against a rubric, run repeatedly.', out:'→ agents you can trust to act'},
-    {track:'Eval & QA', ic:'📈', name:'LLM observability & cost monitoring', blurb:'See quality, drift, and spend in production.', detail:'Tracing, per-run cost tracking, and drift monitoring on your live AI feature so quality decay and runaway spend surface on a dashboard instead of in a customer complaint.', out:'→ production AI you can watch'},
+    {track:'Eval & QA', ic:'scale', name:'LLM evaluation harness', blurb:'Golden set + LLM-as-judge scoring for your feature.', detail:'50–200 real inputs with agreed-good outputs, versioned next to the code, scored by an LLM judge for faithfulness, relevance, and safety. The regression signal you don\'t have yet.', out:'→ ship prompt changes on proof, not vibes'},
+    {track:'Eval & QA', ic:'shield', name:'AI red-team & safety battery', blurb:'Adversarial probes: injection, jailbreak, PII, toxicity.', detail:'A battery of adversarial runners that try to break your assistant the way a real user (or attacker) would: prompt injection, jailbreaks, PII leakage, toxicity, over-refusal — with verbatim transcripts of every failure.', out:'→ find the embarrassing failure first'},
+    {track:'Eval & QA', ic:'gauge', name:'CI quality gate for AI', blurb:'A bad AI change blocks the merge instead of showing up in the retro.', detail:'Your eval suite wired into CI so it runs on every PR. A score below the ratcheted floor fails the build, with a scorecard your PM can actually read.', out:'→ regressions caught before customers'},
+    {track:'Eval & QA', ic:'anchor', name:'Hallucination / grounding gate', blurb:'Stop it inventing facts and policies.', detail:'A grounding layer that binds answers to a source of truth and an eval that fails when the model states unverifiable specifics — the fix for "it made up a refund policy."', out:'→ facts, or a clean "I don\'t know"'},
+    {track:'Eval & QA', ic:'repeat', name:'Prompt & model regression testing', blurb:'Know exactly what the model bump broke.', detail:'A/B and before/after evaluation across prompt and model versions, so a provider update or a prompt tweak comes with a concrete diff of what improved and what regressed.', out:'→ safe upgrades, measured'},
+    {track:'Eval & QA', ic:'target', name:'Agent evaluation', blurb:'Did the agent use the right tool and finish the task?', detail:'Task-success and tool-use-correctness evals for agentic systems: did it call the right function, with the right args, and complete the job. Scored against a rubric, run repeatedly.', out:'→ agents you can trust to act'},
+    {track:'Eval & QA', ic:'activity', name:'LLM observability & cost monitoring', blurb:'See quality, drift, and spend in production.', detail:'Tracing, per-run cost tracking, and drift monitoring on your live AI feature so quality decay and runaway spend surface on a dashboard instead of in a customer complaint.', out:'→ production AI you can watch'},
     // ── Test Automation ──
-    {track:'Test Automation', ic:'🎭', name:'E2E test automation (Playwright)', blurb:'Your critical flows, covered and green in CI.', detail:'A risk-scoped Playwright (or Cypress) suite with Page Object Model, fixtures, trace-on-retry, and four reporters — built in your repo so releases stop breaking in ways users find first.', out:'→ releases that stop breaking'},
-    {track:'Test Automation', ic:'🔗', name:'API & contract testing', blurb:'Catch the broken endpoint before the frontend does.', detail:'Contract and integration tests for your APIs — schema validation, auth paths, error cases, and backwards-compatibility checks wired into CI.', out:'→ no more silent API breaks'},
-    {track:'Test Automation', ic:'📱', name:'Mobile real-device certification', blurb:'Ship iOS/Android with proof, not hope.', detail:'End-to-end certification on real devices — the flows a simulator lies about. I\'ve run 256-screen device-cert passes with retry-clean flake handling.', out:'→ app-store confidence'},
-    {track:'Test Automation', ic:'⚙️', name:'CI/CD pipeline + test wiring', blurb:'A green badge that actually means something.', detail:'GitHub Actions (or your CI) set up from scratch or rescued: parallelized runs, artifact retention, required checks, and the gates that make merge-green trustworthy.', out:'→ a pipeline you believe'},
-    {track:'Test Automation', ic:'🩹', name:'Flaky-test stabilization', blurb:'Make red mean something again.', detail:'The flake protocol installed on your existing suite: quarantine lane, retry policy, isolation fixes, and a weekly triage ritual. At HighStrike this cut a live suite from 10% flake to under 1%.', out:'→ red = a real bug, every time'},
-    {track:'Test Automation', ic:'⚡', name:'Performance & load baselines', blurb:'Know your critical path\'s breaking point.', detail:'k6 load baselines on the flows that matter, with budgets wired into CI so a performance regression trips the gate before it trips your users.', out:'→ performance you can defend'},
-    {track:'Test Automation', ic:'👁', name:'Visual regression testing', blurb:'Catch the layout break a unit test can\'t see.', detail:'Screenshot-based regression across breakpoints and themes, so an unintended visual change is flagged in the PR instead of in a customer screenshot.', out:'→ pixel-level release safety'},
-    {track:'Test Automation', ic:'♿', name:'Accessibility (a11y) audits', blurb:'WCAG compliance, keyboard, contrast, reduced-motion.', detail:'Automated + manual accessibility review against WCAG 2.2: keyboard navigation, screen-reader semantics, contrast, and reduced-motion behavior — with a prioritized fix list.', out:'→ usable by everyone, and compliant'},
+    {track:'Test Automation', ic:'e2e', name:'E2E test automation (Playwright)', blurb:'Your critical flows, covered and green in CI.', detail:'A risk-scoped Playwright (or Cypress) suite with Page Object Model, fixtures, trace-on-retry, and four reporters. Built in your repo, so releases stop breaking in ways users find first.', out:'→ releases that stop breaking'},
+    {track:'Test Automation', ic:'link', name:'API & contract testing', blurb:'Catch the broken endpoint before the frontend does.', detail:'Contract and integration tests for your APIs: schema validation, auth paths, error cases, and backwards-compatibility checks wired into CI.', out:'→ no more silent API breaks'},
+    {track:'Test Automation', ic:'mobile', name:'Mobile real-device certification', blurb:'Ship iOS/Android with proof it actually works.', detail:'End-to-end certification on real devices — the flows a simulator lies about. I\'ve run 256-screen device-cert passes with retry-clean flake handling.', out:'→ app-store confidence'},
+    {track:'Test Automation', ic:'cog', name:'CI/CD pipeline + test wiring', blurb:'A green badge that actually means something.', detail:'GitHub Actions (or your CI) set up from scratch or rescued: parallelized runs, artifact retention, required checks, and the gates that make merge-green trustworthy.', out:'→ a pipeline you believe'},
+    {track:'Test Automation', ic:'bandage', name:'Flaky-test stabilization', blurb:'Make red mean something again.', detail:'The flake protocol installed on your existing suite: quarantine lane, retry policy, isolation fixes, and a weekly triage ritual. At HighStrike this cut a live suite from 10% flake to under 1%.', out:'→ red = a real bug, every time'},
+    {track:'Test Automation', ic:'zap', name:'Performance & load baselines', blurb:'Know your critical path\'s breaking point.', detail:'k6 load baselines on the flows that matter, with budgets wired into CI so a performance regression trips the gate before it trips your users.', out:'→ performance you can defend'},
+    {track:'Test Automation', ic:'eye', name:'Visual regression testing', blurb:'Catch the layout break a unit test can\'t see.', detail:'Screenshot-based regression across breakpoints and themes, so an unintended visual change is flagged in the PR instead of in a customer screenshot.', out:'→ pixel-level release safety'},
+    {track:'Test Automation', ic:'a11y', name:'Accessibility (a11y) audits', blurb:'WCAG compliance, keyboard, contrast, reduced-motion.', detail:'Automated + manual accessibility review against WCAG 2.2: keyboard navigation, screen-reader semantics, contrast, and reduced-motion behavior, with a prioritized fix list.', out:'→ usable by everyone, and compliant'},
     // ── Automation ──
-    {track:'Automation', ic:'🔀', name:'Workflow automation', blurb:'n8n / Make / Zapier — or code when it earns it.', detail:'The repetitive back-office flow, automated end-to-end in tools your team can own after I leave. Make/Zapier for linear flows, n8n for branching, code when the logic is genuinely complex.', out:'→ hours of manual work, deleted'},
-    {track:'Automation', ic:'🧲', name:'Lead capture → qualify → route', blurb:'Every lead caught, scored, and followed up in minutes.', detail:'An intake pipeline that captures every lead from every source, scores and routes it, and triggers follow-up within minutes — nothing slips into a spreadsheet nobody checks.', out:'→ nothing slips through'},
-    {track:'Automation', ic:'🗄', name:'Data pipelines / ETL', blurb:'Move and shape data reliably, on a schedule.', detail:'Extract-transform-load pipelines with validation, idempotency, and alerting — so the report your business runs on is built on data that\'s actually correct and fresh.', out:'→ trustworthy data, automatically'},
-    {track:'Automation', ic:'🧩', name:'Integrations (CRM, tools, APIs)', blurb:'Make your tools finally talk to each other.', detail:'Connect the CRM, the billing system, the support desk, and the spreadsheet into one flow with proper error handling and an audit trail — no more copy-paste between tabs.', out:'→ one connected system'},
-    {track:'Automation', ic:'📡', name:'Monitoring / scraping / alerting', blurb:'Watch a source, act when something changes.', detail:'Scheduled monitoring of a website, feed, or metric with structured extraction and alerting — so you hear about the change that matters the moment it happens.', out:'→ eyes on it, so you don\'t have to be'},
-    {track:'Automation', ic:'⏰', name:'Scheduled jobs & back-office automation', blurb:'The recurring task nobody wants to remember.', detail:'Cron-driven jobs for the invoicing, reporting, cleanup, and reconciliation work that eats your week — reliable, logged, and alert-on-failure.', out:'→ the busywork runs itself'},
+    {track:'Automation', ic:'workflow', name:'Workflow automation', blurb:'n8n / Make / Zapier, or code when it earns it.', detail:'The repetitive back-office flow, automated end-to-end in tools your team can own after I leave. Make/Zapier for linear flows, n8n for branching, code when the logic is genuinely complex.', out:'→ hours of manual work, deleted'},
+    {track:'Automation', ic:'magnet', name:'Lead capture → qualify → route', blurb:'Every lead caught, scored, and followed up in minutes.', detail:'An intake pipeline that captures every lead from every source, scores and routes it, and triggers follow-up within minutes. Nothing slips into a spreadsheet nobody checks.', out:'→ nothing slips through'},
+    {track:'Automation', ic:'database', name:'Data pipelines / ETL', blurb:'Move and shape data reliably, on a schedule.', detail:'Extract-transform-load pipelines with validation, idempotency, and alerting — so the report your business runs on is built on data that\'s actually correct and fresh.', out:'→ trustworthy data, automatically'},
+    {track:'Automation', ic:'puzzle', name:'Integrations (CRM, tools, APIs)', blurb:'Make your tools finally talk to each other.', detail:'Connect the CRM, the billing system, the support desk, and the spreadsheet into one flow with proper error handling and an audit trail. No more copy-paste between tabs.', out:'→ one connected system'},
+    {track:'Automation', ic:'broadcast', name:'Monitoring / scraping / alerting', blurb:'Watch a source, act when something changes.', detail:'Scheduled monitoring of a website, feed, or metric with structured extraction and alerting, so you hear about the change that matters the moment it happens.', out:'→ eyes on it, so you don\'t have to be'},
+    {track:'Automation', ic:'clock', name:'Scheduled jobs & back-office automation', blurb:'The recurring task nobody wants to remember.', detail:'Cron-driven jobs for the invoicing, reporting, cleanup, and reconciliation work that eats your week: reliable, logged, alert-on-failure.', out:'→ the busywork runs itself'},
     // ── Product ──
-    {track:'Product', ic:'🖥', name:'Web apps & customer portals', blurb:'Auth, payments, dashboards — production-grade.', detail:'The real thing, not a prototype: authentication, payments, dashboards, and the boring-but-critical parts done right, on Next.js + Supabase or your stack.', out:'→ a product, not a demo'},
-    {track:'Product', ic:'🛠', name:'Internal tools / admin panels', blurb:'Replace the spreadsheet your team runs by hand.', detail:'The admin panel, ops dashboard, or back-office tool your team currently operates in a fragile spreadsheet — built properly, with the right permissions and audit trail.', out:'→ automate the manual ops'},
-    {track:'Product', ic:'🧱', name:'APIs & backends', blurb:'The service layer everything else depends on.', detail:'REST or typed APIs with validation, auth, rate limiting, and tests — the dependable backend your app, your integrations, and your automations all build on.', out:'→ a backend you can build on'},
-    {track:'Product', ic:'📊', name:'Dashboards & data visualization', blurb:'Turn your data into a decision, not a CSV.', detail:'Institutional-grade dashboards and visualizations treated as part of the design system — the metric your team argues about, made legible and live.', out:'→ decisions from data, at a glance'}
+    {track:'Product', ic:'monitor', name:'Web apps & customer portals', blurb:'Auth, payments, dashboards, production-grade.', detail:'The real thing: authentication, payments, dashboards, and the boring-but-critical parts done right, on Next.js + Supabase or your stack.', out:'→ a product, not a demo'},
+    {track:'Product', ic:'tools', name:'Internal tools / admin panels', blurb:'Replace the spreadsheet your team runs by hand.', detail:'The admin panel, ops dashboard, or back-office tool your team currently operates in a fragile spreadsheet — built properly, with the right permissions and audit trail.', out:'→ automate the manual ops'},
+    {track:'Product', ic:'server', name:'APIs & backends', blurb:'The service layer everything else depends on.', detail:'REST or typed APIs with validation, auth, rate limiting, and tests. The dependable backend your app, your integrations, your automations all build on.', out:'→ a backend you can build on'},
+    {track:'Product', ic:'bars', name:'Dashboards & data visualization', blurb:'Turn your raw data into a decision you can act on.', detail:'Institutional-grade dashboards and visualizations treated as part of the design system — the metric your team argues about, made legible and live.', out:'→ decisions from data, at a glance'}
   ];
 
   var capgrid=document.getElementById('capgrid'), catWrap=document.getElementById('cats'), cur='All';
@@ -270,7 +272,7 @@
     CAPS.filter(function(c){ return cur==='All'||c.track===cur; }).forEach(function(c,i){
       var col=TC[c.track]||'#888';
       var t=document.createElement('div'); t.className='cap'; t.style.animationDelay=(Math.min(i,12)*0.025)+'s';
-      t.innerHTML='<div class="cr"><span class="ic">'+c.ic+'</span><span class="track" style="color:'+col+'">'+c.track+'</span></div>'+
+      t.innerHTML='<div class="cr"><span class="ic">'+icon(c.ic,col,18)+'</span><span class="track" style="color:'+col+'">'+c.track+'</span></div>'+
         '<h4>'+esc(c.name)+'</h4><p class="blurb">'+esc(c.blurb)+'</p>'+
         '<div class="more"><p class="detail">'+esc(c.detail)+'</p><div class="out" style="color:'+col+'">'+esc(c.out)+'</div>'+
           '<a href="book.html" class="q" style="color:'+col+'" data-evt="cap-quote">Get a quote for this →</a></div>'+
