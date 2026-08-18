@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(27);
+    expect((xml.match(/<loc>/g) || []).length).toBe(28);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -371,6 +371,25 @@ test.describe('portfolio — service pages', () => {
   test('services page is reachable from the primary nav', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('nav a[href="services.html"]').first()).toBeVisible();
+  });
+
+  test('case studies: four outcome studies with proof links + credibility strip', async ({ page }) => {
+    await page.goto('/case-studies.html');
+    await expect(page.locator('h1')).toBeVisible();
+    // four case studies
+    await expect(page.locator('article.case')).toHaveCount(4);
+    // each has a proof link
+    for (let i = 0; i < 4; i++) {
+      await expect(page.locator('article.case').nth(i).locator('a.plink').first()).toBeVisible();
+    }
+    // credibility strip present
+    await expect(page.locator('.cred .pill')).toHaveCount(4);
+    // verified metrics that already exist elsewhere on the site (no new claims)
+    await expect(page.locator('body')).toContainText('37/37');
+    await expect(page.locator('body')).toContainText('13/13');
+    // reachable from the homepage nav
+    await page.goto('/');
+    await expect(page.locator('nav a[href="case-studies.html"]').first()).toBeVisible();
   });
 });
 
@@ -418,7 +437,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(27);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(28);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');

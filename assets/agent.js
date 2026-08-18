@@ -94,7 +94,7 @@
     if (/eval|test|prove|check|feature|bot|assistant|chatbot|agent|rag|hallucinat|safety|injection|price|cost/.test(t))
       acts.push({ label: '⚡ Free mini-eval', act: 'minieval' });
     if (/proof|case|experience|result|metric|client|track record|done before/.test(t))
-      acts.push({ label: '📁 See the proof', nav: 'index.html#work' });
+      acts.push({ label: '📁 Case studies', nav: 'case-studies.html' });
     if (/demo|see|show|live|watch|example/.test(t))
       acts.push({ label: '▶ See it live', nav: 'eval.html' });
     acts.push({ label: '📅 Book a call', nav: 'book.html' });
