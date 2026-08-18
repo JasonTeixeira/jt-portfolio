@@ -678,3 +678,14 @@ test.describe('portfolio — docs hub', () => {
     await expect(page.locator('.d-copy').first()).toBeVisible();
   });
 });
+
+test.describe('portfolio — scope studio', () => {
+  test('build page loads with questions and no console errors', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');
+    await expect(page).toHaveTitle(/Scope|Build/i);
+    await expect(page.locator('#scope-questions')).toBeVisible();
+    await expect(page.locator('#scope-root')).toHaveAttribute('data-state', 'discovery');
+    expect(errors).toEqual([]);
+  });
+});
