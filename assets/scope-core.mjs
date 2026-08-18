@@ -52,3 +52,44 @@ export const RATE_CARD = [
 ];
 
 export const CARD_BY_KEY = new Map(RATE_CARD.map(c => [c.key, c]));
+
+const PHASE_ORDER = ['audit', 'build', 'gate', 'operate'];
+const PHASE_LABEL = { audit: 'Audit', build: 'Build', gate: 'Prove', operate: 'Operate' };
+
+// Rough weeks-per-phase for a combined timeline (phases run partly in parallel,
+// so we take the max lower bound and sum a fraction of the rest — kept simple + honest).
+const PHASE_WEEKS = { audit: [1, 1], build: [2, 6], gate: [1, 3], operate: [1, 2] };
+
+export function computePlan(keys, segment = null) {
+  const seen = new Set();
+  const items = [];
+  for (const k of keys || []) {
+    if (!k || seen.has(k)) continue;
+    const card = CARD_BY_KEY.get(k);
+    if (!card) continue; // unknown key dropped
+    seen.add(k);
+    items.push(card);
+  }
+
+  const phases = PHASE_ORDER
+    .map(phase => {
+      const pItems = items.filter(i => i.phase === phase);
+      if (pItems.length === 0) return null;
+      const band = pItems.reduce((a, i) => [a[0] + i.band[0], a[1] + i.band[1]], [0, 0]);
+      return { phase, label: PHASE_LABEL[phase], items: pItems, band };
+    })
+    .filter(Boolean);
+
+  const totalBand = items.reduce((a, i) => [a[0] + i.band[0], a[1] + i.band[1]], [0, 0]);
+
+  // timeline: longest single phase floor, plus half the others' floors (parallelism)
+  let lo = 0, hi = 0;
+  for (const p of phases) {
+    const [wLo, wHi] = PHASE_WEEKS[p.phase];
+    lo = Math.max(lo, wLo);
+    hi += wHi;
+  }
+  const timelineWeeks = phases.length ? [lo, hi] : [0, 0];
+
+  return { segment, items, phases, totalBand, timelineWeeks, count: items.length };
+}
