@@ -135,7 +135,7 @@ p a, .prose a {
 .btn-solid.cyan:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
 .btn-ghost {
   display: inline-flex; align-items: center; gap: 10px;
-  border: 1px solid #2A2826; color: #F4F2EF; font-weight: 600; font-size: 14px;
+  border: 1px solid #2A2826; background: transparent; color: #F4F2EF; font-weight: 600; font-size: 14px;
   padding: 13px 26px; border-radius: 10px; transition: border-color 150ms ease;
 }
 .btn-ghost:hover { border-color: #3D3A37; color: #F4F2EF; }
