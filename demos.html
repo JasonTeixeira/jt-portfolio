@@ -378,6 +378,11 @@
   function track(name){ try { if(typeof window.va==='function') window.va('event',{name:name}); } catch(e){} }
 })();
 </script>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};if(location.hostname.endsWith('sageideas.dev')){var s=document.createElement('script');s.defer=true;s.src='/_vercel/insights/script.js';document.head.appendChild(s);}</script>
+<script>/* analytics: Google Analytics 4 — loads only on production once GA_ID is set */
+window.va=function(){};var GA_ID='__GA_ID__';
+if(GA_ID.charAt(0)==='G'&&GA_ID.indexOf('X')<0&&location.hostname.endsWith('sageideas.dev')){
+var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(g);
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config',GA_ID);
+window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,(payload&&payload.data)||{});}catch(e){}};}</script>
 </body>
 </html>
