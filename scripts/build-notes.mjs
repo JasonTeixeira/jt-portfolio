@@ -213,7 +213,7 @@ ${items}
 
 /* ── sitemap + robots ── */
 const pages = [
-  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/services.html', '/case-studies.html', '/roi.html', '/demos.html', '/eval.html', '/book.html', '/sample.html', '/sample-report.html', '/docs.html', '/guide-eval-gate.html', '/guide-probes.html', '/guide-golden-set.html', '/guide-human-approval.html', '/privacy.html', '/terms.html',
+  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/services.html', '/build.html', '/case-studies.html', '/roi.html', '/demos.html', '/eval.html', '/book.html', '/sample.html', '/sample-report.html', '/docs.html', '/guide-eval-gate.html', '/guide-probes.html', '/guide-golden-set.html', '/guide-human-approval.html', '/privacy.html', '/terms.html',
   ...SERVICES.map((s) => `/services/${s.slug}.html`),
   ...DOC_SLUGS.map((s) => `/docs-${s}.html`),
   ...NOTES.map((n) => `/notes/${n.slug}.html`)

@@ -356,7 +356,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(44);
+    expect((xml.match(/<loc>/g) || []).length).toBe(45);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -475,7 +475,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(44);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(45);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -708,5 +708,15 @@ test.describe('portfolio — scope studio', () => {
     expect(mailto).toContain('mailto:hello@sageideas.dev');
     expect(decodeURIComponent(mailto)).toContain('E2E test automation'); // plan summary in the body
     await expect(page.locator('#scope-human')).toHaveAttribute('href', /book\.html/);
+  });
+
+  test('build page: reachable from nav, no overflow at 320, one h1', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto('/');
+    await expect(page.locator('nav a[href="build.html"]')).toHaveCount(1);
+    await page.goto('/build.html');
+    await expect(page.locator('h1')).toHaveCount(1);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+    expect(overflow).toBe(false);
   });
 });
