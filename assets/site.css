@@ -386,3 +386,25 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
   * { animation: none !important; transition: none !important; }
   .rise-pre { opacity: 1 !important; transform: none !important; }
 }
+
+/* ── receipts band hover (index) ── */
+#receipts .receipt { transition: background .25s ease; }
+#receipts .receipt:hover { background:#15151A; }
+#receipts .receipt:hover div:last-child { text-decoration: underline; }
+
+/* ── transform scrollytelling (index) ── */
+#jt-transform .tf-grid { display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(24px,4vw,56px); margin-top:44px; }
+#jt-transform .tf-col { min-width:0; }
+#jt-transform .tf-sticky { position:sticky; top:96px; }
+#jt-transform .tf-caption { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; margin-top:12px; text-align:center; }
+#jt-transform .tf-step { min-height:76vh; display:flex; flex-direction:column; justify-content:center; }
+#jt-transform .tf-step:first-child { min-height:52vh; }
+@media (max-width:900px){
+  #jt-transform .tf-grid { grid-template-columns:1fr; }
+  #jt-transform .tf-sticky { position:sticky; top:60px; z-index:2; background:#09090B; padding:8px 0; border-bottom:1px solid #211F1C; }
+  #jt-transform .tf-step { min-height:auto; padding:30px 0; }
+}
+@media (prefers-reduced-motion:reduce){
+  #jt-transform .tf-step, #jt-transform .tf-step:first-child { min-height:auto; padding:26px 0; }
+  #jt-transform .tf-sticky { position:static; }
+}

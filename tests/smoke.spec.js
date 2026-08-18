@@ -180,6 +180,26 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#jt-projects')).toContainText('proof ledger');
   });
 
+  test('transformation scrolly: diagram builds and morphs to the proven state', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/');
+    await page.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
+    await expect(page.locator('#jt-transform')).toBeVisible();
+    await expect(page.locator('#tf-stage svg')).toHaveCount(1);
+    await expect(page.locator('#tf-steps > .tf-step')).toHaveCount(3);
+    // initial "today" state
+    await expect(page.locator('#tf-stage')).toContainText('NO EVAL');
+    // scroll the final step to center → diagram resolves to the proven state
+    await page.evaluate(() => {
+      const s = document.getElementById('tf-steps').children[2];
+      const r = s.getBoundingClientRect();
+      window.scrollTo(0, window.scrollY + r.top - (window.innerHeight / 2 - r.height / 2));
+    });
+    await expect(page.locator('#tf-caption')).toHaveText(/PROVEN/, { timeout: 3000 });
+    await expect(page.locator('#tf-stage')).toContainText('EVAL GATE');
+    expect(errors).toEqual([]);
+  });
+
   test('checklist page + PDF exist; subscribe widget renders with fallback', async ({ page, request }) => {
     const ck = await request.get('/checklist.html');
     expect(ck.status()).toBe(200);
