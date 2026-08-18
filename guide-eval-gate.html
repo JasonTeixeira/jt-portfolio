@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Minimum Viable Eval Gate — Stand One Up in an Afternoon · Jason Teixeira</title>
+<meta name="description" content="How to stand up an LLM regression gate in an afternoon: the golden set, the judge, and the CI step that can block a merge. A practical, tool-agnostic field guide for teams shipping AI features.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/guide-eval-gate.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Minimum Viable Eval Gate">
+<meta property="og:description" content="Stand up an LLM regression gate in an afternoon: a golden set, a judge, and one CI step that can block a merge.">
+<meta property="og:url" content="https://agency.sageideas.dev/guide-eval-gate.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"The Minimum Viable Eval Gate","description":"How to stand up an LLM regression gate in an afternoon: the golden set, the judge, and the CI step that can block a merge.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Organization","name":"Sage Ideas LLC"},"mainEntityOfPage":"https://agency.sageideas.dev/guide-eval-gate.html"}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --acc:#22d3ee; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  .tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 9px; border-radius:5px; color:var(--acc); border:1px solid rgba(34,211,238,0.4); background:rgba(34,211,238,0.07); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.06; letter-spacing:-0.02em; margin:20px 0 0; text-wrap:balance; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:44px 0 0; }
+  h3 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1.02rem; margin:26px 0 0; color:var(--ink); }
+  .mono { font-family:var(--mono); }
+  .lede { font-size:16.5px; line-height:1.7; color:var(--dim); margin:22px 0 0; }
+  .prose p { font-size:15px; line-height:1.78; color:#CFC9C1; margin:16px 0 0; }
+  .prose strong { color:var(--ink); font-weight:600; }
+  .prose em { color:#D9D3CB; }
+  .prose ul { margin:14px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:9px; }
+  .prose li { font-size:14.5px; line-height:1.7; color:#CFC9C1; }
+  .prose code { font-family:var(--mono); font-size:0.86em; background:#141311; border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:#E4DFD7; }
+  pre { font-family:var(--mono); font-size:12.5px; line-height:1.65; background:#0b0a08; border:1px solid var(--line); border-left:2px solid var(--acc); border-radius:0 8px 8px 0; padding:16px 18px; overflow-x:auto; color:#C9C4BD; margin:20px 0 0; }
+  pre .c { color:var(--faint); }
+  pre .k { color:var(--purple); }
+  pre .g { color:var(--green); }
+  pre .r { color:var(--red); }
+  figure { margin:32px 0 0; }
+  .diagram { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:clamp(16px,3vw,26px); }
+  figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:12px; text-align:center; }
+  .callout { border:1px solid var(--line); background:var(--card); border-left:2px solid var(--acc); border-radius:0 10px 10px 0; padding:18px 20px; margin:24px 0 0; }
+  .callout .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--acc); }
+  .callout p { font-size:14px; line-height:1.7; color:var(--dim); margin:8px 0 0; }
+  .ctabox { border:1px solid var(--line); background:linear-gradient(180deg,#0C0C0E,#0a0a0c); border-radius:16px; padding:clamp(26px,4vw,40px); margin:52px 0 0; }
+  .btn { display:inline-flex; align-items:center; gap:9px; border-radius:26px; padding:13px 24px; font-size:14.5px; font-weight:700; font-family:inherit; }
+  .btn.green { background:var(--green); color:#052e22; }
+  .toc { display:flex; gap:14px; flex-wrap:wrap; font-family:var(--mono); font-size:11.5px; color:var(--faint); margin-top:22px; }
+  .toc a { color:var(--acc); }
+  hr.sep { border:none; border-top:1px solid var(--line); margin:36px 0 0; }
+  .svgbox rect.node { fill:#0C0C0E; stroke-width:1.5; }
+  .svgbox text.l { fill:#F4F2EF; font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:600; }
+  .svgbox text.s { fill:#8E8882; font-family:'JetBrains Mono',monospace; font-size:8.5px; }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="docs.html" class="dim-link" style="color:var(--ink)">docs</a>
+      <a href="demos.html" class="dim-link">demos</a>
+      <a href="what-i-build.html" class="dim-link">what-i-build</a>
+      <a href="book.html" class="btn-solid green" data-evt="guide-book-nav" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <article class="wrap" style="padding-top:clamp(48px,7vw,80px);padding-bottom:clamp(56px,8vw,88px)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="tag">Evaluation</span>
+      <span class="mono" style="font-size:11px;color:var(--faint)">7 min read &middot; <a href="docs.html" class="dim-link">field guides</a></span>
+    </div>
+    <h1>The Minimum Viable Eval Gate</h1>
+    <p class="lede">You can stand up a real LLM regression gate in an afternoon. It has exactly three moving parts &mdash; a golden set, a judge, and a CI step that can block a merge &mdash; and once it exists, &ldquo;the prompt change seems better&rdquo; stops being an argument and becomes a number.</p>
+    <div class="toc"><span>jump &rarr;</span><a href="#why">why a gate</a><a href="#parts">the three parts</a><a href="#flow">the flow</a><a href="#afternoon">the afternoon build</a><a href="#floor">setting the floor</a></div>
+
+    <div class="prose">
+      <h2 id="why">Why a gate, not a dashboard</h2>
+      <p>Most teams shipping an LLM feature have a dashboard somewhere &mdash; a notebook, a spreadsheet of example outputs, a Slack channel where someone pastes &ldquo;this looks better now.&rdquo; None of it blocks anything. A prompt tweak, a model version bump, a retrieval change: they all ship because they <em>seem</em> fine, and the regression they caused surfaces three weeks later in a customer complaint nobody can trace back to the diff.</p>
+      <p>A gate is different from a dashboard in one way that matters: <strong>a gate can say no.</strong> It sits in your pull-request pipeline, it runs on every change that touches the AI, and when the quality score drops below a floor you agreed on, the merge is red. That&rsquo;s the whole idea. You don&rsquo;t need a platform, a vendor contract, or a data-labeling team to get there. You need thirty examples, one scoring rule, and a CI job.</p>
+
+      <h2 id="parts">The three parts</h2>
+      <p>Strip an eval system down to its irreducible core and you get three things. Everything else &mdash; safety runners, RAG retrieval metrics, cost budgets, ratcheting floors &mdash; is elaboration on top of these.</p>
+      <h3>1. The golden set</h3>
+      <p>A small collection of real inputs paired with what a good answer looks like. Thirty to fifty is enough to start &mdash; pulled from your actual logs and support tickets, not invented at your desk. This set <em>is</em> your definition of &ldquo;working,&rdquo; so it has to reflect the cases you actually care about: the common path, the edge cases that bite, and the ones a customer already complained about. (There&rsquo;s a whole guide on building this well; the short version is: harvest, don&rsquo;t imagine.)</p>
+      <h3>2. The judge</h3>
+      <p>Something that scores each output. For structured outputs, that&rsquo;s deterministic assertions &mdash; exact match, regex, JSON-schema validation, a required substring. For open-ended text, it&rsquo;s an <strong>LLM-as-judge</strong>: a second model given the input, the response, and a rubric, asked to score faithfulness, relevance, or safety on a fixed scale. The trick that makes a judge trustworthy is a written rubric with concrete pass/fail criteria &mdash; not &ldquo;rate this 1&ndash;10,&rdquo; but &ldquo;score 0 if the answer states a fact not supported by the provided context.&rdquo;</p>
+      <h3>3. The gate</h3>
+      <p>A CI step that runs the golden set through the judge, aggregates the scores, and compares the result to a floor. Above the floor: exit 0, the merge is allowed. Below: exit non-zero, the check is red, the merge is blocked. It runs on every pull request that touches a prompt, a model config, a retrieval index, or the code around them.</p>
+
+      <figure>
+        <div class="diagram svgbox">
+          <svg viewBox="0 0 860 300" style="width:100%;height:auto;display:block" role="img" aria-label="Flow diagram: a pull request runs the eval suite, a judge scores it, and the score is compared to a floor which either allows the merge or blocks it.">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#4A4642"></path>
+              </marker>
+              <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#10b981"></path>
+              </marker>
+              <marker id="ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#f43f5e"></path>
+              </marker>
+            </defs>
+            <!-- edges -->
+            <line x1="132" y1="150" x2="176" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="308" y1="150" x2="352" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="484" y1="150" x2="540" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <path d="M636 128 L636 78 L716 78" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#ahg)"></path>
+            <path d="M636 172 L636 222 L716 222" fill="none" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#ahr)"></path>
+            <text x="648" y="98" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="9">&ge; floor</text>
+            <text x="648" y="242" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="9">&lt; floor</text>
+            <!-- PR -->
+            <g><rect class="node" x="28" y="128" width="104" height="44" rx="9" stroke="#22d3ee" stroke-opacity="0.75"></rect><text class="l" x="80" y="148" text-anchor="middle">PR opened</text><text class="s" x="80" y="163" text-anchor="middle">prompt / model diff</text></g>
+            <!-- Eval -->
+            <g><rect class="node" x="176" y="128" width="132" height="44" rx="9" stroke="#22d3ee" stroke-opacity="0.75"></rect><text class="l" x="242" y="148" text-anchor="middle">Eval suite runs</text><text class="s" x="242" y="163" text-anchor="middle">40 golden traces</text></g>
+            <!-- Judge -->
+            <g><rect class="node" x="352" y="128" width="132" height="44" rx="9" stroke="#a78bfa" stroke-opacity="0.8"></rect><text class="l" x="418" y="148" text-anchor="middle">Judge scores</text><text class="s" x="418" y="163" text-anchor="middle">rubric &rarr; 0&ndash;100</text></g>
+            <!-- Decision diamond -->
+            <g>
+              <path d="M588 150 L636 118 L684 150 L636 182 Z" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.85"></path>
+              <text class="l" x="636" y="147" text-anchor="middle" font-size="11">score vs</text>
+              <text class="l" x="636" y="160" text-anchor="middle" font-size="11">floor?</text>
+            </g>
+            <!-- Merge (pass) -->
+            <g><rect class="node" x="716" y="56" width="118" height="44" rx="9" stroke="#10b981" fill="rgba(16,185,129,0.08)"></rect><text class="l" x="775" y="76" text-anchor="middle" fill="#6ee7b7">Merge allowed</text><text class="s" x="775" y="91" text-anchor="middle" fill="#10b981">exit 0 &middot; green</text></g>
+            <!-- Blocked -->
+            <g><rect class="node" x="716" y="200" width="118" height="44" rx="9" stroke="#f43f5e" fill="rgba(244,63,94,0.08)"></rect><text class="l" x="775" y="220" text-anchor="middle" fill="#fda4af">Merge blocked</text><text class="s" x="775" y="235" text-anchor="middle" fill="#f43f5e">exit 1 &middot; red</text></g>
+          </svg>
+        </div>
+        <figcaption>The whole gate on one line: diff &rarr; run &rarr; judge &rarr; compare to floor &rarr; pass or block.</figcaption>
+      </figure>
+
+      <h2 id="afternoon">The afternoon build</h2>
+      <p>Here is the honest sequence. None of these steps is research; they&rsquo;re assembly.</p>
+      <ul>
+        <li><strong>Hour 1 &mdash; harvest.</strong> Pull 30&ndash;50 real inputs from production logs or your support queue. For each, write down (or agree on) what a good answer contains. Store it as a flat file &mdash; JSONL or YAML &mdash; in the repo, next to the code it tests.</li>
+        <li><strong>Hour 2 &mdash; the judge.</strong> Write the rubric. For each output, decide whether it&rsquo;s a deterministic check (assertion) or an open-ended one (LLM-as-judge). Keep the rubric in version control too &mdash; it changes as your definition of good changes, and you want that history.</li>
+        <li><strong>Hour 3 &mdash; the runner.</strong> A script that loops the golden set through your feature, scores each output, and prints a summary. Open-source runners like Promptfoo or DeepEval give you this loop, assertion types, and an LLM-judge harness out of the box, so you write config, not plumbing.</li>
+        <li><strong>Hour 4 &mdash; the gate.</strong> Wire the runner into CI as a required check on pull requests. Fail the job when the aggregate score is below the floor. That&rsquo;s the line that turns a script into a gate.</li>
+      </ul>
+
+      <p>The CI step is smaller than people expect. Conceptually:</p>
+      <pre><span class="c"># .github/workflows/eval-gate.yml (shape, not gospel)</span>
+<span class="k">on:</span> pull_request
+<span class="k">jobs:</span>
+  eval-gate:
+    steps:
+      - run: npm ci
+      - run: <span class="g">npx promptfoo eval -c eval/gate.yaml --output out.json</span>
+      - run: <span class="g">node eval/check-floor.js out.json --floor 0.85</span>
+        <span class="c"># check-floor.js exits 1 if the aggregate pass-rate &lt; 0.85</span></pre>
+      <p>Mark the job a <strong>required status check</strong> on your protected branch, and the platform does the enforcement for you: a red gate means the merge button is disabled. No human has to remember to look.</p>
+
+      <div class="callout">
+        <span class="lbl">the point</span>
+        <p>The value isn&rsquo;t the score. It&rsquo;s that a specific person no longer has to <em>remember to check</em> whether the AI got worse. The pipeline remembers, on every change, forever &mdash; and it can say no.</p>
+      </div>
+
+      <h2 id="floor">Setting the floor without lying to yourself</h2>
+      <p>The first floor is easy to get wrong in two opposite ways. Set it too high and every honest PR is red, so the team learns to bypass the check &mdash; a gate everyone routes around is worse than no gate, because it launders bad changes with a green badge. Set it too low and nothing ever fails, so you&rsquo;ve built a dashboard with extra steps.</p>
+      <p>The move that works: run the suite on your current <code>main</code> to get today&rsquo;s baseline score, then set the floor <em>at</em> that baseline. Now the gate&rsquo;s only job on day one is <strong>&ldquo;don&rsquo;t get worse than we already are.&rdquo;</strong> That&rsquo;s a claim you can defend and a bar every real improvement clears. Over time you <em>ratchet</em>: when a change legitimately raises the score and holds, you raise the floor to match. The floor only moves up, and it moves on evidence.</p>
+      <p>One more discipline: when the gate blocks a PR, the failure output has to be readable by the person who wrote the diff &mdash; which traces failed, what the judge said, and the delta from baseline. A gate that just says &ldquo;score 0.81, floor 0.85, blocked&rdquo; gets resented. A gate that says &ldquo;these 3 of 40 traces regressed on faithfulness, here&rsquo;s what each one said&rdquo; gets trusted, and trusted gates survive.</p>
+
+      <hr class="sep">
+      <p style="margin-top:24px;font-size:14px;color:var(--dim)">That&rsquo;s the minimum viable version. The elaboration &mdash; a safety probe battery, RAG retrieval metrics, per-run cost budgets, ratcheting floors that climb automatically &mdash; is the next section of the same system. But none of it matters until the three parts above exist and the gate can turn red. Build that first.</p>
+    </div>
+
+    <div class="ctabox">
+      <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc)">what I&rsquo;d do on your feature</div>
+      <h2 style="margin:12px 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-0.015em">I&rsquo;ll stand up the gate on your repo, in your CI.</h2>
+      <p style="margin:12px 0 0;font-size:14.5px;line-height:1.7;color:var(--dim);max-width:52ch">Bring the AI feature you&rsquo;re nervous about. We map its real failure surface, harvest a golden set from your own logs, write the judge, and wire the merge-blocking check &mdash; owned by your team when I leave. The call is free and you leave with a plan either way.</p>
+      <div style="display:flex;gap:14px;margin-top:22px;flex-wrap:wrap">
+        <a href="book.html" class="btn green" data-evt="guide-eval-gate-cta">Book a call &rarr;</a>
+        <a href="guide-golden-set.html" class="mono" style="display:inline-flex;align-items:center;padding:13px 6px;font-size:13px;color:var(--acc)">next: building the golden set &rarr;</a>
+      </div>
+    </div>
+  </article>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="docs.html" class="dim-link" style="color:var(--faint)">&larr; all field guides</a></span>
+  </footer>
+</div>
+</body>
+</html>

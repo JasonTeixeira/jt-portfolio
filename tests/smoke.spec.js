@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(19);
+    expect((xml.match(/<loc>/g) || []).length).toBe(21);
   });
 });
 
@@ -384,7 +384,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(19);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(21);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -469,6 +469,27 @@ test.describe('portfolio — standalone booking', () => {
       await page.goto(p);
       const leak = await page.locator('a[href*="www.sageideas.dev/book"], a[href*="www.sageideas.dev/checkout"]').count();
       expect(leak, p).toBe(0);
+    }
+  });
+});
+
+test.describe('portfolio — lead magnet + concierge', () => {
+  test('sample capture reveals the report on submit (graceful when API absent)', async ({ page }) => {
+    await page.goto('/sample.html');
+    await page.locator('#lead-form [name="email"]').fill('lead@company.com');
+    await page.locator('#lead-form button[type=submit]').click();
+    await expect(page.locator('#lead-ok')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('#lead-ok a[href="sample-report.html"]')).toBeVisible();
+  });
+  test('sample report is clearly labeled illustrative, not a real product test', async ({ page }) => {
+    await page.goto('/sample-report.html');
+    await expect(page.locator('.banner')).toContainText('illustrative sample');
+    await expect(page.locator('.score b')).toContainText('4/8');
+  });
+  test('concierge widget mounts on the core pages', async ({ page }) => {
+    for (const p of ['/', '/eval.html', '/book.html', '/what-i-build.html']) {
+      await page.goto(p);
+      await expect(page.locator('button[aria-label="Ask about working with Jason"]')).toHaveCount(1);
     }
   });
 });

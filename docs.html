@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field Guides — Shipping AI You Can Trust · Jason Teixeira</title>
+<meta name="description" content="Practical field guides for founders and engineering leaders shipping LLM features: eval gates, safety probes, golden sets, and where to put the human approval point. Method over vendors — proof, not vibes.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/docs.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Field Guides — Shipping AI You Can Trust">
+<meta property="og:description" content="Practical, engineer-to-engineer guides for teams shipping LLM features: eval gates, the 12 probes, golden sets, and human approval points.">
+<meta property="og:url" content="https://agency.sageideas.dev/docs.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"Field guides — shipping AI you can trust","url":"https://agency.sageideas.dev/docs.html","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"blogPost":[{"@type":"BlogPosting","headline":"The Minimum Viable Eval Gate","url":"https://agency.sageideas.dev/guide-eval-gate.html"},{"@type":"BlogPosting","headline":"The 12 Probes Every LLM Feature Should Survive","url":"https://agency.sageideas.dev/guide-probes.html"},{"@type":"BlogPosting","headline":"Building a Golden Set That Actually Catches Regressions","url":"https://agency.sageideas.dev/guide-golden-set.html"},{"@type":"BlogPosting","headline":"Where to Put the Human Approval Point in AI Automation","url":"https://agency.sageideas.dev/guide-human-approval.html"}]}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:980px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.3rem,5.5vw,3.9rem); line-height:1.04; letter-spacing:-0.02em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.75; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); gap:16px; }
+  .gcard { display:flex; flex-direction:column; gap:12px; border:1px solid var(--line); background:var(--card); border-radius:14px; padding:26px; transition:border-color .2s ease, transform .2s ease; }
+  .gcard:hover { border-color:var(--pc,var(--line)); transform:translateY(-3px); }
+  .tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 9px; border-radius:5px; align-self:flex-start; }
+  .gtitle { font-family:var(--serif); font-weight:400; font-size:1.42rem; letter-spacing:-0.01em; margin:0; line-height:1.15; }
+  .gdek { margin:0; font-size:13.5px; line-height:1.65; color:var(--dim); flex:1; }
+  .gmeta { display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:2px; }
+  .arrow { color:var(--pc,var(--cyan)); display:inline-block; transition:transform .2s ease; }
+  .gcard:hover .arrow { transform:translateX(4px); }
+  .ctabox { border:1px solid var(--line); background:var(--card); border-radius:16px; padding:clamp(28px,5vw,48px); text-align:center; }
+  .btn { display:inline-flex; align-items:center; gap:9px; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; font-family:inherit; }
+  .btn.green { background:var(--green); color:#052e22; }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="docs.html" class="dim-link" style="color:var(--ink)">docs</a>
+      <a href="demos.html" class="dim-link">demos</a>
+      <a href="what-i-build.html" class="dim-link">what-i-build</a>
+      <a href="book.html" class="btn-solid green" data-evt="docs-book-nav" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(24px,4vw,40px)">
+    <div class="kick">Field guides &middot; evaluation, safety &amp; AI quality</div>
+    <h1 style="margin-top:20px;max-width:20ch">Field guides for shipping AI you can trust.</h1>
+    <p class="subtle" style="margin-top:20px;max-width:64ch">Short, technical guides on the discipline of proving an LLM feature works &mdash; the eval gate, the probe battery, the golden set, and where a human signs off. No vendor hype, no vibes. Every claim here is grounded in method you can run yourself, then wire into your CI. This is the same discipline I install for teams shipping AI.</p>
+  </header>
+
+  <section class="wrap" style="padding-bottom:clamp(20px,4vw,32px)">
+    <div class="grid">
+
+      <a href="guide-eval-gate.html" class="gcard" style="--pc:var(--cyan)" data-evt="guide-eval-gate">
+        <span class="tag" style="color:var(--cyan);border:1px solid rgba(34,211,238,0.4);background:rgba(34,211,238,0.07)">Evaluation</span>
+        <h2 class="gtitle">The Minimum Viable Eval Gate</h2>
+        <p class="gdek">Stand up an LLM regression gate in an afternoon: a golden set, a judge, and one CI step that can actually block a merge.</p>
+        <div class="gmeta"><span>7 min read</span><span>&middot;</span><span>gate &amp; CI</span><span style="flex:1"></span><span class="arrow">&rarr;</span></div>
+      </a>
+
+      <a href="guide-probes.html" class="gcard" style="--pc:var(--purple)" data-evt="guide-probes">
+        <span class="tag" style="color:var(--purple);border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.07)">Safety</span>
+        <h2 class="gtitle">The 12 Probes Every LLM Feature Should Survive</h2>
+        <p class="gdek">Injection, jailbreak, system-prompt leak, hallucination, PII, exfil, scope, over-refusal, and more &mdash; what each tests, and what pass vs fail looks like.</p>
+        <div class="gmeta"><span>9 min read</span><span>&middot;</span><span>red-team battery</span><span style="flex:1"></span><span class="arrow">&rarr;</span></div>
+      </a>
+
+      <a href="guide-golden-set.html" class="gcard" style="--pc:var(--green)" data-evt="guide-golden-set">
+        <span class="tag" style="color:var(--green);border:1px solid rgba(16,185,129,0.4);background:rgba(16,185,129,0.07)">Evaluation</span>
+        <h2 class="gtitle">Building a Golden Set That Actually Catches Regressions</h2>
+        <p class="gdek">Where real cases come from, how many you need, how to define &ldquo;good,&rdquo; and why the golden set <em>is</em> your definition of working.</p>
+        <div class="gmeta"><span>7 min read</span><span>&middot;</span><span>datasets</span><span style="flex:1"></span><span class="arrow">&rarr;</span></div>
+      </a>
+
+      <a href="guide-human-approval.html" class="gcard" style="--pc:var(--amber)" data-evt="guide-human-approval">
+        <span class="tag" style="color:var(--amber);border:1px solid rgba(245,158,11,0.4);background:rgba(245,158,11,0.07)">Automation</span>
+        <h2 class="gtitle">Where to Put the Human Approval Point in AI Automation</h2>
+        <p class="gdek">The hardest question in AI automation isn&rsquo;t &ldquo;can the agent do it&rdquo; &mdash; it&rsquo;s where a human signs off. Patterns, and how to earn autonomy down.</p>
+        <div class="gmeta"><span>6 min read</span><span>&middot;</span><span>agents</span><span style="flex:1"></span><span class="arrow">&rarr;</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="wrap" style="padding:clamp(24px,5vw,48px) 0 clamp(56px,8vw,88px)">
+    <div class="ctabox">
+      <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-0.015em;margin:0">Reading this because something ships next week?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Bring the AI feature that scares you. In 30 minutes you&rsquo;ll leave with a concrete plan for the gate &mdash; the call is free and the plan is yours.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+        <a href="book.html" class="btn green" data-evt="docs-book-footer">Book a call &rarr;</a>
+        <a href="eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 6px;font-size:13px;color:var(--cyan)">watch an eval run itself &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+</body>
+</html>
