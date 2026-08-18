@@ -1,6 +1,6 @@
 // Scope Studio page controller — offline question flow + plan-key derivation.
 // Renders questions, tracks answers, and rehydrates from a shared URL.
-// The actual plan visualization is installed by Task 6 via window.__renderScopePlan.
+// Defines window.__renderScopePlan (the plan visualization renderer) directly.
 
 const PHASE_COLOR = { audit: '#8FA0FF', build: '#22d3ee', gate: '#a78bfa', operate: '#10b981' };
 function money(n) { return '$' + (n >= 1000 ? Math.round(n / 100) / 10 + 'k' : String(n)); }
@@ -10,7 +10,7 @@ window.__renderScopePlan = function (plan) {
   const mount = document.getElementById('scope-plan');
   if (!mount) return;
   if (!plan.count) {
-    mount.innerHTML = '<div style="border:1px dashed #2A2826;border-radius:12px;padding:28px;color:#8E8882;font-family:\'JetBrains Mono\',monospace;font-size:12.5px">Pick what you want to happen — your plan builds here as you go.</div>';
+    mount.innerHTML = '<div style="border:1px dashed #2A2826;border-radius:12px;padding:28px;color:#8E8882;font-family:\'JetBrains Mono\',monospace;font-size:12.5px">Pick what you want to happen. Your plan builds here as you go.</div>';
     return;
   }
   const phases = plan.phases.map(p => `
@@ -98,14 +98,14 @@ if (root && qMount && planMount && disc) {
   }
 
   function planSummaryText(plan) {
-    const lines = plan.items.map((i) => `• ${i.name} — ${band(i.band)} (${i.effort})`);
-    return `Here's the plan I scoped on your site:\n\n${lines.join('\n')}\n\nIndicative total: ${band(plan.totalBand)} · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} weeks\n(Indicative only — happy to lock exact scope on a call.)\n\nShared plan: ${location.href}`;
+    const lines = plan.items.map((i) => `• ${i.name} · ${band(i.band)} (${i.effort})`);
+    return `Here's the plan I scoped on your site:\n\n${lines.join('\n')}\n\nIndicative total: ${band(plan.totalBand)} · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} weeks\n(Indicative only. Happy to lock exact scope on a call.)\n\nShared plan: ${location.href}`;
   }
 
   function updateHandoff(plan) {
     const email = document.getElementById('scope-email');
     if (email) {
-      const subj = encodeURIComponent('My scoped plan — via the site');
+      const subj = encodeURIComponent('My scoped plan · via the site');
       const body = encodeURIComponent(plan.count ? planSummaryText(plan) : 'I started scoping on your site and want to talk.');
       email.setAttribute('href', `mailto:hello@sageideas.dev?subject=${subj}&body=${body}`);
     }
