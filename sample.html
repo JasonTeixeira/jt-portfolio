@@ -96,8 +96,16 @@
     statusEl.textContent='sending…';
     try { if(typeof window.va==='function') window.va('event',{name:'lead-submit'}); } catch(_){}
     fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(f)})
-      .then(function(r){ return r.json().catch(function(){return{ok:r.ok};}); })
-      .then(function(d){ if(d && d.ok!==false){ reveal(); } else { statusEl.textContent=(d&&d.error)||'something went wrong — email hello@sageideas.dev'; } })
+      // A real endpoint replies with JSON. No JSON (static host, 501/404, HTML error
+      // body) means the API is absent — reveal the report anyway; the email is
+      // best-effort. Only a genuine JSON {ok:false,error} surfaces an error.
+      .then(function(r){ return r.json().then(function(j){ return { data:j }; }, function(){ return { absent:true }; }); })
+      .then(function(res){
+        if(res.absent){ reveal(); return; }
+        var d=res.data;
+        if(d && d.ok!==false){ reveal(); }
+        else { statusEl.textContent=(d&&d.error)||'something went wrong — email hello@sageideas.dev'; }
+      })
       .catch(function(){ reveal(); }); // never block the report on a transport hiccup
   });
   function reveal(){ document.getElementById('lead-form').style.display='none'; document.getElementById('lead-ok').style.display='block'; }

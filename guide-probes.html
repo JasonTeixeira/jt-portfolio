@@ -94,20 +94,46 @@
           <defs>
             <marker id="pg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"></path></marker>
             <marker id="pr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f43f5e"></path></marker>
+            <radialGradient id="pb-core" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.55"></stop>
+              <stop offset="55%" stop-color="#F59E0B" stop-opacity="0.12"></stop>
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"></stop>
+            </radialGradient>
+            <style>
+              .pb-halo { animation: pb-breathe 2.8s ease-in-out infinite; }
+              @keyframes pb-breathe { 0%,100%{opacity:.45} 50%{opacity:1} }
+              .pb-ring { transform-box: fill-box; transform-origin: center; animation: pb-expand 2.8s ease-out infinite; }
+              @keyframes pb-expand { 0%{transform:scale(1);stroke-opacity:.5} 100%{transform:scale(1.7);stroke-opacity:0} }
+              .pb-arrow { stroke-dasharray: 84; animation: pb-strike 3.6s ease-in-out infinite; }
+              @keyframes pb-strike {
+                0%{stroke-dashoffset:84;opacity:.12}
+                8%{opacity:1}
+                22%{stroke-dashoffset:0;opacity:1}
+                92%{stroke-dashoffset:0;opacity:1}
+                100%{stroke-dashoffset:0;opacity:.35}
+              }
+              @media (prefers-reduced-motion: reduce){
+                .pb-halo,.pb-ring,.pb-arrow{animation:none}
+                .pb-arrow{stroke-dashoffset:0;opacity:1}
+                .pb-ring{opacity:0}
+              }
+            </style>
           </defs>
-          <!-- arrows: fail=red, pass=green. start(150) -> end(72) toward center (410,250) -->
-          <line x1="410" y1="100" x2="410" y2="178" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
-          <line x1="485" y1="120.1" x2="446" y2="187.6" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
-          <line x1="539.9" y1="175" x2="472.3" y2="214" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
-          <line x1="560" y1="250" x2="482" y2="250" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
-          <line x1="539.9" y1="325" x2="472.3" y2="286" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
-          <line x1="485" y1="379.9" x2="446" y2="312.4" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
-          <line x1="410" y1="400" x2="410" y2="322" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
-          <line x1="335" y1="379.9" x2="374" y2="312.4" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
-          <line x1="280.1" y1="325" x2="347.7" y2="286" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
-          <line x1="260" y1="250" x2="338" y2="250" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
-          <line x1="280.1" y1="175" x2="347.7" y2="214" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
-          <line x1="335" y1="120.1" x2="374" y2="187.6" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
+          <!-- living core glow (behind) -->
+          <circle class="pb-halo" cx="410" cy="250" r="104" fill="url(#pb-core)"></circle>
+          <!-- arrows: fail=red, pass=green. staggered strike toward center (410,250) -->
+          <line class="pb-arrow" style="animation-delay:0s" x1="410" y1="100" x2="410" y2="178" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
+          <line class="pb-arrow" style="animation-delay:0.3s" x1="485" y1="120.1" x2="446" y2="187.6" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
+          <line class="pb-arrow" style="animation-delay:0.6s" x1="539.9" y1="175" x2="472.3" y2="214" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
+          <line class="pb-arrow" style="animation-delay:0.9s" x1="560" y1="250" x2="482" y2="250" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
+          <line class="pb-arrow" style="animation-delay:1.2s" x1="539.9" y1="325" x2="472.3" y2="286" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
+          <line class="pb-arrow" style="animation-delay:1.5s" x1="485" y1="379.9" x2="446" y2="312.4" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
+          <line class="pb-arrow" style="animation-delay:1.8s" x1="410" y1="400" x2="410" y2="322" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
+          <line class="pb-arrow" style="animation-delay:2.1s" x1="335" y1="379.9" x2="374" y2="312.4" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
+          <line class="pb-arrow" style="animation-delay:2.4s" x1="280.1" y1="325" x2="347.7" y2="286" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
+          <line class="pb-arrow" style="animation-delay:2.7s" x1="260" y1="250" x2="338" y2="250" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
+          <line class="pb-arrow" style="animation-delay:3s" x1="280.1" y1="175" x2="347.7" y2="214" stroke="#10b981" stroke-width="1.6" marker-end="url(#pg)"></line>
+          <line class="pb-arrow" style="animation-delay:3.3s" x1="335" y1="120.1" x2="374" y2="187.6" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#pr)"></line>
           <!-- dots -->
           <circle cx="410" cy="70" r="6" fill="#f43f5e"></circle>
           <circle cx="500" cy="94.1" r="6" fill="#10b981"></circle>
@@ -135,8 +161,8 @@
           <text x="242" y="163" text-anchor="end" fill="#A8A29E" font-family="'JetBrains Mono',monospace" font-size="10.5">toxicity</text>
           <text x="308" y="92" text-anchor="end" fill="#fda4af" font-family="'JetBrains Mono',monospace" font-size="10.5">consistency</text>
           <!-- target -->
+          <circle class="pb-ring" cx="410" cy="250" r="58" fill="none" stroke="#F59E0B" stroke-width="1.5"></circle>
           <circle cx="410" cy="250" r="58" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.75"></circle>
-          <circle cx="410" cy="250" r="58" fill="none" stroke="#F59E0B" stroke-width="1.75" stroke-opacity="0.25" transform="scale(1)"></circle>
           <text x="410" y="245" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="600">assistant</text>
           <text x="410" y="262" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="9">under test</text>
         </svg>

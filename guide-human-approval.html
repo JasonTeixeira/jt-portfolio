@@ -88,7 +88,32 @@
               <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A4642"></path></marker>
               <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"></path></marker>
               <marker id="aa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#F59E0B"></path></marker>
+              <radialGradient id="ha-amber" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.42"></stop>
+                <stop offset="70%" stop-color="#F59E0B" stop-opacity="0"></stop>
+              </radialGradient>
+              <radialGradient id="ha-green" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.45"></stop>
+                <stop offset="70%" stop-color="#10b981" stop-opacity="0"></stop>
+              </radialGradient>
+              <style>
+                .ha-diamond { animation: ha-pulse 2.4s ease-in-out infinite; }
+                @keyframes ha-pulse { 0%,100%{stroke-opacity:.9} 50%{stroke-opacity:.35} }
+                .ha-gate { animation: ha-gatepulse 2s ease-in-out infinite; }
+                @keyframes ha-gatepulse { 0%,100%{stroke-opacity:1} 50%{stroke-opacity:.45} }
+                .ha-halo { animation: ha-breathe 3.2s ease-in-out infinite; }
+                .ha-halo.d { animation-delay: 1.2s; }
+                @keyframes ha-breathe { 0%,100%{opacity:.35} 50%{opacity:.9} }
+                @media (prefers-reduced-motion: reduce){
+                  .ha-packet{display:none}
+                  .ha-diamond,.ha-gate,.ha-halo{animation:none;opacity:.6}
+                }
+              </style>
             </defs>
+            <!-- glow halos (behind) -->
+            <ellipse class="ha-halo" cx="360" cy="150" rx="66" ry="50" fill="url(#ha-amber)"></ellipse>
+            <ellipse class="ha-halo d" cx="535" cy="228" rx="88" ry="44" fill="url(#ha-amber)"></ellipse>
+            <ellipse class="ha-halo" cx="630" cy="78" rx="90" ry="44" fill="url(#ha-green)"></ellipse>
             <!-- edges -->
             <line x1="128" y1="150" x2="168" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
             <line x1="292" y1="150" x2="312" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
@@ -105,16 +130,21 @@
             <g><rect x="168" y="128" width="124" height="44" rx="9" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.8"></rect><text x="230" y="148" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Classify</text><text x="230" y="163" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8.5">AI reads intent</text></g>
             <!-- decision diamond -->
             <g>
-              <path d="M312 150 L360 118 L408 150 L360 182 Z" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.85"></path>
+              <path class="ha-diamond" d="M312 150 L360 118 L408 150 L360 182 Z" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.85"></path>
               <text x="360" y="147" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" font-weight="600">risk?</text>
               <text x="360" y="160" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8">route</text>
             </g>
             <!-- auto execute -->
             <g><rect x="560" y="56" width="140" height="44" rx="9" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"></rect><text x="630" y="76" text-anchor="middle" fill="#6ee7b7" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Auto-execute</text><text x="630" y="91" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="8.5">send &middot; logged</text></g>
             <!-- human gate -->
-            <g><rect x="470" y="206" width="130" height="44" rx="9" fill="rgba(245,158,11,0.09)" stroke="#F59E0B" stroke-width="1.75"></rect><text x="535" y="226" text-anchor="middle" fill="#fbbf24" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Human approves</text><text x="535" y="241" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="8.5">the risky edge</text></g>
+            <g><rect class="ha-gate" x="470" y="206" width="130" height="44" rx="9" fill="rgba(245,158,11,0.09)" stroke="#F59E0B" stroke-width="1.75"></rect><text x="535" y="226" text-anchor="middle" fill="#fbbf24" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Human approves</text><text x="535" y="241" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="8.5">the risky edge</text></g>
             <!-- execute after approval -->
             <g><rect x="650" y="206" width="140" height="44" rx="9" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"></rect><text x="720" y="226" text-anchor="middle" fill="#6ee7b7" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Execute</text><text x="720" y="241" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="8.5">send &middot; logged</text></g>
+            <!-- packet flow -->
+            <circle class="ha-packet" r="3.6" fill="#22d3ee"><animateMotion dur="2.6s" repeatCount="indefinite" path="M78 150 H340"></animateMotion></circle>
+            <circle class="ha-packet" r="3.4" fill="#10b981"><animateMotion dur="3s" begin="0.4s" repeatCount="indefinite" path="M408 150 H500 V78 H560"></animateMotion></circle>
+            <circle class="ha-packet" r="3.4" fill="#F59E0B"><animateMotion dur="3s" begin="1.2s" repeatCount="indefinite" path="M360 182 V228 H470"></animateMotion></circle>
+            <circle class="ha-packet" r="3.4" fill="#10b981"><animateMotion dur="2.4s" begin="2.6s" repeatCount="indefinite" path="M600 228 H720"></animateMotion></circle>
           </svg>
         </div>
         <figcaption>The gate goes on the risky edge &mdash; not on every action. Routine cases flow; novel or high-stakes ones wait for a human.</figcaption>

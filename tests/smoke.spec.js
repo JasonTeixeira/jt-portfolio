@@ -336,7 +336,34 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(26);
+    expect((xml.match(/<loc>/g) || []).length).toBe(27);
+  });
+
+  test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
+    await page.goto('/services.html');
+    await expect(page.locator('h1')).toBeVisible();
+    // engagement path renders four steps
+    await expect(page.locator('#path .step')).toHaveCount(4);
+    // three flagship service cards, each linking to its detail page
+    await expect(page.locator('#svcgrid .svc')).toHaveCount(3);
+    for (const slug of SLUGS) {
+      await expect(page.locator(`#svcgrid a[href="services/${slug}.html"]`)).toHaveCount(1);
+    }
+    // clicking a card expands it (deliverables become visible)
+    const first = page.locator('#svcgrid .svc').first();
+    await first.locator('.top').click();
+    await expect(first).toHaveClass(/open/);
+    // capability grid + category filter
+    const total = await page.locator('#capgrid .cap').count();
+    expect(total).toBeGreaterThanOrEqual(10);
+    await page.getByRole('button', { name: 'Quality', exact: true }).click();
+    const filtered = await page.locator('#capgrid .cap').count();
+    expect(filtered).toBeLessThan(total);
+  });
+
+  test('services page is reachable from the primary nav', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('nav a[href="services.html"]').first()).toBeVisible();
   });
 });
 
@@ -384,7 +411,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(26);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(27);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
