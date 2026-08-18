@@ -26,6 +26,7 @@
 - Outbound prospecting + auto-proposals (Subsystem D) — highest risk, built last.
 - Operator cockpit UI (Subsystem E) — foundation only writes the data it will read.
 - Autonomous contracting or payment.
+- **Human layer (photo + one testimonial + founder note)** — deferred by Jason. The page reserves the slot (the hidden testimonial block already exists) so it drops in without rework. Note: this is the single highest human-appeal lever and the honest ceiling; when Jason provides a headshot + one real client quote, wire it in. His ElevenLabs cloned voice becomes the phase-2 voice mode.
 
 **Success criteria:**
 - Works fully with **no LLM configured** (deterministic questionnaire → identical plan output). Smoke tests run offline.
@@ -135,7 +136,7 @@ Indexes on `prospect_id`, `stage`, `created_at`. No PII beyond what the visitor 
 ## 6. Backend changes
 
 ### 6.1 `/api/chat` — add `scope` mode
-- New persona `SCOPE_PROMPT`: warm discovery interviewer; **must** return, after enough signal, a single JSON object `{ reply, done, selection:[{key,why,confidence}], segment, flags }` using the provider's JSON/structured-output mode. `reply` is the conversational turn; `selection` accumulates.
+- New persona `SCOPE_PROMPT`: warm discovery interviewer that follows the **§7.5 Voice & Humanity** rules verbatim (Jason's first-person voice, transparent that it's an AI, EQ-first, graceful-no); **must** return, after enough signal, a single JSON object `{ reply, done, selection:[{key,why,confidence}], segment, flags }` using the provider's JSON/structured-output mode. `reply` is the conversational turn; `selection` accumulates.
 - Larger `max_tokens` for this mode; temperature ~0.4 (more deterministic).
 - Validation: server drops any `key` not in the rate card (hard anti-hallucination gate) and strips any dollar figures from `reply` as defense-in-depth.
 
@@ -158,6 +159,32 @@ Indexes on `prospect_id`, `stage`, `created_at`. No PII beyond what the visitor 
 
 ---
 
+## 7.5 Voice & Humanity — HARD REQUIREMENT
+
+Non-optional. An AI sales funnel done wrong is the least human thing on the internet (slick, eager, uncanny). This section is a gate: the scope AI ships only when its tone passes review against these rules, and `SCOPE_PROMPT` encodes them verbatim.
+
+**Radical AI transparency (the core move).** Never pretend the bot is a human. Own it and own why, up front:
+> "This is Jason's AI. It scopes your project so neither of us wastes time on a call that isn't a fit. Jason reads every plan it makes — skip straight to him anytime."
+Pretending-to-be-human is a hard fail (uncanny + the reveal destroys trust). Transparency is itself the on-brand proof.
+
+**Voice = Jason, first person, a smart friend who happens to be an expert — not a brand.**
+- **Banned:** "I'd be happy to help!", "Great question!", "Let's dive in!", exclamation spam, corporate verbs (unlock / leverage / seamless / elevate), perfectly symmetrical enthusiasm, and the em-dash / rule-of-three / "actually/genuinely" tics already scrubbed from the site.
+- **Required:** contractions, plain words, one idea per turn, a real opinion, occasional dry humor, and *specifics from the visitor's world reflected back*. Listens more than it pitches; consultative, never transactional.
+
+**Emotional intelligence first.** Acknowledge their situation before scoping — e.g. "You've probably been burned by an 'AI solution' that was a demo and a prayer. Fair. Let's do this differently."
+
+**Imperfection as warmth.** The AI states limits plainly: "I can't price this exactly without seeing your data — here's my honest range and why." Honest seams read human; seamless perfection reads fake.
+
+**Graceful no.** Genuine non-fits get an honest, kind "this probably isn't for you, and here's who is." Telling someone not to buy is the most trust-building thing the funnel can do.
+
+**Human micro-copy everywhere.** "thinking about your setup…" not "Loading…"; confirmation reads "Sent to Jason — he usually replies the same day, himself." A human sign-off.
+
+**"Talk to Jason" as a warm invitation, present in every state** — framed as a positive choice, never a dead-end fallback.
+
+**Restraint.** The AI is one clearly-labeled tool in a human's shop, not the shop. Human-written copy, the real face (when un-deferred), and human proof stay dominant on the page; the AI never crowds them out.
+
+**Review gate:** before the AI path is enabled in prod, a tone pass confirms it sounds like Jason and is transparent about being an AI. A robotic, salesy, or human-impersonating reply blocks launch — same seriousness as the capability-selection eval.
+
 ## 8. Returning-visitor memory
 
 - On first visit, client mints `prospect_id` (UUID, localStorage).
@@ -179,6 +206,7 @@ Indexes on `prospect_id`, `stage`, `created_at`. No PII beyond what the visitor 
 - **Smoke (Playwright, offline):** questionnaire → plan builds → totals compute from ratecard → lead capture falls back to mailto → shareable link rehydrates → zero console errors. (Mirrors the site's existing offline-first test discipline.)
 - **Unit:** `computePlan(keys)` math (phase grouping, band summing, timeline), URL encode/decode round-trip, ratecard integrity (every `CAPS` key has a card; every band is `[min≤max]`).
 - **Eval:** golden-set selection scoring (§7), gated in CI.
+- **Voice & Humanity review gate (§7.5):** before enabling the AI path in prod, a tone pass confirms replies sound like Jason (first person, plain, opinionated), are transparent about being an AI, and never impersonate a human. Robotic / salesy / impersonating replies block launch.
 - **A11y + Lighthouse:** 100 targets on `/build.html`; SVG plan viz gets `role=img` + labels like the transform section.
 - **Security:** confirm no service key reaches the client bundle; RLS denies anon reads/writes.
 
