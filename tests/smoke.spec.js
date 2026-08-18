@@ -632,4 +632,29 @@ test.describe('portfolio — docs hub', () => {
     await page.locator('#d-menu').click();
     await expect(page.locator('body')).toHaveClass(/d-navopen/);
   });
+
+  test('docs search (⌘K) opens, filters, and navigates', async ({ page }) => {
+    await page.goto('/docs.html');
+    await page.locator('#d-search-btn').click();
+    await expect(page.locator('#d-modal')).toHaveClass(/open/);
+    await page.locator('#d-q').fill('evaluation');
+    const results = page.locator('#d-results .d-res');
+    expect(await results.count()).toBeGreaterThan(0);
+    await expect(results.first()).toContainText('evaluation', { ignoreCase: true });
+    // Enter navigates to the top hit
+    await page.locator('#d-q').press('Enter');
+    await expect(page).toHaveURL(/docs-.*\.html/);
+  });
+
+  test('docs content pages have on-this-page TOC, anchors, and code blocks', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/docs-evaluation-and-quality.html');
+    // right-rail TOC with links to the page's sections
+    await expect(page.locator('.d-toc .d-toc-link').first()).toBeVisible();
+    // headings are anchor-linkable
+    expect(await page.locator('h2.d-h2[id] a.d-anchor').count()).toBeGreaterThan(0);
+    // real code blocks with copy buttons
+    expect(await page.locator('figure.d-codewrap pre.d-code').count()).toBeGreaterThanOrEqual(2);
+    await expect(page.locator('.d-copy').first()).toBeVisible();
+  });
 });
