@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   if (!r.ok) {
     const detail = await r.text().catch(() => '');
     console.error('resend failed', r.status, detail.slice(0, 500));
-    return res.status(502).json({ ok: false, error: 'mail delivery failed', _diag: detail.slice(0, 300), _from: FROM, _to: TO });
+    return res.status(502).json({ ok: false, error: 'mail delivery failed' });
   }
   return res.status(200).json({ ok: true });
 }
