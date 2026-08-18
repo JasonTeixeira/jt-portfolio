@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { RATE_CARD, CARD_BY_KEY, DISCLAIMER, SEGMENTS } from '../../assets/scope-core.mjs';
 
 test('rate card has cards and every key is unique', () => {
-  assert.ok(RATE_CARD.length >= 20, 'expected the full capability catalog');
+  assert.ok(RATE_CARD.length >= 30, 'expected the full capability catalog');
   const keys = RATE_CARD.map(c => c.key);
   assert.equal(new Set(keys).size, keys.length, 'keys must be unique');
 });

@@ -32,7 +32,7 @@ export const RATE_CARD = [
   { key: 'e2e',            name: 'E2E test automation',             track: 'Test Automation', band: [4000, 12000], effort: '~2-5 wks', phase: 'gate', why: 'Your critical flows, covered and green in CI.' },
   { key: 'api-testing',    name: 'API & contract testing',          track: 'Test Automation', band: [3000, 8000],  effort: '~1-3 wks', phase: 'gate', why: 'Catch the broken endpoint before the frontend does.' },
   { key: 'mobile-cert',    name: 'Mobile real-device certification',track: 'Test Automation', band: [4000, 10000], effort: '~2-4 wks', phase: 'gate', why: 'Ship iOS/Android with proof, not hope.' },
-  { key: 'cicd',           name: 'CI/CD pipeline + test wiring',     track: 'Test Automation', band: [3000, 8000],  effort: '~1-3 wks', phase: 'build', why: 'A green badge that actually means something.' },
+  { key: 'cicd',           name: 'CI/CD pipeline + test wiring',     track: 'Test Automation', band: [3000, 8000],  effort: '~1-3 wks', phase: 'build', why: 'A green badge you can trust.' },
   { key: 'flaky',          name: 'Flaky-test stabilization',        track: 'Test Automation', band: [2500, 6000],  effort: '~1-2 wks', phase: 'gate', why: 'Make red mean something again.' },
   { key: 'perf',           name: 'Performance & load baselines',    track: 'Test Automation', band: [3000, 7000],  effort: '~1-2 wks', phase: 'gate', why: 'Know your critical path\'s breaking point.' },
   { key: 'visual',         name: 'Visual regression testing',       track: 'Test Automation', band: [2500, 6000],  effort: '~1-2 wks', phase: 'gate', why: 'Catch the layout break a unit test can\'t see.' },
