@@ -94,6 +94,34 @@ if (root && qMount && planMount && disc) {
     window.__renderScopePlan(plan);
     syncUrl();
     root.setAttribute('data-state', keys.length ? 'plan' : 'discovery');
+    updateHandoff(plan);
+  }
+
+  function planSummaryText(plan) {
+    const lines = plan.items.map((i) => `• ${i.name} — ${band(i.band)} (${i.effort})`);
+    return `Here's the plan I scoped on your site:\n\n${lines.join('\n')}\n\nIndicative total: ${band(plan.totalBand)} · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} weeks\n(Indicative only — happy to lock exact scope on a call.)\n\nShared plan: ${location.href}`;
+  }
+
+  function updateHandoff(plan) {
+    const email = document.getElementById('scope-email');
+    if (email) {
+      const subj = encodeURIComponent('My scoped plan — via the site');
+      const body = encodeURIComponent(plan.count ? planSummaryText(plan) : 'I started scoping on your site and want to talk.');
+      email.setAttribute('href', `mailto:hello@sageideas.dev?subject=${subj}&body=${body}`);
+    }
+    const copy = document.getElementById('scope-copy');
+    if (copy && !copy.dataset.wired) {
+      copy.dataset.wired = '1';
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(location.href);
+          copy.textContent = 'Copied';
+          setTimeout(() => { copy.textContent = 'Copy shareable link'; }, 1600);
+        } catch {
+          // Clipboard API unavailable (e.g. insecure context) — link is still visible to copy manually.
+        }
+      });
+    }
   }
 
   function selectedOptionIds() {

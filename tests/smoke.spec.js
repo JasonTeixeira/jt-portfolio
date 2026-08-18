@@ -700,4 +700,13 @@ test.describe('portfolio — scope studio', () => {
     await expect(page.locator('#scope-root')).toHaveAttribute('data-state', 'plan');
     expect(errors).toEqual([]);
   });
+
+  test('handoff: mailto is prefilled with the plan; talk-to-human always present', async ({ page, context, browserName }) => {
+    await page.goto('/build.html');
+    await page.locator('.scope-opt[data-id="opt-e2e"]').click();
+    const mailto = await page.locator('#scope-email').getAttribute('href');
+    expect(mailto).toContain('mailto:hello@sageideas.dev');
+    expect(decodeURIComponent(mailto)).toContain('E2E test automation'); // plan summary in the body
+    await expect(page.locator('#scope-human')).toHaveAttribute('href', /book\.html/);
+  });
 });
