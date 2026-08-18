@@ -134,7 +134,7 @@ export const QUESTIONS = [
   {
     id: 'needs', prompt: 'What do you want to happen?', multi: true,
     options: [
-      { id: 'opt-eval', label: 'Prove our AI feature actually works', keys: ['llm-eval', 'ci-gate'] },
+      { id: 'opt-eval', label: 'Prove our AI feature works', keys: ['llm-eval', 'ci-gate'] },
       { id: 'opt-safety', label: 'Stop it hallucinating / leaking', keys: ['grounding', 'redteam'] },
       { id: 'opt-e2e', label: 'Stop releases from breaking', keys: ['e2e', 'flaky'] },
       { id: 'opt-build-ai', label: 'Build an AI assistant/agent', keys: ['chatbot', 'rag'] },
