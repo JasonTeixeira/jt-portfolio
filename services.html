@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Services — Everything I Build, and What It Costs · Jason Teixeira</title>
-<meta name="description" content="The full stack from one operator: LLM evaluation & AI quality, test automation & CI, and AI workflow automation — plus the capability menu and a fixed engagement path (audit $750 → build $9,500). Real prices, real proof.">
+<title>Services — Everything I Build · Jason Teixeira</title>
+<meta name="description" content="The full stack from one operator: AI product engineering, LLM evaluation & AI quality, test automation & CI, workflow automation, and full-stack product builds. A 30+ capability matrix with explainers. No fixed prices — every engagement is scoped and quoted after a short call.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://agency.sageideas.dev/services.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Services — Everything I Build, and What It Costs">
-<meta property="og:description" content="LLM evaluation, test automation, AI workflow automation — the full stack, one operator, fixed prices, real proof.">
+<meta property="og:title" content="Services — Everything I Build">
+<meta property="og:description" content="30+ capabilities across AI engineering, evaluation, test automation, and automation — scoped and quoted for your problem, not a package.">
 <meta property="og:url" content="https://agency.sageideas.dev/services.html">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <style>
-  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
   a { color:inherit; text-decoration:none; }
@@ -42,7 +42,7 @@
   .step p { margin:12px 0 0; font-size:13px; line-height:1.6; color:var(--dim); }
   .step .sweep { position:absolute; top:0; left:0; height:2px; width:100%; background:linear-gradient(90deg,transparent,currentColor,transparent); opacity:.5; }
 
-  /* service matrix */
+  /* flagship service cards */
   .svcgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr)); gap:16px; margin-top:28px; }
   .svc { border:1px solid var(--line); background:var(--card); border-radius:16px; overflow:hidden; opacity:0; animation:rise .6s cubic-bezier(.16,1,.3,1) forwards; transition:border-color .3s; }
   .svc:hover { border-color:var(--ac); }
@@ -56,30 +56,34 @@
   .svc .rule { height:1px; background:var(--line); margin:4px 0 18px; }
   .deliv { display:flex; gap:11px; align-items:baseline; padding:7px 0; font-size:13px; color:var(--dim); }
   .deliv .b { color:var(--ac); font-family:var(--mono); }
-  .pkgs { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:16px 0; }
-  @media (max-width:520px){ .pkgs { grid-template-columns:1fr; } }
-  .pkg { border:1px solid var(--line); border-radius:9px; padding:12px; }
-  .pkg .pn { font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); }
-  .pkg .pp { font-family:var(--serif); font-size:1.3rem; margin-top:3px; }
-  .pkg .pt { font-family:var(--mono); font-size:10px; color:var(--faint); }
+  .phases { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:16px 0; }
+  @media (max-width:520px){ .phases { grid-template-columns:1fr; } }
+  .ph { border:1px solid var(--line); border-radius:9px; padding:12px; }
+  .ph .pn { font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); }
+  .ph .pp { font-family:var(--serif); font-size:1.1rem; margin-top:3px; }
+  .ph .pt { font-family:var(--mono); font-size:10px; color:var(--faint); }
   .svc .foot { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
   .toggle { margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--ac); }
-  .btnrow a { font-size:13px; }
   .proofline { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:6px; }
   .proofline b { color:var(--ink); }
 
-  /* capability grid */
-  .cat-filter { display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; }
-  .chip { font-family:var(--mono); font-size:11px; padding:7px 14px; border-radius:16px; border:1px solid var(--line); color:var(--dim); cursor:pointer; background:transparent; }
-  .chip.on { color:var(--ink); border-color:#3a3632; background:rgba(255,255,255,0.04); }
-  .capgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr)); gap:12px; margin-top:22px; }
-  .cap { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; opacity:0; animation:rise .45s ease-out forwards; transition:transform .3s,border-color .3s; }
-  .cap:hover { transform:translateY(-4px); }
-  .cap .ic { font-size:19px; }
-  .cap h4 { font-family:var(--serif); font-weight:400; font-size:1.15rem; margin:10px 0 5px; }
-  .cap p { margin:0; font-size:12.5px; line-height:1.55; color:var(--dim); }
-  .cap .out { margin-top:10px; font-family:var(--mono); font-size:11px; max-height:0; overflow:hidden; opacity:0; transition:max-height .35s,opacity .35s,margin .35s; }
-  .cap:hover .out { max-height:60px; opacity:1; }
+  /* matrix */
+  .cat-filter { display:flex; gap:8px; flex-wrap:wrap; margin-top:24px; }
+  .chip { font-family:var(--mono); font-size:11px; padding:8px 15px; border-radius:16px; border:1px solid var(--line); color:var(--dim); cursor:pointer; background:transparent; transition:all .2s; }
+  .chip.on { color:var(--bg); border-color:transparent; font-weight:700; }
+  .capgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr)); gap:12px; margin-top:22px; align-items:start; }
+  .cap { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; opacity:0; animation:rise .4s ease-out forwards; transition:border-color .25s; cursor:pointer; }
+  .cap .cr { display:flex; align-items:center; gap:10px; }
+  .cap .ic { font-size:18px; }
+  .cap .track { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; margin-left:auto; }
+  .cap h4 { font-family:var(--serif); font-weight:400; font-size:1.2rem; margin:11px 0 5px; }
+  .cap .blurb { margin:0; font-size:12.5px; line-height:1.55; color:var(--dim); }
+  .cap .more { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.16,1,.3,1); }
+  .cap.open .more { max-height:360px; }
+  .cap .detail { margin:14px 0 0; font-size:12.5px; line-height:1.62; color:#C4BFB8; }
+  .cap .out { margin:12px 0 0; font-family:var(--mono); font-size:11px; }
+  .cap .q { display:inline-flex; align-items:center; gap:6px; margin-top:14px; font-family:var(--mono); font-size:11px; font-weight:600; }
+  .cap .hint { font-family:var(--mono); font-size:10px; color:var(--faint); margin-top:12px; }
 
   .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
   @keyframes rise { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
@@ -102,30 +106,34 @@
 
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(20px,3vw,32px)">
     <div class="kick">Services &middot; the full stack, one operator</div>
-    <h1 style="margin-top:20px;max-width:15ch">Everything I build — and exactly <em style="color:var(--green)">what it costs.</em></h1>
-    <p class="subtle lead" style="margin-top:20px">No agency, no handoff, no "quote after five calls." Three flagship engagements, a full capability menu, and one fixed path from a $750 audit to a shipped system. Every price is on the page. Every claim links to proof.</p>
+    <h1 style="margin-top:20px;max-width:16ch">Everything I build — <em style="color:var(--green)">scoped &amp; quoted for you.</em></h1>
+    <p class="subtle lead" style="margin-top:20px">No agency, no handoff, no fixed price list padded to cover overhead you don't have. Three flagship engagements, a 30+ capability matrix, and one path from a short audit to a shipped system. Tell me the problem and you leave with a plan and a real number — you pay for your problem, not a package.</p>
+    <div style="display:flex;gap:14px;margin-top:26px;flex-wrap:wrap">
+      <a href="book.html" class="cta" data-evt="svc-hero-book">Start a conversation &rarr;</a>
+      <a href="#matrix" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">jump to the full matrix &darr;</a>
+    </div>
   </header>
 
   <!-- ENGAGEMENT PATH -->
   <section><div class="wrap">
     <div class="kick" style="color:#8FA0FF">01 — how an engagement goes</div>
-    <h2 style="margin-top:12px">A fixed path. A real number. Evidence at every step.</h2>
+    <h2 style="margin-top:12px">A fixed path. A real quote. Evidence at every step.</h2>
     <div class="path" id="path"></div>
-    <p class="mono" style="margin-top:16px;font-size:11px;color:var(--faint)">the $750 audit is credited in full toward any build &middot; 50% deposit before build work starts &middot; your repo, your CI, nothing retained after handoff</p>
+    <p class="mono" style="margin-top:16px;font-size:11px;color:var(--faint)">no fixed price list — every engagement is scoped and quoted after a short call &middot; your repo, your CI, nothing retained after handoff &middot; if the scoping shows I can't help, I'll say so and it costs nothing</p>
   </div></section>
 
-  <!-- SERVICE MATRIX -->
+  <!-- FLAGSHIP -->
   <section><div class="wrap">
     <div class="kick" style="color:var(--purple)">02 — flagship engagements</div>
-    <h2 style="margin-top:12px">Pick the one that fits. Click to open it up.</h2>
+    <h2 style="margin-top:12px">The three I'm known for. Click to open one up.</h2>
     <div class="svcgrid" id="svcgrid"></div>
   </div></section>
 
-  <!-- CAPABILITY MENU -->
-  <section><div class="wrap">
-    <div class="kick" style="color:var(--cyan)">03 — the full menu</div>
-    <h2 style="margin-top:12px">And everything around them.</h2>
-    <p class="subtle" style="margin-top:12px;max-width:52ch">Hover any tile for what it does for your business. Filter by what you need.</p>
+  <!-- MATRIX -->
+  <section id="matrix"><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">03 — the full capability matrix</div>
+    <h2 style="margin-top:12px">30+ things I can build for you.</h2>
+    <p class="subtle" style="margin-top:12px;max-width:56ch">Filter by track. Click any card for the explainer — what it is, what you get, and the outcome. Every one ends in a quote, not a checkout.</p>
     <div class="cat-filter" id="cats"></div>
     <div class="capgrid" id="capgrid"></div>
   </div></section>
@@ -133,7 +141,7 @@
   <!-- CTA -->
   <section><div class="wrap" style="text-align:center;max-width:680px;margin:0 auto">
     <h2>Not sure which one? That's what the call is for.</h2>
-    <p class="subtle" style="margin:14px auto 0;max-width:46ch">15 minutes. You describe the problem; I tell you honestly which of these it needs and what it costs — or that it doesn't need me at all.</p>
+    <p class="subtle" style="margin:14px auto 0;max-width:46ch">15 minutes. You describe the problem; I tell you honestly which of these it needs, what it takes, and what it costs — or that it doesn't need me at all.</p>
     <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
       <a href="book.html" class="cta" data-evt="svc-book">Book a 15-minute call &rarr;</a>
       <a href="demos.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">see it work first &rarr;</a>
@@ -148,15 +156,15 @@
 
 <script>
 (function(){
-  var GREEN='#10b981', CYAN='#22d3ee', PURPLE='#a78bfa', AMBER='#F59E0B';
+  var GREEN='#10b981', CYAN='#22d3ee', PURPLE='#a78bfa', AMBER='#F59E0B', ROSE='#f43f5e', BLUE='#8FA0FF';
   function esc(s){ return String(s==null?'':s); }
 
-  /* engagement path */
+  /* engagement path — no prices */
   var PATH=[
-    {n:'01', t:'Audit', price:'$750 · 1 week', c:'#8FA0FF', d:'I map your highest-leverage failure — the AI surface, the test gap, the automation ROI — and hand you a costed plan you own. Credited toward any build.'},
-    {n:'02', t:'Sprint', price:'from $2,500 · 2 wks', c:CYAN, d:'One visible, production-grade improvement — real code, deployed, measured. A minimum viable gate or a shipped workflow.'},
-    {n:'03', t:'Build', price:'from $9,500 · 4–8 wks', c:PURPLE, d:'The full system: the eval battery, the CI gate, the automation, the runbook — owned by your team at handoff.'},
-    {n:'04', t:'Operate', price:'$2,500/mo · ongoing', c:GREEN, d:'Measure, improve, publish. The gate stays green and the system compounds instead of quietly decaying.'}
+    {n:'01', t:'Audit', price:'~1 week · start here', c:BLUE, d:"I map your highest-leverage failure — the AI surface, the test gap, the automation ROI — and hand you a prioritized plan and a concrete quote you own."},
+    {n:'02', t:'Sprint', price:'~2 weeks · scoped', c:CYAN, d:'One visible, production-grade improvement — real code, deployed, measured. A minimum viable gate or a shipped workflow.'},
+    {n:'03', t:'Build', price:'~4–8 weeks · scoped', c:PURPLE, d:'The full system: the eval battery, the CI gate, the automation, the runbook — owned by your team at handoff.'},
+    {n:'04', t:'Operate', price:'ongoing · optional', c:GREEN, d:'Measure, improve, publish. The system stays green and compounds instead of quietly decaying.'}
   ];
   var pathEl=document.getElementById('path');
   PATH.forEach(function(s,i){
@@ -165,24 +173,24 @@
     pathEl.appendChild(d);
   });
 
-  /* flagship services */
+  /* flagship services — no prices */
   var SERVICES=[
     { cat:'AI quality & evaluation', ac:PURPLE, name:'LLM Evaluation & Eval Harness',
       sub:"You shipped an AI feature. I build the evaluation and regression system that proves it works — scoring, safety gates, and a CI gate that blocks a bad change before customers see it.",
       deliv:['Golden dataset + LLM-as-judge scoring for faithfulness, relevance, safety','Safety runner battery: injection, jailbreak, PII, toxicity, hallucination, consistency','CI quality gate — a score below the ratcheted floor blocks the merge','Runbook + handoff so your team owns the gate'],
-      pkgs:[['Eval Audit','$750','1 week'],['MV Gate','from $2,500','2 weeks'],['Full Battery','from $9,500','4–8 weeks']],
+      phases:[['Eval Audit','~1 wk'],['MV Gate','~2 wks'],['Full Battery','~4–8 wks']],
       proof:'llm-eval-gate (public, keyless) · nexural-qa-os — 85 runners, 10 AI-safety evals',
       href:'services/llm-evaluation-qa.html' },
     { cat:'Quality engineering', ac:GREEN, name:'Test Automation & CI',
       sub:"A regression suite a release manager can trust: risk-scoped coverage with traces, reporters, artifacts, and a green gate that actually means something — in your repo, your CI.",
       deliv:['Risk model → coverage matrix (coverage by release risk, not habit)','Playwright/Pytest suite: POM, fixtures, trace-on-retry, four reporters','CI wiring on every push/PR with artifact retention','Flake protocol: quarantine lane, retry policy, weekly triage'],
-      pkgs:[['Suite Audit','$750','1 week'],['Stabilize','from $2,500','2 weeks'],['Regression Build','from $9,500','4–8 weeks']],
+      phases:[['Suite Audit','~1 wk'],['Stabilize','~2 wks'],['Regression Build','~4–8 wks']],
       proof:'playwright-sdet-regression-suite — 37/37 in CI · HighStrike flake 10% → <1%',
       href:'services/test-automation-ci.html' },
     { cat:'AI automation', ac:CYAN, name:'AI Workflow Automation',
       sub:"Automation that ships work, not surprises: intake, triage, routing, RAG-backed answers — with human approval points where the risk is, and logs you can audit.",
       deliv:['One scoped workflow end-to-end — intake → classify → route → act','Human approval points placed by risk, earned down with evidence','Structured outputs + schema validation + fallbacks; raw inputs logged','Cost model per run + runbook + handoff'],
-      pkgs:[['Automation Audit','$750','1 week'],['One Workflow','from $2,500','2 weeks'],['System Build','from $9,500','4–8 weeks']],
+      phases:[['Automation Audit','~1 wk'],['One Workflow','~2 wks'],['System Build','~4–8 wks']],
       proof:'BRIEF/01 — feedback triage that runs itself · sage-agents with a hard consent gate',
       href:'services/ai-workflow-automation.html' },
   ];
@@ -190,49 +198,103 @@
   SERVICES.forEach(function(s,i){
     var card=document.createElement('div'); card.className='svc'; card.style.setProperty('--ac',s.ac); card.style.animationDelay=(i*0.09)+'s';
     var deliv=s.deliv.map(function(d){ return '<div class="deliv"><span class="b">→</span>'+esc(d)+'</div>'; }).join('');
-    var pkgs=s.pkgs.map(function(p){ return '<div class="pkg"><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div><div class="pt">'+p[2]+'</div></div>'; }).join('');
+    var phases=s.phases.map(function(p){ return '<div class="ph"><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div><div class="pt">scoped &amp; quoted</div></div>'; }).join('');
     card.innerHTML=
       '<div class="top"><div class="cat">'+esc(s.cat)+'</div><h3>'+esc(s.name)+'</h3><div class="sub">'+esc(s.sub)+'</div>'+
         '<div class="foot" style="margin-top:14px"><span class="proofline">proof: <b>'+esc(s.proof.split(' · ')[0])+'</b></span><span class="toggle">what you get ↓</span></div></div>'+
       '<div class="expand"><div class="inner"><div class="rule"></div>'+deliv+
-        '<div class="pkgs">'+pkgs+'</div>'+
+        '<div class="phases">'+phases+'</div>'+
         '<div class="proofline" style="margin-bottom:14px">proof: <b>'+esc(s.proof)+'</b></div>'+
         '<div class="btnrow" style="display:flex;gap:14px;flex-wrap:wrap"><a href="'+s.href+'" class="btn-solid green" data-evt="svc-detail" style="padding:11px 18px">Full details &rarr;</a>'+
-        '<a href="book.html" data-evt="svc-book-card" style="display:inline-flex;align-items:center;color:'+s.ac+';font-family:var(--mono);font-size:12px">or book a call →</a></div></div></div>';
+        '<a href="book.html" data-evt="svc-book-card" style="display:inline-flex;align-items:center;color:'+s.ac+';font-family:var(--mono);font-size:12px">or get a quote →</a></div></div></div>';
     var top=card.querySelector('.top'), tog=card.querySelector('.toggle');
     top.addEventListener('click', function(){ card.classList.toggle('open'); tog.textContent=card.classList.contains('open')?'close ↑':'what you get ↓'; });
     grid.appendChild(card);
   });
 
-  /* capability menu */
-  var CAPS=[
-    {cat:'AI systems',ic:'📞',n:'AI receptionist',p:'Answers every call, qualifies, books, texts you the summary.',o:'→ zero missed jobs, 24/7'},
-    {cat:'AI systems',ic:'🗣',n:'Voice agents',p:'Inbound + outbound voice that sounds human and gets tasks done.',o:'→ reminders, intake, follow-up'},
-    {cat:'AI systems',ic:'💬',n:'Knowledge assistant',p:'Answers from your docs, policies, and past tickets.',o:'→ support deflection, internal Q&A'},
-    {cat:'AI systems',ic:'📄',n:'Document intake',p:'Invoices, forms, applications → clean structured data.',o:'→ no more manual entry'},
-    {cat:'AI systems',ic:'🔀',n:'Lead automation',p:'Every lead captured, scored, routed, followed up in minutes.',o:'→ nothing slips'},
-    {cat:'AI systems',ic:'✍️',n:'Workflow copilots',p:'Quotes, emails, reports drafted inside your process.',o:'→ hours back per week'},
-    {cat:'Quality',ic:'🧪',n:'LLM eval harness',p:'Prove your AI feature works: scoring, safety gates, CI.',o:'→ ship without the 3am fear'},
-    {cat:'Quality',ic:'✅',n:'Test automation + CI',p:'Regression suites with traces and a green gate that means it.',o:'→ releases stop breaking'},
-    {cat:'Quality',ic:'📱',n:'Mobile app testing',p:'Real-device end-to-end certification for iOS/Android.',o:'→ ship with proof, not hope'},
-    {cat:'Quality',ic:'📊',n:'Release gates',p:'A clear ship/no-ship signal backed by evidence.',o:'→ decisions, not vibes'},
-    {cat:'Product',ic:'🖥',n:'Web apps & portals',p:'Auth, payments, dashboards — production-grade.',o:'→ the real thing'},
-    {cat:'Product',ic:'🛠',n:'Internal tools',p:'The admin panel your team runs by hand in spreadsheets.',o:'→ automate the busywork'}
+  /* the full matrix — tracks × offerings, each with an explainer */
+  var TRACKS=[
+    {key:'AI Build', color:CYAN},
+    {key:'Eval & QA', color:PURPLE},
+    {key:'Test Automation', color:GREEN},
+    {key:'Automation', color:AMBER},
+    {key:'Product', color:ROSE}
   ];
-  var CATS=['All','AI systems','Quality','Product'];
-  var CC={'AI systems':CYAN,'Quality':GREEN,'Product':PURPLE};
+  var TC={}; TRACKS.forEach(function(t){ TC[t.key]=t.color; });
+
+  var CAPS=[
+    // ── AI Build ──
+    {track:'AI Build', ic:'💬', name:'Conversational assistant / chatbot', blurb:'A support or product chatbot grounded in your own docs.', detail:'A retrieval-augmented assistant that answers from your documentation, policies, and past tickets — not the open internet. Streaming UI, source citations, and a scope guard so it stays on-topic.', out:'→ support deflection + instant internal Q&A'},
+    {track:'AI Build', ic:'📞', name:'AI voice agent', blurb:'Inbound + outbound voice that gets tasks done.', detail:'A phone agent that answers 24/7, qualifies the caller, books the job, and texts you a summary — or makes outbound reminder and follow-up calls. Human-sounding, with a hard consent gate on outbound.', out:'→ zero missed calls, zero missed jobs'},
+    {track:'AI Build', ic:'📄', name:'Document intake & extraction', blurb:'Invoices, forms, PDFs → clean structured data.', detail:'An extraction pipeline that turns messy documents into validated structured records — schema-enforced, with confidence scoring and a human-review lane for the low-confidence cases.', out:'→ no more manual data entry'},
+    {track:'AI Build', ic:'🧠', name:'Internal copilot / knowledge assistant', blurb:'An AI that knows how your company works.', detail:'A private assistant wired into your wiki, code, and tickets so your team gets answers in seconds instead of pinging the one person who knows. Access-scoped and auditable.', out:'→ onboarding + tribal knowledge, solved'},
+    {track:'AI Build', ic:'🔎', name:'RAG pipeline engineering', blurb:'Retrieval that actually retrieves the right thing.', detail:'The unglamorous core that makes AI features trustworthy: chunking strategy, embeddings, hybrid retrieval, reranking, and grounding — with retrieval-quality evals (context precision/recall, citation coverage) in front.', out:'→ answers that cite their sources'},
+    {track:'AI Build', ic:'🕸', name:'Multi-agent workflow / orchestration', blurb:'Agents that plan, call tools, and hand off — safely.', detail:'When the logic is genuinely agentic, a LangGraph-style orchestration with explicit state, tool-use boundaries, retries, and approval checkpoints — instrumented so you can see every step it took.', out:'→ complex flows, kept auditable'},
+    {track:'AI Build', ic:'🔌', name:'Structured-output & function-calling', blurb:'Make the LLM a reliable part of your backend.', detail:'Schema-validated LLM steps with function/tool calling, fallback labels on parse failure, and raw inputs logged beside every decision — the difference between a demo and production.', out:'→ AI you can call from code'},
+    // ── Eval & QA ──
+    {track:'Eval & QA', ic:'⚖️', name:'LLM evaluation harness', blurb:'Golden set + LLM-as-judge scoring for your feature.', detail:'50–200 real inputs with agreed-good outputs, versioned next to the code, scored by an LLM judge for faithfulness, relevance, and safety. The regression signal you don\'t have yet.', out:'→ ship prompt changes on proof, not vibes'},
+    {track:'Eval & QA', ic:'🛡', name:'AI red-team & safety battery', blurb:'Adversarial probes: injection, jailbreak, PII, toxicity.', detail:'A battery of adversarial runners that try to break your assistant the way a real user (or attacker) would — prompt injection, jailbreaks, PII leakage, toxicity, over-refusal — with verbatim transcripts of every failure.', out:'→ find the embarrassing failure first'},
+    {track:'Eval & QA', ic:'🚦', name:'CI quality gate for AI', blurb:'A bad AI change blocks the merge, not the retro.', detail:'Your eval suite wired into CI so it runs on every PR. A score below the ratcheted floor fails the build — with a scorecard your PM can actually read.', out:'→ regressions caught before customers'},
+    {track:'Eval & QA', ic:'📌', name:'Hallucination / grounding gate', blurb:'Stop it inventing facts and policies.', detail:'A grounding layer that binds answers to a source of truth and an eval that fails when the model states unverifiable specifics — the fix for "it made up a refund policy."', out:'→ facts, or a clean "I don\'t know"'},
+    {track:'Eval & QA', ic:'🔁', name:'Prompt & model regression testing', blurb:'Know exactly what the model bump broke.', detail:'A/B and before/after evaluation across prompt and model versions, so a provider update or a prompt tweak comes with a diff of what improved and what regressed — not a shrug.', out:'→ safe upgrades, measured'},
+    {track:'Eval & QA', ic:'🎯', name:'Agent evaluation', blurb:'Did the agent use the right tool and finish the task?', detail:'Task-success and tool-use-correctness evals for agentic systems: did it call the right function, with the right args, and complete the job — scored against a rubric, run repeatedly.', out:'→ agents you can trust to act'},
+    {track:'Eval & QA', ic:'📈', name:'LLM observability & cost monitoring', blurb:'See quality, drift, and spend in production.', detail:'Tracing, per-run cost tracking, and drift monitoring on your live AI feature so quality decay and runaway spend surface on a dashboard instead of in a customer complaint.', out:'→ production AI you can watch'},
+    // ── Test Automation ──
+    {track:'Test Automation', ic:'🎭', name:'E2E test automation (Playwright)', blurb:'Your critical flows, covered and green in CI.', detail:'A risk-scoped Playwright (or Cypress) suite with Page Object Model, fixtures, trace-on-retry, and four reporters — built in your repo so releases stop breaking in ways users find first.', out:'→ releases that stop breaking'},
+    {track:'Test Automation', ic:'🔗', name:'API & contract testing', blurb:'Catch the broken endpoint before the frontend does.', detail:'Contract and integration tests for your APIs — schema validation, auth paths, error cases, and backwards-compatibility checks wired into CI.', out:'→ no more silent API breaks'},
+    {track:'Test Automation', ic:'📱', name:'Mobile real-device certification', blurb:'Ship iOS/Android with proof, not hope.', detail:'End-to-end certification on real devices — the flows a simulator lies about. I\'ve run 256-screen device-cert passes with retry-clean flake handling.', out:'→ app-store confidence'},
+    {track:'Test Automation', ic:'⚙️', name:'CI/CD pipeline + test wiring', blurb:'A green badge that actually means something.', detail:'GitHub Actions (or your CI) set up from scratch or rescued: parallelized runs, artifact retention, required checks, and the gates that make merge-green trustworthy.', out:'→ a pipeline you believe'},
+    {track:'Test Automation', ic:'🩹', name:'Flaky-test stabilization', blurb:'Make red mean something again.', detail:'The flake protocol installed on your existing suite: quarantine lane, retry policy, isolation fixes, and a weekly triage ritual. At HighStrike this cut a live suite from 10% flake to under 1%.', out:'→ red = a real bug, every time'},
+    {track:'Test Automation', ic:'⚡', name:'Performance & load baselines', blurb:'Know your critical path\'s breaking point.', detail:'k6 load baselines on the flows that matter, with budgets wired into CI so a performance regression trips the gate before it trips your users.', out:'→ performance you can defend'},
+    {track:'Test Automation', ic:'👁', name:'Visual regression testing', blurb:'Catch the layout break a unit test can\'t see.', detail:'Screenshot-based regression across breakpoints and themes, so an unintended visual change is flagged in the PR instead of in a customer screenshot.', out:'→ pixel-level release safety'},
+    {track:'Test Automation', ic:'♿', name:'Accessibility (a11y) audits', blurb:'WCAG compliance, keyboard, contrast, reduced-motion.', detail:'Automated + manual accessibility review against WCAG 2.2: keyboard navigation, screen-reader semantics, contrast, and reduced-motion behavior — with a prioritized fix list.', out:'→ usable by everyone, and compliant'},
+    // ── Automation ──
+    {track:'Automation', ic:'🔀', name:'Workflow automation', blurb:'n8n / Make / Zapier — or code when it earns it.', detail:'The repetitive back-office flow, automated end-to-end in tools your team can own after I leave. Make/Zapier for linear flows, n8n for branching, code when the logic is genuinely complex.', out:'→ hours of manual work, deleted'},
+    {track:'Automation', ic:'🧲', name:'Lead capture → qualify → route', blurb:'Every lead caught, scored, and followed up in minutes.', detail:'An intake pipeline that captures every lead from every source, scores and routes it, and triggers follow-up within minutes — nothing slips into a spreadsheet nobody checks.', out:'→ nothing slips through'},
+    {track:'Automation', ic:'🗄', name:'Data pipelines / ETL', blurb:'Move and shape data reliably, on a schedule.', detail:'Extract-transform-load pipelines with validation, idempotency, and alerting — so the report your business runs on is built on data that\'s actually correct and fresh.', out:'→ trustworthy data, automatically'},
+    {track:'Automation', ic:'🧩', name:'Integrations (CRM, tools, APIs)', blurb:'Make your tools finally talk to each other.', detail:'Connect the CRM, the billing system, the support desk, and the spreadsheet into one flow with proper error handling and an audit trail — no more copy-paste between tabs.', out:'→ one connected system'},
+    {track:'Automation', ic:'📡', name:'Monitoring / scraping / alerting', blurb:'Watch a source, act when something changes.', detail:'Scheduled monitoring of a website, feed, or metric with structured extraction and alerting — so you hear about the change that matters the moment it happens.', out:'→ eyes on it, so you don\'t have to be'},
+    {track:'Automation', ic:'⏰', name:'Scheduled jobs & back-office automation', blurb:'The recurring task nobody wants to remember.', detail:'Cron-driven jobs for the invoicing, reporting, cleanup, and reconciliation work that eats your week — reliable, logged, and alert-on-failure.', out:'→ the busywork runs itself'},
+    // ── Product ──
+    {track:'Product', ic:'🖥', name:'Web apps & customer portals', blurb:'Auth, payments, dashboards — production-grade.', detail:'The real thing, not a prototype: authentication, payments, dashboards, and the boring-but-critical parts done right, on Next.js + Supabase or your stack.', out:'→ a product, not a demo'},
+    {track:'Product', ic:'🛠', name:'Internal tools / admin panels', blurb:'Replace the spreadsheet your team runs by hand.', detail:'The admin panel, ops dashboard, or back-office tool your team currently operates in a fragile spreadsheet — built properly, with the right permissions and audit trail.', out:'→ automate the manual ops'},
+    {track:'Product', ic:'🧱', name:'APIs & backends', blurb:'The service layer everything else depends on.', detail:'REST or typed APIs with validation, auth, rate limiting, and tests — the dependable backend your app, your integrations, and your automations all build on.', out:'→ a backend you can build on'},
+    {track:'Product', ic:'📊', name:'Dashboards & data visualization', blurb:'Turn your data into a decision, not a CSV.', detail:'Institutional-grade dashboards and visualizations treated as part of the design system — the metric your team argues about, made legible and live.', out:'→ decisions from data, at a glance'}
+  ];
+
   var capgrid=document.getElementById('capgrid'), catWrap=document.getElementById('cats'), cur='All';
   function renderCaps(){
     capgrid.innerHTML='';
-    CAPS.filter(function(c){ return cur==='All'||c.cat===cur; }).forEach(function(c,i){
-      var col=CC[c.cat]||'#888';
-      var t=document.createElement('div'); t.className='cap'; t.style.animationDelay=(i*0.03)+'s';
-      t.onmouseenter=function(){ t.style.borderColor=col; }; t.onmouseleave=function(){ t.style.borderColor='var(--line)'; };
-      t.innerHTML='<div class="ic">'+c.ic+'</div><div class="mono" style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:'+col+';margin-top:6px">'+c.cat+'</div><h4>'+c.n+'</h4><p>'+c.p+'</p><div class="out" style="color:'+col+'">'+c.o+'</div>';
+    CAPS.filter(function(c){ return cur==='All'||c.track===cur; }).forEach(function(c,i){
+      var col=TC[c.track]||'#888';
+      var t=document.createElement('div'); t.className='cap'; t.style.animationDelay=(Math.min(i,12)*0.025)+'s';
+      t.innerHTML='<div class="cr"><span class="ic">'+c.ic+'</span><span class="track" style="color:'+col+'">'+c.track+'</span></div>'+
+        '<h4>'+esc(c.name)+'</h4><p class="blurb">'+esc(c.blurb)+'</p>'+
+        '<div class="more"><p class="detail">'+esc(c.detail)+'</p><div class="out" style="color:'+col+'">'+esc(c.out)+'</div>'+
+          '<a href="book.html" class="q" style="color:'+col+'" data-evt="cap-quote">Get a quote for this →</a></div>'+
+        '<div class="hint">click to expand ↓</div>';
+      t.addEventListener('click', function(e){
+        if(e.target.closest('a')) return; // let the quote link through
+        var open=t.classList.toggle('open');
+        t.style.borderColor=open?col:'var(--line)';
+        t.querySelector('.hint').textContent=open?'click to collapse ↑':'click to expand ↓';
+      });
       capgrid.appendChild(t);
     });
   }
-  CATS.forEach(function(ct){ var b=document.createElement('button'); b.className='chip'+(ct===cur?' on':''); b.textContent=ct; b.onclick=function(){ cur=ct; [].forEach.call(catWrap.children,function(x){x.classList.remove('on');}); b.classList.add('on'); renderCaps(); }; catWrap.appendChild(b); });
+  // filter chips
+  var ALL=[{key:'All',color:'#F4F2EF'}].concat(TRACKS);
+  ALL.forEach(function(t){
+    var b=document.createElement('button'); b.className='chip'+(t.key===cur?' on':''); b.textContent=t.key;
+    if(t.key===cur){ b.style.background=t.color; }
+    b.onclick=function(){
+      cur=t.key;
+      [].forEach.call(catWrap.children,function(x){ x.classList.remove('on'); x.style.background='transparent'; });
+      b.classList.add('on'); b.style.background=t.color;
+      renderCaps();
+    };
+    catWrap.appendChild(b);
+  });
   renderCaps();
 })();
 </script>

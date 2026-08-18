@@ -5,7 +5,7 @@
  * targeting, proof links back into the portfolio.
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { SERVICES, AUDIT_CHECKOUT, BOOK_URL } from './services.data.mjs';
+import { SERVICES, BOOK_URL } from './services.data.mjs';
 import { SITE_URL, AUTHOR } from './site.config.mjs';
 
 const MONO = "font-family:'JetBrains Mono',monospace;";
@@ -34,9 +34,9 @@ for (const s of SERVICES) {
             offers: s.packages.map((p) => ({
               '@type': 'Offer',
               name: `${s.keyword} — ${p.name}`,
-              price: p.price.replace(/[^0-9.]/g, ''),
-              priceCurrency: 'USD',
-              url: p.cta === 'checkout' ? AUDIT_CHECKOUT : BOOK_URL,
+              priceSpecification: { '@type': 'PriceSpecification', priceCurrency: 'USD' },
+              availability: 'https://schema.org/InStock',
+              url: BOOK_URL,
               description: p.d
             }))
           }
@@ -139,16 +139,16 @@ ${deliverables}
   </section>
 
   <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px" id="packages">
-    <div class="sec-rule"><span class="sec-label" style="color:${s.color}">engagement paths · real numbers</span><span class="line"></span></div>
+    <div class="sec-rule"><span class="sec-label" style="color:${s.color}">how we work together</span><span class="line"></span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px;margin-top:24px">
 ${(s.packages || []).map((p, i) => `      <div style="border:1px solid ${i === 0 ? s.color : '#2A2826'};background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
         <div style="${MONO}font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:${s.color}">${esc(p.name)}</div>
-        <div><span style="${SERIF}font-size:2rem;letter-spacing:-0.02em;color:#F4F2EF">${esc(p.price)}</span> <span style="${MONO}font-size:11px;color:#837D77">· ${esc(p.timing)}</span></div>
+        <div><span style="${SERIF}font-size:1.5rem;letter-spacing:-0.01em;color:#F4F2EF">${esc(p.timing)}</span> <span style="${MONO}font-size:11px;color:#837D77">· scoped &amp; quoted</span></div>
         <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">${esc(p.d)}</p>
-        <a href="${p.cta === 'checkout' ? AUDIT_CHECKOUT : BOOK_URL}" class="${i === 0 ? 'btn-solid green' : 'btn-ghost'}" data-evt="${p.cta === 'checkout' ? 'pkg-checkout' : 'pkg-book'}" style="align-self:flex-start">${p.cta === 'checkout' ? 'Start the audit →' : 'Book a scoping call →'}</a>
+        <a href="${BOOK_URL}" class="${i === 0 ? 'btn-solid green' : 'btn-ghost'}" data-evt="pkg-book" style="align-self:flex-start">${i === 0 ? 'Start here — get a quote →' : 'Get a quote →'}</a>
       </div>`).join('\n')}
     </div>
-    <p style="margin:18px 0 0;${MONO}font-size:11px;color:#837D77">the $750 audit checks out through a live Stripe link · credited in full toward any larger engagement · every engagement ends with evidence you keep — and if the week-1 scoping shows I can’t help, I’ll say so and it costs nothing</p>
+    <p style="margin:18px 0 0;${MONO}font-size:11px;color:#837D77">no fixed price list — every engagement is scoped and quoted after a short conversation, so you pay for your problem, not a package · every engagement ends with evidence you keep — and if the scoping shows I can’t help, I’ll say so and it costs nothing</p>
   </section>
 
   <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px">

@@ -353,12 +353,19 @@ test.describe('portfolio — service pages', () => {
     const first = page.locator('#svcgrid .svc').first();
     await first.locator('.top').click();
     await expect(first).toHaveClass(/open/);
-    // capability grid + category filter
+    // capability matrix + category filter
     const total = await page.locator('#capgrid .cap').count();
-    expect(total).toBeGreaterThanOrEqual(10);
-    await page.getByRole('button', { name: 'Quality', exact: true }).click();
+    expect(total).toBeGreaterThanOrEqual(30);
+    await page.getByRole('button', { name: 'Eval & QA', exact: true }).click();
     const filtered = await page.locator('#capgrid .cap').count();
     expect(filtered).toBeLessThan(total);
+    // clicking a matrix card reveals its explainer
+    const cap = page.locator('#capgrid .cap').first();
+    await cap.click();
+    await expect(cap).toHaveClass(/open/);
+    await expect(cap.locator('.detail')).toBeVisible();
+    // quote-first: no dollar prices anywhere on the page
+    await expect(page.locator('body')).not.toContainText('$');
   });
 
   test('services page is reachable from the primary nav', async ({ page }) => {
@@ -424,14 +431,15 @@ test.describe('portfolio — field notes', () => {
 });
 
 test.describe('portfolio — what-i-build + legal', () => {
-  test('what-i-build page: dual flagships with verbatim prices and booking CTAs', async ({ page }) => {
+  test('what-i-build page: dual flagships, quote-first, booking CTAs', async ({ page }) => {
     await page.goto('/what-i-build.html');
     await expect(page.locator('h1')).toContainText('prove they work');
-    await expect(page.locator('body')).toContainText('$3,000');
-    await expect(page.locator('body')).toContainText('from $9,500');
+    await expect(page.locator('body')).toContainText('scoped & quoted');
     expect(await page.locator('a[href*="book.html"]').count()).toBeGreaterThanOrEqual(2);
     await expect(page.locator('body')).not.toContainText('[DEMO_LINE');
     await expect(page.locator('body')).not.toContainText('_TBD');
+    // quote-first: no dollar prices leak onto the page
+    await expect(page.locator('body')).not.toContainText('$');
   });
   test('privacy and terms stubs load with real content', async ({ page }) => {
     for (const p of ['/privacy.html', '/terms.html']) {
@@ -485,11 +493,14 @@ test.describe('portfolio — live eval', () => {
 });
 
 test.describe('portfolio — standalone booking', () => {
-  test('book.html loads with a working form and audit section', async ({ page }) => {
+  test('book.html loads with a working form and a quote-first audit section', async ({ page }) => {
     await page.goto('/book.html');
     await expect(page.locator('h1')).toContainText('slipping through the cracks');
     await expect(page.locator('#book-form [name="email"]')).toBeVisible();
-    await expect(page.locator('#audit')).toContainText('$750');
+    await expect(page.locator('#audit')).toContainText('scoped');
+    // quote-first: no dollar prices and no live Stripe checkout link
+    await expect(page.locator('body')).not.toContainText('$');
+    await expect(page.locator('a[href*="buy.stripe.com"]')).toHaveCount(0);
   });
   test('no booking/checkout links leak to the academy site', async ({ page }) => {
     for (const p of ['/', '/what-i-build.html', '/demos.html', '/eval.html', '/book.html']) {
