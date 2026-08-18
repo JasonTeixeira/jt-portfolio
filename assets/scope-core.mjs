@@ -93,3 +93,30 @@ export function computePlan(keys, segment = null) {
 
   return { segment, items, phases, totalBand, timelineWeeks, count: items.length };
 }
+
+// URL-safe base64url encoding/decoding helpers
+function b64urlEncode(s) {
+  return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function b64urlDecode(s) {
+  try {
+    const pad = s.replace(/-/g, '+').replace(/_/g, '/');
+    return decodeURIComponent(escape(atob(pad)));
+  } catch {
+    return '';
+  }
+}
+
+export function encodeKeys(keys, segment = null) {
+  const clean = (keys || []).filter(Boolean);
+  return b64urlEncode((segment || '') + '~' + clean.join(','));
+}
+
+export function decodeKeys(str) {
+  const raw = b64urlDecode(str || '');
+  if (!raw.includes('~')) return { keys: [], segment: null };
+  const [seg, keyStr] = raw.split('~');
+  const keys = (keyStr || '').split(',').filter(Boolean);
+  return { keys, segment: seg || null };
+}
