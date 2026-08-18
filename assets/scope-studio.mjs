@@ -4,14 +4,14 @@
 
 window.__renderScopePlan = window.__renderScopePlan || function () {};
 
-import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER, SEGMENTS } from './scope-core.mjs';
+import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER } from './scope-core.mjs';
 
 const root = document.getElementById('scope-root');
 const qMount = document.getElementById('scope-questions');
 const planMount = document.getElementById('scope-plan');
 const disc = document.getElementById('scope-disclaimer');
 
-if (root && qMount && planMount) {
+if (root && qMount && planMount && disc) {
   disc.textContent = DISCLAIMER;
   const answers = {};
   renderQuestions();
@@ -63,23 +63,29 @@ if (root && qMount && planMount) {
     const keys = keysFromAnswers(answers);
     const plan = computePlan(keys, segmentFromAnswers());
     window.__renderScopePlan(plan);
-    syncUrl(keys, plan.segment);
+    syncUrl();
     root.setAttribute('data-state', keys.length ? 'plan' : 'discovery');
   }
 
-  function syncUrl(keys, segment) {
-    const enc = keys.length ? '#plan=' + encodeKeys(keys, segment) : location.pathname;
+  function selectedOptionIds() {
+    const ids = [];
+    QUESTIONS.forEach((q) => (answers[q.id] || []).forEach((id) => ids.push(id)));
+    return ids;
+  }
+
+  function syncUrl() {
+    const ids = selectedOptionIds();
+    const enc = ids.length ? '#plan=' + encodeKeys(ids) : location.pathname;
     history.replaceState(null, '', enc);
   }
 
   function rehydrateFromUrl() {
     const m = location.hash.match(/plan=([^&]+)/);
     if (!m) return;
-    const { keys } = decodeKeys(m[1]);
-    // reverse-map keys -> option ids so buttons reflect the shared plan
-    const wanted = new Set(keys);
+    const { keys: ids } = decodeKeys(m[1]); // these are option ids
+    const idSet = new Set(ids);
     QUESTIONS.forEach((q) => q.options.forEach((o) => {
-      if (o.keys.length && o.keys.every((k) => wanted.has(k))) {
+      if (idSet.has(o.id)) {
         answers[q.id] = answers[q.id] || [];
         if (!answers[q.id].includes(o.id)) answers[q.id].push(o.id);
         const btn = qMount.querySelector(`.scope-opt[data-q="${q.id}"][data-id="${o.id}"]`);
