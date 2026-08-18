@@ -4,8 +4,12 @@
  * RESEND_API_KEY is configured; otherwise returns 501 so the client falls
  * back to a prefilled mailto (the form never silently loses a lead).
  */
-const TO = 'hello@sageideas.dev';
-const FROM = 'portfolio@agency.sageideas.dev';
+// Configurable via env so Resend works before/without domain verification:
+// set RESEND_FROM='onboarding@resend.dev' to send immediately (delivers only to
+// the account owner's verified email — fine, since TO is your own inbox), then
+// switch to a verified-domain sender like portfolio@agency.sageideas.dev later.
+const TO = process.env.RESEND_TO || 'hello@sageideas.dev';
+const FROM = process.env.RESEND_FROM || 'portfolio@agency.sageideas.dev';
 const MAX = { name: 200, email: 320, message: 5000, company: 300, stage: 40 };
 
 export default async function handler(req, res) {
