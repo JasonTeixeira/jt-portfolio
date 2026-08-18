@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(28);
+    expect((xml.match(/<loc>/g) || []).length).toBe(29);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -391,6 +391,22 @@ test.describe('portfolio — service pages', () => {
     await page.goto('/');
     await expect(page.locator('nav a[href="case-studies.html"]').first()).toBeVisible();
   });
+
+  test('ROI calculator recomputes exposure live from the sliders', async ({ page }) => {
+    await page.goto('/roi.html');
+    await expect(page.locator('h1')).toBeVisible();
+    const annual = page.locator('#annual');
+    const before = await annual.textContent();
+    // bump "AI responses / month" to the max and confirm the exposure changes
+    await page.locator('#users').fill('1000000');
+    await page.locator('#users').dispatchEvent('input');
+    await expect(annual).not.toHaveText(before || '');
+    // recovered figure and fit qualifier present
+    await expect(page.locator('#recovered')).toContainText('/yr');
+    await expect(page.locator('.fitcard')).toHaveCount(2);
+    // clearly illustrative, not a real invoice
+    await expect(page.locator('body')).toContainText('Illustrative');
+  });
 });
 
 test.describe('portfolio — field notes', () => {
@@ -437,7 +453,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(28);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(29);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');

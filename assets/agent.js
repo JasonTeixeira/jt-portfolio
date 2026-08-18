@@ -91,6 +91,8 @@
   // contextual action chips based on the running conversation
   function actionsFor(text) {
     var t = (text || '').toLowerCase(), acts = [];
+    if (/price|cost|budget|roi|worth|expensive|value/.test(t))
+      acts.push({ label: '💰 Cost calculator', nav: 'roi.html' });
     if (/eval|test|prove|check|feature|bot|assistant|chatbot|agent|rag|hallucinat|safety|injection|price|cost/.test(t))
       acts.push({ label: '⚡ Free mini-eval', act: 'minieval' });
     if (/proof|case|experience|result|metric|client|track record|done before/.test(t))
