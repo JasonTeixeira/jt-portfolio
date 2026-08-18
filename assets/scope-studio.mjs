@@ -2,7 +2,36 @@
 // Renders questions, tracks answers, and rehydrates from a shared URL.
 // The actual plan visualization is installed by Task 6 via window.__renderScopePlan.
 
-window.__renderScopePlan = window.__renderScopePlan || function () {};
+const PHASE_COLOR = { audit: '#8FA0FF', build: '#22d3ee', gate: '#a78bfa', operate: '#10b981' };
+function money(n) { return '$' + (n >= 1000 ? Math.round(n / 100) / 10 + 'k' : String(n)); }
+function band([lo, hi]) { return money(lo) + '–' + money(hi); }
+
+window.__renderScopePlan = function (plan) {
+  const mount = document.getElementById('scope-plan');
+  if (!mount) return;
+  if (!plan.count) {
+    mount.innerHTML = '<div style="border:1px dashed #2A2826;border-radius:12px;padding:28px;color:#8E8882;font-family:\'JetBrains Mono\',monospace;font-size:12.5px">Pick what you want to happen — your plan builds here as you go.</div>';
+    return;
+  }
+  const phases = plan.phases.map(p => `
+    <div style="margin-top:18px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:${PHASE_COLOR[p.phase]};margin-bottom:8px">${p.label} · ${band(p.band)}</div>
+      ${p.items.map(i => `
+        <div style="display:flex;justify-content:space-between;gap:14px;border-top:1px solid #211F1C;padding:11px 0">
+          <div><div style="color:#F4F2EF;font-size:14px">${i.name}</div><div style="color:#8E8882;font-size:12px;line-height:1.5">${i.why}</div></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#A8A29E;white-space:nowrap;text-align:right">${band(i.band)}<br><span style="color:#8E8882">${i.effort}</span></div>
+        </div>`).join('')}
+    </div>`).join('');
+  mount.innerHTML = `
+    <div style="border:1px solid #2A2826;border-radius:14px;padding:22px;background:#0C0C0E">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882">your plan · ${plan.count} pieces · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} wks</div>
+      ${phases}
+      <div id="scope-total" style="margin-top:20px;border-top:1px solid #2A2826;padding-top:16px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+        <span style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.4rem,2.4vw,2rem);color:#10b981">${band(plan.totalBand)}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#8E8882">indicative range · exact scope on a call</span>
+      </div>
+    </div>`;
+};
 
 import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER } from './scope-core.mjs';
 

@@ -688,4 +688,16 @@ test.describe('portfolio — scope studio', () => {
     await expect(page.locator('#scope-root')).toHaveAttribute('data-state', 'discovery');
     expect(errors).toEqual([]);
   });
+
+  test('selecting needs builds an itemized plan with an indicative total', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');
+    await page.locator('.scope-opt[data-id="opt-eval"]').click();      // llm-eval + ci-gate
+    await expect(page.locator('#scope-plan')).toContainText('LLM evaluation harness');
+    await expect(page.locator('#scope-plan')).toContainText('CI quality gate');
+    await expect(page.locator('#scope-total')).toContainText('$');     // a computed band
+    await expect(page.locator('#scope-total')).toContainText('indicative');
+    await expect(page.locator('#scope-root')).toHaveAttribute('data-state', 'plan');
+    expect(errors).toEqual([]);
+  });
 });
