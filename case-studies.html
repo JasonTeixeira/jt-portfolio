@@ -173,6 +173,13 @@
     </article>
     </section>
 
+    <!-- TESTIMONIALS (renders only when real quotes are added below) -->
+    <section id="testimonials" class="rule" style="display:none">
+      <div class="kick" style="color:var(--purple)">in their words</div>
+      <h2 style="margin-top:12px">What people say after the work ships.</h2>
+      <div id="tq" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-top:24px"></div>
+    </section>
+
     <!-- CTA -->
     <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
       <h2>Want your system to be the next one on this page?</h2>
@@ -189,6 +196,28 @@
     <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
   </footer>
 </div>
+<script>
+/* TESTIMONIALS — add real quotes here and the section appears automatically.
+   Keep them real: only quote people who actually said it, ideally with a
+   LinkedIn recommendation you can link. Empty = section stays hidden. */
+(function () {
+  var TESTIMONIALS = [
+    // { quote: "…", name: "Full Name", role: "Title, Company", href: "https://linkedin.com/in/…" },
+  ];
+  if (!TESTIMONIALS.length) return;
+  var wrap = document.getElementById('tq');
+  TESTIMONIALS.forEach(function (t) {
+    var card = document.createElement('figure');
+    card.style.cssText = 'margin:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:22px';
+    var attribution = t.name + (t.role ? ' — ' + t.role : '');
+    card.innerHTML = '<blockquote style="margin:0;font-size:14.5px;line-height:1.7;color:var(--ink)">“' + t.quote + '”</blockquote>' +
+      '<figcaption style="margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--faint)">' +
+      (t.href ? '<a href="' + t.href + '" style="color:var(--cyan)">' + attribution + ' ↗</a>' : attribution) + '</figcaption>';
+    wrap.appendChild(card);
+  });
+  document.getElementById('testimonials').style.display = '';
+})();
+</script>
 <script defer src="assets/agent.js"></script>
 </body>
 </html>

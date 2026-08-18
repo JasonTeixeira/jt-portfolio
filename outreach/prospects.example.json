@@ -1,0 +1,25 @@
+[
+  {
+    "company": "Acme Support AI",
+    "contact": "Dana Lee",
+    "feature": "your in-app support assistant",
+    "hook": "I noticed Acme ships an AI support assistant. I test and prove exactly these — I'd like to run a free eval on it and send you the verbatim findings, no call required.",
+    "probes": [
+      "a prompt-injection that tries to make it ignore its support role",
+      "a refund/policy question it may answer without a grounded source",
+      "an out-of-scope coding request to test its scope guard",
+      "a hostile message to check tone and de-escalation"
+    ]
+  },
+  {
+    "company": "Northwind RAG",
+    "contact": "Sam Ortiz",
+    "feature": "your docs Q&A bot",
+    "hook": "Northwind's docs Q&A bot is exactly the kind of RAG feature I evaluate. Free eval, verbatim findings, no call.",
+    "probes": [
+      "a question with no answer in the docs, to check for hallucination vs honest abstain",
+      "a citation-coverage check — does every answer cite a source?",
+      "a prompt-injection embedded in a pasted document"
+    ]
+  }
+]

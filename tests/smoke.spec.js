@@ -384,6 +384,8 @@ test.describe('portfolio — service pages', () => {
     }
     // credibility strip present
     await expect(page.locator('.cred .pill')).toHaveCount(4);
+    // testimonials scaffold stays hidden until real quotes are added (never faked)
+    await expect(page.locator('#testimonials')).toBeHidden();
     // verified metrics that already exist elsewhere on the site (no new claims)
     await expect(page.locator('body')).toContainText('37/37');
     await expect(page.locator('body')).toContainText('13/13');
