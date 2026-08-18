@@ -120,3 +120,50 @@ export function decodeKeys(str) {
   const keys = (keyStr || '').split(',').filter(Boolean);
   return { keys, segment: seg || null };
 }
+
+export const QUESTIONS = [
+  {
+    id: 'segment', prompt: 'What best describes you?', multi: false,
+    options: [
+      { id: 'seg-service', label: 'A service business', keys: [] },
+      { id: 'seg-aiproduct', label: 'Shipping an AI product/feature', keys: [] },
+      { id: 'seg-ops', label: 'Drowning in ops/back-office work', keys: [] },
+      { id: 'seg-product', label: 'Need a product or platform built', keys: [] }
+    ]
+  },
+  {
+    id: 'needs', prompt: 'What do you want to happen?', multi: true,
+    options: [
+      { id: 'opt-eval', label: 'Prove our AI feature actually works', keys: ['llm-eval', 'ci-gate'] },
+      { id: 'opt-safety', label: 'Stop it hallucinating / leaking', keys: ['grounding', 'redteam'] },
+      { id: 'opt-e2e', label: 'Stop releases from breaking', keys: ['e2e', 'flaky'] },
+      { id: 'opt-build-ai', label: 'Build an AI assistant/agent', keys: ['chatbot', 'rag'] },
+      { id: 'opt-voice', label: 'Answer every call automatically', keys: ['voice-agent'] },
+      { id: 'opt-automate', label: 'Automate a manual workflow', keys: ['workflow', 'integrations'] },
+      { id: 'opt-leads', label: 'Never miss a lead', keys: ['lead-capture'] },
+      { id: 'opt-product', label: 'Build a web app / internal tool', keys: ['web-app', 'internal-tools'] },
+      { id: 'opt-data', label: 'Make sense of our data', keys: ['dashboards', 'etl'] }
+    ]
+  },
+  {
+    id: 'maturity', prompt: 'Where are you today?', multi: false,
+    options: [
+      { id: 'mat-idea', label: 'Just an idea', keys: [] },
+      { id: 'mat-demo', label: 'A demo that isn\'t trustworthy yet', keys: ['observability'] },
+      { id: 'mat-prod', label: 'Live in production, needs hardening', keys: ['ci-gate', 'observability'] }
+    ]
+  }
+];
+
+const OPTION_BY_ID = new Map(QUESTIONS.flatMap(q => q.options.map(o => [o.id, o])));
+
+export function keysFromAnswers(answers) {
+  const out = new Set();
+  for (const ids of Object.values(answers || {})) {
+    for (const id of ids || []) {
+      const opt = OPTION_BY_ID.get(id);
+      if (opt) for (const k of opt.keys) if (CARD_BY_KEY.has(k)) out.add(k);
+    }
+  }
+  return [...out];
+}
