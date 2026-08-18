@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Case Studies — Measured Outcomes, Linkable Proof · Jason Teixeira</title>
-<meta name="description" content="Four systems, four measured outcomes — each linking to the public repo, the verbatim run, or the live screenshot. Proof, not promises: a red→green security gate, a 37/37 zero-flake suite, 100%-cited AI answers, and a flaky suite cut from 10% to under 1%.">
+<meta name="description" content="Four verified client outcomes: a QA gate that refused a fake green, a 37/37 zero-flake suite, 100% RAG citation coverage, and flake cut 10% to under 1%.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://agency.sageideas.dev/case-studies.html">
 <meta property="og:type" content="website">
@@ -76,7 +76,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
     <div class="kick">Case studies &middot; proof, not promises</div>
     <h1 style="margin-top:20px;max-width:18ch">Four systems. Four measured outcomes. <em style="color:var(--green)">Every one links to the receipt.</em></h1>
-    <p class="subtle" style="margin-top:20px;max-width:62ch">No logos I can't back up and no numbers I can't show you. Each of these is a system I built or rescued, with the metric that mattered — and a link to the public repo, the verbatim run, or the live screenshot that proves it.</p>
+    <p class="subtle" style="margin-top:20px;max-width:62ch">No logos I can't back up and no numbers I can't show you. Each of these is a system I built or rescued, with the metric that mattered, and a link to the public repo, the verbatim run, or the live screenshot that proves it.</p>
     <div class="cred">
       <span class="pill"><span class="dot" style="background:var(--green)"></span>Fortune-50 test engineering</span>
       <span class="pill"><b>ISTQB</b> Test Automation Engineer</span>
@@ -93,11 +93,11 @@
       <h3>The QA platform that refused to show a fake green.</h3>
       <div class="metric">
         <span class="big">red&nbsp;→&nbsp;green</span>
-        <span class="lbl">CVE gate went red at 11:39, blocked the release, and was back to a proven 13/13 by 14:35 — both runs published verbatim.</span>
+        <span class="lbl">CVE gate went red at 11:39, blocked the release, and was back to a proven 13/13 by 14:35. Both runs published verbatim.</span>
       </div>
       <div class="grid">
-        <div class="blk"><div class="h">The problem</div><p>A quality platform is only trustworthy if it can fail. On a real run, the dependency-audit gate found 15 high/critical CVEs — the honest verdict was <b>not shippable</b>, not a green badge.</p></div>
-        <div class="blk"><div class="h">What I did</div><ul><li>Let the gate go red and published the verbatim run — no quiet override</li><li>Fixed the drift at the source: 9 pinned security floors, killing the unpatchable transitive chain</li><li>Re-ran the full battery: 85 runners incl. 10 LLM-safety evals</li></ul></div>
+        <div class="blk"><div class="h">The problem</div><p>A quality platform is only trustworthy if it can fail. On a real run, the dependency-audit gate found 15 high/critical CVEs. The honest verdict was <b>not shippable</b>, not a green badge.</p></div>
+        <div class="blk"><div class="h">What I did</div><ul><li>Let the gate go red and published the verbatim run: no quiet override</li><li>Fixed the drift at the source: 9 pinned security floors, killing the unpatchable transitive chain</li><li>Re-ran the full battery: 85 runners incl. 10 LLM-safety evals</li></ul></div>
         <div class="blk"><div class="h">The result</div><p><b>3,759 tests · 91% coverage · 13/13 gates.</b> High/critical CVEs: 15 → 0. The whole caught→blocked→patched→proven arc is on the site, both captures included.</p></div>
       </div>
       <div class="proofrow">
@@ -112,14 +112,14 @@
     <section style="padding-top:0">
     <article class="case" style="--ac:var(--green)">
       <div class="tag">Test automation · playwright-sdet-regression-suite</div>
-      <h3>A regression suite a release manager can actually trust.</h3>
+      <h3>A regression suite a release manager can trust.</h3>
       <div class="metric">
         <span class="big">37/37</span>
         <span class="lbl">specs green in CI · 15.3s · <b>0 flakes</b> — with traces, screenshots, and a written risk model.</span>
       </div>
       <div class="grid">
         <div class="blk"><div class="h">The problem</div><p>Most suites are script soup: coverage follows whoever wrote tests last, red is ignored because it's flaky, and every failure starts a screenshot scavenger hunt.</p></div>
-        <div class="blk"><div class="h">What I did</div><ul><li>Risk model → coverage matrix, so coverage tracks release risk</li><li>Page Object Model, fixtures, trace-on-retry, four reporters</li><li>Wired into CI with artifact retention — a green badge that means something</li></ul></div>
+        <div class="blk"><div class="h">What I did</div><ul><li>Risk model → coverage matrix, so coverage tracks release risk</li><li>Page Object Model, fixtures, trace-on-retry, four reporters</li><li>Wired into CI with artifact retention, a green badge that means something</li></ul></div>
         <div class="blk"><div class="h">The result</div><p><b>37/37 specs, zero flakes, 15.3s.</b> The evidence folder — traces and screenshots — ships in the public repo. Clone it and reproduce the run.</p></div>
       </div>
       <div class="proofrow">
@@ -137,12 +137,12 @@
       <h3>An AI assistant that can't answer without a citation.</h3>
       <div class="metric">
         <span class="big">100%</span>
-        <span class="lbl">of answers cite their source — not by prompt, by design. There is no uncited generation path.</span>
+        <span class="lbl">of answers cite their source, built into the design rather than requested by prompt. There is no uncited generation path.</span>
       </div>
       <div class="grid">
         <div class="blk"><div class="h">The problem</div><p>Most RAG demos hallucinate confidently. "Grounded" is claimed in the prompt and quietly violated in production the first time retrieval comes back thin.</p></div>
-        <div class="blk"><div class="h">What I did</div><ul><li>Built retrieval so every answer is bound to ranked, selected chunks</li><li>Removed the uncited generation path entirely — abstain when there's no evidence</li><li>Tracked quality, safety, latency, and cost per query on an analytics endpoint</li></ul></div>
-        <div class="blk"><div class="h">The result</div><p><b>100% citation coverage, by construction.</b> Verified live — I ran it, asked a real question, and captured the actual cited answer (screenshot on the homepage).</p></div>
+        <div class="blk"><div class="h">What I did</div><ul><li>Built retrieval so every answer is bound to ranked, selected chunks</li><li>Removed the uncited generation path entirely: abstain when there's no evidence</li><li>Tracked quality, safety, latency, and cost per query on an analytics endpoint</li></ul></div>
+        <div class="blk"><div class="h">The result</div><p><b>100% citation coverage, by construction.</b> Verified live. I ran it, asked a real question, and captured the actual cited answer (screenshot on the homepage).</p></div>
       </div>
       <div class="proofrow">
         <a class="plink" href="index.html#work">▸ live screenshot + architecture</a>
@@ -161,8 +161,8 @@
         <span class="lbl">flake rate on a live production suite — cut with retry logic and test-isolation fixes, no rebuild required.</span>
       </div>
       <div class="grid">
-        <div class="blk"><div class="h">The problem</div><p>A flaky suite is worse than none: when red is noise, the team learns to ignore it — and the real regression sails through with the false alarms.</p></div>
-        <div class="blk"><div class="h">What I did</div><ul><li>Diagnosed the flake sources — shared state, timing, ordering</li><li>Installed a flake protocol: quarantine lane, retry policy, isolation fixes</li><li>Kept the existing suite; rebuild is the last resort, not the default</li></ul></div>
+        <div class="blk"><div class="h">The problem</div><p>A flaky suite is worse than none: when red is noise, the team learns to ignore it, and the real regression sails through with the false alarms.</p></div>
+        <div class="blk"><div class="h">What I did</div><ul><li>Diagnosed the flake sources: shared state, timing, ordering</li><li>Installed a flake protocol: quarantine lane, retry policy, isolation fixes</li><li>Kept the existing suite and treated rebuild as the last resort</li></ul></div>
         <div class="blk"><div class="h">The result</div><p><b>Flake rate 10% → under 1%.</b> Red became a real signal again — carried on the same Fortune-50-grade discipline behind 500+-test infrastructure earlier in my career.</p></div>
       </div>
       <div class="proofrow">

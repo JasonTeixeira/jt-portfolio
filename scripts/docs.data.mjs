@@ -269,7 +269,7 @@ export const PAGES = {
   'process-and-handoff': {
     title: 'Process & handoff',
     cat: 'Working together',
-    desc: 'How a week runs, what "done" means, and the runbook + walkthrough that leave your team owning the system.',
+    desc: 'How a week runs, what “done” means, and the runbook + walkthrough that leave your team owning the system.',
     lead: 'How the work actually runs, and what you’re left holding at the end. The deliverable is a system your team runs without me — never a dependency on me.',
     blocks: [
       ['h', 'How a typical build runs'],
