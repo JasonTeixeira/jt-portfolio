@@ -179,6 +179,7 @@ ${faq}
   </footer>
 <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
 </div>
+<script defer src="../assets/agent.js"></script>
 </body>
 </html>
 `;

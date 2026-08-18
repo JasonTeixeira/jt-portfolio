@@ -524,11 +524,33 @@ test.describe('portfolio — lead magnet + concierge', () => {
     await expect(page.locator('.banner')).toContainText('illustrative sample');
     await expect(page.locator('.score b')).toContainText('4/8');
   });
-  test('concierge widget mounts on the core pages', async ({ page }) => {
-    for (const p of ['/', '/eval.html', '/book.html', '/what-i-build.html']) {
+  test('AI associate (Atlas) mounts on the core pages', async ({ page }) => {
+    for (const p of ['/', '/eval.html', '/book.html', '/what-i-build.html', '/services.html']) {
       await page.goto(p);
       await expect(page.locator('button[aria-label="Ask about working with Jason"]')).toHaveCount(1);
     }
+  });
+
+  test('Atlas opens, replies (scripted fallback offline), and offers actions', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('button[aria-label="Ask about working with Jason"]').click();
+    const panel = page.locator('div[role="dialog"][aria-label*="Atlas"]');
+    await expect(panel).toBeVisible();
+    // greeting + starter chips render
+    await expect(panel.getByText('Atlas', { exact: false }).first()).toBeVisible();
+    // send a pricing question; offline it must use the scripted brain and never invent a price
+    await panel.locator('input[aria-label="Message Atlas"]').fill('how much does it cost?');
+    await panel.locator('button[aria-label="Send"]').click();
+    await expect(panel).toContainText('no fixed price list', { timeout: 6000 });
+    await expect(panel).not.toContainText('$');
+    // contextual action chips appear (mini-eval / book)
+    await expect(panel.getByRole('button', { name: /mini-eval|Book a call/ }).first()).toBeVisible();
+  });
+
+  test('Atlas hero launcher opens the associate from the homepage', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('button[data-evt="atlas-hero"]').click();
+    await expect(page.locator('div[role="dialog"][aria-label*="Atlas"]')).toBeVisible();
   });
 });
 
