@@ -11,7 +11,8 @@
     "build:notes": "node scripts/build-notes.mjs",
     "build:services": "node scripts/build-services.mjs",
     "proof": "node scripts/proof.mjs",
-    "lighthouse": "lhci autorun"
+    "lighthouse": "lhci autorun",
+    "build:docs": "node scripts/build-docs.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",

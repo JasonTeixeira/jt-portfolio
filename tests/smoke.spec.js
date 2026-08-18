@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(29);
+    expect((xml.match(/<loc>/g) || []).length).toBe(44);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -455,7 +455,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(29);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(44);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -603,5 +603,33 @@ test.describe('portfolio — docs hub', () => {
       await expect(page.locator('svg')).toHaveCount(1);
       await expect(page.locator('a[href="book.html"]').first()).toBeVisible();
     }
+  });
+
+  test('documentation site: sidebar, content pages, breadcrumb, prev/next', async ({ page }) => {
+    await page.goto('/docs.html');
+    // sidebar has the five categories + many page links
+    await expect(page.locator('#d-sidebar .d-group')).toHaveCount(6); // 5 nav cats + "More"
+    const navItems = await page.locator('#d-sidebar .d-navitem').count();
+    expect(navItems).toBeGreaterThanOrEqual(18);
+    // a content page renders with breadcrumb, lead, blocks, and prev/next
+    await page.goto('/docs-evaluation-and-quality.html');
+    await expect(page.locator('h1')).toContainText('evaluation');
+    await expect(page.locator('.d-crumb')).toContainText('Docs');
+    await expect(page.locator('.d-body')).toBeVisible();
+    await expect(page.locator('.d-prevnext .d-pn')).toHaveCount(2);
+    // quote-first everywhere in docs — no dollar prices
+    await expect(page.locator('.d-body')).not.toContainText('$');
+    // active page highlighted in the sidebar
+    await expect(page.locator('.d-navitem.d-on')).toHaveCount(1);
+    // TechArticle schema present
+    const ld = await page.locator('script[type="application/ld+json"]').first().textContent();
+    expect(JSON.parse(ld)['@type']).toBe('TechArticle');
+  });
+
+  test('docs mobile menu toggles the sidebar', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto('/docs-overview.html');
+    await page.locator('#d-menu').click();
+    await expect(page.locator('body')).toHaveClass(/d-navopen/);
   });
 });

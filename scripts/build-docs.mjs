@@ -1,25 +1,81 @@
-<!DOCTYPE html>
+#!/usr/bin/env node
+/**
+ * build-docs.mjs — generates the documentation site from docs.data.mjs:
+ * a shared sidebar chrome, breadcrumbs, prev/next, and block-rendered content.
+ * Writes docs.html (home) + docs-<slug>.html for every page in PAGES.
+ *
+ * Run: node scripts/build-docs.mjs
+ */
+import { writeFileSync } from 'node:fs';
+import { NAV, PAGES, DOC_SLUGS } from './docs.data.mjs';
+import { SITE_URL, AUTHOR } from './site.config.mjs';
+
+const MONO = "'JetBrains Mono',monospace";
+const SERIF = "'Instrument Serif',Georgia,serif";
+const esc = (s) => String(s ?? '').replace(/&(?![a-z#0-9]+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const href = (slug) => `docs-${slug}.html`;
+
+/* ── block renderers ── */
+function renderBlock(b) {
+  const [t] = b;
+  if (t === 'p') return `<p class="d-p">${b[1]}</p>`;
+  if (t === 'h') return `<h2 class="d-h2">${esc(b[1])}</h2>`;
+  if (t === 'ul') return `<ul class="d-ul">${b[1].map((i) => `<li>${i}</li>`).join('')}</ul>`;
+  if (t === 'ol') return `<ol class="d-ol">${b[1].map((i) => `<li>${i}</li>`).join('')}</ol>`;
+  if (t === 'note') return `<div class="d-note"><span class="d-note-i">▸</span><div>${b[1]}</div></div>`;
+  if (t === 'cards') return `<div class="d-cards">${b[1].map(([tt, dd]) => `<div class="d-card"><h3>${esc(tt)}</h3><p>${esc(dd)}</p></div>`).join('')}</div>`;
+  if (t === 'proof') return `<div class="d-proof">${b[1].map(([lbl, h]) => `<a href="${h}" class="d-plink"${h.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${esc(lbl)} <span>→</span></a>`).join('')}</div>`;
+  if (t === 'cta') return `<div class="d-cta"><div><div class="d-cta-h">${esc(b[1] || 'Ready to start?')}</div><div class="d-cta-s">${esc(b[2] || '')}</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-cta">Book a call →</a></div>`;
+  return '';
+}
+
+/* ── sidebar ── */
+function sidebar(activeSlug) {
+  const groups = NAV.map((g) => {
+    const items = g.items.map((it) => {
+      if (it.ext) return `<a href="${it.href}" class="d-navitem d-ext">${esc(it.title)} <span class="d-extmark">↗</span></a>`;
+      const p = PAGES[it.slug];
+      const on = it.slug === activeSlug ? ' d-on' : '';
+      return `<a href="${href(it.slug)}" class="d-navitem${on}">${esc(p.title)}</a>`;
+    }).join('');
+    return `<div class="d-group"><div class="d-grouphead">${esc(g.cat)}</div>${items}</div>`;
+  }).join('');
+  return `<aside class="d-sidebar" id="d-sidebar">
+    <a href="docs.html" class="d-navitem d-home${activeSlug === '__home__' ? ' d-on' : ''}">Documentation home</a>
+    ${groups}
+    <div class="d-group"><div class="d-grouphead">More</div>
+      <a href="services.html" class="d-navitem d-ext">Services matrix <span class="d-extmark">↗</span></a>
+      <a href="case-studies.html" class="d-navitem d-ext">Case studies <span class="d-extmark">↗</span></a>
+      <a href="index.html" class="d-navitem d-ext">← Portfolio <span class="d-extmark"></span></a>
+    </div>
+  </aside>`;
+}
+
+/* ── page shell ── */
+function shell({ slug, title, desc, breadcrumb, jsonLd, body }) {
+  const canonical = `${SITE_URL}/${slug === '__home__' ? 'docs.html' : href(slug)}`;
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Documentation — Documentation · Jason Teixeira</title>
-<meta name="description" content="Complete documentation of what Jason Teixeira builds — AI engineering, evaluation &amp; quality, test automation, workflow automation — and how engagements work.">
+<title>${esc(title)} — Documentation · ${esc(AUTHOR)}</title>
+<meta name="description" content="${esc(desc)}">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://agency.sageideas.dev/docs.html">
+<link rel="canonical" href="${canonical}">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Documentation — Documentation">
-<meta property="og:description" content="Complete documentation of what Jason Teixeira builds — AI engineering, evaluation &amp; quality, test automation, workflow automation — and how engagements work.">
-<meta property="og:url" content="https://agency.sageideas.dev/docs.html">
-<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<meta property="og:title" content="${esc(title)} — Documentation">
+<meta property="og:description" content="${esc(desc)}">
+<meta property="og:url" content="${canonical}">
+<meta property="og:image" content="${SITE_URL}/assets/og.png">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Documentation","description":"Complete documentation of what Jason Teixeira builds and how engagements work.","url":"https://agency.sageideas.dev/docs.html"}</script>
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 <style>
-  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:${MONO}; --serif:${SERIF}; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
   a { color:inherit; text-decoration:none; }
@@ -99,27 +155,10 @@
     </div>
   </div>
   <div class="d-layout">
-    <aside class="d-sidebar" id="d-sidebar">
-    <a href="docs.html" class="d-navitem d-home d-on">Documentation home</a>
-    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div>
-    <div class="d-group"><div class="d-grouphead">More</div>
-      <a href="services.html" class="d-navitem d-ext">Services matrix <span class="d-extmark">↗</span></a>
-      <a href="case-studies.html" class="d-navitem d-ext">Case studies <span class="d-extmark">↗</span></a>
-      <a href="index.html" class="d-navitem d-ext">← Portfolio <span class="d-extmark"></span></a>
-    </div>
-  </aside>
+    ${sidebar(slug)}
     <main class="d-main">
-      <div class="d-crumb"><a href="index.html">Home</a> / <span style="color:var(--dim)">Docs</span></div>
-      
-    <div class="d-kicker">Documentation</div>
-    <h1>What I build, how it works, and the proof behind it.</h1>
-    <p class="d-lead">The complete, honest reference for working with me: every capability documented, the evaluation method explained, and how engagements actually run. Start with the <a href="docs-overview.html">overview</a>, or jump to what you need.</p>
-    <div class="d-note"><span class="d-note-i">▸</span><div>New here? The fastest way to see the work is a <a href="sample.html">free mini-eval</a> on your live AI feature, or the <a href="eval.html">live eval</a> running in your browser.</div></div>
-    <style>.d-card-link{font-size:13.5px;color:var(--dim);padding:5px 0}.d-card-link:hover{color:var(--cyan)}</style>
-    <div class="d-cards" style="margin-top:28px"><div class="d-card"><h3>Getting started</h3><div style="display:flex;flex-direction:column;gap:2px;margin-top:8px"><a href="docs-overview.html" class="d-card-link">Overview</a><a href="docs-start-here.html" class="d-card-link">Start here</a><a href="docs-how-engagements-work.html" class="d-card-link">How engagements work</a></div></div><div class="d-card"><h3>What I build</h3><div style="display:flex;flex-direction:column;gap:2px;margin-top:8px"><a href="docs-ai-engineering.html" class="d-card-link">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-card-link">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-card-link">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-card-link">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-card-link">Product &amp; platform</a></div></div><div class="d-card"><h3>The eval method</h3><div style="display:flex;flex-direction:column;gap:2px;margin-top:8px"><a href="docs-eval-method.html" class="d-card-link">The eval method</a><a href="guide-eval-gate.html" class="d-card-link">The CI eval gate ↗</a><a href="guide-probes.html" class="d-card-link">Safety probes ↗</a><a href="guide-golden-set.html" class="d-card-link">Golden sets &amp; judges ↗</a><a href="guide-human-approval.html" class="d-card-link">Human approval ↗</a></div></div><div class="d-card"><h3>Working together</h3><div style="display:flex;flex-direction:column;gap:2px;margin-top:8px"><a href="docs-process-and-handoff.html" class="d-card-link">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-card-link">Data &amp; security</a><a href="docs-pricing.html" class="d-card-link">Pricing</a></div></div><div class="d-card"><h3>Reference</h3><div style="display:flex;flex-direction:column;gap:2px;margin-top:8px"><a href="docs-faq.html" class="d-card-link">FAQ</a><a href="docs-glossary.html" class="d-card-link">Glossary</a><a href="docs-proof-index.html" class="d-card-link">Proof index</a></div></div></div>
-    <div class="d-cta"><div><div class="d-cta-h">Prefer to talk it through?</div><div class="d-cta-s">Ask my AI associate on any page, or book a 15-minute call.</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-home-cta">Book a call →</a></div>
-    <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</div>
-    <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
+      <div class="d-crumb">${breadcrumb}</div>
+      ${body}
     </main>
   </div>
   <script>
@@ -131,4 +170,72 @@
   </script>
   <script defer src="assets/agent.js"></script>
 </body>
-</html>
+</html>`;
+}
+
+/* ── content page ── */
+function contentPage(slug) {
+  const p = PAGES[slug];
+  const idx = DOC_SLUGS.indexOf(slug);
+  const prev = idx > 0 ? DOC_SLUGS[idx - 1] : null;
+  const next = idx >= 0 && idx < DOC_SLUGS.length - 1 ? DOC_SLUGS[idx + 1] : null;
+  const pn = `<div class="d-prevnext">${
+    prev ? `<a class="d-pn prev" href="${href(prev)}"><div class="l">← Previous</div><div class="t">${esc(PAGES[prev].title)}</div></a>` : '<div class="d-pn" style="visibility:hidden"></div>'
+  }${
+    next ? `<a class="d-pn next" href="${href(next)}"><div class="l">Next →</div><div class="t">${esc(PAGES[next].title)}</div></a>` : '<div class="d-pn" style="visibility:hidden"></div>'
+  }</div>`;
+
+  const body = `
+    <div class="d-kicker">${esc(p.cat)}</div>
+    <h1>${esc(p.title)}</h1>
+    <p class="d-lead">${p.lead}</p>
+    <div class="d-body">${p.blocks.map(renderBlock).join('\n')}</div>
+    ${pn}
+    <div class="d-foot">© <span data-year>2026</span> ${esc(AUTHOR)} · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a></div>
+    <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org', '@type': 'TechArticle',
+    headline: p.title, description: p.desc,
+    author: { '@type': 'Person', name: AUTHOR, url: SITE_URL },
+    mainEntityOfPage: `${SITE_URL}/${href(slug)}`,
+  };
+  const breadcrumb = `<a href="index.html">Home</a> / <a href="docs.html">Docs</a> / ${esc(p.cat)} / <span style="color:var(--dim)">${esc(p.title)}</span>`;
+  return shell({ slug, title: p.title, desc: p.desc, breadcrumb, jsonLd, body });
+}
+
+/* ── docs home ── */
+function homePage() {
+  const cats = NAV.map((g) => {
+    const links = g.items.map((it) => {
+      if (it.ext) return `<a href="${it.href}" class="d-card-link">${esc(it.title)} ↗</a>`;
+      return `<a href="${href(it.slug)}" class="d-card-link">${esc(PAGES[it.slug].title)}</a>`;
+    }).join('');
+    return `<div class="d-card"><h3>${esc(g.cat)}</h3><div style="display:flex;flex-direction:column;gap:2px;margin-top:8px">${links}</div></div>`;
+  }).join('');
+
+  const body = `
+    <div class="d-kicker">Documentation</div>
+    <h1>What I build, how it works, and the proof behind it.</h1>
+    <p class="d-lead">The complete, honest reference for working with me: every capability documented, the evaluation method explained, and how engagements actually run. Start with the <a href="${href('overview')}">overview</a>, or jump to what you need.</p>
+    <div class="d-note"><span class="d-note-i">▸</span><div>New here? The fastest way to see the work is a <a href="sample.html">free mini-eval</a> on your live AI feature, or the <a href="eval.html">live eval</a> running in your browser.</div></div>
+    <style>.d-card-link{font-size:13.5px;color:var(--dim);padding:5px 0}.d-card-link:hover{color:var(--cyan)}</style>
+    <div class="d-cards" style="margin-top:28px">${cats}</div>
+    <div class="d-cta"><div><div class="d-cta-h">Prefer to talk it through?</div><div class="d-cta-s">Ask my AI associate on any page, or book a 15-minute call.</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-home-cta">Book a call →</a></div>
+    <div class="d-foot">© <span data-year>2026</span> ${esc(AUTHOR)} · Sage Ideas LLC</div>
+    <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org', '@type': 'CollectionPage',
+    name: 'Documentation', description: 'Complete documentation of what Jason Teixeira builds and how engagements work.',
+    url: `${SITE_URL}/docs.html`,
+  };
+  const breadcrumb = `<a href="index.html">Home</a> / <span style="color:var(--dim)">Docs</span>`;
+  return shell({ slug: '__home__', title: 'Documentation', desc: 'Complete documentation of what Jason Teixeira builds — AI engineering, evaluation & quality, test automation, workflow automation — and how engagements work.', breadcrumb, jsonLd, body });
+}
+
+/* ── write ── */
+writeFileSync('docs.html', homePage());
+let n = 0;
+for (const slug of Object.keys(PAGES)) { writeFileSync(href(slug), contentPage(slug)); n++; }
+console.log(`✓ built docs.html + ${n} documentation pages (docs-*.html)`);
