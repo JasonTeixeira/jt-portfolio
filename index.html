@@ -118,6 +118,38 @@
     </div>
   </header>
 
+  <!-- RECEIPTS — point-of-view line, substantiated by four verified client outcomes -->
+  <section id="receipts" class="rise" style="max-width:1240px;margin:0 auto;padding:80px clamp(18px,4vw,40px) 8px;position:relative">
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#F59E0B">field receipts · in production</span>
+      <span class="line"></span>
+    </div>
+    <p style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.9rem,4.2vw,3.2rem);line-height:1.08;letter-spacing:-0.015em;margin:34px 0 0;max-width:22ch;color:#F4F2EF;text-wrap:balance">Everyone can build an AI demo now. Almost nobody can <em style="font-style:italic;color:#10b981">prove</em> it works in production.</p>
+    <p style="margin:16px 0 0;font-size:1.02rem;line-height:1.7;color:#A8A29E;max-width:52ch">That gap is the whole job — and it's the part I have receipts for. Four, each linked to the verbatim run.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:1px;margin-top:44px;background:#2A2826;border:1px solid #2A2826;border-radius:12px;overflow:hidden">
+      <a href="case-studies.html" class="receipt" style="display:block;text-decoration:none;background:#0C0C0E;padding:26px 22px;transition:background .25s">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.2rem);line-height:1;color:#F59E0B">10% → &lt;1%</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8E8882;margin-top:12px">flake rate cut on a live<br>production suite · HighStrike</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#F59E0B;margin-top:14px">the case study →</div>
+      </a>
+      <a href="captures/playwright-suite.html" class="receipt" style="display:block;text-decoration:none;background:#0C0C0E;padding:26px 22px;transition:background .25s">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.2rem);line-height:1;color:#10b981">37/37</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8E8882;margin-top:12px">specs green in CI · 0 flakes<br>15.3s · public, reproducible</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#10b981;margin-top:14px">the run →</div>
+      </a>
+      <a href="#work" class="receipt" style="display:block;text-decoration:none;background:#0C0C0E;padding:26px 22px;transition:background .25s">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.2rem);line-height:1;color:#22d3ee">100%</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8E8882;margin-top:12px">of RAG answers cite a source<br>by construction, not by prompt</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#22d3ee;margin-top:14px">live screenshot →</div>
+      </a>
+      <a href="captures/nexural-qa-os.html" class="receipt" style="display:block;text-decoration:none;background:#0C0C0E;padding:26px 22px;transition:background .25s">
+        <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.2rem);line-height:1;color:#f43f5e">15 → 0</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8E8882;margin-top:12px">high/critical CVEs — my own<br>gate caught them, on my repo</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f43f5e;margin-top:14px">the red run →</div>
+      </a>
+    </div>
+  </section>
+
   <!-- PROOF -->
   <section id="proof" style="border-top:1px solid #2A2826;background:#0C0C0E;position:relative">
     <div style="max-width:1240px;margin:0 auto;padding:72px clamp(18px,4vw,40px) 56px;position:relative">
@@ -566,4 +598,6 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
 window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,(payload&&payload.data)||{});}catch(e){}};}</script>
 <script defer src="assets/agent.js"></script>
 </body>
-</html>
+</html>  #receipts .receipt:hover{background:#15151A !important}
+  #receipts .receipt:hover div:last-child{text-decoration:underline}
+
