@@ -336,7 +336,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(21);
+    expect((xml.match(/<loc>/g) || []).length).toBe(26);
   });
 });
 
@@ -384,7 +384,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(21);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(26);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -490,6 +490,21 @@ test.describe('portfolio — lead magnet + concierge', () => {
     for (const p of ['/', '/eval.html', '/book.html', '/what-i-build.html']) {
       await page.goto(p);
       await expect(page.locator('button[aria-label="Ask about working with Jason"]')).toHaveCount(1);
+    }
+  });
+});
+
+test.describe('portfolio — docs hub', () => {
+  test('docs hub lists the guides and each guide renders with a diagram', async ({ page }) => {
+    await page.goto('/docs.html');
+    await expect(page.locator('h1')).toBeVisible();
+    const guideLinks = await page.locator('a[href^="guide-"]').count();
+    expect(guideLinks).toBeGreaterThanOrEqual(4);
+    for (const g of ['/guide-eval-gate.html','/guide-probes.html','/guide-golden-set.html','/guide-human-approval.html']) {
+      await page.goto(g);
+      await expect(page.locator('h1')).toBeVisible();
+      await expect(page.locator('svg')).toHaveCount(1);
+      await expect(page.locator('a[href="book.html"]').first()).toBeVisible();
     }
   });
 });

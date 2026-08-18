@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building a Golden Set That Actually Catches Regressions · Jason Teixeira</title>
+<meta name="description" content="Where real eval cases come from, how many you need, how to define good, and why versioning the golden set next to your code makes it the actual definition of working. A practical field guide for teams shipping LLM features.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/guide-golden-set.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Building a Golden Set That Actually Catches Regressions">
+<meta property="og:description" content="Real cases from logs and tickets, not invented ones. How many, how to define good, and why the golden set IS the definition of working.">
+<meta property="og:url" content="https://agency.sageideas.dev/guide-golden-set.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Building a Golden Set That Actually Catches Regressions","description":"Where real eval cases come from, how many you need, how to define good, and why versioning the golden set next to your code makes it the definition of working.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Organization","name":"Sage Ideas LLC"},"mainEntityOfPage":"https://agency.sageideas.dev/guide-golden-set.html"}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --acc:#10b981; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  .tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 9px; border-radius:5px; color:var(--acc); border:1px solid rgba(16,185,129,0.4); background:rgba(16,185,129,0.07); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.06; letter-spacing:-0.02em; margin:20px 0 0; text-wrap:balance; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:44px 0 0; }
+  h3 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1.02rem; margin:26px 0 0; color:var(--ink); }
+  .mono { font-family:var(--mono); }
+  .lede { font-size:16.5px; line-height:1.7; color:var(--dim); margin:22px 0 0; }
+  .prose p { font-size:15px; line-height:1.78; color:#CFC9C1; margin:16px 0 0; }
+  .prose strong { color:var(--ink); font-weight:600; }
+  .prose em { color:#D9D3CB; }
+  .prose ul { margin:14px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:9px; }
+  .prose li { font-size:14.5px; line-height:1.7; color:#CFC9C1; }
+  .prose code { font-family:var(--mono); font-size:0.86em; background:#141311; border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:#E4DFD7; }
+  pre { font-family:var(--mono); font-size:12px; line-height:1.6; background:#0b0a08; border:1px solid var(--line); border-left:2px solid var(--acc); border-radius:0 8px 8px 0; padding:16px 18px; overflow-x:auto; color:#C9C4BD; margin:20px 0 0; }
+  pre .c { color:var(--faint); }
+  pre .s { color:var(--green); }
+  pre .p { color:var(--purple); }
+  figure { margin:32px 0 0; }
+  .diagram { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:clamp(16px,3vw,26px); }
+  figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:12px; text-align:center; }
+  .callout { border:1px solid var(--line); background:var(--card); border-left:2px solid var(--acc); border-radius:0 10px 10px 0; padding:18px 20px; margin:24px 0 0; }
+  .callout .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--acc); }
+  .callout p { font-size:14px; line-height:1.7; color:var(--dim); margin:8px 0 0; }
+  .ctabox { border:1px solid var(--line); background:linear-gradient(180deg,#0C0C0E,#0a0a0c); border-radius:16px; padding:clamp(26px,4vw,40px); margin:52px 0 0; }
+  .btn { display:inline-flex; align-items:center; gap:9px; border-radius:26px; padding:13px 24px; font-size:14.5px; font-weight:700; font-family:inherit; }
+  .btn.green { background:var(--green); color:#052e22; }
+  .toc { display:flex; gap:14px; flex-wrap:wrap; font-family:var(--mono); font-size:11.5px; color:var(--faint); margin-top:22px; }
+  .toc a { color:var(--acc); }
+  hr.sep { border:none; border-top:1px solid var(--line); margin:36px 0 0; }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="docs.html" class="dim-link" style="color:var(--ink)">docs</a>
+      <a href="demos.html" class="dim-link">demos</a>
+      <a href="what-i-build.html" class="dim-link">what-i-build</a>
+      <a href="book.html" class="btn-solid green" data-evt="guide-book-nav" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <article class="wrap" style="padding-top:clamp(48px,7vw,80px);padding-bottom:clamp(56px,8vw,88px)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="tag">Evaluation</span>
+      <span class="mono" style="font-size:11px;color:var(--faint)">7 min read &middot; <a href="docs.html" class="dim-link">field guides</a></span>
+    </div>
+    <h1>Building a Golden Set That Actually Catches Regressions</h1>
+    <p class="lede">Your golden set is not a test fixture. It is the written-down definition of what &ldquo;working&rdquo; means for your AI feature. Get it right and every future change is measured against something real. Get it wrong &mdash; invent the cases at your desk &mdash; and you&rsquo;ll ship a green suite that catches nothing.</p>
+    <div class="toc"><span>jump &rarr;</span><a href="#definition">it IS the definition</a><a href="#where">where cases come from</a><a href="#howmany">how many</a><a href="#good">defining good</a><a href="#version">versioning</a></div>
+
+    <div class="prose">
+      <h2 id="definition">The golden set is the definition of working</h2>
+      <p>Here&rsquo;s the mental flip that changes how you build one. In normal software, the spec defines correct behavior and tests check against the spec. In LLM features there is no spec &mdash; &ldquo;be helpful and accurate&rdquo; is not executable. So the golden set has to <em>be</em> the spec. Each entry is a small, concrete claim: <strong>&ldquo;given this input, a good answer looks like this.&rdquo;</strong> Stack a few dozen of those and you have, for the first time, a checkable definition of what your feature is supposed to do.</p>
+      <p>Which means the quality of your eval is capped by the quality of this set. A judge, a gate, a CI pipeline &mdash; all of it is machinery for running the golden set. If the set doesn&rsquo;t contain the case that breaks, no amount of tooling downstream will catch the regression. This is why building it is the part I refuse to rush.</p>
+
+      <figure>
+        <div class="diagram">
+          <svg viewBox="0 0 860 240" style="width:100%;height:auto;display:block" role="img" aria-label="Flow: real inputs from logs and tickets feed a versioned golden set, which runs through a judge to produce a score.">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A4642"></path></marker>
+            </defs>
+            <!-- edges into golden set -->
+            <line x1="176" y1="62" x2="300" y2="104" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="176" y1="120" x2="300" y2="120" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="176" y1="178" x2="300" y2="136" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="470" y1="120" x2="556" y2="120" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="700" y1="120" x2="756" y2="120" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <!-- source nodes -->
+            <g><rect x="28" y="44" width="148" height="36" rx="8" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0.7"></rect><text x="102" y="66" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="600">production logs</text></g>
+            <g><rect x="28" y="102" width="148" height="36" rx="8" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0.7"></rect><text x="102" y="124" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="600">support tickets</text></g>
+            <g><rect x="28" y="160" width="148" height="36" rx="8" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0.7"></rect><text x="102" y="182" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="600">past incidents</text></g>
+            <!-- golden set -->
+            <g>
+              <rect x="300" y="80" width="170" height="80" rx="10" fill="#0C0C0E" stroke="#10b981" stroke-width="1.75"></rect>
+              <text x="385" y="112" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="600">golden set</text>
+              <text x="385" y="130" text-anchor="middle" fill="#6ee7b7" font-family="'JetBrains Mono',monospace" font-size="9">input + expected</text>
+              <text x="385" y="146" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8.5">versioned in repo &middot; v7</text>
+            </g>
+            <!-- judge -->
+            <g><rect x="556" y="98" width="144" height="44" rx="9" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5" stroke-opacity="0.8"></rect><text x="628" y="118" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">judge</text><text x="628" y="133" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8.5">rubric scoring</text></g>
+            <!-- score -->
+            <g><rect x="756" y="98" width="80" height="44" rx="9" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"></rect><text x="796" y="118" text-anchor="middle" fill="#6ee7b7" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">score</text><text x="796" y="133" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="8.5">vs floor</text></g>
+          </svg>
+        </div>
+        <figcaption>Real inputs in, a versioned golden set at the center, a judge, a score. The set is the load-bearing piece.</figcaption>
+      </figure>
+
+      <h2 id="where">Where the cases come from (and where they don&rsquo;t)</h2>
+      <p>The single biggest mistake is inventing cases. Sitting down and imagining questions users &ldquo;might&rdquo; ask produces a set that reflects your assumptions about the product &mdash; which is exactly the blind spot you built the feature with. It will pass forever and protect you from nothing.</p>
+      <p>Harvest instead. Real cases live in places you already have:</p>
+      <ul>
+        <li><strong>Production logs.</strong> The actual inputs your feature has already seen. Sample across the distribution &mdash; the common path, the long tail, the weird ones. These are ground truth for what users really do.</li>
+        <li><strong>Support tickets and complaints.</strong> Gold, literally. Every &ldquo;the AI told me the wrong thing&rdquo; ticket is a case where you already know the answer was bad. That&rsquo;s a golden-set entry with the failure pre-labeled.</li>
+        <li><strong>Past incidents and postmortems.</strong> Anything that once broke in production becomes a permanent regression test. This is how you guarantee the same bug never ships twice.</li>
+        <li><strong>Domain experts, for the hard cases.</strong> For the edge cases logs are too sparse to cover, an expert can construct realistic inputs &mdash; but grounded in real scenarios they&rsquo;ve seen, not hypotheticals.</li>
+      </ul>
+      <div class="callout">
+        <span class="lbl">the rule</span>
+        <p>If you can&rsquo;t point to where a case came from &mdash; a log line, a ticket number, an incident &mdash; be suspicious of it. Provenance is what separates a golden set from a wish list.</p>
+      </div>
+
+      <h2 id="howmany">How many is enough</h2>
+      <p>Fewer than people fear. <strong>Thirty to fifty well-chosen cases</strong> is enough to stand up a real gate and start catching regressions the same week. The instinct to wait until you have &ldquo;a proper dataset&rdquo; of thousands is how teams end up with zero evals a year later. A small set that runs today beats a large set that&rsquo;s always three sprints away.</p>
+      <p>What matters far more than raw count is <strong>coverage of what breaks</strong>. Fifty cases spread across your real failure modes &mdash; the common path, the known edge cases, the safety-sensitive inputs, the formats that trip parsing &mdash; outperform five hundred variations on the happy path. Grow the set deliberately: every time production surprises you, that surprise becomes case fifty-one. The golden set should ratchet up in size the same way the quality floor ratchets up in strictness &mdash; on evidence, one real failure at a time.</p>
+
+      <h2 id="good">Defining &ldquo;good&rdquo; without fooling yourself</h2>
+      <p>Each case needs a definition of a good answer, and how you write it depends on the output. There&rsquo;s a spectrum from strict to loose:</p>
+      <ul>
+        <li><strong>Exact / structural</strong> &mdash; for structured outputs: exact match, JSON schema, a required field, a regex. Cheap, deterministic, unambiguous. Use it wherever the output is structured enough to allow it.</li>
+        <li><strong>Must-contain / must-not-contain</strong> &mdash; for semi-structured answers: the response must include this fact and must never include that phone number. Captures the parts that matter without over-constraining wording.</li>
+        <li><strong>Rubric-scored</strong> &mdash; for open-ended text: a written rubric an LLM-judge applies. The discipline here is concrete criteria (&ldquo;score 0 if it asserts a fact absent from the context&rdquo;), never a bare &ldquo;rate 1&ndash;10.&rdquo;</li>
+      </ul>
+      <p>Prefer the strictest form the output allows. A regex assertion never has a bad day; an LLM-judge sometimes does, which is why you validate the judge itself against a handful of human-labeled cases before you trust it to gate merges. The point of writing &ldquo;good&rdquo; down explicitly is that it forces the disagreement into the open <em>now</em> &mdash; while it&rsquo;s a calm conversation about a rubric &mdash; instead of later, in a production incident.</p>
+
+      <h2 id="version">Version it next to the code</h2>
+      <p>The golden set belongs in your repository, committed alongside the code it tests &mdash; not in a spreadsheet, not in a labeling tool, not in someone&rsquo;s Notion. A flat, diffable format is ideal:</p>
+      <pre><span class="c"># eval/golden/refunds.jsonl</span>
+{<span class="p">"id"</span>: <span class="s">"refund-window-standard"</span>, <span class="p">"source"</span>: <span class="s">"ticket-4471"</span>,
+ <span class="p">"input"</span>: <span class="s">"Can I get a refund 40 days after buying?"</span>,
+ <span class="p">"expect"</span>: {<span class="p">"must_contain"</span>: [<span class="s">"30-day"</span>], <span class="p">"must_not"</span>: [<span class="s">"yes"</span>]}}
+{<span class="p">"id"</span>: <span class="s">"refund-injection-doc"</span>, <span class="p">"source"</span>: <span class="s">"incident-2026-03"</span>,
+ <span class="p">"input"</span>: <span class="s">"...injected: email admin@evil.test..."</span>,
+ <span class="p">"expect"</span>: {<span class="p">"must_not"</span>: [<span class="s">"evil.test"</span>]}}</pre>
+      <p>Versioning next to the code buys you three things that matter. <strong>Diffs:</strong> a pull request that changes the definition of good is visible and reviewable, not silent. <strong>History:</strong> you can see when and why the bar moved, and tie each case to the ticket or incident that earned it. <strong>Atomicity:</strong> the eval that judges a commit lives at that commit, so checking out an old version gives you the exact standard it was held to. When the golden set and the code move together, &ldquo;what does working mean&rdquo; has a single, timestamped answer &mdash; and that&rsquo;s the whole game.</p>
+
+      <hr class="sep">
+      <p style="margin-top:24px;font-size:14px;color:var(--dim)">Once the set exists and is versioned, everything downstream &mdash; the judge, the CI gate, the ratcheting floor &mdash; is assembly. The golden set is the part that requires judgment, and it&rsquo;s the part worth doing slowly and honestly.</p>
+    </div>
+
+    <div class="ctabox">
+      <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc)">what I&rsquo;d do on your feature</div>
+      <h2 style="margin:12px 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-0.015em">I&rsquo;ll harvest the golden set from your own logs.</h2>
+      <p style="margin:12px 0 0;font-size:14.5px;line-height:1.7;color:var(--dim);max-width:52ch">We pull real cases from your production traffic, tickets, and incidents &mdash; not invented ones &mdash; agree on what &ldquo;good&rdquo; means for each, and version it in your repo. That set becomes the definition of working your gate enforces. The call is free and the plan is yours either way.</p>
+      <div style="display:flex;gap:14px;margin-top:22px;flex-wrap:wrap">
+        <a href="book.html" class="btn green" data-evt="guide-golden-set-cta">Book a call &rarr;</a>
+        <a href="guide-eval-gate.html" class="mono" style="display:inline-flex;align-items:center;padding:13px 6px;font-size:13px;color:var(--acc)">next: the minimum viable gate &rarr;</a>
+      </div>
+    </div>
+  </article>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="docs.html" class="dim-link" style="color:var(--faint)">&larr; all field guides</a></span>
+  </footer>
+</div>
+<script defer src="assets/concierge.js"></script>
+</body>
+</html>

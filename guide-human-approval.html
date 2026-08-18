@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where to Put the Human Approval Point in AI Automation · Jason Teixeira</title>
+<meta name="description" content="The hardest question in AI automation isn't whether the agent can do the task — it's where a human signs off. Approval patterns (before every send, before novel cases, after-the-fact review) and how to earn autonomy down with evidence.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/guide-human-approval.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Where to Put the Human Approval Point in AI Automation">
+<meta property="og:description" content="Not 'can the agent do it' but 'where does a human sign off.' Approval patterns and how to earn autonomy down with evidence.">
+<meta property="og:url" content="https://agency.sageideas.dev/guide-human-approval.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Where to Put the Human Approval Point in AI Automation","description":"Approval patterns for AI automation — before every send, before novel cases, after-the-fact review — and how to earn autonomy down with evidence.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Organization","name":"Sage Ideas LLC"},"mainEntityOfPage":"https://agency.sageideas.dev/guide-human-approval.html"}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --acc:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  .tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 9px; border-radius:5px; color:var(--acc); border:1px solid rgba(245,158,11,0.4); background:rgba(245,158,11,0.07); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.06; letter-spacing:-0.02em; margin:20px 0 0; text-wrap:balance; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:44px 0 0; }
+  h3 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1.02rem; margin:26px 0 0; color:var(--ink); }
+  .mono { font-family:var(--mono); }
+  .lede { font-size:16.5px; line-height:1.7; color:var(--dim); margin:22px 0 0; }
+  .prose p { font-size:15px; line-height:1.78; color:#CFC9C1; margin:16px 0 0; }
+  .prose strong { color:var(--ink); font-weight:600; }
+  .prose em { color:#D9D3CB; }
+  .prose ul { margin:14px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:9px; }
+  .prose li { font-size:14.5px; line-height:1.7; color:#CFC9C1; }
+  .prose code { font-family:var(--mono); font-size:0.86em; background:#141311; border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:#E4DFD7; }
+  figure { margin:32px 0 0; }
+  .diagram { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:clamp(16px,3vw,26px); }
+  figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:12px; text-align:center; }
+  .pat { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:20px 22px; margin:16px 0 0; }
+  .pat h3 { margin:0; display:flex; align-items:baseline; gap:10px; }
+  .pat .g { font-family:var(--mono); font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border-radius:5px; }
+  .pat p { font-size:14px; line-height:1.7; color:#CFC9C1; margin:12px 0 0; }
+  .pat .when { font-family:var(--mono); font-size:11.5px; color:var(--dim); margin:12px 0 0; padding-left:12px; border-left:2px solid var(--acc); }
+  .callout { border:1px solid var(--line); background:var(--card); border-left:2px solid var(--acc); border-radius:0 10px 10px 0; padding:18px 20px; margin:24px 0 0; }
+  .callout .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--acc); }
+  .callout p { font-size:14px; line-height:1.7; color:var(--dim); margin:8px 0 0; }
+  .ctabox { border:1px solid var(--line); background:linear-gradient(180deg,#0C0C0E,#0a0a0c); border-radius:16px; padding:clamp(26px,4vw,40px); margin:52px 0 0; }
+  .btn { display:inline-flex; align-items:center; gap:9px; border-radius:26px; padding:13px 24px; font-size:14.5px; font-weight:700; font-family:inherit; }
+  .btn.green { background:var(--green); color:#052e22; }
+  hr.sep { border:none; border-top:1px solid var(--line); margin:36px 0 0; }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="docs.html" class="dim-link" style="color:var(--ink)">docs</a>
+      <a href="demos.html" class="dim-link">demos</a>
+      <a href="what-i-build.html" class="dim-link">what-i-build</a>
+      <a href="book.html" class="btn-solid green" data-evt="guide-book-nav" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <article class="wrap" style="padding-top:clamp(48px,7vw,80px);padding-bottom:clamp(56px,8vw,88px)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="tag">Automation</span>
+      <span class="mono" style="font-size:11px;color:var(--faint)">6 min read &middot; <a href="docs.html" class="dim-link">field guides</a></span>
+    </div>
+    <h1>Where to Put the Human Approval Point in AI Automation</h1>
+    <p class="lede">The hardest question in AI automation isn&rsquo;t &ldquo;can the agent do the task.&rdquo; Given a capable model, it usually can. The hard question is <em>where a human signs off</em> &mdash; because that single placement decision sets your blast radius, your throughput, and whether the thing is safe to turn on at all.</p>
+
+    <div class="prose">
+      <p>Get the approval point wrong in one direction and you&rsquo;ve built a very expensive suggestion box: a human reviews every trivial action, the automation saves nobody any time, and it quietly gets switched off. Wrong in the other direction and the agent sends the refund, emails the customer, or hits the API with no one watching the case that was never safe to automate &mdash; and you find out from the fallout.</p>
+      <p>The good news: this isn&rsquo;t a single global switch. The approval point goes <strong>on the risky edge</strong> of the flow, and most flows have exactly one or two edges that carry nearly all the risk. Find those, gate those, and let the rest run.</p>
+
+      <figure>
+        <div class="diagram">
+          <svg viewBox="0 0 860 300" style="width:100%;height:auto;display:block" role="img" aria-label="An automation flow: intake then AI classify, then a risk decision. Low-risk seen-before cases auto-execute; novel or high-stakes cases route through a human approval gate before executing.">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A4642"></path></marker>
+              <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"></path></marker>
+              <marker id="aa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#F59E0B"></path></marker>
+            </defs>
+            <!-- edges -->
+            <line x1="128" y1="150" x2="168" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="292" y1="150" x2="312" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <!-- low risk path (green) -->
+            <path d="M408 150 H500 V78 H560" fill="none" stroke="#10b981" stroke-width="1.6" marker-end="url(#ag)"></path>
+            <text x="512" y="140" text-anchor="middle" fill="#6ee7b7" font-family="'JetBrains Mono',monospace" font-size="9">low risk &middot; seen before</text>
+            <!-- high risk path (amber) -->
+            <path d="M360 182 V228 H470" fill="none" stroke="#F59E0B" stroke-width="1.6" marker-end="url(#aa)"></path>
+            <text x="372" y="210" text-anchor="start" fill="#fbbf24" font-family="'JetBrains Mono',monospace" font-size="9">novel / high-stakes</text>
+            <line x1="600" y1="228" x2="650" y2="228" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <!-- intake -->
+            <g><rect x="28" y="128" width="100" height="44" rx="9" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0.75"></rect><text x="78" y="148" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Intake</text><text x="78" y="163" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8.5">lead / ticket / DM</text></g>
+            <!-- classify -->
+            <g><rect x="168" y="128" width="124" height="44" rx="9" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.8"></rect><text x="230" y="148" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Classify</text><text x="230" y="163" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8.5">AI reads intent</text></g>
+            <!-- decision diamond -->
+            <g>
+              <path d="M312 150 L360 118 L408 150 L360 182 Z" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.85"></path>
+              <text x="360" y="147" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" font-weight="600">risk?</text>
+              <text x="360" y="160" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8">route</text>
+            </g>
+            <!-- auto execute -->
+            <g><rect x="560" y="56" width="140" height="44" rx="9" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"></rect><text x="630" y="76" text-anchor="middle" fill="#6ee7b7" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Auto-execute</text><text x="630" y="91" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="8.5">send &middot; logged</text></g>
+            <!-- human gate -->
+            <g><rect x="470" y="206" width="130" height="44" rx="9" fill="rgba(245,158,11,0.09)" stroke="#F59E0B" stroke-width="1.75"></rect><text x="535" y="226" text-anchor="middle" fill="#fbbf24" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Human approves</text><text x="535" y="241" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="8.5">the risky edge</text></g>
+            <!-- execute after approval -->
+            <g><rect x="650" y="206" width="140" height="44" rx="9" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"></rect><text x="720" y="226" text-anchor="middle" fill="#6ee7b7" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Execute</text><text x="720" y="241" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="8.5">send &middot; logged</text></g>
+          </svg>
+        </div>
+        <figcaption>The gate goes on the risky edge &mdash; not on every action. Routine cases flow; novel or high-stakes ones wait for a human.</figcaption>
+      </figure>
+
+      <h2>Three patterns, from cautious to earned</h2>
+      <p>There are really only three places the approval point can sit. They&rsquo;re not competitors &mdash; they&rsquo;re a progression you move through as evidence accumulates.</p>
+
+      <div class="pat">
+        <h3><span>Before every send</span><span class="g" style="color:var(--red);background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.3)">max caution</span></h3>
+        <p>The agent drafts, a human approves, then it acts. Nothing reaches the outside world without a person clicking yes. This is where every new automation should start &mdash; it&rsquo;s a co-pilot, not an autopilot, and it&rsquo;s how you build the evidence that anything more is safe.</p>
+        <p class="when">use when &rsaquo; the action is irreversible or externally visible, the automation is new, or you have no track record yet</p>
+      </div>
+
+      <div class="pat">
+        <h3><span>Before novel cases only</span><span class="g" style="color:var(--amber);background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3)">selective</span></h3>
+        <p>The interesting one, and where most mature automations should live. Cases the system has seen before &mdash; high classifier confidence, an input close to known-good examples, an amount under a threshold &mdash; execute automatically. Anything <em>novel</em> or high-stakes routes to a human. The gate sits on exactly the edge that carries risk, so throughput is high on the routine 90% while a person still owns the 10% that could go wrong.</p>
+        <p class="when">use when &rsaquo; you can measure confidence or novelty, most cases are routine, and you have proof the routine path is reliable</p>
+      </div>
+
+      <div class="pat">
+        <h3><span>After-the-fact review</span><span class="g" style="color:var(--green);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3)">earned autonomy</span></h3>
+        <p>The agent acts immediately; humans sample and review a slice of actions afterward, plus anything the system flags as low-confidence. This only belongs on reversible, low-stakes actions where the cost of a rare miss is small and recoverable &mdash; and only after the earlier patterns have produced a clean record. Review shifts from gate to audit.</p>
+        <p class="when">use when &rsaquo; actions are reversible and low-cost, volume is high, and you have a monitored track record that earns the trust</p>
+      </div>
+
+      <h2>Earning autonomy down &mdash; on evidence, not vibes</h2>
+      <p>The mistake is treating autonomy as a launch-day decision: someone picks &ldquo;full auto&rdquo; or &ldquo;human in the loop&rdquo; in a planning meeting and ships it. Autonomy isn&rsquo;t chosen &mdash; it&rsquo;s <strong>earned, edge by edge, with data.</strong></p>
+      <p>The move that works: start every risky edge at &ldquo;before every send.&rdquo; Log every case &mdash; what the agent proposed, what the human decided, whether they agreed. After enough volume you have an actual measurement: on this class of case, how often does the human just rubber-stamp the agent? When the agreement rate on a well-defined slice is consistently high and the failures are cheap, you have earned the right to let <em>that slice</em> run automatically &mdash; and you keep watching it. Autonomy ratchets down the same way an eval floor ratchets up: only on evidence, one slice at a time, always reversible.</p>
+
+      <div class="callout">
+        <span class="lbl">the honest version</span>
+        <p>&ldquo;The human approves everything&rdquo; is a fine place to <em>launch</em> and a bad place to <em>stay</em> &mdash; it trains people to click yes without reading, which is worse than no gate. &ldquo;Full autonomy from day one&rdquo; is how you get the incident that kills the project. The real answer is a gate on the risky edge that you move, deliberately, as the record earns it.</p>
+      </div>
+
+      <p>Two things make this whole approach work in practice, and both are unglamorous. First, <strong>logging</strong>: you cannot earn autonomy down without a record of agent-proposed-vs-human-decided, so instrument that from the first day. Second, a <strong>reversal path</strong>: the confidence to automate an edge comes largely from knowing you can undo a mistake &mdash; a hold window, a recall, a rollback. Reversibility is what turns &ldquo;too risky to automate&rdquo; into &ldquo;safe to automate with an escape hatch.&rdquo;</p>
+
+      <hr class="sep">
+      <p style="margin-top:24px;font-size:14px;color:var(--dim)">The approval point is a design decision, not a config flag &mdash; and it&rsquo;s the one that decides whether an AI automation is an asset or a liability. Place it on the risky edge, start cautious, and let evidence move it.</p>
+    </div>
+
+    <div class="ctabox">
+      <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc)">what I&rsquo;d do on your feature</div>
+      <h2 style="margin:12px 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-0.015em">I&rsquo;ll map the risky edges and place the gate.</h2>
+      <p style="margin:12px 0 0;font-size:14.5px;line-height:1.7;color:var(--dim);max-width:52ch">We walk your automation flow, find the one or two edges that carry the real blast radius, place the approval point there, and instrument the logging that lets you earn autonomy down safely later. The call is free and you leave with the flow mapped either way.</p>
+      <div style="display:flex;gap:14px;margin-top:22px;flex-wrap:wrap">
+        <a href="book.html" class="btn green" data-evt="guide-human-approval-cta">Book a call &rarr;</a>
+        <a href="docs.html" class="mono" style="display:inline-flex;align-items:center;padding:13px 6px;font-size:13px;color:var(--acc)">back to all field guides &rarr;</a>
+      </div>
+    </div>
+  </article>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="docs.html" class="dim-link" style="color:var(--faint)">&larr; all field guides</a></span>
+  </footer>
+</div>
+<script defer src="assets/concierge.js"></script>
+</body>
+</html>
