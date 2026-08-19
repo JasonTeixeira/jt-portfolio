@@ -65,6 +65,16 @@
               <input id="scope-chat-input" type="text" placeholder="Tell me what you&rsquo;re working on&hellip;" autocomplete="off">
               <button id="scope-chat-send" type="submit" class="btn-solid green">Send</button>
             </form>
+            <div id="scope-chat-handoff" class="sc-handoff" hidden>
+              <p class="sc-handoff-copy"></p>
+              <form id="sc-handoff-form" class="sc-handoff-form">
+                <label for="sc-handoff-email" class="sr-only">Your email</label>
+                <input id="sc-handoff-email" type="email" required placeholder="you@company.com" autocomplete="email">
+                <button type="submit" class="btn-solid green">Email me the plan &rarr;</button>
+              </form>
+              <div id="sc-handoff-status" role="status" aria-live="polite" class="sc-handoff-status"></div>
+              <a class="sc-handoff-talk" href="book.html">Talk to Jason directly &rarr;</a>
+            </div>
           </div>
         </div>
         <div class="tf-col">

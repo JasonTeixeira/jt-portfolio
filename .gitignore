@@ -8,6 +8,7 @@ playwright-report/
 .env.local
 out/
 .env*.local
+proof-artifacts/
 
 # outreach: real prospect data + generated pages are private
 outreach/*.html
