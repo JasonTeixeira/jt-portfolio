@@ -802,6 +802,28 @@ test.describe('portfolio — scope studio', () => {
     expect(errors).toEqual([]);
   });
 
+  test('AI chat: greeting bubble appears, form submit reaches the offline end state, and the quick-questions toggle still works', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');
+    await page.locator('#scope-mode-chat').click();
+    // greeting bubble renders on open
+    await expect(page.locator('#scope-chat-messages')).toContainText("This is Jason's AI");
+
+    await page.locator('#scope-chat-input').fill("We need help scoping an AI chatbot project.");
+    await page.locator('#scope-chat-form').locator('button[type="submit"]').click();
+    // static host has no /api/chat (501) — the deterministic end state is the
+    // offline note; the typing indicator is transient and not asserted directly
+    await expect(page.locator('#scope-chat-offline')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('#scope-chat-offline')).toContainText(/offline/i);
+
+    // quick-questions toggle still switches back to the questionnaire
+    await page.locator('#scope-mode-quick').click();
+    await expect(page.locator('#scope-questions')).toBeVisible();
+    await expect(page.locator('#scope-chat')).toBeHidden();
+
+    expect(errors).toEqual([]);
+  });
+
   test('AI chat: strong-fit qualification shows a positive confidence cue', async ({ page }) => {
     const errors = trackErrors(page);
     await page.goto('/build.html');
