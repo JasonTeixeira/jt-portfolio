@@ -162,16 +162,21 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     let band = [0, 0];
     try { band = computePlan(lastKeys, lastSegment).totalBand; } catch { /* keep [0,0] */ }
     if (handoffStatus) handoffStatus.textContent = 'Sending it over…';
+    let leadOk = false;
     try {
-      await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      const r = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: e, prospectId: pid, source: 'scope-chat', plan: { keys: lastKeys, segment: lastSegment, total: band } }) });
-    } catch { /* degrade-safe */ }
+      leadOk = r.ok;
+    } catch { leadOk = false; }
+    // proposal draft is best-effort regardless
     try {
       fetch('/api/proposal', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prospectId: pid, email: e, plan: { keys: lastKeys, segment: lastSegment, totalBand: band } }) }).catch(() => {});
     } catch { /* degrade-safe */ }
     if (handoffForm) handoffForm.hidden = true;
-    if (handoffStatus) handoffStatus.textContent = "On its way. I'll follow up personally.";
+    if (handoffStatus) handoffStatus.textContent = leadOk
+      ? "On its way. I'll follow up personally."
+      : "That didn't send. Email me at hello@sageideas.dev and I'll pick it up.";
   }
   if (handoffForm) {
     handoffForm.addEventListener('submit', (e) => { e.preventDefault(); submitPlan(handoffEmail ? handoffEmail.value : ''); });

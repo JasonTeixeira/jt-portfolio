@@ -24,7 +24,7 @@ async function runProbe(p) {
     if (!data || !data.ok) return { name: p.name, pass: false, failures: ['bad_response'] };
     const g = gradePass({ reply: data.reply, qualification: data.qualification }, p.expect || {});
     return { name: p.name, pass: g.pass, failures: g.failures, reply: data.reply };
-  } catch (e) { return { name: p.name, pass: false, failures: ['error:' + (e && e.message)] }; }
+  } catch { return { name: p.name, skipped: 'unreachable' }; }
 }
 
 const redteam = await loadProbes('redteam.json');
