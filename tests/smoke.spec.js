@@ -797,4 +797,55 @@ test.describe('portfolio — scope studio', () => {
     await expect(page.locator('#scope-total')).toContainText('$');
     expect(errors).toEqual([]);
   });
+
+  test('AI chat: strong-fit qualification shows a positive confidence cue', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');
+    await page.locator('#scope-mode-chat').click();
+    await page.evaluate(() => window.__applyQualification({ fit: 'strong', reasons: ['Clear scope, real budget signal.'] }));
+    const fit = page.locator('#scope-fit');
+    await expect(fit).toBeVisible();
+    await expect(fit).toContainText(/strong fit/i);
+    await expect(fit).toHaveClass(/fit-strong/);
+    // no disqualification panel for a strong fit
+    await expect(page.locator('#scope-chat-disqualify')).toBeHidden();
+    expect(errors).toEqual([]);
+  });
+
+  test('AI chat: maybe-fit qualification shows a neutral cue', async ({ page }) => {
+    await page.goto('/build.html');
+    await page.locator('#scope-mode-chat').click();
+    await page.evaluate(() => window.__applyQualification({ fit: 'maybe', reasons: [] }));
+    const fit = page.locator('#scope-fit');
+    await expect(fit).toBeVisible();
+    await expect(fit).toContainText(/worth a conversation/i);
+    await expect(fit).toHaveClass(/fit-maybe/);
+  });
+
+  test('AI chat: poor-fit qualification renders a kind disqualification panel, not a hard CTA, and keeps the talk-to-Jason escape hatch', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');
+    await page.locator('#scope-mode-chat').click();
+    // server-provided reasons arrive as plain strings; must be rendered as text, not HTML
+    await page.evaluate(() =>
+      window.__applyQualification({
+        fit: 'poor',
+        reasons: ['You need something live next week; this is a multi-week build.', '<img src=x onerror=alert(1)>'],
+      })
+    );
+    const panel = page.locator('#scope-chat-disqualify');
+    await expect(panel).toBeVisible();
+    await expect(panel).toContainText(/right fit/i);
+    await expect(panel).toContainText('You need something live next week');
+    // the raw markup reason rendered as inert text, never executed/injected
+    await expect(panel.locator('img')).toHaveCount(0);
+    await expect(panel).toContainText('<img src=x onerror=alert(1)>');
+    // no positive/neutral chip alongside a poor-fit panel
+    await expect(page.locator('#scope-fit')).toBeHidden();
+    // this must not read as a hard sell: the panel's own CTA is "talk to Jason", not "email me the plan"
+    await expect(panel).not.toContainText(/email me the plan/i);
+    // the always-visible escape hatch to a human is still present on the page
+    await expect(page.locator('#scope-human')).toHaveAttribute('href', /book\.html/);
+    expect(errors).toEqual([]);
+  });
 });

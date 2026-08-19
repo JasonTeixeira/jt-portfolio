@@ -58,6 +58,8 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
   const inputEl = document.getElementById('scope-chat-input');
   const sendBtn = document.getElementById('scope-chat-send');
   const offlineEl = document.getElementById('scope-chat-offline');
+  const fitEl = document.getElementById('scope-fit');
+  const disqualifyEl = document.getElementById('scope-chat-disqualify');
 
   let hist = [];
   let offline = false;
@@ -115,6 +117,101 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     if (keys.length) window.__applyScopeKeys(keys, segment || null);
   }
 
+  const FIT_CHIP = {
+    strong: { label: 'Strong fit', cls: 'fit-strong' },
+    maybe: { label: 'Worth a conversation', cls: 'fit-maybe' },
+  };
+
+  function clearFitChip() {
+    if (!fitEl) return;
+    fitEl.hidden = true;
+    fitEl.textContent = '';
+    fitEl.className = 'scope-fit';
+  }
+
+  function showFitChip(fit) {
+    if (!fitEl) return;
+    const chip = FIT_CHIP[fit];
+    if (!chip) {
+      clearFitChip();
+      return;
+    }
+    fitEl.className = 'scope-fit ' + chip.cls;
+    fitEl.textContent = chip.label;
+    fitEl.hidden = false;
+  }
+
+  function clearDisqualify() {
+    if (!disqualifyEl) return;
+    disqualifyEl.hidden = true;
+    disqualifyEl.textContent = '';
+  }
+
+  // Kind, specific "this probably isn't the right fit" panel — shown INSTEAD of
+  // a confidence chip when the server-graded qualification is 'poor'. Reasons
+  // come from the model via api/chat.js's price-sanitizing filter, but they are
+  // still untrusted free text: every piece is set via textContent, never HTML,
+  // so nothing in a reason can inject markup or script.
+  function showDisqualify(reasons) {
+    if (!disqualifyEl) return;
+    disqualifyEl.textContent = '';
+
+    const heading = document.createElement('p');
+    heading.className = 'sd-heading';
+    heading.textContent = "Honestly, this probably isn't the right fit for me.";
+    disqualifyEl.appendChild(heading);
+
+    const list = Array.isArray(reasons) ? reasons.filter((r) => typeof r === 'string' && r.trim()) : [];
+    if (list.length) {
+      const ul = document.createElement('ul');
+      ul.className = 'sd-reasons';
+      list.forEach((reason) => {
+        const li = document.createElement('li');
+        li.textContent = reason;
+        ul.appendChild(li);
+      });
+      disqualifyEl.appendChild(ul);
+    }
+
+    const note = document.createElement('p');
+    note.className = 'sd-note';
+    note.textContent = "That's not a knock on the project. It just means someone else is likely a better match than I am for this one.";
+    disqualifyEl.appendChild(note);
+
+    const cta = document.createElement('a');
+    cta.className = 'sd-cta';
+    cta.href = 'book.html';
+    cta.textContent = 'Talk to Jason directly →';
+    disqualifyEl.appendChild(cta);
+
+    disqualifyEl.hidden = false;
+  }
+
+  // Reads a scope-mode qualification and renders the right signal: a subtle
+  // confidence chip for 'strong'/'maybe', or the graceful disqualification
+  // panel for 'poor' (never both at once, never a hard-sell CTA on a poor fit).
+  // Exposed as window.__applyQualification so it can be driven directly —
+  // both by send() below and by tests, since scope mode's grounding only
+  // exists server-side and there is no safe client fallback to script from.
+  function applyQualification(q) {
+    if (!q || typeof q !== 'object') {
+      clearFitChip();
+      clearDisqualify();
+      return;
+    }
+    if (q.fit === 'poor') {
+      clearFitChip();
+      showDisqualify(q.reasons);
+    } else if (q.fit === 'strong' || q.fit === 'maybe') {
+      clearDisqualify();
+      showFitChip(q.fit);
+    } else {
+      clearFitChip();
+      clearDisqualify();
+    }
+  }
+  window.__applyQualification = applyQualification;
+
   async function send(text) {
     const v = (text || '').trim();
     if (!v) return;
@@ -149,6 +246,7 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     bubble('bot', data.reply);
     hist.push({ role: 'assistant', content: data.reply });
     applySelection(data.selection, data.segment);
+    applyQualification(data.qualification);
     persistTranscript(hist);
   }
 
