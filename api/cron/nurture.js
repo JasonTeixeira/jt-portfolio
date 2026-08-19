@@ -30,11 +30,14 @@ export default async function handler(req, res) {
     due++;
     if (cap()) return;
     try {
+      const rec = await db.recordSend({ prospect_id: prospect.id, proposal_id: proposal ? proposal.id : null, step });
+      if (!rec.ok || rec.recorded === false) return; // duplicate / claimed by another run / db issue -> do not send
       const tok = await db.ensureUnsubToken(prospect.id);
       if (!tok.ok || !tok.token) return;
       const built = email(unsubUrl(tok.token));
-      const r = await sendClient({ to: prospect.email || proposal.client_email, subject: built.subject, text: built.text, headers: built.headers });
-      if (r.ok) { await db.recordSend({ prospect_id: prospect.id, proposal_id: proposal ? proposal.id : null, step }); sent++; }
+      const r = await sendClient({ to: prospect.email || (proposal && proposal.client_email), subject: built.subject, text: built.text, headers: built.headers });
+      if (r.ok) sent++;
+      // send row already recorded; a send failure is not retried (a nurture nudge is best-effort)
     } catch { errors++; }
   }
 
@@ -48,16 +51,17 @@ export default async function handler(req, res) {
       await fire({ prospect, proposal: null, step: STEP.LEAD,
         email: (u) => leadEmail({ prospect, hasPlan, siteUrl: SITE, unsubscribeUrl: u }) });
     }
-  } catch { errors++; }
+  } catch (e) { errors++; console.error('nurture section error:', e && e.message ? e.message : e); }
 
   // B + C — approved proposals (unpaid reminders + expiry). unpaidProposals covers both; expiry handled by dueStepForProposal.
   try {
     const props = await db.unpaidProposals();
     for (const p of (props.data || [])) {
       if (cap()) break;
+      const sp = p.scope_prospects;
+      if (!sp) continue; // no prospect row -> cannot confirm consent -> fail closed
       const prospect = { id: p.prospect_id, email: p.client_email,
-        unsubscribed: p.scope_prospects && p.scope_prospects.unsubscribed,
-        nurture_suppressed: p.scope_prospects && p.scope_prospects.nurture_suppressed };
+        unsubscribed: sp.unsubscribed, nurture_suppressed: sp.nurture_suppressed };
       if (!isSendable(prospect)) continue;
       const steps = await db.sentStepsForProposal(p.id);
       const step = dueStepForProposal(p, steps.data || new Set(), now);
@@ -67,7 +71,7 @@ export default async function handler(req, res) {
         : (u) => unpaidEmail({ proposal: p, step, siteUrl: SITE, unsubscribeUrl: u });
       await fire({ prospect, proposal: p, step, email });
     }
-  } catch { errors++; }
+  } catch (e) { errors++; console.error('nurture section error:', e && e.message ? e.message : e); }
 
   // D — operator digest: stale drafts + run summary (also the heartbeat)
   try {
@@ -78,7 +82,7 @@ export default async function handler(req, res) {
       await sendOperator({ subject: `Nurture ran: ${sent} sent, ${drafts.length} drafts waiting`,
         text: `Nurture tick complete.\nSent: ${sent}\nDue: ${due}\nErrors: ${errors}\n\nProposals waiting for your approval (>24h):\n${lines.join('\n') || '(none)'}\n` });
     }
-  } catch { errors++; }
+  } catch (e) { errors++; console.error('nurture section error:', e && e.message ? e.message : e); }
 
   return res.status(200).json({ ok: true, sent, due, errors, capped: cap() });
 }

@@ -6,6 +6,7 @@ export default async function handler(req, res) {
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true });
   const prospect = String((req.query && req.query.prospect) || '');
   if (!prospect) return res.status(400).json({ ok: false, error: 'prospect required' });
-  await setSuppressed(prospect);
+  const r = await setSuppressed(prospect);
+  if (!r.ok) return res.status(200).json({ ok: false, skipped: true });
   return res.status(200).json({ ok: true, suppressed: prospect });
 }

@@ -38,9 +38,9 @@ One tick per day evaluates four rules. Each rule sends a given step at most once
 | B1 `proposal_unpaid_1` | proposal `status='approved'`, not expired, has `client_email`, sendable, `approved_at` ≥3 days ago | "any questions before you decide?" → proposal link |
 | B2 `proposal_unpaid_2` | same, `approved_at` ≥8 days ago | a second, lower-pressure nudge → proposal link |
 | C `proposal_expiring` | `status='approved'`, `expires_at` within the next 3 days | heads-up that the quote expires on a given date → proposal link |
-| D (operator digest) | `draft_pending` proposals older than 24h, plus the run summary | email to **you** (`RESEND_TO`): how many proposals are waiting, per-prospect one-click suppress links, and the tick's `sent`/`due`/`errors` counts |
+| D (operator digest) | `draft_pending` proposals older than 24h, plus the run summary — only sent when there's something to report (pending drafts, sends, or errors) | email to **you** (`RESEND_TO`): how many proposals are waiting, per-prospect one-click suppress links, and the tick's `sent`/`due`/`errors` counts |
 
-Only the first unsent due step fires per run — a 9-day-unpaid proposal that has never been touched sends B1 today and B2 on the next run, giving natural spacing instead of a burst. C takes priority over B1/B2 when both are due. Sequences B/C stop automatically the moment a proposal's status leaves `approved` (paid, expired, etc.). D has no unsubscribe concerns (it goes to you, not a prospect) and doubles as the cron heartbeat — it fires whenever there's something to report, even zero sends, so a silent cron is visible.
+Only the first unsent due step fires per run — a 9-day-unpaid proposal that has never been touched sends B1 today and B2 on the next run, giving natural spacing instead of a burst. C takes priority over B1/B2 when both are due. Sequences B/C stop automatically the moment a proposal's status leaves `approved` (paid, expired, etc.). D has no unsubscribe concerns (it goes to you, not a prospect) and doubles as a partial heartbeat — it only fires when there's activity (pending drafts, sends, or errors), so a genuinely empty run sends no email. For true uptime monitoring of the cron itself, rely on Vercel's cron execution logs, not the digest.
 
 ## 4. Kill switch
 
