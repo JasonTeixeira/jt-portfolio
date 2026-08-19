@@ -1,5 +1,7 @@
 # Scope Studio — Plan 1: Deterministic Core — Implementation Plan
 
+> **Status:** SHIPPED — merged to main. Checklists below are historical.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ship a fully working, offline self-serve scoping tool at `/build.html` — a guided questionnaire builds a visual, itemized engagement plan with indicative cost bands, a shareable link, and lead capture — with zero AI and zero database.

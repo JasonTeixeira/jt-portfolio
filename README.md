@@ -33,9 +33,9 @@ for SEO by the build scripts.
   on a project in `assets/site.js`; replaces the "Private — walkthrough on
   request" label with a public ▶ link.
 - **Availability chip** → hero section of `index.html` (`.avail-chip`).
-- **Domain** → `scripts/site.config.mjs` `SITE_URL` (TODO before deploy),
-  then rebuild notes + prerender; also update the hardcoded head of
-  `index.html`.
+- **Domain** → `scripts/site.config.mjs` `SITE_URL` (live at
+  `agency.sageideas.dev`), then rebuild notes + prerender; also update
+  the hardcoded head of `index.html`.
 
 ## CI
 

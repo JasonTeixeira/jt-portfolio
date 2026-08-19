@@ -1,5 +1,7 @@
 # Scope Studio P5 — Close → Cash Implementation Plan
 
+> **Status:** SHIPPED — merged to main. Checklists below are historical.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development. Steps use `- [ ]`.
 
 **Goal:** Firm proposal → human approval → client acceptance → Stripe deposit, degrade-safe.

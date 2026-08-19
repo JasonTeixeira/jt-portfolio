@@ -1,5 +1,7 @@
 # Scope Studio P4 — Nurture Implementation Plan
 
+> **Status:** SHIPPED — merged to main. Checklists below are historical.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development. Steps use `- [ ]`.
 
 **Goal:** Automated, gentle, dormant-until-wired follow-up on cold leads/proposals.
