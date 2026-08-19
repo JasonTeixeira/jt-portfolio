@@ -1,5 +1,6 @@
 /**
- * /api/lead — lead-magnet capture for the sample eval report.
+ * /api/lead — lead-magnet capture for the sample eval report, and the
+ * general lead-capture endpoint for the Atlas chat + Scope Studio handoffs.
  *
  * On submit: (1) always emails YOU the new lead (works now via onboarding@
  * resend.dev → your account inbox), (2) adds the contact to a Resend Audience
@@ -8,12 +9,23 @@
  * (RESEND_FROM is not the onboarding sender). The capture page reveals the
  * report link on success regardless, so the visitor always gets it instantly.
  *
- * Returns { ok: true } even if the notify email hiccups — capturing the lead
- * on-page must never fail because of a mail transport issue.
+ * Optionally also accepts { prospectId, plan } from a Scope Studio session
+ * (see assets/scope-studio.mjs, lib/scope-db.mjs). When Supabase is enabled
+ * and a prospectId is present, this links the lead's email to that prospect
+ * record, marks it 'engaged', and appends a lead_captured event, and folds
+ * the scoped plan into the operator notify email. All of that is guarded by
+ * isEnabled() and wrapped so a persistence hiccup can never break the lead
+ * capture itself.
+ *
+ * Returns { ok: true } even if the notify email or the DB write hiccups —
+ * capturing the lead on-page must never fail because of a downstream issue.
  */
+
+import { isEnabled, upsertProspect, appendEvent } from '../lib/scope-db.mjs';
 
 const RESEND = 'https://api.resend.com';
 const REPORT_URL = 'https://agency.sageideas.dev/sample-report.html';
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const hits = new Map();
 function throttled(ip) {
@@ -32,22 +44,81 @@ async function resend(path, key, body) {
   });
 }
 
+/**
+ * Pure request-body validator — no I/O, safe to unit test directly.
+ * `email` is required (same rule as before); `prospectId` and `plan` are
+ * optional additions for the Scope Studio handoff.
+ */
+export function validate(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return { ok: false, error: 'bad_request' };
+  }
+  const { email, prospectId, plan } = body;
+
+  const clean = typeof email === 'string' ? email.trim() : '';
+  if (!clean || !EMAIL_RE.test(clean) || clean.length > 320) {
+    return { ok: false, error: 'enter a valid email' };
+  }
+  if (prospectId !== undefined && prospectId !== null &&
+      (typeof prospectId !== 'string' || !prospectId.trim())) {
+    return { ok: false, error: 'invalid prospectId' };
+  }
+  if (plan !== undefined && plan !== null &&
+      (typeof plan !== 'object' || Array.isArray(plan))) {
+    return { ok: false, error: 'invalid plan' };
+  }
+
+  return { ok: true };
+}
+
+/** Short "Scoped plan —" block folded into the operator notify email, or '' if no plan. */
+function planSummaryText(plan) {
+  if (!plan || typeof plan !== 'object') return '';
+  const lines = [];
+  if (typeof plan.segment === 'string' && plan.segment) lines.push(`Segment: ${plan.segment}`);
+  if (Array.isArray(plan.keys) && plan.keys.length) lines.push(`Scope: ${plan.keys.join(', ')}`);
+  if (Array.isArray(plan.total) && plan.total.length === 2 &&
+      Number.isFinite(plan.total[0]) && Number.isFinite(plan.total[1])) {
+    lines.push(`Indicative total: $${plan.total[0]}–$${plan.total[1]}`);
+  }
+  return lines.length ? `\n\nScoped plan —\n${lines.join('\n')}` : '';
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'method not allowed' });
   }
 
-  const { email, name, feature, website } = req.body ?? {};
+  const { name, feature, website } = req.body ?? {};
   if (website) return res.status(200).json({ ok: true }); // honeypot
 
-  const clean = typeof email === 'string' ? email.trim() : '';
-  if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean) || clean.length > 320) {
-    return res.status(400).json({ ok: false, error: 'enter a valid email' });
+  const check = validate(req.body ?? {});
+  if (!check.ok) {
+    return res.status(400).json({ ok: false, error: check.error });
   }
+  const { email, prospectId, plan } = req.body;
+  const clean = email.trim();
 
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
   if (throttled(ip)) return res.status(429).json({ ok: false, error: 'slow down' });
+
+  // Link the lead to its Scope Studio prospect record, if any. Independent of
+  // the Resend key below — never allowed to affect the { ok: true } response.
+  if (isEnabled() && typeof prospectId === 'string' && prospectId.trim()) {
+    try {
+      const row = { id: prospectId.trim(), email: clean, stage: 'engaged' };
+      if (plan && typeof plan.segment === 'string' && plan.segment) row.segment = plan.segment;
+      await upsertProspect(row);
+      await appendEvent({
+        prospect_id: prospectId.trim(),
+        type: 'lead_captured',
+        meta: plan && Array.isArray(plan.total) ? { total: plan.total } : {},
+      });
+    } catch (err) {
+      console.error('[lead] prospect link error', err instanceof Error ? err.message : err);
+    }
+  }
 
   const key = process.env.RESEND_API_KEY;
   // No key → still succeed on-page (the report link is revealed client-side);
@@ -66,7 +137,7 @@ export default async function handler(req, res) {
       to: [notifyTo],
       reply_to: clean,
       subject: `New sample-report lead — ${clean}`,
-      text: `Email: ${clean}\nName: ${nm}\nFeature URL: ${feat || '(none given)'}\n\nThey grabbed the sample eval report. If they left a feature URL, run the eval CLI on it and send the real report as touch 1.`,
+      text: `Email: ${clean}\nName: ${nm}\nFeature URL: ${feat || '(none given)'}\n\nThey grabbed the sample eval report. If they left a feature URL, run the eval CLI on it and send the real report as touch 1.${planSummaryText(plan)}`,
     });
   } catch (_) {}
 
