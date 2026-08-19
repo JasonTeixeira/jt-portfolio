@@ -12,14 +12,16 @@ import { test, expect } from '@playwright/test';
  * scope-chat.mjs) and /api/proposal (see scope-studio.mjs's post-lead trigger
  * and proposal.mjs/proposal-admin.mjs's GETs), which the static server also
  * has no handler for; `pageerror` (uncaught exceptions) is left untouched and
- * still fails every test below. */
+ * still fails every test below. Same applies to /api/cron, /api/unsubscribe, and
+ * /api/suppress (nurture endpoints), which the static server also has no handler
+ * for. */
 function trackErrors(page) {
   const errors = [];
   page.on('console', (msg) => {
     if (msg.type() !== 'error') return;
     const text = msg.text();
     const url = msg.location()?.url || '';
-    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal)(\?|$)/.test(url)) return;
+    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal|cron|unsubscribe|suppress)(\?|$)/.test(url)) return;
     errors.push(text);
   });
   page.on('pageerror', (err) => errors.push(String(err)));
@@ -864,5 +866,14 @@ test.describe('proposal page', () => {
   test('admin console with no token shows "Not authorized"', async ({ page }) => {
     await page.goto('/proposal-admin.html');
     await expect(page.locator('body')).toContainText('Not authorized');
+  });
+});
+
+test.describe('unsubscribe page', () => {
+  test('renders the confirmation with no uncaught error', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/unsubscribe.html?done=1');
+    await expect(page.locator('body')).toContainText(/unsubscribed/i);
+    expect(errors).toEqual([]);
   });
 });
