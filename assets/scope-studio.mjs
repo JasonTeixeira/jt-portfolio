@@ -15,6 +15,36 @@ function band([lo, hi]) { return money(lo) + '–' + money(hi); }
 function trackColor(t) { return TRACK_COLOR[t] || '#8E8882'; }
 function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
+/* ── anonymous prospect tracking: fire-and-forget, never affects the UI ──
+   A missing/failing /api/scope endpoint (static hosting, no env configured)
+   must never log a console error or block any interaction. */
+function prospectId() {
+  try {
+    let pid = localStorage.getItem('scope_pid');
+    if (!pid) {
+      pid = (crypto.randomUUID && crypto.randomUUID()) || (Date.now().toString(36) + Math.random().toString(36).slice(2));
+      localStorage.setItem('scope_pid', pid);
+    }
+    return pid;
+  } catch {
+    return null; // localStorage unavailable (private mode, quota) — tracking is best-effort only
+  }
+}
+
+function track(type, extra) {
+  try {
+    const pid = prospectId();
+    if (!pid) return;
+    fetch('/api/scope', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prospectId: pid, type, ...extra }),
+    }).catch(() => {}); // network failure — swallow, never surface to the UI
+  } catch {
+    // fetch/JSON unavailable or threw synchronously — tracking must never break the tool
+  }
+}
+
 /* ── the signature: a live-assembling system blueprint ── */
 function buildBlueprint(plan) {
   const W = 480;
@@ -142,6 +172,8 @@ function optionColor(o) {
 if (root && qMount && planMount && disc) {
   disc.textContent = DISCLAIMER;
   const answers = {};
+  let planTrackTimer = 0;
+  track('started');
   renderQuestions();
   rehydrateFromUrl();
   renderPlan();
@@ -187,11 +219,18 @@ if (root && qMount && planMount && disc) {
 
   function renderPlan() {
     const keys = keysFromAnswers(answers);
-    const plan = computePlan(keys, segmentFromAnswers());
+    const segment = segmentFromAnswers();
+    const plan = computePlan(keys, segment);
     window.__renderScopePlan(plan);
     syncUrl();
     root.setAttribute('data-state', keys.length ? 'plan' : 'discovery');
     updateHandoff(plan);
+    if (keys.length) {
+      clearTimeout(planTrackTimer);
+      planTrackTimer = setTimeout(() => {
+        track('plan_built', { plan: { keys, segment, total: plan.totalBand } });
+      }, 600);
+    }
   }
 
   function planSummaryText(plan) {
@@ -205,11 +244,16 @@ if (root && qMount && planMount && disc) {
       const subj = encodeURIComponent('My scoped plan · via the site');
       const body = encodeURIComponent(plan.count ? planSummaryText(plan) : 'I started scoping on your site and want to talk.');
       email.setAttribute('href', `mailto:hello@sageideas.dev?subject=${subj}&body=${body}`);
+      if (!email.dataset.wired) {
+        email.dataset.wired = '1';
+        email.addEventListener('click', () => track('handoff_clicked', { kind: 'email' }));
+      }
     }
     const copy = document.getElementById('scope-copy');
     if (copy && !copy.dataset.wired) {
       copy.dataset.wired = '1';
       copy.addEventListener('click', async () => {
+        track('handoff_clicked', { kind: 'copy' });
         try {
           await navigator.clipboard.writeText(location.href);
           copy.textContent = 'Copied';

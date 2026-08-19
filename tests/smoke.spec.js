@@ -1,10 +1,24 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-/** Collect console errors + page errors for a page. */
+/** Collect console errors + page errors for a page.
+ * /api/scope is an optional, env-gated persistence endpoint (see scope-studio.mjs
+ * `track()`): the static test server (python's http.server) has no handler for it,
+ * so every POST resolves 501. That's a resolved fetch handled by the client's own
+ * `.catch()` — no JS exception — but Chromium's network layer still emits a
+ * "Failed to load resource" console diagnostic for the failed sub-resource load,
+ * independent of and unsuppressible by any JS-level handling. It is not an
+ * application bug, so it's filtered here; `pageerror` (uncaught exceptions) is
+ * left untouched and still fails every test below. */
 function trackErrors(page) {
   const errors = [];
-  page.on('console', (msg) => { if (msg.type() === 'error') errors.push(msg.text()); });
+  page.on('console', (msg) => {
+    if (msg.type() !== 'error') return;
+    const text = msg.text();
+    const url = msg.location()?.url || '';
+    if (/Failed to load resource/.test(text) && /\/api\/scope$/.test(url)) return;
+    errors.push(text);
+  });
   page.on('pageerror', (err) => errors.push(String(err)));
   return errors;
 }
@@ -718,5 +732,13 @@ test.describe('portfolio — scope studio', () => {
     await expect(page.locator('h1')).toHaveCount(1);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflow).toBe(false);
+  });
+
+  test('persistence is fire-and-forget: /api/scope absent does not break the tool', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');                 // static server has no /api → 501/404
+    await page.locator('.scope-opt[data-id="opt-eval"]').click();
+    await expect(page.locator('#scope-plan')).toContainText('LLM evaluation harness');
+    expect(errors).toEqual([]);                      // failed POST must not log a console error
   });
 });
