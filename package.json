@@ -19,5 +19,8 @@
     "@axe-core/playwright": "^4.10.1",
     "@lhci/cli": "^0.14.0",
     "@playwright/test": "^1.49.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.3"
   }
 }
