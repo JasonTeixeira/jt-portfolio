@@ -129,9 +129,11 @@ const MAX_CHARS = 800;
 const MAX_OUT = { associate: 220, concierge: 220, scope: 500 };
 
 // Strip any $-amount token (e.g. "$4,000", "$9k", "$4,000–$9k", "$4k to $9k")
+// or unambiguous money-word patterns (e.g. "5 grand", "5,000 dollars", "5000 usd")
 // out of a scope-mode reply. Defense-in-depth: the model is instructed never
 // to price, this guarantees it server-side regardless of what it does.
-const MONEY_RE = /\$\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?(?:\s*(?:[-–—]|to)\s*\$?\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?)?/gi;
+// NOTE: Bare suffixes like "5k" or "10m" are NOT stripped (legitimate tech talk).
+const MONEY_RE = /\$\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?(?:\s*(?:[-–—]|to)\s*\$?\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?)?|\d[\d,]*(?:\.\d+)?\s+(?:grand|dollars?|usd)/gi;
 const REPEAT_PLACEHOLDER_RE = /(\(scoped on a call\))(?:\s*(?:to|[-–—])\s*\1)+/gi;
 
 export function sanitizeScopeReply(text) {
@@ -255,7 +257,7 @@ export default async function handler(req, res) {
       const qualification =
         parsed.qualification && typeof parsed.qualification === 'object'
           ? {
-              ...parsed.qualification,
+              fit: parsed.qualification.fit,
               reasons: Array.isArray(parsed.qualification.reasons)
                 ? parsed.qualification.reasons.filter((r) => typeof r === 'string').map(clean)
                 : [],

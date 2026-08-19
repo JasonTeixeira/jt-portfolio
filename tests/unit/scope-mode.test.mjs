@@ -27,6 +27,24 @@ test('sanitizeScopeReply leaves price-free text untouched', () => {
   assert.equal(sanitizeScopeReply('We can scope this on a call.'), 'We can scope this on a call.');
 });
 
+test('sanitizeScopeReply strips money-word patterns (grand)', () => {
+  const out = sanitizeScopeReply('about 5 grand for that');
+  assert.ok(!/5\s+grand/.test(out), 'no "5 grand" remains: ' + out);
+  assert.ok(out.includes('(scoped on a call)'), 'replacement placeholder present');
+});
+
+test('sanitizeScopeReply strips money-word patterns (dollars)', () => {
+  const out = sanitizeScopeReply('roughly 5,000 dollars');
+  assert.ok(!/5,000\s+dollars/.test(out), 'no "5,000 dollars" remains: ' + out);
+  assert.ok(out.includes('(scoped on a call)'), 'replacement placeholder present');
+});
+
+test('sanitizeScopeReply preserves technical suffixes (5k, 10m not stripped)', () => {
+  const out = sanitizeScopeReply('handles 5k users and 10m rows');
+  assert.ok(/5k/.test(out), '5k is preserved in: ' + out);
+  assert.ok(/10m/.test(out), '10m is preserved in: ' + out);
+});
+
 test('filterSelection drops keys not in the rate card (anti-hallucination)', () => {
   const valid = new Set(RATE_CARD.map((c) => c.key));
   const sel = filterSelection(
