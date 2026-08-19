@@ -3,6 +3,12 @@ import { appendEvent } from '../lib/scope-db.mjs';
 import * as stripe from '../lib/stripe.mjs';
 import { isExpired, PROPOSAL_STATUS } from '../assets/proposal-core.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
+const hits = new Map();
+function throttled(req) {
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || 'unknown';
+  const now = Date.now(); const arr = (hits.get(ip) || []).filter((t) => now - t < 60000);
+  arr.push(now); hits.set(ip, arr); return arr.length > 20;
+}
 
 export function validate(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
@@ -16,6 +22,7 @@ export function validate(body) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   const v = validate(req.body || {}); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
+  if (throttled(req)) return res.status(429).json({ ok: false, error: 'slow_down' });
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
   const r = await getProposalByPublicId(req.body.publicId.trim());
   if (!r.ok || !r.data) return res.status(404).json({ ok: false, error: 'not_found' });
@@ -26,8 +33,9 @@ export default async function handler(req, res) {
   if (!stripe.isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'payments_off' });
   // record acceptance intent (finalized by payment webhook)
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || null;
-  await updateProposal(row.id, { accepted_name: req.body.acceptName.trim(), accepted_at: nowIso,
+  const acc = await updateProposal(row.id, { accepted_name: req.body.acceptName.trim(), accepted_at: nowIso,
     accept_ip: ip, accept_terms_version: row.terms_version });
+  if (!acc.ok) return res.status(200).json({ ok: false, skipped: true, reason: 'accept_write_failed' });
   // reuse an open session if one exists
   if (row.stripe_session_id) {
     const got = await stripe.retrieveSession(row.stripe_session_id);

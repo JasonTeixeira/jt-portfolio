@@ -28,6 +28,11 @@ export function clientView(row, nowIso) {
   if (row.status === PROPOSAL_STATUS.APPROVED && isExpired(row, nowIso)) out.status = PROPOSAL_STATUS.EXPIRED;
   return out;
 }
+// Price band is derived from the catalog keys, NEVER from client-sent totalBand.
+export function serverBand(plan) {
+  const p = computePlan(Array.isArray(plan && plan.keys) ? plan.keys : [], (plan && plan.segment) || null);
+  return p.totalBand;
+}
 function throttled(req) {
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || 'unknown';
   const now = Date.now(); const arr = (hits.get(ip) || []).filter((t) => now - t < 60000);
@@ -53,7 +58,7 @@ export default async function handler(req, res) {
   const body = req.body || {};
   const v = validate(body); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
   const plan = body.plan;
-  const band = Array.isArray(plan.totalBand) ? plan.totalBand : (Array.isArray(plan.total) ? plan.total : [0, 0]);
+  const band = serverBand(plan);
   const firm = firmCentsFromBand(band);
   const dep = depositCents(firm, DEPOSIT_PCT_DEFAULT);
   const now = new Date();
@@ -72,10 +77,11 @@ export default async function handler(req, res) {
   const created = await createProposal(row);
   if (!created.ok) return res.status(200).json({ ok: false, skipped: true });
   appendEvent({ prospect_id: row.prospect_id, type: 'proposal_drafted', meta: { public_id: pid, firm_cents: firm } }).catch(() => {});
-  const admin = `${SITE}/proposal-admin?key=REDACTED#${created.data ? created.data.id : ''}`;
+  const adminToken = process.env.SCOPE_ADMIN_TOKEN || '';
+  const adminLink = adminToken ? `${SITE}/proposal-admin?key=${adminToken}` : `${SITE}/proposal-admin`;
   sendOperator({
     subject: `New proposal to approve — ${money(firm)} draft`,
-    text: `A scope just came in.\n\nSegment: ${row.segment || '(none)'}\nItems: ${plan.keys.length}\nDraft firm price: ${money(firm)} (deposit ${money(dep)})\nClient email: ${row.client_email || '(none)'}\n\nApprove it: ${SITE}/proposal-admin?key=YOUR_TOKEN\nProposal id: ${created.data ? created.data.id : '(unknown)'}\n`,
+    text: `A scope just came in.\n\nSegment: ${row.segment || '(none)'}\nItems: ${plan.keys.length}\nDraft firm price: ${money(firm)} (deposit ${money(dep)})\nClient email: ${row.client_email || '(none)'}\n\nApprove it: ${adminLink}\nProposal id: ${created.data ? created.data.id : '(unknown)'}\n`,
   }).catch(() => {});
   return res.status(200).json({ ok: true, publicId: pid });
 }

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validate, clientView } from '../../api/proposal.js';
+import { validate, clientView, serverBand } from '../../api/proposal.js';
+import { computePlan } from '../../assets/scope-core.mjs';
 
 test('validate requires prospectId + a plan with keys', () => {
   assert.equal(validate({ prospectId: 'p', plan: { keys: ['ai-agent'], totalBand: [4000, 9000] } }).ok, true);
@@ -20,4 +21,13 @@ test('clientView hides drafts and whitelists fields', () => {
   assert.equal(v.accept_ip, undefined); assert.equal(v.stripe_session_id, undefined);
   assert.equal(clientView({ ...base, status: 'draft_pending' }, '2026-01-01T00:00:00Z'), null);
   assert.equal(clientView({ ...base, status: 'approved', expires_at: '2020-01-01T00:00:00Z' }, '2026-01-01T00:00:00Z').status, 'expired');
+});
+test('serverBand ignores client-sent totalBand; derives band from catalog keys', () => {
+  // forged cheap band on a real key must be ignored
+  const REAL = 'chatbot';
+  const got = serverBand({ keys: [REAL], segment: null, totalBand: [1, 1] });
+  assert.deepEqual(got, computePlan([REAL]).totalBand);
+  assert.ok(got[1] > 1);
+  // unknown keys => empty plan => [0,0]
+  assert.deepEqual(serverBand({ keys: ['definitely-not-a-real-key'], totalBand: [1, 1] }), [0, 0]);
 });
