@@ -1,44 +1,143 @@
-// Scope Studio page controller — offline question flow + plan-key derivation.
-// Renders questions, tracks answers, and rehydrates from a shared URL.
-// Defines window.__renderScopePlan (the plan visualization renderer) directly.
+// Scope Studio page controller — offline question flow + a live system blueprint.
+// As you pick needs, a real architecture diagram assembles (nodes per capability,
+// grouped by phase, colored by track) and resolves to a "proven" verdict when an
+// eval gate is present. Everything is deterministic; numbers come only from the rate card.
+// Defines window.__renderScopePlan (blueprint + HUD + itemized plan) directly.
 
+import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER, CARD_BY_KEY } from './scope-core.mjs';
+
+const TRACK_COLOR = { 'AI Build': '#22d3ee', 'Eval & QA': '#a78bfa', 'Test Automation': '#10b981', 'Automation': '#F59E0B', 'Product': '#8FA0FF' };
 const PHASE_COLOR = { audit: '#8FA0FF', build: '#22d3ee', gate: '#a78bfa', operate: '#10b981' };
-function money(n) { return '$' + (n >= 1000 ? Math.round(n / 100) / 10 + 'k' : String(n)); }
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function money(n) { return '$' + (n >= 1000 ? Math.round(n / 100) / 10 + 'k' : String(Math.round(n))); }
 function band([lo, hi]) { return money(lo) + '–' + money(hi); }
+function trackColor(t) { return TRACK_COLOR[t] || '#8E8882'; }
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+/* ── the signature: a live-assembling system blueprint ── */
+function buildBlueprint(plan) {
+  const W = 480;
+  const hasGate = plan.phases.some((p) => p.phase === 'gate');
+  const cols = plan.phases; // ordered audit→build→gate→operate
+  const perSide = Math.ceil(Math.max(...cols.map((c) => c.items.length), 1) / 2);
+  const H = Math.max(220, 150 + perSide * 34);
+  const midY = H / 2;
+  const x0 = 46, x1 = W - 46;
+  const colX = cols.length === 1 ? [(x0 + x1) / 2] : cols.map((_, i) => x0 + 92 + (i * (x1 - x0 - 184)) / Math.max(cols.length - 1, 1));
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const parts = [];
+  // rail
+  parts.push(`<line x1="${x0}" y1="${midY}" x2="${x1}" y2="${midY}" stroke="#2A2826" stroke-width="1.5" stroke-linecap="round"/>`);
+  // capability nodes branch off phase stations
+  let delay = 0;
+  cols.forEach((col, ci) => {
+    const sx = colX[ci];
+    parts.push(`<circle cx="${sx}" cy="${midY}" r="3" fill="${PHASE_COLOR[col.phase]}" class="bp-station"/>`);
+    parts.push(`<text x="${sx}" y="${midY + 24}" text-anchor="middle" class="bp-phase" fill="${PHASE_COLOR[col.phase]}">${esc(col.label).toUpperCase()}</text>`);
+    col.items.forEach((it, k) => {
+      const up = k % 2 === 0;
+      const tier = Math.floor(k / 2);
+      const ny = midY + (up ? -1 : 1) * (46 + tier * 34);
+      const c = trackColor(it.track);
+      const d = (delay += 55);
+      parts.push(`<line x1="${sx}" y1="${midY}" x2="${sx}" y2="${ny}" stroke="${c}" stroke-opacity="0.4" stroke-width="1.25" class="bp-edge" style="--d:${d}ms"/>`);
+      parts.push(`<g class="bp-node" style="--d:${d}ms">
+        <circle cx="${sx}" cy="${ny}" r="11" fill="none" stroke="${c}" stroke-opacity="0.28" class="bp-halo"/>
+        <circle cx="${sx}" cy="${ny}" r="5" fill="${c}"/>
+        <text x="${sx}" y="${ny + (up ? -16 : 22)}" text-anchor="middle" class="bp-label" fill="#C4BFB8">${esc(it.name)}</text>
+      </g>`);
+    });
+  });
+  // start + verdict
+  parts.push(`<g class="bp-node" style="--d:0ms"><circle cx="${x0}" cy="${midY}" r="6" fill="#F4F2EF"/><text x="${x0}" y="${midY - 16}" text-anchor="middle" class="bp-cap" fill="#8E8882">YOUR BUILD</text></g>`);
+  const vc = hasGate ? '#10b981' : '#8E8882';
+  const vlabel = hasGate ? 'PROVEN' : 'SHIPPED';
+  parts.push(`<g class="bp-node bp-verdict${hasGate ? ' on' : ''}" style="--d:${delay + 120}ms">
+    <circle cx="${x1}" cy="${midY}" r="12" fill="none" stroke="${vc}" stroke-opacity="0.35" class="bp-halo"/>
+    <circle cx="${x1}" cy="${midY}" r="6" fill="${vc}"/>
+    <text x="${x1}" y="${midY - 18}" text-anchor="middle" class="bp-cap" fill="${vc}">${vlabel}</text>
+  </g>`);
+  const packet = REDUCED ? '' : `<circle r="3.5" fill="#22d3ee" class="bp-packet"><animate attributeName="cx" from="${x0}" to="${x1}" dur="3.2s" repeatCount="indefinite"/><animate attributeName="cy" values="${midY};${midY}" dur="3.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" dur="3.2s" repeatCount="indefinite"/></circle>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="A live diagram of your scoped system: ${plan.count} components across ${cols.length} phases, ${hasGate ? 'with an evaluation gate that proves it works' : 'ready to ship'}." style="display:block;width:100%;height:auto;overflow:visible">${parts.join('')}${packet}</svg>`;
+}
+
+/* ── count-up on the total band ── */
+let lastLo = 0, lastHi = 0, rafId = 0;
+function animateTotal(el, toLo, toHi) {
+  if (REDUCED) { el.textContent = band([toLo, toHi]); lastLo = toLo; lastHi = toHi; return; }
+  cancelAnimationFrame(rafId);
+  const fromLo = lastLo, fromHi = lastHi, t0 = performance.now(), dur = 520;
+  function step(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = band([Math.round(fromLo + (toLo - fromLo) * e), Math.round(fromHi + (toHi - fromHi) * e)]);
+    if (p < 1) rafId = requestAnimationFrame(step); else { lastLo = toLo; lastHi = toHi; }
+  }
+  rafId = requestAnimationFrame(step);
+}
 
 window.__renderScopePlan = function (plan) {
+  const bp = document.getElementById('scope-blueprint');
+  const hud = document.getElementById('scope-hud');
   const mount = document.getElementById('scope-plan');
   if (!mount) return;
+
   if (!plan.count) {
-    mount.innerHTML = '<div style="border:1px dashed #2A2826;border-radius:12px;padding:28px;color:#8E8882;font-family:\'JetBrains Mono\',monospace;font-size:12.5px">Pick what you want to happen. Your plan builds here as you go.</div>';
+    if (bp) bp.innerHTML = `<div class="bp-empty"><span class="bp-seed"></span><p>Your system builds here.<br><span>Pick what you want to happen — watch it assemble, priced and proven.</span></p></div>`;
+    if (hud) hud.innerHTML = '';
+    mount.innerHTML = '';
+    lastLo = lastHi = 0;
     return;
   }
-  const phases = plan.phases.map(p => `
-    <div style="margin-top:18px">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:${PHASE_COLOR[p.phase]};margin-bottom:8px">${p.label} · ${band(p.band)}</div>
-      ${p.items.map(i => `
-        <div style="display:flex;justify-content:space-between;gap:14px;border-top:1px solid #211F1C;padding:11px 0">
-          <div><div style="color:#F4F2EF;font-size:14px">${i.name}</div><div style="color:#8E8882;font-size:12px;line-height:1.5">${i.why}</div></div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#A8A29E;white-space:nowrap;text-align:right">${band(i.band)}<br><span style="color:#8E8882">${i.effort}</span></div>
+
+  if (bp) bp.innerHTML = buildBlueprint(plan);
+
+  if (hud) {
+    hud.innerHTML = `
+      <div class="hud-row">
+        <div class="hud-stat"><span class="hud-num" data-track="green" id="scope-total-num">${band(plan.totalBand)}</span><span class="hud-lbl">indicative range</span></div>
+        <div class="hud-stat"><span class="hud-num sm">${plan.count}</span><span class="hud-lbl">components</span></div>
+        <div class="hud-stat"><span class="hud-num sm">~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]}<span class="hud-u">wks</span></span><span class="hud-lbl">timeline</span></div>
+      </div>
+      <div class="hud-bar" aria-hidden="true">${plan.phases.map((p) => `<span style="flex:${p.items.length};background:${PHASE_COLOR[p.phase]}"></span>`).join('')}</div>`;
+    const num = document.getElementById('scope-total-num');
+    if (num) animateTotal(num, plan.totalBand[0], plan.totalBand[1]);
+  }
+
+  const phaseCards = plan.phases.map((p) => `
+    <div class="plan-phase">
+      <div class="plan-phase-h" style="color:${PHASE_COLOR[p.phase]}"><span class="pp-dot" style="background:${PHASE_COLOR[p.phase]}"></span>${esc(p.label)} <span class="pp-band">${band(p.band)}</span></div>
+      ${p.items.map((i) => `
+        <div class="plan-item" style="--tc:${trackColor(i.track)}">
+          <div class="pi-main"><div class="pi-name">${esc(i.name)}</div><div class="pi-why">${esc(i.why)}</div></div>
+          <div class="pi-price">${band(i.band)}<span class="pi-eff">${esc(i.effort)}</span></div>
         </div>`).join('')}
     </div>`).join('');
+
+  // #scope-total kept for the smoke test (contains "$" and "indicative")
   mount.innerHTML = `
-    <div style="border:1px solid #2A2826;border-radius:14px;padding:22px;background:#0C0C0E">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882">your plan · ${plan.count} pieces · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} wks</div>
-      ${phases}
-      <div id="scope-total" style="margin-top:20px;border-top:1px solid #2A2826;padding-top:16px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-        <span style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.4rem,2.4vw,2rem);color:#10b981">${band(plan.totalBand)}</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#8E8882">indicative range · exact scope on a call</span>
+    <div class="plan-card">
+      ${phaseCards}
+      <div id="scope-total" class="plan-total">
+        <span class="pt-num">${band(plan.totalBand)}</span>
+        <span class="pt-lbl">indicative range · exact scope on a call</span>
       </div>
     </div>`;
 };
 
-import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER } from './scope-core.mjs';
-
+/* ─────────────────────────── controller ─────────────────────────── */
 const root = document.getElementById('scope-root');
 const qMount = document.getElementById('scope-questions');
 const planMount = document.getElementById('scope-plan');
 const disc = document.getElementById('scope-disclaimer');
+
+function optionColor(o) {
+  const k = (o.keys || [])[0];
+  const card = k && CARD_BY_KEY.get(k);
+  return card ? trackColor(card.track) : '#22d3ee';
+}
 
 if (root && qMount && planMount && disc) {
   disc.textContent = DISCLAIMER;
@@ -48,11 +147,11 @@ if (root && qMount && planMount && disc) {
   renderPlan();
 
   function renderQuestions() {
-    qMount.innerHTML = QUESTIONS.map((q) => `
-      <fieldset style="border:1px solid #2A2826;border-radius:12px;padding:18px 20px;margin:0 0 16px">
-        <legend style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8E8882;padding:0 6px">${q.prompt}</legend>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-          ${q.options.map((o) => `<button type="button" class="scope-opt" data-q="${q.id}" data-id="${o.id}" data-multi="${q.multi}" aria-pressed="false" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#A8A29E;border:1px solid #2A2826;border-radius:999px;padding:7px 13px;background:transparent;cursor:pointer">${o.label}</button>`).join('')}
+    qMount.innerHTML = QUESTIONS.map((q, qi) => `
+      <fieldset class="scope-q" style="--qd:${qi * 70}ms">
+        <legend>${esc(q.prompt)}</legend>
+        <div class="scope-opts">
+          ${q.options.map((o) => `<button type="button" class="scope-opt" data-q="${q.id}" data-id="${o.id}" data-multi="${q.multi}" aria-pressed="false" style="--tc:${optionColor(o)}">${esc(o.label)}</button>`).join('')}
         </div>
       </fieldset>`).join('');
     qMount.querySelectorAll('.scope-opt').forEach((btn) => btn.addEventListener('click', onPick));
@@ -78,9 +177,7 @@ if (root && qMount && planMount && disc) {
 
   function setPressed(btn, on) {
     btn.setAttribute('aria-pressed', String(on));
-    btn.style.color = on ? '#09090B' : '#A8A29E';
-    btn.style.background = on ? '#22d3ee' : 'transparent';
-    btn.style.borderColor = on ? '#22d3ee' : '#2A2826';
+    btn.classList.toggle('is-on', on);
   }
 
   function segmentFromAnswers() {
