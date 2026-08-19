@@ -741,4 +741,14 @@ test.describe('portfolio — scope studio', () => {
     await expect(page.locator('#scope-plan')).toContainText('LLM evaluation harness');
     expect(errors).toEqual([]);                      // failed POST must not log a console error
   });
+
+  test('lead capture form submits and degrades gracefully when /api/lead is absent', async ({ page }) => {
+    await page.goto('/build.html');                  // static server has no /api → the graceful fallback path
+    await page.locator('.scope-opt[data-id="opt-eval"]').click();
+    await page.locator('#scope-email-input').fill('client@example.com');
+    await page.locator('#scope-send').click();
+    // the form must resolve to a visible status (fallback message here), never hang or navigate away
+    await expect(page.locator('#scope-send-status')).toContainText(/email/i, { timeout: 5000 });
+    await expect(page).toHaveURL(/build\.html/);      // must not navigate away (no jarring mailto redirect)
+  });
 });

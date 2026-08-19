@@ -59,12 +59,20 @@
           </div>
         </div>
       </div>
-      <div id="scope-handoff" style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-        <a id="scope-email" class="btn-solid green" href="#">Email me this plan &rarr;</a>
-        <button id="scope-copy" type="button" class="btn-ghost">Copy shareable link</button>
-        <a id="scope-human" class="btn-ghost" href="book.html" style="border-color:#a78bfa;color:#a78bfa">Talk to Jason directly &rarr;</a>
+      <div id="scope-handoff" style="margin-top:28px">
+        <form id="scope-lead" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;max-width:540px">
+          <input id="scope-email-input" type="email" required placeholder="you@company.com" autocomplete="email" aria-label="Your email"
+            style="flex:1;min-width:220px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#F4F2EF;background:#0E0E10;border:1px solid #2A2826;border-radius:10px;padding:13px 15px">
+          <button id="scope-send" type="submit" class="btn-solid green">Email me the plan &rarr;</button>
+        </form>
+        <div id="scope-send-status" role="status" aria-live="polite" style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882;min-height:16px"></div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:14px">
+          <button id="scope-copy" type="button" class="btn-ghost">Copy shareable link</button>
+          <a id="scope-human" class="btn-ghost" href="book.html" style="border-color:#a78bfa;color:#a78bfa">Talk to Jason directly &rarr;</a>
+          <a id="scope-email" class="dim-link" href="#" style="font-family:'JetBrains Mono',monospace;font-size:12px">or open in your email app</a>
+        </div>
       </div>
-      <p class="subtle" style="margin-top:10px;font-size:11px">I&rsquo;ll email you the plan and may follow up about it. Unsubscribe anytime.</p>
+      <p class="subtle" style="margin-top:12px;font-size:11px">I&rsquo;ll email you the plan and may follow up about it. Unsubscribe anytime.</p>
       <p id="scope-disclaimer" class="subtle" style="margin-top:24px;font-size:12px"></p>
     </section>
   </main>

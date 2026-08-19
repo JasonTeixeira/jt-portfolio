@@ -178,6 +178,46 @@ if (root && qMount && planMount && disc) {
   rehydrateFromUrl();
   renderPlan();
 
+  const leadForm = document.getElementById('scope-lead');
+  if (leadForm) leadForm.addEventListener('submit', onLeadSubmit);
+
+  async function onLeadSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('scope-email-input');
+    const status = document.getElementById('scope-send-status');
+    const email = ((input && input.value) || '').trim();
+    if (!email) return;
+    const keys = keysFromAnswers(answers);
+    const plan = computePlan(keys, segmentFromAnswers());
+    if (status) { status.style.color = '#8E8882'; status.textContent = 'Sending…'; }
+    let ok = false;
+    try {
+      const r = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          prospectId: prospectId(),
+          source: 'scope-studio',
+          feature: plan.count ? plan.items.map((i) => i.name).join(', ') : 'scoping',
+          plan: { keys, segment: plan.segment, total: plan.totalBand },
+        }),
+      });
+      ok = !!(r && r.ok);
+    } catch { ok = false; }
+    if (ok) {
+      if (status) { status.style.color = '#10b981'; status.textContent = 'Sent. I’ll email you the plan and be in touch, usually the same day.'; }
+      if (input) input.disabled = true;
+      const send = document.getElementById('scope-send');
+      if (send) send.disabled = true;
+      leadForm.reset();
+    } else if (status) {
+      // No working endpoint (static host / not yet deployed) — the "open in your email app" link is still there.
+      status.style.color = '#F59E0B';
+      status.textContent = 'Couldn’t send from here. Use “open in your email app” below, or email hello@sageideas.dev.';
+    }
+  }
+
   function renderQuestions() {
     qMount.innerHTML = QUESTIONS.map((q, qi) => `
       <fieldset class="scope-q" style="--qd:${qi * 70}ms">
