@@ -4,6 +4,9 @@
   "private": true,
   "description": "Jason Teixeira — AI Automation × QA/LLM-Eval engineer portfolio. The site runs its own QA.",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "serve": "python3 -m http.server 8242",
     "test": "playwright test",

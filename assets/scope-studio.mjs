@@ -246,14 +246,14 @@ if (root && qMount && planMount && disc) {
       email.setAttribute('href', `mailto:hello@sageideas.dev?subject=${subj}&body=${body}`);
       if (!email.dataset.wired) {
         email.dataset.wired = '1';
-        email.addEventListener('click', () => track('handoff_clicked', { kind: 'email' }));
+        email.addEventListener('click', () => track('handoff_clicked', { meta: { kind: 'email' } }));
       }
     }
     const copy = document.getElementById('scope-copy');
     if (copy && !copy.dataset.wired) {
       copy.dataset.wired = '1';
       copy.addEventListener('click', async () => {
-        track('handoff_clicked', { kind: 'copy' });
+        track('handoff_clicked', { meta: { kind: 'copy' } });
         try {
           await navigator.clipboard.writeText(location.href);
           copy.textContent = 'Copied';
