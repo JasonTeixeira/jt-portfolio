@@ -1,3 +1,5 @@
+import { RATE_CARD } from '../assets/scope-core.mjs';
+
 /**
  * /api/chat — Vercel serverless function powering the live demo AI receptionist.
  *
@@ -63,11 +65,87 @@ HARD RULES
 - Only discuss Jason, his work, and how to engage him. Warmly redirect anything off-topic.
 - Be genuinely useful first; nudge toward the call or mini-eval only when the visitor is clearly interested. Never pushy.`;
 
-const PROMPTS = { receptionist: SYSTEM_PROMPT, concierge: ASSOCIATE_PROMPT, associate: ASSOCIATE_PROMPT };
+// Explicit capability-key allowlist injected into the prompt AND enforced
+// server-side (filterSelection) — the model may only ever pick from this set.
+const SCOPE_KEY_LIST = RATE_CARD.map((c) => `${c.key}: ${c.name}`).join('\n');
+const VALID_SCOPE_KEYS = new Set(RATE_CARD.map((c) => c.key));
+
+// Scope Studio discovery persona (mode 'scope') — a warm interviewer that
+// figures out what a visitor needs and proposes capability keys from the
+// rate card. This is the highest-trust surface on the site, so §7.5 "Voice &
+// Humanity" from the Scope Studio spec is encoded here near-verbatim and is
+// non-negotiable: radical AI transparency, Jason's first-person voice, EQ
+// first, a graceful no, and a hard ban on ever stating a price.
+const SCOPE_PROMPT = `You are Jason's AI — a discovery interviewer embedded on Jason Teixeira's (Sage Ideas LLC) consulting site. You are not Jason and you never pretend to be. Your job is a short, warm conversation that figures out what someone actually needs, so neither of them wastes time on a call that isn't a fit.
+
+RADICAL TRANSPARENCY (non-negotiable)
+Open by owning what you are, plainly — something like: "This is Jason's AI. It scopes your project so neither of us wastes time on a call that isn't a fit. Jason reads every plan it makes — skip straight to him anytime." Never claim or imply you're a human. If asked, say so directly.
+
+VOICE — you speak as Jason, first person: a smart friend who happens to be an expert, not a brand.
+Banned: "I'd be happy to help!", "Great question!", "Let's dive in!", exclamation spam, corporate verbs (unlock / leverage / seamless / elevate), perfectly symmetrical enthusiasm, em-dash clause-connectors, rule-of-three lists, and "actually" / "genuinely" as filler.
+Required: contractions, plain words, one idea per turn, a real opinion, occasional dry humor, and specifics from the visitor's own words reflected back. Listen more than you pitch. Consultative, never transactional.
+
+EMOTIONAL INTELLIGENCE FIRST — acknowledge their situation before scoping. Example: "You've probably been burned by an 'AI solution' that was a demo and a prayer. Fair. Let's do this differently."
+
+IMPERFECTION AS WARMTH — state limits plainly. "I can't price this exactly without seeing your data — here's my honest read and why." Honest seams read human; seamless perfection reads fake.
+
+GRACEFUL NO — if this genuinely isn't a fit, say so kindly and say who it might be for instead. Telling someone not to buy is the most trust-building thing you can do.
+
+HUMAN MICRO-COPY — write like a person, not a system. Never "Loading…" or "Processing your request."
+
+"TALK TO JASON" — the option to skip straight to Jason is a warm invitation, present in every state, never a dead-end fallback.
+
+RESTRAINT — you are one clearly-labeled tool in Jason's shop, not the shop itself. Don't oversell yourself.
+
+HOW THE CONVERSATION WORKS
+- Ask one thing at a time. Keep turns short: 1-3 sentences.
+- Figure out: what they're trying to do, their segment (service business / AI product / ops automation / product build), what "working" would mean for them, rough maturity or urgency, and anything that changes scope (data readiness, integrations, existing systems).
+- Never invent a price or a specific dollar figure, not even as an example. If pressed, say pricing is scoped on a call once there's enough signal, and that indicative bands show up in the plan, not from you.
+- Once you have enough signal to suggest a real set of capabilities (usually after 3-5 exchanges), stop asking questions and respond with ONLY a single JSON object, nothing else — no prose before or after it, no markdown fences. Shape:
+{
+  "reply": "<your conversational turn, still first-person Jason, still no prices>",
+  "done": <true once there's enough to hand off a plan, false while still discovering>,
+  "selection": [ { "key": "<one of the keys below>", "why": "<one honest sentence tying it to what they said>", "confidence": <number 0-1> } ],
+  "segment": "<one of: service-business, ai-product, ops-automation, product-build, or null>",
+  "flags": [ "<anything the rate card can't see: integration complexity, data readiness, unclear scope, etc.>" ],
+  "qualification": { "fit": "strong" | "maybe" | "poor", "reasons": [ "<one honest reason>" ] }
+}
+Before "done" is true, "selection" can be empty or partial — only include a key once you're genuinely confident it fits what they've told you.
+
+CAPABILITY KEYS — choose "key" ONLY from this exact list (id: name). Never invent a key that isn't here:
+${SCOPE_KEY_LIST}
+
+Stay only on Jason, his work, and scoping what this visitor needs. Warmly redirect anything else back to the conversation.`;
+
+const PROMPTS = {
+  receptionist: SYSTEM_PROMPT,
+  concierge: ASSOCIATE_PROMPT,
+  associate: ASSOCIATE_PROMPT,
+  scope: SCOPE_PROMPT,
+};
 
 const MAX_TURNS = 16;
 const MAX_CHARS = 800;
-const MAX_OUT = { associate: 220, concierge: 220 };
+const MAX_OUT = { associate: 220, concierge: 220, scope: 500 };
+
+// Strip any $-amount token (e.g. "$4,000", "$9k", "$4,000–$9k", "$4k to $9k")
+// out of a scope-mode reply. Defense-in-depth: the model is instructed never
+// to price, this guarantees it server-side regardless of what it does.
+const MONEY_RE = /\$\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?(?:\s*(?:[-–—]|to)\s*\$?\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?)?/gi;
+const REPEAT_PLACEHOLDER_RE = /(\(scoped on a call\))(?:\s*(?:to|[-–—])\s*\1)+/gi;
+
+export function sanitizeScopeReply(text) {
+  if (typeof text !== 'string') return '';
+  return text.replace(MONEY_RE, '(scoped on a call)').replace(REPEAT_PLACEHOLDER_RE, '$1');
+}
+
+// Anti-hallucination gate: only keep selection entries whose key is on the
+// real rate card. Guards non-array/garbage input from a misbehaving model.
+export function filterSelection(selection, validKeys) {
+  if (!Array.isArray(selection)) return [];
+  if (!validKeys || typeof validKeys.has !== 'function') return [];
+  return selection.filter((s) => s && typeof s === 'object' && typeof s.key === 'string' && validKeys.has(s.key));
+}
 
 // tiny per-instance throttle (best-effort; resets on cold start)
 const hits = new Map();
@@ -114,6 +192,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'bad_request' });
   }
 
+  const isScope = body.mode === 'scope';
+
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 20_000);
@@ -130,7 +210,11 @@ export default async function handler(req, res) {
         model,
         messages: [{ role: 'system', content: persona }, ...messages],
         max_tokens: MAX_OUT[body.mode] || 160,
-        temperature: 0.6,
+        // Scope mode is a structured, price-safe discovery flow: lower
+        // temperature for consistency, and ask the provider's JSON mode for
+        // a parseable turn.
+        temperature: isScope ? 0.4 : 0.6,
+        ...(isScope ? { response_format: { type: 'json_object' } } : {}),
       }),
       signal: ctrl.signal,
     });
@@ -141,9 +225,35 @@ export default async function handler(req, res) {
       return res.status(502).json({ ok: false, error: 'provider_error' });
     }
     const data = await r.json();
-    const reply = data?.choices?.[0]?.message?.content?.trim();
-    if (!reply) return res.status(502).json({ ok: false, error: 'empty_reply' });
-    return res.status(200).json({ ok: true, reply });
+    const raw = data?.choices?.[0]?.message?.content?.trim();
+    if (!raw) return res.status(502).json({ ok: false, error: 'empty_reply' });
+
+    if (!isScope) {
+      return res.status(200).json({ ok: true, reply: raw });
+    }
+
+    // Scope mode: parse the model's structured turn, then ground it before
+    // it ever reaches the client — drop hallucinated capability keys and
+    // strip any price the model stated anyway. Never 500 the visitor: if
+    // the model didn't return valid JSON, degrade to a plain sanitized reply.
+    try {
+      const parsed = JSON.parse(raw);
+      const reply = sanitizeScopeReply(typeof parsed.reply === 'string' ? parsed.reply : '');
+      const selection = filterSelection(parsed.selection, VALID_SCOPE_KEYS);
+      return res.status(200).json({
+        ok: true,
+        reply,
+        done: !!parsed.done,
+        selection,
+        segment: typeof parsed.segment === 'string' ? parsed.segment : null,
+        flags: Array.isArray(parsed.flags) ? parsed.flags.filter((f) => typeof f === 'string') : [],
+        qualification:
+          parsed.qualification && typeof parsed.qualification === 'object' ? parsed.qualification : null,
+      });
+    } catch (parseErr) {
+      console.error('[chat] scope reply was not valid JSON', parseErr instanceof Error ? parseErr.message : parseErr);
+      return res.status(200).json({ ok: true, reply: sanitizeScopeReply(raw), selection: [] });
+    }
   } catch (err) {
     console.error('[chat] error', err instanceof Error ? err.message : err);
     return res.status(502).json({ ok: false, error: 'upstream_failed' });
