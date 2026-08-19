@@ -43,12 +43,16 @@ function throttled(req) {
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    if (!isEnabled()) return res.status(404).json({ ok: false, error: 'not_found' });
+    // GET always answers 200 with a body the client branches on. A private proposal that
+    // does not exist is not an HTTP error for the visitor (a stale/invalid link is a normal
+    // state), and returning 200 keeps the browser console clean — matching the site's
+    // degrade convention (api/scope.js). The page renders "unavailable" from { ok:false }.
+    if (!isEnabled()) return res.status(200).json({ ok: false, reason: 'not_configured' });
     const publicIdParam = String(req.query.publicId || '');
-    if (!publicIdParam) return res.status(400).json({ ok: false, error: 'publicId required' });
+    if (!publicIdParam) return res.status(200).json({ ok: false, reason: 'bad_request' });
     const r = await getProposalByPublicId(publicIdParam);
     const view = r.ok ? clientView(r.data, new Date().toISOString()) : null;
-    if (!view) return res.status(404).json({ ok: false, error: 'not_found' });
+    if (!view) return res.status(200).json({ ok: false, reason: 'not_found' });
     if (view.status === PROPOSAL_STATUS.APPROVED && r.data && r.data.id) {
       appendEvent({ prospect_id: r.data.prospect_id, type: 'proposal_viewed', meta: { public_id: publicIdParam } }).catch(() => {});
     }

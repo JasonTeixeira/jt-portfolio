@@ -216,6 +216,10 @@ async function init() {
 
   if (!id) { renderUnavailable(root); return; }
 
+  // Immediate placeholder inside the reserved min-height so the fetch->render
+  // transition does not shift the page (keeps CLS ~0).
+  root.appendChild(h('p', { class: 'subtle', style: 'padding-top:8vh;text-align:center' }, 'Loading your proposal…'));
+
   let json = null;
   try {
     const res = await fetch(`/api/proposal?publicId=${encodeURIComponent(id)}`);
