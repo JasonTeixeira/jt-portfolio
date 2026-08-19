@@ -17,8 +17,8 @@
 // visible.
 
 const GREETING =
-  "This is Jason's AI. It scopes your project so neither of us wastes time on a call that isn't a fit — tell me what you're working on and I'll ask a few questions. Jason reads every plan it makes; you can skip straight to him anytime.";
-const OFFLINE_MSG = "The AI's offline right now — use the quick questions instead, they build the exact same plan.";
+  "This is Jason's AI. It scopes your project so neither of us wastes time on a call that isn't a fit. Tell me what you're working on and I'll ask a few questions. Jason reads every plan it makes; you can skip straight to him anytime.";
+const OFFLINE_MSG = "The AI's offline right now. Use the quick questions instead; they build the exact same plan.";
 
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
