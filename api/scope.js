@@ -3,7 +3,10 @@
  * (prospect, event, and optionally a computed plan) to Supabase.
  *
  * Env-guarded: without SUPABASE_URL / SUPABASE_SERVICE_KEY (see lib/scope-db.mjs)
- * this returns 501 and the client keeps working entirely from localStorage —
+ * this returns a clean 200 `{ ok:false, skipped:true, reason:'not_configured' }`
+ * (not 501 — the client fires this as a fire-and-forget beacon, and a non-2xx
+ * status would log a console error and ding Lighthouse Best Practices on the
+ * live site) and the client keeps working entirely from localStorage —
  * persistence is additive telemetry, never a dependency for the visitor's flow.
  *
  * Once a request is validated, every DB call is best-effort: lib/scope-db.mjs's
@@ -84,10 +87,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'method not allowed' });
   }
 
-  // Not configured yet → 501 tells the client persistence is off; the visitor
-  // keeps going on localStorage-only Scope Studio state regardless.
+  // Not configured yet → still 200 (not 501): a non-2xx response here would
+  // log a "Failed to load resource" console error on every page load (this
+  // is a fire-and-forget track('started') call) and ding Lighthouse Best
+  // Practices on the live site. ok:false + skipped tells the client
+  // persistence is off; it keeps going on localStorage-only Scope Studio
+  // state regardless — no browser console error, no behavior change.
   if (!isEnabled()) {
-    return res.status(501).json({ ok: false, error: 'not_configured' });
+    return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
   }
 
   const ip =
