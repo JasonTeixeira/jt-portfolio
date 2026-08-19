@@ -1,5 +1,7 @@
 # Scope Studio — Plan 3: Conversational AI Scope + Qualification + Voice & Humanity
 
+> **Status:** SHIPPED — merged to main. Checklists below are historical.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development. Steps use checkbox (`- [ ]`) syntax.
 
 **Goal:** Add a conversational AI path to `/build.html` that scopes a visitor's project *by talking with them* — grounded so it only ever selects real capability keys (never invents prices), assesses fit honestly (qualification + graceful disqualification), sounds unmistakably like Jason (Voice & Humanity), and drives the SAME live blueprint + plan the questionnaire already builds. Degradation-safe: with no LLM env, `/build.html` shows today's questionnaire exactly as-is.

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Front Desk — Never Miss Another Lead · Jason Teixeira</title>
+<meta name="description" content="I set up an AI front desk that answers, qualifies, and books your leads 24/7, so the job goes to you, not whoever picks up first on Google. Built and tested by a QA engineer.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/front-desk.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Front Desk — Never Miss Another Lead">
+<meta property="og:description" content="An AI that answers, qualifies, and books your leads 24/7, so the job goes to you, not whoever picks up first on Google.">
+<meta property="og:url" content="https://agency.sageideas.dev/front-desk.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Will it sound robotic?","acceptedAnswer":{"@type":"Answer","text":"No. It's built on the same voice models behind modern phone assistants, tuned to your business and how you actually talk to customers. Most callers don't realize it's not a person until you tell them."}},{"@type":"Question","name":"What if it can't answer something?","acceptedAnswer":{"@type":"Answer","text":"It hands off cleanly: takes a message, texts you the details, and tells the caller you'll follow up. It never guesses at something it doesn't know, and it never quotes a price it isn't sure of."}},{"@type":"Question","name":"Does it work with my calendar or booking tool?","acceptedAnswer":{"@type":"Answer","text":"Yes. It connects to Google Calendar, Calendly, Housecall Pro, Jobber, and most common scheduling tools. If you use something else, I'll check on the call."}},{"@type":"Question","name":"What does setup involve for me?","acceptedAnswer":{"@type":"Answer","text":"About 30 minutes of your time: what to ask, what counts as a good lead, how you want it to sound. I build it, test it against real conversations, and you approve it before it goes live."}},{"@type":"Question","name":"Can I turn it off?","acceptedAnswer":{"@type":"Answer","text":"Any time. It's your number and your calendar. If it's not working for you, we turn it off or fix it — no long lock-in."}}]}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:900px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5.6vw,3.8rem); line-height:1.06; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15.5px; line-height:1.75; }
+  section { padding:clamp(40px,6vw,68px) 0; border-top:1px solid var(--line); }
+  .lead { max-width:58ch; }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:15px 28px; font-size:15px; font-weight:700; font-family:inherit; }
+  .cta:hover { box-shadow:0 0 28px rgba(16,185,129,0.35); }
+  .cta:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+
+  /* problem */
+  .painrow { display:flex; gap:14px; align-items:flex-start; padding:16px 0; border-top:1px solid var(--line); }
+  .painrow:first-of-type { border-top:none; }
+  .painrow .mk { flex-shrink:0; width:26px; height:26px; border-radius:7px; background:rgba(244,63,94,0.1); color:var(--rose); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:12px; }
+  .painrow p { margin:0; font-size:14.5px; line-height:1.65; color:var(--dim); }
+  .painrow b { color:var(--ink); }
+
+  /* how it works */
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:30px; }
+  @media (max-width:760px){ .steps { grid-template-columns:1fr; } }
+  .step { border:1px solid var(--line); border-radius:14px; background:var(--card); padding:22px; }
+  .step .n { font-family:var(--serif); font-size:2.2rem; line-height:1; color:var(--green); }
+  .step h3 { font-family:var(--serif); font-weight:400; font-size:1.25rem; margin:10px 0 6px; }
+  .step p { margin:0; font-size:13.5px; line-height:1.6; color:var(--dim); }
+  .always-on { display:inline-flex; align-items:center; gap:8px; margin-top:24px; font-family:var(--mono); font-size:11.5px; color:var(--green); }
+  .always-on .dot { width:8px; height:8px; border-radius:50%; background:var(--green); animation:jt-blink 2.4s ease-in-out infinite; }
+  @keyframes jt-blink { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+  /* what you get */
+  .getgrid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:26px; }
+  @media (max-width:640px){ .getgrid { grid-template-columns:1fr; } }
+  .get { display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line); border-radius:12px; background:var(--card); padding:16px 18px; }
+  .get .b { color:var(--green); font-family:var(--mono); flex-shrink:0; }
+  .get p { margin:0; font-size:14px; line-height:1.55; color:var(--dim); }
+  .get b { color:var(--ink); }
+
+  /* reliability */
+  .reliability { border:1px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.04); border-radius:16px; padding:clamp(22px,4vw,32px); margin-top:26px; }
+  .reliability .badge { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--purple); }
+  .reliability blockquote { margin:16px 0 0; font-family:var(--serif); font-size:clamp(1.3rem,2.6vw,1.6rem); font-weight:400; line-height:1.3; color:var(--ink); }
+  .reliability .attr { margin-top:10px; font-size:13px; color:var(--faint); }
+  .reliability .proof-link { display:inline-flex; align-items:center; gap:8px; margin-top:18px; font-family:var(--mono); font-size:13px; color:var(--purple); }
+  .reliability .proof-link:hover { color:var(--ink); }
+
+  /* pricing */
+  .price-card { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:clamp(24px,4vw,32px); margin-top:26px; }
+  .price-row { display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; padding:14px 0; border-top:1px solid var(--line); }
+  .price-row:first-child { border-top:none; padding-top:0; }
+  .price-row .lbl { font-size:14px; color:var(--dim); }
+  .price-row .val { font-family:var(--serif); font-size:1.5rem; color:var(--ink); white-space:nowrap; }
+  .price-note { margin:18px 0 0; font-size:12.5px; line-height:1.6; color:var(--faint); }
+
+  /* faq */
+  .faq { margin-top:24px; display:flex; flex-direction:column; gap:10px; }
+  .faq details { border:1px solid var(--line); border-radius:12px; background:var(--card); padding:4px 20px; }
+  .faq summary { cursor:pointer; padding:16px 0; font-size:15px; font-weight:600; color:var(--ink); list-style:none; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary .ind { font-family:var(--mono); color:var(--cyan); flex-shrink:0; transition:transform 200ms ease; }
+  .faq details[open] summary .ind { transform:rotate(45deg); }
+  .faq summary:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; border-radius:6px; }
+  .faq p { margin:0 0 16px; font-size:14px; line-height:1.7; color:var(--dim); }
+
+  @media (prefers-reduced-motion:reduce){ .always-on .dot { animation:none; } }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="case-studies.html" class="dim-link">case studies</a>
+      <a href="build.html" class="dim-link">scope</a>
+      <a href="roi.html" class="dim-link">ROI calc</a>
+      <a href="demos.html" class="dim-link">demos</a>
+      <a href="docs.html" class="dim-link">guides</a>
+      <a href="book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(20px,3vw,32px)">
+    <div class="kick">AI front desk &middot; for local service businesses</div>
+    <h1 style="margin-top:20px">Stop losing leads when no one answers.</h1>
+    <p class="subtle lead" style="margin-top:20px">I set up an AI front desk that answers, qualifies, and books your leads 24/7 &mdash; so the job goes to you, not whoever picks up first on Google.</p>
+    <div style="display:flex;gap:14px;margin-top:26px;flex-wrap:wrap">
+      <a href="book.html" class="cta" data-evt="fd-hero-book">Book a 15-min call &rarr;</a>
+      <a href="#how-it-works" class="mono" style="display:inline-flex;align-items:center;padding:15px 8px;font-size:13px;color:var(--cyan)">See how it works &darr;</a>
+    </div>
+  </header>
+
+  <main id="content" style="display:block">
+
+  <!-- THE PROBLEM -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--rose)">the problem</div>
+    <h2 style="margin-top:12px">Every unanswered call is a job for someone else.</h2>
+    <div style="margin-top:26px">
+      <div class="painrow"><span class="mk">✕</span><p><b>After hours, it rings out.</b> A pipe bursts at 9pm, a tooth breaks on a Saturday &mdash; the customer calls the next name on the list, not yours.</p></div>
+      <div class="painrow"><span class="mk">✕</span><p><b>You're on a job, so you can't pick up.</b> By the time you call back, they've already booked someone who answered first.</p></div>
+      <div class="painrow"><span class="mk">✕</span><p><b>The website form goes into a black hole.</b> Nobody checks it for hours, so a warm lead goes cold before you ever see it.</p></div>
+      <div class="painrow"><span class="mk">✕</span><p><b>You're paying for ads that ring through to voicemail.</b> Every missed call is money you already spent to generate, wasted.</p></div>
+    </div>
+  </div></section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works"><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">how it works</div>
+    <h2 style="margin-top:12px">Three steps. No app for your customer to download.</h2>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h3>A lead reaches out</h3><p>They call, text, or fill out your website form &mdash; any hour, any day.</p></div>
+      <div class="step"><div class="n">02</div><h3>The AI answers instantly</h3><p>It picks up (or replies) right away and asks the two or three questions that actually matter for your business.</p></div>
+      <div class="step"><div class="n">03</div><h3>It books &amp; texts you</h3><p>A qualified lead gets put straight into your calendar, and you get a text with the details before they hang up.</p></div>
+    </div>
+    <div class="always-on"><span class="dot"></span>Runs 24/7 &mdash; nights, weekends, while you're on a job</div>
+  </div></section>
+
+  <!-- WHAT YOU GET -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--green)">what you get</div>
+    <h2 style="margin-top:12px">Plain and simple.</h2>
+    <div class="getgrid">
+      <div class="get"><span class="b">→</span><p><b>Instant response.</b> No lead waits more than a few seconds for a reply, day or night.</p></div>
+      <div class="get"><span class="b">→</span><p><b>Real qualification.</b> It asks what you'd ask &mdash; job type, location, urgency &mdash; so you're not calling back tire-kickers.</p></div>
+      <div class="get"><span class="b">→</span><p><b>Booking, not just a message.</b> Good leads land directly on your calendar, matched to your real availability.</p></div>
+      <div class="get"><span class="b">→</span><p><b>After-hours coverage.</b> The exact hours you're closed are the hours it's working hardest for you.</p></div>
+      <div class="get"><span class="b">→</span><p><b>A text the moment it happens.</b> You always know who called and what they need, in real time.</p></div>
+      <div class="get"><span class="b">→</span><p><b>A monthly report.</b> How many leads came in, how many booked, and where you're still losing them.</p></div>
+    </div>
+  </div></section>
+
+  <!-- RELIABILITY ANGLE -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--purple)">why this is different</div>
+    <h2 style="margin-top:12px">Most people who sell you a chatbot have never tested one.</h2>
+    <div class="reliability">
+      <span class="badge">the edge</span>
+      <blockquote>"I'm a QA engineer. I test the AI so it won't say something wrong to your customers."</blockquote>
+      <p class="attr">Before it ever talks to one of your leads, I run it through the same adversarial testing I use for engineering clients: does it stay on script, does it avoid promising something it shouldn't, does it hold up when someone tries to trip it up.</p>
+      <a href="ai-under-test.html" class="proof-link" data-evt="fd-proof-link">I even red-team my own AI &mdash; see it here &rarr;</a>
+    </div>
+  </div></section>
+
+  <!-- PRICING -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--amber)">pricing</div>
+    <h2 style="margin-top:12px">A flat setup fee, then a small monthly.</h2>
+    <p class="subtle" style="margin-top:14px;max-width:58ch">No package to guess at. Every setup is scoped to your business on a quick call, so the number reflects what you actually need &mdash; not a one-size-fits-all price list.</p>
+    <div class="price-card">
+      <div class="price-row"><span class="lbl">Setup (one-time)</span><span class="val">~$1,000 to start</span></div>
+      <div class="price-row"><span class="lbl">Run &amp; improve it (monthly)</span><span class="val">~$600&ndash;800/mo</span></div>
+    </div>
+    <p class="price-note">These are indicative numbers, not a final quote. Your actual price depends on your call volume, your booking tools, and how much qualification logic you need &mdash; we work that out together on the call, and you get a real number before anything starts.</p>
+  </div></section>
+
+  <!-- FAQ -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">questions</div>
+    <h2 style="margin-top:12px">What owners actually ask me.</h2>
+    <div class="faq">
+      <details>
+        <summary>Will it sound robotic?<span class="ind">+</span></summary>
+        <p>No. It's built on the same voice and text models behind modern phone assistants, tuned to your business and how you actually talk to customers. Most callers don't realize it's not a person until you tell them.</p>
+      </details>
+      <details>
+        <summary>What if it can't answer something?<span class="ind">+</span></summary>
+        <p>It hands off cleanly: takes a message, texts you the details, and tells the caller you'll follow up personally. It never guesses at something it doesn't know, and it's tested to never quote a price it isn't sure of.</p>
+      </details>
+      <details>
+        <summary>Does it work with my calendar or booking tool?<span class="ind">+</span></summary>
+        <p>Yes, in most cases. It connects to Google Calendar, Calendly, Housecall Pro, Jobber, and most common scheduling software. If you use something else, I'll check on the call before we start.</p>
+      </details>
+      <details>
+        <summary>What does setup involve on my end?<span class="ind">+</span></summary>
+        <p>About 30 minutes of your time up front: what to ask callers, what counts as a good lead for you, how you want it to sound. I build it, test it against real conversations, and you approve it before it ever talks to a customer.</p>
+      </details>
+      <details>
+        <summary>Can I turn it off?<span class="ind">+</span></summary>
+        <p>Any time. It's your phone number and your calendar &mdash; nothing about that changes. If it's not working for you, we turn it off or fix it. No long lock-in contract.</p>
+      </details>
+    </div>
+  </div></section>
+
+  <!-- FINAL CTA -->
+  <section><div class="wrap" style="text-align:center;max-width:640px;margin:0 auto">
+    <h2>Fifteen minutes. No pressure, no pitch deck.</h2>
+    <p class="subtle" style="margin:14px auto 0;max-width:46ch">Tell me how leads come in today and where they're slipping through. I'll tell you honestly whether this fits your business, and what it would take.</p>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+      <a href="book.html" class="cta" data-evt="fd-final-book">Book a 15-min call &rarr;</a>
+    </div>
+  </div></section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+
+<script defer src="assets/agent.js"></script>
+</body>
+</html>

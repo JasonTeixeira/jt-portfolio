@@ -14,14 +14,25 @@
     "prerender": "node scripts/prerender.mjs",
     "build:notes": "node scripts/build-notes.mjs",
     "build:services": "node scripts/build-services.mjs",
+    "build:og": "node scripts/build-og.mjs",
+    "build:captures": "node scripts/build-captures.mjs",
+    "build:onepager": "node scripts/build-onepager-pdf.mjs",
+    "build:checklist": "node scripts/build-checklist-pdf.mjs",
+    "build:outreach": "node scripts/build-outreach.mjs",
     "proof": "node scripts/proof.mjs",
     "lighthouse": "lhci autorun",
-    "build:docs": "node scripts/build-docs.mjs"
+    "build:docs": "node scripts/build-docs.mjs",
+    "eval:chatbot": "node scripts/eval-chatbot.mjs",
+    "eval:scope": "node scripts/eval-scope.mjs",
+    "eval:target": "node scripts/eval-target.mjs",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
+    "@eslint/js": "^10.0.1",
     "@lhci/cli": "^0.14.0",
-    "@playwright/test": "^1.49.0"
+    "@playwright/test": "^1.49.0",
+    "eslint": "^10.8.1"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",

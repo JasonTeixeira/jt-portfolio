@@ -1,5 +1,7 @@
 # Scope Studio — Plan 2: Persistence (Supabase spine) — Implementation Plan
 
+> **Status:** SHIPPED — merged to main. Checklists below are historical.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax.
 
 **Goal:** Persist every scoping session (anonymous → named) into the **existing sageideas Supabase project**, so leads, plans, conversations, and funnel events become one queryable pipeline — the spine that C (nurture), D (outbound), and E (cockpit) all read. Ships **degradation-safe**: with no Supabase env set, the tool works exactly as today (mailto fallback, no persistence); the instant the env is present, persistence activates.
