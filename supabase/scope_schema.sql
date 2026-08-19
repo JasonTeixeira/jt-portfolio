@@ -90,3 +90,24 @@ create unique index if not exists scope_projects_proposal on scope_projects(prop
 alter table scope_proposals enable row level security;
 alter table scope_projects enable row level security;
 -- (No policies created → deny-all-anon; service role bypasses RLS.)
+
+-- ============================================================================
+-- P4: Nurture (suppression flags + idempotent send log). Automated follow-ups.
+-- ============================================================================
+alter table scope_prospects add column if not exists unsubscribed boolean not null default false;
+alter table scope_prospects add column if not exists nurture_suppressed boolean not null default false;
+alter table scope_prospects add column if not exists unsubscribe_token text;
+
+create table if not exists scope_nurture_sends (
+  id uuid primary key default gen_random_uuid(),
+  prospect_id uuid references scope_prospects(id) on delete cascade,
+  proposal_id uuid references scope_proposals(id) on delete cascade,
+  step text not null,
+  sent_at timestamptz not null default now()
+);
+-- Idempotency: one send per (proposal, step) for proposal touches, one per (prospect, step) for lead touches.
+create unique index if not exists nurture_send_proposal on scope_nurture_sends(proposal_id, step) where proposal_id is not null;
+create unique index if not exists nurture_send_prospect on scope_nurture_sends(prospect_id, step) where proposal_id is null;
+create index if not exists nurture_send_prospect_all on scope_nurture_sends(prospect_id);
+alter table scope_nurture_sends enable row level security;
+-- (No policies created → deny-all-anon; service role bypasses RLS.)
