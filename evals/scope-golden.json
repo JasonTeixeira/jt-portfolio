@@ -1,0 +1,117 @@
+{
+  "description": "Golden set for the Scope Studio 'scope' chat mode (/api/chat, mode:'scope'). Each case is a realistic single-turn prospect message with enough signal for the AI to commit to a selection. expectKeys must all be real assets/scope-core.mjs RATE_CARD keys (enforced by tests/unit/scope-eval.test.mjs). expectFit is the expected qualification.fit tier. Scored by scripts/eval-scope.mjs — see docs/SCOPE-EVAL.md.",
+  "cases": [
+    {
+      "id": "llm-feature-no-evals",
+      "messages": [
+        { "role": "user", "content": "We shipped an LLM feature into our product last month and honestly have no idea how well it's holding up — no evals, no regression tests, we just eyeball it when something looks wrong. We want that gated in CI before the next model swap breaks something." }
+      ],
+      "expectKeys": ["llm-eval", "ci-gate"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "hallucinating-support-bot",
+      "messages": [
+        { "role": "user", "content": "Our support chatbot keeps making up refund policies and shipping dates that aren't real, and a customer screenshotted one and posted it. We need to stop it inventing facts and also stress-test it for jailbreaks before we expand it to more markets." }
+      ],
+      "expectKeys": ["grounding", "redteam"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "flaky-release-pipeline",
+      "messages": [
+        { "role": "user", "content": "Our release pipeline is a mess — the same E2E suite passes and fails at random, so the team just re-runs CI until it's green and nobody trusts red anymore. We need our critical checkout and login flows actually covered and the flakiness fixed." }
+      ],
+      "expectKeys": ["e2e", "flaky"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "want-docs-assistant",
+      "messages": [
+        { "role": "user", "content": "We want an AI assistant on our site that can answer customer questions using our actual help docs and product manuals, not just make things up. It should cite where the answer came from." }
+      ],
+      "expectKeys": ["chatbot", "rag"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "automate-onboarding-workflow",
+      "messages": [
+        { "role": "user", "content": "Every new client we sign gets onboarded by a human copying data between our CRM, a spreadsheet, and three other tools by hand. We want that whole back-office process automated end-to-end and the tools actually talking to each other." }
+      ],
+      "expectKeys": ["workflow", "integrations"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "voice-agent-booking-line",
+      "messages": [
+        { "role": "user", "content": "We're a home services business and miss half our incoming calls after hours. We want something that answers 24/7, figures out what the caller needs, and books them into our calendar with a text confirmation." }
+      ],
+      "expectKeys": ["voice-agent"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "internal-tool-replace-spreadsheet",
+      "messages": [
+        { "role": "user", "content": "Our ops team runs the entire weekly inventory reconciliation out of a shared spreadsheet with a dozen tabs and manual formulas that break constantly. We want a real internal tool that replaces it, with proper access control." }
+      ],
+      "expectKeys": ["internal-tools"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "messy-document-extraction",
+      "messages": [
+        { "role": "user", "content": "We get hundreds of vendor invoices a week as PDFs and scanned images in wildly different formats, and someone re-types the line items into our accounting system by hand. We need that extracted into structured, validated data automatically." }
+      ],
+      "expectKeys": ["doc-intake"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "mobile-device-cert-gap",
+      "messages": [
+        { "role": "user", "content": "We ship our mobile app updates and just hope they work — we've never actually certified it against a real spread of iOS and Android devices before release, and we've had a couple of embarrassing device-specific bugs slip through." }
+      ],
+      "expectKeys": ["mobile-cert"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "multi-agent-internal-copilot",
+      "messages": [
+        { "role": "user", "content": "We want an internal copilot for our engineers that can plan a task, call our internal tools, and hand off between a research step and a code step, with an audit trail of what it did and why." }
+      ],
+      "expectKeys": ["orchestration", "copilot"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "no-cicd-pipeline",
+      "messages": [
+        { "role": "user", "content": "We have tests written but nothing actually runs them automatically — engineers run them locally if they remember to. We want a real CI/CD pipeline wired up so a green badge on a PR actually means something." }
+      ],
+      "expectKeys": ["cicd"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "raw-data-no-dashboard",
+      "messages": [
+        { "role": "user", "content": "Our leadership team gets a raw CSV export every Monday and someone manually builds charts in Excel to present it. We want that turned into a real dashboard that updates itself and actually helps us make decisions." }
+      ],
+      "expectKeys": ["dashboards"],
+      "expectFit": "strong"
+    },
+    {
+      "id": "poor-fit-hobby-project",
+      "messages": [
+        { "role": "user", "content": "I'm a high school student messing around with a personal to-do list app for fun, just me, no company, no budget, not trying to launch anything. Just curious what you'd even say about it." }
+      ],
+      "expectKeys": [],
+      "expectFit": "poor"
+    },
+    {
+      "id": "maybe-fit-too-early",
+      "messages": [
+        { "role": "user", "content": "We're two people, pre-revenue, still figuring out if there's even a real product here. We might want some kind of AI feature eventually but honestly we don't know our stack or what 'working' would even mean yet." }
+      ],
+      "expectKeys": [],
+      "expectFit": "maybe"
+    }
+  ]
+}
