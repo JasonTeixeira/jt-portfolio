@@ -9,15 +9,17 @@ import { test, expect } from '@playwright/test';
  * "Failed to load resource" console diagnostic for the failed sub-resource load,
  * independent of and unsuppressible by any JS-level handling. It is not an
  * application bug, so it's filtered here; the same applies to /api/chat (see
- * scope-chat.mjs), which the static server also has no handler for; `pageerror`
- * (uncaught exceptions) is left untouched and still fails every test below. */
+ * scope-chat.mjs) and /api/proposal (see scope-studio.mjs's post-lead trigger
+ * and proposal.mjs/proposal-admin.mjs's GETs), which the static server also
+ * has no handler for; `pageerror` (uncaught exceptions) is left untouched and
+ * still fails every test below. */
 function trackErrors(page) {
   const errors = [];
   page.on('console', (msg) => {
     if (msg.type() !== 'error') return;
     const text = msg.text();
     const url = msg.location()?.url || '';
-    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat)$/.test(url)) return;
+    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal)(\?|$)/.test(url)) return;
     errors.push(text);
   });
   page.on('pageerror', (err) => errors.push(String(err)));
@@ -847,5 +849,20 @@ test.describe('portfolio — scope studio', () => {
     // the always-visible escape hatch to a human is still present on the page
     await expect(page.locator('#scope-human')).toHaveAttribute('href', /book\.html/);
     expect(errors).toEqual([]);
+  });
+});
+
+test.describe('proposal page', () => {
+  test('unknown proposal id degrades to a calm unavailable state', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/proposal.html?id=nope');
+    await expect(page.locator('#proposal-root')).toBeVisible();
+    await expect(page.locator('#proposal-root')).toContainText(/isn.t available/i);
+    expect(errors).toEqual([]);
+  });
+
+  test('admin console with no token shows "Not authorized"', async ({ page }) => {
+    await page.goto('/proposal-admin.html');
+    await expect(page.locator('body')).toContainText('Not authorized');
   });
 });

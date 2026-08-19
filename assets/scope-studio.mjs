@@ -220,7 +220,11 @@ if (root && qMount && planMount && disc) {
       ok = !!(r && r.ok);
     } catch { ok = false; }
     if (ok) {
-      if (status) { status.style.color = '#10b981'; status.textContent = 'Sent. I’ll email you the plan and be in touch, usually the same day.'; }
+      if (keys.length) {
+        fetch('/api/proposal', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prospectId: prospectId(), email, plan: { keys, segment: plan.segment, totalBand: plan.totalBand } }) }).catch(() => {});
+      }
+      if (status) { status.style.color = '#10b981'; status.textContent = "Got it. Your plan's on its way to your inbox, and I'll follow up with a proposal shortly — I review every one myself."; }
       if (input) input.disabled = true;
       const send = document.getElementById('scope-send');
       if (send) send.disabled = true;
