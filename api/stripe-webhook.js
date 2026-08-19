@@ -39,7 +39,7 @@ export default async function handler(req, res) {
           sendOperator({ subject: `Deposit paid — ${row ? money(row.deposit_cents) : ''}`,
             text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` }).catch(() => {});
           if (row && row.client_email) sendClient({ to: row.client_email,
-            subject: 'Deposit received — we\'re starting',
+            subject: 'Deposit received. We\'re starting.',
             text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n` }).catch(() => {});
         }
       }

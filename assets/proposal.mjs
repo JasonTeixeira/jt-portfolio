@@ -64,7 +64,7 @@ function renderPaid(root, proposal) {
   const balance = typeof proposal.balance_cents === 'number' ? money(proposal.balance_cents, proposal.currency || 'usd') : null;
   root.appendChild(h('div', { class: 'prop-empty' },
     h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'deposit received'), h('span', { class: 'line' })),
-    h('h1', { class: 'sec-title', style: 'font-size:clamp(1.8rem,4vw,2.6rem)' }, 'Thanks — the deposit’s in.'),
+    h('h1', { class: 'sec-title', style: 'font-size:clamp(1.8rem,4vw,2.6rem)' }, 'Thanks. The deposit’s in.'),
     h('p', { class: 'subtle', style: 'margin-top:12px' }, 'I have what I need to get started. Here’s what’s still ahead.'),
     balance ? h('div', { class: 'prop-card', style: 'text-align:left;max-width:420px;margin-left:auto;margin-right:auto' },
       h('div', { class: 'price-row', style: 'border-top:none;padding-top:0' },
@@ -85,7 +85,7 @@ function renderApproved(root, proposal, publicId) {
   const header = h('div', {},
     h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'your proposal'), h('span', { class: 'line' })),
     h('h1', { class: 'sec-title' }, "Here’s your plan and what it costs."),
-    h('p', { class: 'subtle', style: 'margin-top:12px' }, 'Everything below is what’s included, what it costs, and how it works. If anything looks off, just say so — nothing here is final until you accept it.'),
+    h('p', { class: 'subtle', style: 'margin-top:12px' }, 'Everything below is what’s included, what it costs, and how it works. If anything looks off, just say so. Nothing here is final until you accept it.'),
   );
   root.appendChild(header);
 
@@ -177,7 +177,7 @@ function renderApproved(root, proposal, publicId) {
         }
         clear(status);
         if (data && data.skipped) {
-          status.appendChild(document.createTextNode('Payments aren’t switched on yet — email Jason and he’ll send a link. '));
+          status.appendChild(document.createTextNode('Payments aren’t switched on yet. Email Jason and he’ll send a link. '));
           status.appendChild(h('a', { href: 'book.html', style: 'color:var(--cyan)' }, 'Book a call →'));
         } else {
           status.classList.add('err');
