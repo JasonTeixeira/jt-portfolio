@@ -141,6 +141,14 @@ export function sanitizeScopeReply(text) {
   return text.replace(MONEY_RE, '(scoped on a call)').replace(REPEAT_PLACEHOLDER_RE, '$1');
 }
 
+// Voice enforcement (defense-in-depth; the prompt asks, this guarantees).
+// Conservative: only the spaced em/en-dash clause-joiner and exclamation runs.
+// Never touches hyphenated words, numbers, or no-space ranges like 4k–9k.
+export function deVoiceTic(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/\s+[—–]\s+/g, ', ').replace(/!{2,}/g, '!');
+}
+
 // Anti-hallucination gate: only keep selection entries whose key is on the
 // real rate card. Guards non-array/garbage input from a misbehaving model.
 export function filterSelection(selection, validKeys) {
@@ -244,7 +252,7 @@ export default async function handler(req, res) {
       // just "reply" — must be scrubbed of $-amounts. A model can just as
       // easily smuggle a price into a flag, a selection "why", or a
       // qualification reason as into the main reply.
-      const clean = (s) => (typeof s === 'string' ? sanitizeScopeReply(s) : s);
+      const clean = (s) => (typeof s === 'string' ? deVoiceTic(sanitizeScopeReply(s)) : s);
       const reply = clean(typeof parsed.reply === 'string' ? parsed.reply : '');
       const selection = filterSelection(parsed.selection, VALID_SCOPE_KEYS).map((s) => ({
         ...s,
