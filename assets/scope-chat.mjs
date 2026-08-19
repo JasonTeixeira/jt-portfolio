@@ -158,7 +158,7 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
 
     const heading = document.createElement('p');
     heading.className = 'sd-heading';
-    heading.textContent = "Honestly, this probably isn't the right fit for me.";
+    heading.textContent = "This probably isn't the right fit for me.";
     disqualifyEl.appendChild(heading);
 
     const list = Array.isArray(reasons) ? reasons.filter((r) => typeof r === 'string' && r.trim()) : [];

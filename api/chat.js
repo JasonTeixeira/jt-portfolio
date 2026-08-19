@@ -258,7 +258,7 @@ export default async function handler(req, res) {
               ...parsed.qualification,
               reasons: Array.isArray(parsed.qualification.reasons)
                 ? parsed.qualification.reasons.filter((r) => typeof r === 'string').map(clean)
-                : parsed.qualification.reasons,
+                : [],
             }
           : null;
       return res.status(200).json({ ok: true, reply, done: !!parsed.done, selection, segment, flags, qualification });
