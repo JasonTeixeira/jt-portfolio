@@ -100,8 +100,8 @@ RESTRAINT — you are one clearly-labeled tool in Jason's shop, not the shop its
 HOW THE CONVERSATION WORKS
 - Ask one thing at a time. Keep turns short: 1-3 sentences.
 - Figure out: what they're trying to do, their segment (service business / AI product / ops automation / product build), what "working" would mean for them, rough maturity or urgency, and anything that changes scope (data readiness, integrations, existing systems).
-- Never invent a price or a specific dollar figure, not even as an example. If pressed, say pricing is scoped on a call once there's enough signal, and that indicative bands show up in the plan, not from you.
-- Once you have enough signal to suggest a real set of capabilities (usually after 3-5 exchanges), stop asking questions and respond with ONLY a single JSON object, nothing else — no prose before or after it, no markdown fences. Shape:
+- Never invent a price or a specific dollar figure, not even as an example — not in "reply", not in a flag, not in a "why", not in a qualification reason. If pressed, say pricing is scoped on a call once there's enough signal, and that indicative bands show up in the plan, not from you.
+- EVERY response, from the very first turn, is ONLY a single JSON object — nothing else, no prose before or after it, no markdown fences. On early turns, while you're still discovering, set "done": false and "selection": [] and put your conversational question in "reply". Once you have enough signal to suggest a real set of capabilities (usually after 3-5 exchanges), set "done": true and start populating "selection". Shape (same shape every turn):
 {
   "reply": "<your conversational turn, still first-person Jason, still no prices>",
   "done": <true once there's enough to hand off a plan, false while still discovering>,
@@ -238,18 +238,30 @@ export default async function handler(req, res) {
     // the model didn't return valid JSON, degrade to a plain sanitized reply.
     try {
       const parsed = JSON.parse(raw);
-      const reply = sanitizeScopeReply(typeof parsed.reply === 'string' ? parsed.reply : '');
-      const selection = filterSelection(parsed.selection, VALID_SCOPE_KEYS);
-      return res.status(200).json({
-        ok: true,
-        reply,
-        done: !!parsed.done,
-        selection,
-        segment: typeof parsed.segment === 'string' ? parsed.segment : null,
-        flags: Array.isArray(parsed.flags) ? parsed.flags.filter((f) => typeof f === 'string') : [],
-        qualification:
-          parsed.qualification && typeof parsed.qualification === 'object' ? parsed.qualification : null,
-      });
+      // Every LLM-authored free-text surface that reaches the client — not
+      // just "reply" — must be scrubbed of $-amounts. A model can just as
+      // easily smuggle a price into a flag, a selection "why", or a
+      // qualification reason as into the main reply.
+      const clean = (s) => (typeof s === 'string' ? sanitizeScopeReply(s) : s);
+      const reply = clean(typeof parsed.reply === 'string' ? parsed.reply : '');
+      const selection = filterSelection(parsed.selection, VALID_SCOPE_KEYS).map((s) => ({
+        ...s,
+        why: clean(s.why),
+      }));
+      const segment = typeof parsed.segment === 'string' ? clean(parsed.segment) : null;
+      const flags = Array.isArray(parsed.flags)
+        ? parsed.flags.filter((f) => typeof f === 'string').map(clean)
+        : [];
+      const qualification =
+        parsed.qualification && typeof parsed.qualification === 'object'
+          ? {
+              ...parsed.qualification,
+              reasons: Array.isArray(parsed.qualification.reasons)
+                ? parsed.qualification.reasons.filter((r) => typeof r === 'string').map(clean)
+                : parsed.qualification.reasons,
+            }
+          : null;
+      return res.status(200).json({ ok: true, reply, done: !!parsed.done, selection, segment, flags, qualification });
     } catch (parseErr) {
       console.error('[chat] scope reply was not valid JSON', parseErr instanceof Error ? parseErr.message : parseErr);
       return res.status(200).json({ ok: true, reply: sanitizeScopeReply(raw), selection: [] });

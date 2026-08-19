@@ -13,6 +13,16 @@ test('sanitizeScopeReply strips a worded range too', () => {
   assert.ok(!/\$\s?\d/.test(out), 'no $-amount remains: ' + out);
 });
 
+test('sanitizeScopeReply strips a bare no-comma dollar amount', () => {
+  const out = sanitizeScopeReply('Budget is $4000, may not fit.');
+  assert.ok(!/\$\s?\d/.test(out), 'no $-amount remains: ' + out);
+});
+
+test('sanitizeScopeReply strips a bare k-suffixed dollar amount', () => {
+  const out = sanitizeScopeReply('Sounds like a $9k budget.');
+  assert.ok(!/\$\s?\d/.test(out), 'no $-amount remains: ' + out);
+});
+
 test('sanitizeScopeReply leaves price-free text untouched', () => {
   assert.equal(sanitizeScopeReply('We can scope this on a call.'), 'We can scope this on a call.');
 });
