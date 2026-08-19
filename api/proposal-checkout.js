@@ -47,8 +47,8 @@ export default async function handler(req, res) {
     amountCents: row.deposit_cents, currency: row.currency || 'usd',
     productName: 'Project deposit', publicId: row.public_id, proposalId: row.id,
     customerEmail: row.client_email || undefined,
-    successUrl: `${SITE}/proposal?id=${row.public_id}&paid=1`,
-    cancelUrl: `${SITE}/proposal?id=${row.public_id}`,
+    successUrl: `${SITE}/proposal.html?id=${row.public_id}&paid=1`,
+    cancelUrl: `${SITE}/proposal.html?id=${row.public_id}`,
   });
   if (!sess.ok) return res.status(200).json({ ok: false, skipped: true });
   await updateProposal(row.id, { stripe_session_id: sess.id });

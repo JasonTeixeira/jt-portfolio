@@ -77,7 +77,7 @@ function renderPaid(root, proposal) {
 }
 
 /* ── the real page: SOW + price block + terms + accept form ── */
-function renderApproved(root, proposal, publicId) {
+function renderApproved(root, proposal, publicId, opts) {
   clear(root);
   const currency = proposal.currency || 'usd';
   const plan = computePlan(Array.isArray(proposal.keys) ? proposal.keys : [], proposal.segment || null);
@@ -88,6 +88,10 @@ function renderApproved(root, proposal, publicId) {
     h('p', { class: 'subtle', style: 'margin-top:12px' }, 'Everything below is what’s included, what it costs, and how it works. If anything looks off, just say so. Nothing here is final until you accept it.'),
   );
   root.appendChild(header);
+  if (opts && opts.pendingPaid) {
+    root.appendChild(h('p', { class: 'subtle', style: 'margin-top:10px;color:#F59E0B' },
+      'If you just paid, it can take a moment to confirm. Refresh in a minute.'));
+  }
 
   // SOW — the hero: itemized, grouped by phase, all text from the plan
   const sow = h('div', { class: 'prop-card' });
@@ -224,8 +228,8 @@ async function init() {
   if (!proposal) { renderUnavailable(root); return; }
 
   if (proposal.status === PROPOSAL_STATUS.EXPIRED) { renderExpired(root); return; }
-  if (proposal.status === PROPOSAL_STATUS.PAID || paidFlag) { renderPaid(root, proposal); return; }
-  if (proposal.status === PROPOSAL_STATUS.APPROVED) { renderApproved(root, proposal, id); return; }
+  if (proposal.status === PROPOSAL_STATUS.PAID) { renderPaid(root, proposal); return; }
+  if (proposal.status === PROPOSAL_STATUS.APPROVED) { renderApproved(root, proposal, id, { pendingPaid: paidFlag }); return; }
   renderUnavailable(root);
 }
 

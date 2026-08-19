@@ -27,27 +27,40 @@ export default async function handler(req, res) {
   try {
     if (event.type === 'checkout.session.completed') {
       const obj = event.data.object;
+      if (obj.payment_status && obj.payment_status !== 'paid') {
+        return res.status(200).json({ ok: true, received: true });
+      }
       const proposalId = obj.metadata && obj.metadata.proposalId;
       if (proposalId) {
         const paid = await markPaidIfUnpaid(proposalId, {
           session: obj.id, intent: obj.payment_intent, paidAtIso: new Date().toISOString() });
-        if (paid.ok && paid.transitioned) {
+        if (paid.ok) {
           const got = await getProposalById(proposalId);
           const row = got.ok ? got.data : null;
-          await createProjectOnce(proposalId, row && row.prospect_id);
-          appendEvent({ prospect_id: row && row.prospect_id, type: 'deposit_paid', meta: { proposalId } }).catch(() => {});
-          sendOperator({ subject: `Deposit paid — ${row ? money(row.deposit_cents) : ''}`,
-            text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` }).catch(() => {});
-          if (row && row.client_email) sendClient({ to: row.client_email,
-            subject: 'Deposit received. We\'re starting.',
-            text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n` }).catch(() => {});
+          await createProjectOnce(proposalId, row && row.prospect_id); // idempotent (unique index) -> self-heals on retry
+          if (paid.transitioned) {
+            appendEvent({ prospect_id: row && row.prospect_id, type: 'deposit_paid', meta: { proposalId } }).catch(() => {});
+            try {
+              await sendOperator({ subject: `Deposit paid — ${row ? money(row.deposit_cents) : ''}`,
+                text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` });
+            } catch {}
+            if (row && row.client_email) {
+              try {
+                await sendClient({ to: row.client_email,
+                  subject: 'Deposit received. We\'re starting.',
+                  text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n` });
+              } catch {}
+            }
+          }
         }
       }
     } else if (event.type === 'charge.dispute.created') {
       const obj = event.data.object;
       const proposalId = obj.metadata && obj.metadata.proposalId;
       appendEvent({ prospect_id: null, type: 'dispute_opened', meta: { proposalId: proposalId || null } }).catch(() => {});
-      sendOperator({ subject: 'Payment dispute opened', text: `A dispute was opened. Charge: ${obj.id}. Handle it in the Stripe dashboard.\n` }).catch(() => {});
+      try {
+        await sendOperator({ subject: 'Payment dispute opened', text: `A dispute was opened. Charge: ${obj.id}. Handle it in the Stripe dashboard.\n` });
+      } catch {}
     }
     return res.status(200).json({ ok: true, received: true });
   } catch (e) {

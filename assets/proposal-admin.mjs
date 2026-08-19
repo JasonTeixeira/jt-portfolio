@@ -187,7 +187,7 @@ function renderDetail(mount, row, key) {
         approveBtn.disabled = false;
         approveBtn.textContent = 'Approve';
         if (data && data.ok && data.publicId) {
-          const link = `${location.origin}/proposal?id=${data.publicId}`;
+          const link = `${location.origin}/proposal.html?id=${data.publicId}`;
           clear(status);
           const linkRow = h('div', { style: 'margin-top:4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap' });
           linkRow.appendChild(document.createTextNode('Approved. Client link: '));

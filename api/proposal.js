@@ -18,6 +18,8 @@ export function validate(body) {
   const p = body.plan;
   if (!p || typeof p !== 'object' || Array.isArray(p)) return { ok: false, error: 'plan required' };
   if (!Array.isArray(p.keys) || p.keys.length === 0) return { ok: false, error: 'plan.keys required' };
+  if (body.prospectId.trim().length > 64) return { ok: false, error: 'too_large' };
+  if (p.keys.length > 40) return { ok: false, error: 'too_large' };
   return { ok: true };
 }
 export function clientView(row, nowIso) {
@@ -78,10 +80,12 @@ export default async function handler(req, res) {
   if (!created.ok) return res.status(200).json({ ok: false, skipped: true });
   appendEvent({ prospect_id: row.prospect_id, type: 'proposal_drafted', meta: { public_id: pid, firm_cents: firm } }).catch(() => {});
   const adminToken = process.env.SCOPE_ADMIN_TOKEN || '';
-  const adminLink = adminToken ? `${SITE}/proposal-admin?key=${adminToken}` : `${SITE}/proposal-admin`;
-  sendOperator({
-    subject: `New proposal to approve — ${money(firm)} draft`,
-    text: `A scope just came in.\n\nSegment: ${row.segment || '(none)'}\nItems: ${plan.keys.length}\nDraft firm price: ${money(firm)} (deposit ${money(dep)})\nClient email: ${row.client_email || '(none)'}\n\nApprove it: ${adminLink}\nProposal id: ${created.data ? created.data.id : '(unknown)'}\n`,
-  }).catch(() => {});
+  const adminLink = adminToken ? `${SITE}/proposal-admin.html?key=${adminToken}` : `${SITE}/proposal-admin.html`;
+  try {
+    await sendOperator({
+      subject: `New proposal to approve — ${money(firm)} draft`,
+      text: `A scope just came in.\n\nSegment: ${row.segment || '(none)'}\nItems: ${plan.keys.length}\nDraft firm price: ${money(firm)} (deposit ${money(dep)})\nClient email: ${row.client_email || '(none)'}\n\nApprove it: ${adminLink}\nProposal id: ${created.data ? created.data.id : '(unknown)'}\n`,
+    });
+  } catch {}
   return res.status(200).json({ ok: true, publicId: pid });
 }

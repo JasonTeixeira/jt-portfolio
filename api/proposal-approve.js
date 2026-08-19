@@ -28,9 +28,11 @@ export default async function handler(req, res) {
   if (!upd.ok) return res.status(200).json({ ok: false, skipped: true });
   appendEvent({ prospect_id: row.prospect_id, type: 'proposal_approved', meta: { id, firm_cents: firm } }).catch(() => {});
   if (row.client_email) {
-    sendClient({ to: row.client_email,
-      subject: 'Your project proposal is ready',
-      text: `Hi,\n\nYour proposal is ready to review. It has the scope, the price, and the terms in one place.\n\nSee it here: ${SITE}/proposal?id=${row.public_id}\n\nDeposit to start: ${money(dep)}. If anything looks off, just reply and we'll sort it out.\n\n— Jason\n` }).catch(() => {});
+    try {
+      await sendClient({ to: row.client_email,
+        subject: 'Your project proposal is ready',
+        text: `Hi,\n\nYour proposal is ready to review. It has the scope, the price, and the terms in one place.\n\nSee it here: ${SITE}/proposal.html?id=${row.public_id}\n\nDeposit to start: ${money(dep)}. If anything looks off, just reply and we'll sort it out.\n\n— Jason\n` });
+    } catch {}
   }
   return res.status(200).json({ ok: true, publicId: row.public_id });
 }
