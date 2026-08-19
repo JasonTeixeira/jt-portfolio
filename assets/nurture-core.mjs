@@ -28,8 +28,11 @@ export function dueStepForProposal(proposal, sentSteps, nowIso) {
   }
   if (!proposal.approved_at) return null;
   const ageDays = (now - new Date(proposal.approved_at).getTime()) / 864e5;
+  // Send the most-overdue single step, in order, never backward: once UNPAID_2 has gone
+  // out we do not loop back to UNPAID_1. A backfilled old proposal (>=8d, nothing sent yet)
+  // gets one "still here" nudge, not a stale "sent this a few days ago".
   if (ageDays >= DUE.UNPAID_2_DAYS && !sent.has(STEP.UNPAID_2)) return STEP.UNPAID_2;
-  if (ageDays >= DUE.UNPAID_1_DAYS && !sent.has(STEP.UNPAID_1)) return STEP.UNPAID_1;
+  if (ageDays >= DUE.UNPAID_1_DAYS && !sent.has(STEP.UNPAID_1) && !sent.has(STEP.UNPAID_2)) return STEP.UNPAID_1;
   return null;
 }
 

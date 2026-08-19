@@ -29,8 +29,10 @@ test('dueStepForProposal: only approved+unexpired; C>B; B2>B1; sentSteps exclude
   const appr = (d) => ({ status: 'approved', approved_at: daysAgo(d), expires_at: daysAhead(20) });
   assert.equal(dueStepForProposal(appr(1), new Set(), NOW), null);                 // <3d
   assert.equal(dueStepForProposal(appr(3), new Set(), NOW), STEP.UNPAID_1);        // >=3d
-  assert.equal(dueStepForProposal(appr(9), new Set(), NOW), STEP.UNPAID_2);        // >=8d
-  assert.equal(dueStepForProposal(appr(9), new Set([STEP.UNPAID_2]), NOW), STEP.UNPAID_1); // 2 sent -> 1 still due? no: send first unsent
+  assert.equal(dueStepForProposal(appr(9), new Set(), NOW), STEP.UNPAID_2);        // backfill >=8d, nothing sent -> single most-overdue nudge
+  assert.equal(dueStepForProposal(appr(9), new Set([STEP.UNPAID_1]), NOW), STEP.UNPAID_2); // normal progression: B1 sent -> B2
+  assert.equal(dueStepForProposal(appr(5), new Set([STEP.UNPAID_1]), NOW), null);  // B1 sent, not yet 8d -> wait
+  assert.equal(dueStepForProposal(appr(9), new Set([STEP.UNPAID_2]), NOW), null);  // never loop back to B1 after B2
   assert.equal(dueStepForProposal(appr(9), new Set([STEP.UNPAID_1, STEP.UNPAID_2]), NOW), null);
   assert.equal(dueStepForProposal({ status: 'draft_pending', approved_at: null, expires_at: daysAhead(20) }, new Set(), NOW), null);
   assert.equal(dueStepForProposal({ status: 'approved', approved_at: daysAgo(5), expires_at: daysAgo(1) }, new Set(), NOW), null); // expired
