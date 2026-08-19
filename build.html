@@ -49,8 +49,23 @@
       <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">scope studio &middot; build your plan</span><span class="line"></span></div>
       <h1 class="sec-title" style="max-width:20ch;margin-top:12px">Tell me what you need. I&rsquo;ll scope it.</h1>
       <p class="subtle" style="margin-top:12px;max-width:56ch">A few questions, and you&rsquo;ll get an itemized plan with an indicative range. No signup, no call required. This is Jason&rsquo;s tool. Jason reads every plan it makes.</p>
-      <div class="tf-grid scope-grid" style="margin-top:36px">
-        <div id="scope-questions"></div>
+      <div class="scope-mode-toggle" role="group" aria-label="How do you want to scope this?">
+        <button type="button" id="scope-mode-chat" class="scope-mode-btn" aria-pressed="false">Talk it through</button>
+        <button type="button" id="scope-mode-quick" class="scope-mode-btn" aria-pressed="true">Quick questions</button>
+      </div>
+      <div class="tf-grid scope-grid" style="margin-top:20px">
+        <div id="scope-primary">
+          <div id="scope-questions"></div>
+          <div id="scope-chat" class="scope-chat" hidden>
+            <div id="scope-chat-offline" class="scope-chat-offline" role="status" hidden></div>
+            <div id="scope-chat-messages" class="scope-chat-messages" role="log" aria-live="polite" aria-label="Conversation with Jason's AI"></div>
+            <form id="scope-chat-form" class="scope-chat-form">
+              <label for="scope-chat-input" class="sr-only">Tell Jason's AI what you're working on</label>
+              <input id="scope-chat-input" type="text" placeholder="Tell me what you&rsquo;re working on&hellip;" autocomplete="off">
+              <button id="scope-chat-send" type="submit" class="btn-solid green">Send</button>
+            </form>
+          </div>
+        </div>
         <div class="tf-col">
           <div id="scope-canvas" class="tf-sticky">
             <div id="scope-blueprint"></div>
@@ -83,5 +98,6 @@
   </footer>
 </div>
 <script type="module" src="assets/scope-studio.mjs"></script>
+<script type="module" src="assets/scope-chat.mjs"></script>
 </body>
 </html>

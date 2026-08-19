@@ -8,15 +8,16 @@ import { test, expect } from '@playwright/test';
  * `.catch()` — no JS exception — but Chromium's network layer still emits a
  * "Failed to load resource" console diagnostic for the failed sub-resource load,
  * independent of and unsuppressible by any JS-level handling. It is not an
- * application bug, so it's filtered here; `pageerror` (uncaught exceptions) is
- * left untouched and still fails every test below. */
+ * application bug, so it's filtered here; the same applies to /api/chat (see
+ * scope-chat.mjs), which the static server also has no handler for; `pageerror`
+ * (uncaught exceptions) is left untouched and still fails every test below. */
 function trackErrors(page) {
   const errors = [];
   page.on('console', (msg) => {
     if (msg.type() !== 'error') return;
     const text = msg.text();
     const url = msg.location()?.url || '';
-    if (/Failed to load resource/.test(text) && /\/api\/scope$/.test(url)) return;
+    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat)$/.test(url)) return;
     errors.push(text);
   });
   page.on('pageerror', (err) => errors.push(String(err)));
@@ -750,5 +751,50 @@ test.describe('portfolio — scope studio', () => {
     // the form must resolve to a visible status (fallback message here), never hang or navigate away
     await expect(page.locator('#scope-send-status')).toContainText(/email/i, { timeout: 5000 });
     await expect(page).toHaveURL(/build\.html/);      // must not navigate away (no jarring mailto redirect)
+  });
+
+  test('AI chat: toggle exists, defaults to quick questions, and switches modes', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');
+    await expect(page.locator('#scope-mode-chat')).toBeVisible();
+    await expect(page.locator('#scope-mode-quick')).toBeVisible();
+    // default: questionnaire visible, chat hidden
+    await expect(page.locator('#scope-questions')).toBeVisible();
+    await expect(page.locator('#scope-chat')).toBeHidden();
+    await expect(page.locator('#scope-mode-quick')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#scope-mode-chat')).toHaveAttribute('aria-pressed', 'false');
+
+    await page.locator('#scope-mode-chat').click();
+    await expect(page.locator('#scope-chat')).toBeVisible();
+    await expect(page.locator('#scope-questions')).toBeHidden();
+    await expect(page.locator('#scope-mode-chat')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#scope-chat-messages')).toBeVisible();
+    await expect(page.locator('#scope-chat-input')).toBeVisible();
+    expect(errors).toEqual([]);
+
+    // switching back reveals the questionnaire again
+    await page.locator('#scope-mode-quick').click();
+    await expect(page.locator('#scope-questions')).toBeVisible();
+    await expect(page.locator('#scope-chat')).toBeHidden();
+    expect(errors).toEqual([]);
+  });
+
+  test('AI chat: with no /api/chat, sending a message shows a graceful offline state and the questionnaire still works', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/build.html');
+    await page.locator('#scope-mode-chat').click();
+    await page.locator('#scope-chat-input').fill("I need a chatbot that doesn't hallucinate.");
+    await page.locator('#scope-chat-send').click();
+    await expect(page.locator('#scope-chat-offline')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('#scope-chat-offline')).toContainText(/offline/i);
+    await expect(page.locator('#scope-chat-offline')).toContainText(/quick questions/i);
+    expect(errors).toEqual([]);
+
+    // the questionnaire fallback still fully works from here
+    await page.locator('#scope-mode-quick').click();
+    await page.locator('.scope-opt[data-id="opt-eval"]').click();
+    await expect(page.locator('#scope-plan')).toContainText('LLM evaluation harness');
+    await expect(page.locator('#scope-total')).toContainText('$');
+    expect(errors).toEqual([]);
   });
 });

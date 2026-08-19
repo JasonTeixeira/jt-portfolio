@@ -173,10 +173,24 @@ if (root && qMount && planMount && disc) {
   disc.textContent = DISCLAIMER;
   const answers = {};
   let planTrackTimer = 0;
+  // A capability-key selection applied by the AI chat (assets/scope-chat.mjs),
+  // taking priority over the questionnaire's answers until the visitor touches
+  // a questionnaire option again (see onPick below) — both surfaces drive the
+  // same computePlan → __renderScopePlan blueprint, whichever was touched last.
+  let chatKeys = null;
+  let chatSegment = null;
   track('started');
   renderQuestions();
   rehydrateFromUrl();
   renderPlan();
+
+  // Hook for assets/scope-chat.mjs: apply an externally-derived (AI) capability
+  // key selection to the SAME live blueprint/plan the questionnaire builds.
+  window.__applyScopeKeys = function (keys, segment) {
+    chatKeys = Array.isArray(keys) ? keys.filter(Boolean) : [];
+    chatSegment = segment || null;
+    renderPlan();
+  };
 
   const leadForm = document.getElementById('scope-lead');
   if (leadForm) leadForm.addEventListener('submit', onLeadSubmit);
@@ -230,6 +244,8 @@ if (root && qMount && planMount && disc) {
   }
 
   function onPick(e) {
+    chatKeys = null; // touching the questionnaire hands control back to it
+    chatSegment = null;
     const b = e.currentTarget;
     const q = b.dataset.q;
     const id = b.dataset.id;
@@ -258,8 +274,8 @@ if (root && qMount && planMount && disc) {
   }
 
   function renderPlan() {
-    const keys = keysFromAnswers(answers);
-    const segment = segmentFromAnswers();
+    const keys = chatKeys !== null ? chatKeys : keysFromAnswers(answers);
+    const segment = chatKeys !== null ? (chatSegment || segmentFromAnswers()) : segmentFromAnswers();
     const plan = computePlan(keys, segment);
     window.__renderScopePlan(plan);
     syncUrl();
