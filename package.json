@@ -24,6 +24,7 @@
     "@playwright/test": "^1.49.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.3"
+    "@supabase/supabase-js": "^2.112.3",
+    "stripe": "^22.5.0"
   }
 }

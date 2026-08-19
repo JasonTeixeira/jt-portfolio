@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your proposal · Jason Teixeira</title>
+<meta name="description" content="Your project proposal from Jason Teixeira — scope, price, and terms in one place.">
+<meta name="robots" content="noindex">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  h1.sec-title { font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-size:clamp(2.2rem,4.5vw,3.4rem); letter-spacing:-0.02em; line-height:1.05; margin:26px 0 0; color:#F4F2EF; }
+  .prop-wrap { max-width:760px; margin:0 auto; padding:clamp(40px,7vw,88px) clamp(18px,4vw,40px); }
+  .prop-card { border:1px solid var(--line); background:var(--card); border-radius:16px; padding:clamp(20px,4vw,30px); margin-top:22px; }
+  .prop-phase + .prop-phase { margin-top:18px; }
+  .prop-phase h3 { font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--cyan); margin:0 0 10px; }
+  .prop-item { border-top:1px solid var(--line); padding:12px 0; }
+  .prop-item:first-child { border-top:none; padding-top:0; }
+  .prop-item .name { font-size:15px; color:var(--ink); font-weight:600; }
+  .prop-item .why { color:var(--dim); font-size:13.5px; line-height:1.6; margin-top:3px; }
+  .price-block { border:1px solid rgba(16,185,129,0.35); background:radial-gradient(120% 140% at 0% 0%, rgba(16,185,129,0.10), transparent 60%), var(--card); border-radius:16px; padding:clamp(22px,4vw,30px); margin-top:22px; }
+  .price-firm { font-family:var(--serif); font-size:clamp(2.4rem,6vw,3.4rem); color:var(--ink); line-height:1; }
+  .price-row { display:flex; justify-content:space-between; gap:14px; padding:10px 0; border-top:1px solid var(--line); font-size:14.5px; }
+  .price-row:first-of-type { margin-top:16px; }
+  .price-row .lbl { color:var(--dim); }
+  .price-row .val { font-family:var(--mono); color:var(--ink); font-weight:600; }
+  .terms-item { border-top:1px solid var(--line); padding:14px 0; }
+  .terms-item:first-child { border-top:none; padding-top:0; }
+  .terms-item h4 { font-size:14px; margin:0 0 4px; color:var(--ink); }
+  .terms-item p { color:var(--dim); font-size:13.5px; line-height:1.65; margin:0; }
+  label.fld { display:block; margin-bottom:14px; }
+  label.fld span.lbl-text { display:block; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); margin-bottom:6px; }
+  .prop-form input[type="text"] { width:100%; background:#0F0F13; border:1px solid var(--line); border-radius:9px; padding:12px 14px; font-size:14.5px; color:var(--ink); font-family:inherit; outline:none; }
+  .prop-form input[type="text"]:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
+  .prop-check { display:flex; align-items:flex-start; gap:10px; margin:16px 0; }
+  .prop-check input[type="checkbox"] { width:18px; height:18px; margin-top:2px; accent-color:var(--green); flex-shrink:0; }
+  .prop-check input[type="checkbox"]:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
+  .prop-check label { font-size:13.5px; color:var(--dim); line-height:1.5; }
+  .prop-status { margin-top:12px; font-family:var(--mono); font-size:12.5px; color:var(--faint); min-height:16px; }
+  .prop-status.err { color:var(--rose); }
+  #proposal-root .btn-solid:focus-visible, #proposal-root .btn-ghost:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+  .prop-empty { text-align:center; padding:60px 20px; }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-solid.green:hover, .btn-solid.cyan:hover { transform:none; }
+  }
+  @media print {
+    nav, footer, .prop-form, #proposal-noscript { display:none !important; }
+    body, .prop-wrap { background:#fff !important; color:#111 !important; }
+    .prop-card, .price-block, .terms-item, .prop-item { border-color:#ccc !important; background:#fff !important; box-shadow:none !important; }
+    h1.sec-title, .price-firm { color:#111 !important; }
+    a { color:#111 !important; text-decoration:underline; }
+  }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="services.html" class="dim-link">services</a>
+      <a href="case-studies.html" class="dim-link">case studies</a>
+      <a href="docs.html" class="dim-link">guides</a>
+      <a href="book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="prop-wrap">
+      <noscript>
+        <div id="proposal-noscript" class="prop-card">
+          <p class="subtle">This proposal needs JavaScript to load. Email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> and I&rsquo;ll send it another way.</p>
+        </div>
+      </noscript>
+      <div id="proposal-root"></div>
+    </div>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+<script type="module" src="assets/proposal.mjs"></script>
+</body>
+</html>
