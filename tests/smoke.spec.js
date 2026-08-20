@@ -375,7 +375,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(45);
+    expect((xml.match(/<loc>/g) || []).length).toBe(47);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -494,7 +494,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(45);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(47);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -571,7 +571,7 @@ test.describe('portfolio — live eval', () => {
 test.describe('portfolio — standalone booking', () => {
   test('book.html loads with a working form and a quote-first audit section', async ({ page }) => {
     await page.goto('/book.html');
-    await expect(page.locator('h1')).toContainText('slipping through the cracks');
+    await expect(page.locator('h1').first()).toContainText('slipping through the cracks');
     await expect(page.locator('#book-form [name="email"]')).toBeVisible();
     await expect(page.locator('#audit')).toContainText('scoped');
     // quote-first: no dollar prices and no live Stripe checkout link
