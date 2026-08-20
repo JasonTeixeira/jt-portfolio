@@ -230,13 +230,13 @@ body.site-nav-open { overflow: hidden; }
 }
 .flow-chip:hover { border-color: var(--chip-c); }
 
-/* ─── services cards ─── */
+/* ─── services cards (dark) ─── */
 .svc-card {
-  border: 1px solid #DDD6CE; padding: 28px; background: #FFFFFF;
+  border: 1px solid #2A2826; padding: 28px; background: #101014; border-radius: 12px;
   display: flex; flex-direction: column; gap: 14px;
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 }
-.svc-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(9,9,11,0.08); }
+.svc-card:hover { transform: translateY(-2px); border-color: #3D3A37; }
 
 /* ─── field-note rows ─── */
 .note-row { transition: background 200ms ease; color: #F4F2EF; }
@@ -361,20 +361,20 @@ details.brief-more > summary .chev { transition: transform 200ms ease; display: 
 details.brief-more[open] > summary .chev { transform: rotate(90deg); }
 details.brief-more > summary:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
 
-/* ─── FAQ (light band) ─── */
-details.faq { border-bottom: 1px solid #DDD6CE; }
+/* ─── FAQ (dark) ─── */
+details.faq { border-bottom: 1px solid #2A2826; }
 details.faq > summary {
   list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
-  padding: 16px 0; font-size: 14.5px; font-weight: 600; color: #09090B; user-select: none;
+  padding: 16px 0; font-size: 14.5px; font-weight: 600; color: #F4F2EF; user-select: none;
 }
 details.faq > summary::-webkit-details-marker { display: none; }
 details.faq > summary::before {
-  content: '+'; font-family: 'JetBrains Mono', monospace; color: #0e7490;
+  content: '+'; font-family: 'JetBrains Mono', monospace; color: #22d3ee;
   font-size: 16px; width: 18px; flex-shrink: 0; transition: transform 200ms ease;
 }
 details.faq[open] > summary::before { transform: rotate(45deg); }
-details.faq > summary:focus-visible { outline: 2px solid #0e7490; outline-offset: 3px; }
-details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; color: #57534E; max-width: 58ch; }
+details.faq > summary:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
+details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; color: #A8A29E; max-width: 58ch; }
 
 /* ─── availability chip ─── */
 .avail-chip {
@@ -614,3 +614,35 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 .sc-handoff-form input:focus-visible { outline:2px solid var(--cyan,#22d3ee); outline-offset:2px; }
 .sc-handoff-status { margin-top:8px; font-family:var(--mono,monospace); font-size:12px; color:var(--faint,#8E8882); min-height:15px; }
 .sc-handoff-talk { display:inline-block; margin-top:10px; font-family:var(--mono,monospace); font-size:12px; color:var(--purple,#a78bfa); }
+
+/* ═══════════════ P2 — risk-reversal + capacity (shared component, every page) ═══════════════ */
+/* ─── guarantee / risk-reversal block — reused near every primary CTA ─── */
+.jt-guarantee {
+  display: flex; gap: 10px; align-items: flex-start;
+  margin-top: 14px; padding: 12px 16px;
+  border: 1px solid rgba(16,185,129,0.22); border-radius: 10px;
+  background: rgba(16,185,129,0.045);
+  font-size: 12.5px; line-height: 1.65; color: #A8A29E; max-width: 58ch;
+}
+.jt-guarantee .g-mk { color: #10b981; font-family: 'JetBrains Mono', monospace; font-size: 12px; flex-shrink: 0; line-height: 1.65; }
+.jt-guarantee b, .jt-guarantee strong { color: #F4F2EF; font-weight: 600; }
+
+/* ─── capacity line — identical wording everywhere; edit the quarter in one place per instance ─── */
+.jt-capacity {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+  color: #10b981; border: 1px solid rgba(16,185,129,0.3); border-radius: 999px;
+  padding: 6px 13px; background: rgba(16,185,129,0.05); margin-top: 14px;
+}
+.jt-capacity .dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; flex-shrink: 0; animation: jt-blink 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .jt-capacity .dot { animation: none; } }
+
+/* ═══════════════ P3.3 — restrained depth (compositor-friendly: transform/opacity/box-shadow) ═══════════════ */
+.svc-card { box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset; }
+.svc-card:hover { box-shadow: 0 16px 40px -14px rgba(9,9,11,0.55), 0 0 0 1px rgba(167,139,250,0.14); }
+.jt-hero-wash {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60% 55% at 18% 0%, rgba(34,211,238,0.07), transparent 60%),
+    radial-gradient(55% 60% at 92% 15%, rgba(167,139,250,0.06), transparent 60%);
+}
