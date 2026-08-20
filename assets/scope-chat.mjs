@@ -44,10 +44,10 @@ function persistTranscript(messages) {
   } catch { /* never break the chat over telemetry */ }
 }
 
-function saveMemory(hist, lastKeys, lastSegment) {
+function saveMemory(hist, lastKeys, lastSegment, lastQual, lastDone) {
   try {
     if (!Array.isArray(hist) || hist.length < 2) return; // nothing beyond the greeting — not worth resuming
-    localStorage.setItem(MEMORY_KEY, JSON.stringify({ hist, lastKeys, lastSegment, ts: Date.now() }));
+    localStorage.setItem(MEMORY_KEY, JSON.stringify({ hist, lastKeys, lastSegment, lastQual: lastQual || null, lastDone: !!lastDone, ts: Date.now() }));
   } catch { /* private mode / quota — memory is best-effort only */ }
 }
 
@@ -64,7 +64,12 @@ function loadMemory() {
     if (hist.length < 2) return null; // opted-out / stale / never got past the greeting
     const lastKeys = Array.isArray(parsed.lastKeys) ? parsed.lastKeys.filter((k) => typeof k === 'string' && k) : [];
     const lastSegment = typeof parsed.lastSegment === 'string' && parsed.lastSegment ? parsed.lastSegment : null;
-    return { hist, lastKeys, lastSegment };
+    const q = parsed.lastQual;
+    const lastQual = q && typeof q === 'object' && (q.fit === 'strong' || q.fit === 'maybe' || q.fit === 'poor')
+      ? { fit: q.fit, reasons: Array.isArray(q.reasons) ? q.reasons.filter((r) => typeof r === 'string') : [] }
+      : null;
+    const lastDone = parsed.lastDone === true;
+    return { hist, lastKeys, lastSegment, lastQual, lastDone };
   } catch { return null; }
 }
 
@@ -96,6 +101,8 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
   let lastSegment = null;
   let narratedPlan = false;
   let handoffShown = false;
+  let lastQualification = null; // persisted so a returning strong-fit visitor keeps the handoff CTA
+  let lastDone = false;
   let typingEl = null;
 
   function setMode(mode) {
@@ -246,6 +253,13 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
       if (typeof window.__applyScopeKeys === 'function') window.__applyScopeKeys(lastKeys, lastSegment);
       narratedPlan = true; // the plan already sits on the canvas — don't re-narrate it
     }
+    if (saved.lastQual) {
+      lastQualification = saved.lastQual;
+      lastDone = saved.lastDone;
+      applyQualification(saved.lastQual); // restore the fit chip / disqualify panel
+      // a returning strong/maybe-fit visitor who already reached done keeps the email-capture CTA
+      if (saved.lastDone && (saved.lastQual.fit === 'strong' || saved.lastQual.fit === 'maybe')) showHandoff();
+    }
     showResumeBanner();
   }
 
@@ -256,6 +270,8 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     lastSegment = null;
     narratedPlan = false;
     handoffShown = false;
+    lastQualification = null;
+    lastDone = false;
     clearFitChip();
     clearDisqualify();
     if (handoffEl) handoffEl.hidden = true;
@@ -381,7 +397,7 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     hideResumeBanner();
     bubble('user', v);
     hist.push({ role: 'user', content: v });
-    saveMemory(hist, lastKeys, lastSegment);
+    saveMemory(hist, lastKeys, lastSegment, lastQualification, lastDone);
     if (inputEl) inputEl.value = '';
     if (notConfigured) { showOffline(); return; }
 
@@ -402,10 +418,12 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     if (inputEl) { try { inputEl.focus(); } catch { /* jsdom / detached */ } }
     hist.push({ role: 'assistant', content: data.reply });
     applySelection(data.selection, data.segment);
+    lastQualification = data.qualification || null;
+    lastDone = !!data.done;
     applyQualification(data.qualification);
     if (data.done && data.qualification && (data.qualification.fit === 'strong' || data.qualification.fit === 'maybe')) showHandoff();
     persistTranscript(hist);
-    saveMemory(hist, lastKeys, lastSegment);
+    saveMemory(hist, lastKeys, lastSegment, lastQualification, lastDone);
   }
 
   if (formEl) { formEl.addEventListener('submit', (e) => { e.preventDefault(); send(inputEl ? inputEl.value : ''); }); }
