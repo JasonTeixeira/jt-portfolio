@@ -44,18 +44,20 @@
 </head>
 <body>
 <div style="min-height:100vh;background:var(--bg)">
-  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
-    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
-      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
-      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
     </a>
-    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
-      <a href="services.html" class="dim-link">services</a>
-      <a href="case-studies.html" class="dim-link">case studies</a>
-      <a href="demos.html" class="dim-link">demos</a>
-      <a href="docs.html" class="dim-link">guides</a>
-      <a href="what-i-build.html" class="dim-link">what I build</a>
-      <a href="index.html" class="dim-link">&larr; portfolio</a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Guides</a>
+      <a href="book.html" class="btn-solid green site-nav-cta" aria-current="page">Book a call &rarr;</a>
     </div>
   </nav>
 
@@ -67,11 +69,22 @@
 
   <main id="content" style="display:block">
 
-  <!-- BOOK -->
-  <section class="wrap" style="padding-bottom:clamp(32px,5vw,52px)">
+  <!-- SCHEDULE — Cal.com inline embed. Falls back to the contact form below if it can't load. -->
+  <section class="wrap" style="padding-bottom:clamp(18px,3vw,26px)">
     <div class="card">
-      <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:18px">Book a 15-minute call</div>
-      <!-- CAL.COM SLOT: when you have a Cal.com link, drop it here as a button and it becomes the primary CTA. -->
+      <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:18px">Book a 15-minute call — live availability</div>
+      <!-- TODO(jason): replace YOUR-CAL-USERNAME with your real cal.com link -->
+      <div id="cal-embed" data-cal-link="YOUR-CAL-USERNAME/intro" style="min-height:0;border-radius:10px;overflow:hidden"></div>
+      <p id="cal-embed-fallback-note" class="subtle" hidden style="margin:14px 0 0">The live scheduler didn&rsquo;t load. Use the form below and I&rsquo;ll reply within one business day &mdash; or email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> directly.</p>
+      <noscript><p class="subtle" style="margin:14px 0 0">Enable JavaScript to see live availability, or use the form below.</p></noscript>
+    </div>
+  </section>
+
+  <!-- BOOK (fallback) -->
+  <section class="wrap" id="book-form-section" style="padding-bottom:clamp(32px,5vw,52px)">
+    <div class="card">
+      <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px">Prefer email? Send a note instead</div>
+      <p class="subtle" style="margin:0 0 18px">No slot works, or you&rsquo;d rather write it out? Fill this in and I reply within one business day &mdash; a human, not a sequence.</p>
       <form id="book-form" novalidate>
         <div class="grid2">
           <label class="fld"><span>name</span><input type="text" name="name" required autocomplete="name" placeholder="Ada Lovelace"></label>
@@ -121,6 +134,39 @@
   </footer>
 </div>
 
+<!-- Cal.com inline embed (open-source scheduling). See TODO above the #cal-embed div. -->
+<script>
+(function(){
+  var mount = document.getElementById('cal-embed');
+  var fallbackNote = document.getElementById('cal-embed-fallback-note');
+  if (!mount) return;
+  var calLink = mount.getAttribute('data-cal-link');
+
+  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+
+  try {
+    window.Cal("init", "intro", { origin: "https://cal.com" });
+    window.Cal.ns.intro("inline", {
+      elementOrSelector: "#cal-embed",
+      config: { layout: "month_view", theme: "dark" },
+      calLink: calLink
+    });
+    window.Cal.ns.intro("ui", { theme: "dark", hideEventTypeDetails: false, layout: "month_view" });
+  } catch (e) {
+    if (fallbackNote) fallbackNote.hidden = false;
+  }
+
+  // If the embed hasn't mounted an iframe after a few seconds (bad link, network
+  // block, ad-blocker), surface the fallback note pointing at the form below.
+  window.setTimeout(function () {
+    if (!mount.querySelector('iframe')) {
+      mount.style.display = 'none';
+      if (fallbackNote) fallbackNote.hidden = false;
+    }
+  }, 4000);
+})();
+</script>
+
 <script>
 (function(){
   var form=document.getElementById('book-form'), statusEl=document.getElementById('book-status');
@@ -155,5 +201,6 @@ var g=document.createElement('script');g.async=true;g.src='https://www.googletag
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config',GA_ID);
 window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,(payload&&payload.data)||{});}catch(e){}};}</script>
 <script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
 </body>
 </html>
