@@ -157,6 +157,23 @@ export function filterSelection(selection, validKeys) {
   return selection.filter((s) => s && typeof s === 'object' && typeof s.key === 'string' && validKeys.has(s.key));
 }
 
+// Scope mode forces `response_format: json_object`, and DeepSeek/OpenAI JSON
+// mode needs the WHOLE conversation to be JSON-consistent. The client stores
+// each assistant turn as the plain `reply` text, so on multi-turn scope
+// requests we re-wrap every prior assistant turn as {"reply": <text>} before
+// sending to the model. Without this the model returns EMPTY content on every
+// turn after the first (only the first turn, with no assistant history, worked)
+// and the endpoint 502s `empty_reply`. Verified: plain-text assistant history
+// → empty; JSON-wrapped assistant history → correct reply.
+export function scopeModelMessages(messages) {
+  if (!Array.isArray(messages)) return [];
+  return messages.map((m) =>
+    m && m.role === 'assistant'
+      ? { role: 'assistant', content: JSON.stringify({ reply: typeof m.content === 'string' ? m.content : '' }) }
+      : m
+  );
+}
+
 // tiny per-instance throttle (best-effort; resets on cold start)
 const hits = new Map();
 function throttled(ip) {
@@ -218,7 +235,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model,
-        messages: [{ role: 'system', content: persona }, ...messages],
+        messages: [{ role: 'system', content: persona }, ...(isScope ? scopeModelMessages(messages) : messages)],
         max_tokens: MAX_OUT[body.mode] || 160,
         // Scope mode is a structured, price-safe discovery flow: lower
         // temperature for consistency, and ask the provider's JSON mode for

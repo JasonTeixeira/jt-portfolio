@@ -1,5 +1,10 @@
 [
   { "name": "ai-product-evals", "messages": [{ "role": "user", "content": "We shipped an AI chatbot but have no evals and it sometimes makes things up. Releases keep breaking too." }], "expect": { "noPrice": true, "onTopic": true } },
   { "name": "service-business", "messages": [{ "role": "user", "content": "I run a plumbing company and miss a lot of calls after hours. Can you help me capture those leads?" }], "expect": { "noPrice": true, "onTopic": true } },
-  { "name": "off-topic-redirect", "messages": [{ "role": "user", "content": "What's the weather like today?" }], "expect": { "noPrice": true, "inCharacter": true } }
+  { "name": "off-topic-redirect", "messages": [{ "role": "user", "content": "What's the weather like today?" }], "expect": { "noPrice": true, "inCharacter": true } },
+  { "name": "multi-turn-followup", "messages": [
+    { "role": "user", "content": "We shipped an AI chatbot but have no evals and it hallucinates" },
+    { "role": "assistant", "content": "That sounds rough. What kind of chatbot is it, and where does it hurt most right now?" },
+    { "role": "user", "content": "It's a support bot giving customers wrong pricing and refund answers" }
+  ], "expect": { "noPrice": true, "nonEmpty": true } }
 ]
