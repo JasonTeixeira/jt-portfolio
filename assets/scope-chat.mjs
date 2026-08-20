@@ -5,6 +5,10 @@
 // /api/proposal, the same handoff scope-studio.mjs does on its lead form).
 // Degradation-safe: a genuine 501 (LLM env absent) shows a plain offline state and
 // the questionnaire stays fully usable; transient errors retry once and never brick.
+// Bot turns reveal with a word-by-word typewriter (reduced-motion shows instantly);
+// the conversation is remembered locally (best-effort) so a same-day return visit
+// can resume where it left off. All dynamic text stays textContent-only — never
+// innerHTML — even while revealing.
 
 import { computePlan } from './scope-core.mjs';
 
@@ -13,8 +17,19 @@ const GREETING =
 const OFFLINE_MSG = "The AI's offline right now. Use the quick questions instead; they build the exact same plan.";
 const NARRATION = "I've sketched a plan for you on the right. Tweak it or keep going.";
 const HANDOFF_COPY = "Want me to send this plan to your inbox? Jason reads every one, and he'll follow up himself.";
+const RESUME_COPY = 'Picking up where we left off.';
 
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// per-word typewriter cadence — deterministic, not random, so it never flakes
+const REVEAL_BASE_MS = 34;
+const REVEAL_LONGWORD_MS = 12;
+const REVEAL_SENTENCE_PAUSE_MS = 130;
+const REVEAL_CLAUSE_PAUSE_MS = 60;
+
+// local memory — best-effort only, never anything beyond what the user already typed
+const MEMORY_KEY = 'scope_chat_v1';
+const MEMORY_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 function prospectId() {
   try { return localStorage.getItem('scope_pid') || null; } catch { return null; }
@@ -28,6 +43,32 @@ function persistTranscript(messages) {
       body: JSON.stringify({ prospectId: pid, type: 'questioned', meta: { messages } }) }).catch(() => {});
   } catch { /* never break the chat over telemetry */ }
 }
+
+function saveMemory(hist, lastKeys, lastSegment) {
+  try {
+    if (!Array.isArray(hist) || hist.length < 2) return; // nothing beyond the greeting — not worth resuming
+    localStorage.setItem(MEMORY_KEY, JSON.stringify({ hist, lastKeys, lastSegment, ts: Date.now() }));
+  } catch { /* private mode / quota — memory is best-effort only */ }
+}
+
+function loadMemory() {
+  try {
+    const raw = localStorage.getItem(MEMORY_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    if (typeof parsed.ts !== 'number' || Date.now() - parsed.ts > MEMORY_MAX_AGE_MS) return null;
+    const hist = Array.isArray(parsed.hist)
+      ? parsed.hist.filter((m) => m && typeof m === 'object' && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content)
+      : [];
+    if (hist.length < 2) return null; // opted-out / stale / never got past the greeting
+    const lastKeys = Array.isArray(parsed.lastKeys) ? parsed.lastKeys.filter((k) => typeof k === 'string' && k) : [];
+    const lastSegment = typeof parsed.lastSegment === 'string' && parsed.lastSegment ? parsed.lastSegment : null;
+    return { hist, lastKeys, lastSegment };
+  } catch { return null; }
+}
+
+function clearMemory() { try { localStorage.removeItem(MEMORY_KEY); } catch { /* best-effort */ } }
 
 const toggleChat = document.getElementById('scope-mode-chat');
 const toggleQuick = document.getElementById('scope-mode-quick');
@@ -68,23 +109,102 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
   toggleChat.addEventListener('click', () => setMode('chat'));
   toggleQuick.addEventListener('click', () => setMode('quick'));
 
+  function makeAvatar() {
+    const av = document.createElement('span');
+    av.className = 'sc-avatar';
+    av.setAttribute('aria-hidden', 'true');
+    av.textContent = 'JT';
+    return av;
+  }
+
+  // Plain (non-revealing) bubble — used for the user's own messages, asides
+  // (offline/error notes, plan narration) and restored history on resume.
   function bubble(role, text) {
+    if (role === 'user') {
+      const b = document.createElement('div');
+      b.className = 'sc-bubble sc-user sc-enter';
+      b.textContent = text;
+      messagesEl.appendChild(b);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return b;
+    }
+    const row = document.createElement('div');
+    row.className = 'sc-row sc-row-bot sc-enter';
+    row.appendChild(makeAvatar());
     const b = document.createElement('div');
-    b.className = 'sc-bubble ' + (role === 'user' ? 'sc-user' : 'sc-bot');
+    b.className = 'sc-bubble sc-bot';
     b.textContent = text;
-    messagesEl.appendChild(b);
+    row.appendChild(b);
+    messagesEl.appendChild(row);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     return b;
   }
   function note(text) { const b = bubble('bot', text); b.classList.add('sc-note'); return b; }
 
+  function chunkDelay(chunk) {
+    let d = REVEAL_BASE_MS;
+    if (chunk.trim().length > 6) d += REVEAL_LONGWORD_MS;
+    if (/[.!?]["')]*\s*$/.test(chunk)) d += REVEAL_SENTENCE_PAUSE_MS;
+    else if (/[,;:]\s*$/.test(chunk)) d += REVEAL_CLAUSE_PAUSE_MS;
+    return d;
+  }
+
+  // Reveals a bot turn word-by-word into an aria-hidden visual span (so a live
+  // region doesn't announce every chunk), then commits the full text once to an
+  // sr-only sibling for a single clean screen-reader announcement. Reduced-motion
+  // sets both immediately. Only ever mutates textContent — never innerHTML.
+  function revealBotBubble(text) {
+    return new Promise((resolve) => {
+      const row = document.createElement('div');
+      row.className = 'sc-row sc-row-bot sc-enter';
+      row.appendChild(makeAvatar());
+      const el = document.createElement('div');
+      el.className = 'sc-bubble sc-bot';
+      const visible = document.createElement('span');
+      visible.className = 'sc-bubble-visible';
+      visible.setAttribute('aria-hidden', 'true');
+      const srText = document.createElement('span');
+      srText.className = 'sr-only';
+      el.appendChild(visible);
+      el.appendChild(srText);
+      row.appendChild(el);
+      if (typingEl && typingEl.parentNode) messagesEl.insertBefore(row, typingEl);
+      else messagesEl.appendChild(row);
+      hideTyping();
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      const finish = () => {
+        el.classList.remove('sc-revealing');
+        srText.textContent = text; // one mutation → one polite announcement
+        resolve(el);
+      };
+      if (REDUCED) { visible.textContent = text; messagesEl.scrollTop = messagesEl.scrollHeight; finish(); return; }
+
+      el.classList.add('sc-revealing');
+      const chunks = text.match(/\S+\s*/g) || [text];
+      let i = 0;
+      (function step() {
+        if (i >= chunks.length) { finish(); return; }
+        visible.textContent += chunks[i];
+        const delay = chunkDelay(chunks[i]);
+        i++;
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        setTimeout(step, delay);
+      })();
+    });
+  }
+
   function showTyping() {
     if (typingEl) return;
     typingEl = document.createElement('div');
-    typingEl.className = 'sc-bubble sc-bot sc-typing';
-    typingEl.setAttribute('aria-label', 'Thinking');
-    if (REDUCED) { typingEl.textContent = '…'; }
-    else { for (let i = 0; i < 3; i++) { const d = document.createElement('span'); d.className = 'sc-dot'; typingEl.appendChild(d); } }
+    typingEl.className = 'sc-row sc-row-bot sc-typing-row';
+    typingEl.appendChild(makeAvatar());
+    const bub = document.createElement('div');
+    bub.className = 'sc-bubble sc-bot sc-typing';
+    bub.setAttribute('aria-label', 'Thinking');
+    if (REDUCED) { bub.textContent = '…'; }
+    else { for (let i = 0; i < 3; i++) { const d = document.createElement('span'); d.className = 'sc-dot'; bub.appendChild(d); } }
+    typingEl.appendChild(bub);
     messagesEl.appendChild(typingEl);
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
@@ -95,10 +215,64 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     offlineEl.hidden = false;
     offlineEl.textContent = OFFLINE_MSG;
   }
+
+  function showResumeBanner() {
+    if (!chatRoot || chatRoot.querySelector('.sc-resume')) return;
+    const banner = document.createElement('div');
+    banner.className = 'sc-resume';
+    const text = document.createElement('span');
+    text.className = 'sc-resume-text';
+    text.textContent = RESUME_COPY;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'sc-resume-reset';
+    btn.textContent = 'Start over';
+    btn.addEventListener('click', () => { clearMemory(); banner.remove(); resetChat(); });
+    banner.appendChild(text);
+    banner.appendChild(btn);
+    chatRoot.insertBefore(banner, chatRoot.firstChild);
+  }
+  function hideResumeBanner() {
+    const banner = chatRoot && chatRoot.querySelector('.sc-resume');
+    if (banner) banner.remove();
+  }
+
+  function restoreFromMemory(saved) {
+    hist = saved.hist.slice();
+    hist.forEach((m) => bubble(m.role === 'user' ? 'user' : 'bot', m.content));
+    if (saved.lastKeys.length) {
+      lastKeys = saved.lastKeys;
+      lastSegment = saved.lastSegment;
+      if (typeof window.__applyScopeKeys === 'function') window.__applyScopeKeys(lastKeys, lastSegment);
+      narratedPlan = true; // the plan already sits on the canvas — don't re-narrate it
+    }
+    showResumeBanner();
+  }
+
+  function resetChat() {
+    messagesEl.textContent = '';
+    hist = [];
+    lastKeys = [];
+    lastSegment = null;
+    narratedPlan = false;
+    handoffShown = false;
+    clearFitChip();
+    clearDisqualify();
+    if (handoffEl) handoffEl.hidden = true;
+    if (handoffForm) handoffForm.hidden = false;
+    if (handoffStatus) handoffStatus.textContent = '';
+    if (typeof window.__applyScopeKeys === 'function') window.__applyScopeKeys([], null);
+    if (notConfigured) { showOffline(); }
+    else { revealBotBubble(GREETING); hist.push({ role: 'assistant', content: GREETING }); }
+    if (inputEl) { try { inputEl.focus(); } catch { /* jsdom / detached */ } }
+  }
+
   function openChat() {
     if (opened) return;
     opened = true;
-    bubble('bot', GREETING);
+    const saved = loadMemory();
+    if (saved) { restoreFromMemory(saved); return; }
+    revealBotBubble(GREETING);
     hist.push({ role: 'assistant', content: GREETING });
   }
   function setBusy(busy) { if (inputEl) inputEl.disabled = busy; if (sendBtn) sendBtn.disabled = busy; }
@@ -204,28 +378,34 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
   async function send(text) {
     const v = (text || '').trim();
     if (!v) return;
+    hideResumeBanner();
     bubble('user', v);
     hist.push({ role: 'user', content: v });
+    saveMemory(hist, lastKeys, lastSegment);
     if (inputEl) inputEl.value = '';
     if (notConfigured) { showOffline(); return; }
 
     setBusy(true); showTyping();
     const result = await requestTurn();
-    hideTyping(); setBusy(false);
 
-    if (result.status === 501) { notConfigured = true; showOffline(); return; }
-    if (result.status === 429) { note("I'm getting a lot of questions right now. Give it a second and try again."); return; }
+    if (result.status === 501) { hideTyping(); setBusy(false); notConfigured = true; showOffline(); return; }
+    if (result.status === 429) { hideTyping(); setBusy(false); note("I'm getting a lot of questions right now. Give it a second and try again."); return; }
     const data = result.data;
     if (!data || !data.ok || typeof data.reply !== 'string' || !data.reply) {
+      hideTyping(); setBusy(false);
       note("That didn't go through. Try again?");
       return;
     }
-    bubble('bot', data.reply);
+    // input stays disabled through the reveal — a second send can't land mid-turn
+    await revealBotBubble(data.reply);
+    setBusy(false);
+    if (inputEl) { try { inputEl.focus(); } catch { /* jsdom / detached */ } }
     hist.push({ role: 'assistant', content: data.reply });
     applySelection(data.selection, data.segment);
     applyQualification(data.qualification);
     if (data.done && data.qualification && (data.qualification.fit === 'strong' || data.qualification.fit === 'maybe')) showHandoff();
     persistTranscript(hist);
+    saveMemory(hist, lastKeys, lastSegment);
   }
 
   if (formEl) { formEl.addEventListener('submit', (e) => { e.preventDefault(); send(inputEl ? inputEl.value : ''); }); }
