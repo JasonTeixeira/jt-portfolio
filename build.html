@@ -31,16 +31,20 @@
 </head>
 <body>
 <div style="min-height:100vh;background:var(--bg)">
-  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
-    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
-      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
-      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
     </a>
-    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
-      <a href="services.html" class="dim-link">services</a>
-      <a href="case-studies.html" class="dim-link">case studies</a>
-      <a href="docs.html" class="dim-link">guides</a>
-      <a href="book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link" aria-current="page">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Guides</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
     </div>
   </nav>
 
@@ -98,6 +102,8 @@
           <a id="scope-human" class="btn-ghost" href="book.html" style="border-color:#a78bfa;color:#a78bfa">Talk to Jason directly &rarr;</a>
           <a id="scope-email" class="dim-link" href="#" style="font-family:'JetBrains Mono',monospace;font-size:12px">or open in your email app</a>
         </div>
+        <div class="jt-guarantee"><span class="g-mk">&check;</span><span>This planner is free, no signup. When you're ready, every engagement is <b>quoted in writing before work starts</b>: the audit fee credits into the build. No fit, no charge.</span></div>
+        <span class="jt-capacity"><span class="dot"></span>one engagement at a time — <!-- TODO(jason): update capacity -->currently booking Q4 2026</span>
       </div>
       <p class="subtle" style="margin-top:12px;font-size:11px">I&rsquo;ll email you the plan and may follow up about it. Unsubscribe anytime.</p>
       <p id="scope-disclaimer" class="subtle" style="margin-top:24px;font-size:12px"></p>
@@ -111,5 +117,6 @@
 </div>
 <script type="module" src="assets/scope-studio.mjs"></script>
 <script type="module" src="assets/scope-chat.mjs"></script>
+<script defer src="assets/nav.js"></script>
 </body>
 </html>

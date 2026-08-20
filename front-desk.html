@@ -92,18 +92,20 @@
 </head>
 <body>
 <div style="min-height:100vh;background:var(--bg)">
-  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
-    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
-      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
-      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
     </a>
-    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
-      <a href="case-studies.html" class="dim-link">case studies</a>
-      <a href="build.html" class="dim-link">scope</a>
-      <a href="roi.html" class="dim-link">ROI calc</a>
-      <a href="demos.html" class="dim-link">demos</a>
-      <a href="docs.html" class="dim-link">guides</a>
-      <a href="book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Book a call &rarr;</a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Guides</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
     </div>
   </nav>
 
@@ -115,6 +117,8 @@
       <a href="book.html" class="cta" data-evt="fd-hero-book">Book a 15-min call &rarr;</a>
       <a href="#how-it-works" class="mono" style="display:inline-flex;align-items:center;padding:15px 8px;font-size:13px;color:var(--cyan)">See how it works &darr;</a>
     </div>
+    <p style="display:flex;gap:8px;align-items:baseline;margin:14px 0 0;font-size:12.5px;color:var(--faint);max-width:60ch"><span style="color:var(--green)">&check;</span> You approve it before it ever talks to a customer. No lock-in contract: turn it off any time.</p>
+    <span class="jt-capacity"><span class="dot"></span>one engagement at a time — <!-- TODO(jason): update capacity -->currently booking Q4 2026</span>
   </header>
 
   <main id="content" style="display:block">
@@ -216,6 +220,8 @@
     <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
       <a href="book.html" class="cta" data-evt="fd-final-book">Book a 15-min call &rarr;</a>
     </div>
+    <div class="jt-guarantee" style="margin-left:auto;margin-right:auto;text-align:left"><span class="g-mk">&check;</span><span>You approve it before it ever talks to a customer. Scoped to your business on the call, with a real number before anything starts. No lock-in contract.</span></div>
+    <span class="jt-capacity"><span class="dot"></span>one engagement at a time — <!-- TODO(jason): update capacity -->currently booking Q4 2026</span>
   </div></section>
 
   </main>
@@ -227,5 +233,6 @@
 </div>
 
 <script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
 </body>
 </html>

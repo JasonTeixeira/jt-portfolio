@@ -49,14 +49,21 @@
 </head>
 <body>
 <div style="min-height:100vh;background:#09090B;position:relative">
-  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(18px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
-    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
-      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.02em">jason.teixeira<span style="color:#10b981">()</span></span>
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:#10b981">()</span></span>
     </a>
-    <div style="display:flex;gap:20px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:12px">
-      <a href="assets/llm-eval-checklist.pdf" class="dim-link" download data-evt="checklist-pdf">download PDF ↓</a>
-      <a href="index.html" class="dim-link">← portfolio</a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Guides</a>
+      <a href="assets/llm-eval-checklist.pdf" class="site-nav-link" download data-evt="checklist-pdf">Download PDF ↓</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
     </div>
   </nav>
 
@@ -202,5 +209,6 @@ document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=Strin
   score();
 })();
 </script>
+<script defer src="assets/nav.js"></script>
 </body>
 </html>
