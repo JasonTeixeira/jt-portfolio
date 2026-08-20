@@ -222,37 +222,47 @@ export default async function handler(req, res) {
   const isScope = body.mode === 'scope';
 
   try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 20_000);
-    const r = await fetch(`${base.replace(/\/$/, '')}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`,
-        // OpenRouter niceties; ignored by other providers.
-        'HTTP-Referer': 'https://agency.sageideas.dev',
-        'X-Title': 'Sage Ideas demo receptionist',
-      },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: 'system', content: persona }, ...(isScope ? scopeModelMessages(messages) : messages)],
-        max_tokens: MAX_OUT[body.mode] || 160,
-        // Scope mode is a structured, price-safe discovery flow: lower
-        // temperature for consistency, and ask the provider's JSON mode for
-        // a parseable turn.
-        temperature: isScope ? 0.4 : 0.6,
-        ...(isScope ? { response_format: { type: 'json_object' } } : {}),
-      }),
-      signal: ctrl.signal,
+    const reqBody = JSON.stringify({
+      model,
+      messages: [{ role: 'system', content: persona }, ...(isScope ? scopeModelMessages(messages) : messages)],
+      max_tokens: MAX_OUT[body.mode] || 160,
+      // Scope mode is a structured, price-safe discovery flow: lower
+      // temperature for consistency, and ask the provider's JSON mode for
+      // a parseable turn.
+      temperature: isScope ? 0.4 : 0.6,
+      ...(isScope ? { response_format: { type: 'json_object' } } : {}),
     });
-    clearTimeout(t);
-
-    if (!r.ok) {
-      console.error('[chat] provider error', r.status, await r.text().catch(() => ''));
-      return res.status(502).json({ ok: false, error: 'provider_error' });
+    // The provider occasionally returns EMPTY content (seen on adversarial
+    // scope turns). Retry once on a blank before surfacing a 502 — the money
+    // surface must not error on a recoverable empty completion.
+    let raw = '';
+    for (let attempt = 0; attempt < 2 && !raw; attempt++) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 20_000);
+      let r;
+      try {
+        r = await fetch(`${base.replace(/\/$/, '')}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${key}`,
+            // OpenRouter niceties; ignored by other providers.
+            'HTTP-Referer': 'https://agency.sageideas.dev',
+            'X-Title': 'Sage Ideas demo receptionist',
+          },
+          body: reqBody,
+          signal: ctrl.signal,
+        });
+      } finally {
+        clearTimeout(t);
+      }
+      if (!r.ok) {
+        console.error('[chat] provider error', r.status, await r.text().catch(() => ''));
+        return res.status(502).json({ ok: false, error: 'provider_error' });
+      }
+      const data = await r.json();
+      raw = (data?.choices?.[0]?.message?.content || '').trim();
     }
-    const data = await r.json();
-    const raw = data?.choices?.[0]?.message?.content?.trim();
     if (!raw) return res.status(502).json({ ok: false, error: 'empty_reply' });
 
     if (!isScope) {
