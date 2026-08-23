@@ -61,6 +61,28 @@
         <div id="scope-primary">
           <div id="scope-questions"></div>
           <div id="scope-chat" class="scope-chat" hidden>
+            <div class="sc-voice-bar">
+              <button type="button" id="scope-voice-toggle" class="sc-voice-toggle-btn" aria-pressed="false" aria-controls="scope-voice-panel">
+                <span class="sc-voice-toggle-ico" aria-hidden="true">&#127908;</span>
+                <span id="scope-voice-toggle-label">Voice mode</span>
+              </button>
+              <p id="scope-voice-fallback-note" class="vr-voice-note" hidden></p>
+            </div>
+            <div id="scope-voice-panel" class="sc-voice-panel" hidden>
+              <div class="vr-topbar">
+                <div id="scope-voice-status" class="vr-status" data-state="idle" role="status" aria-live="polite">
+                  <span class="vr-status-dot" aria-hidden="true"></span>
+                  <span id="scope-voice-status-text">Idle</span>
+                </div>
+                <button type="button" id="scope-voice-mute" class="vr-mute-btn" aria-pressed="false">&#128266; Sound on</button>
+              </div>
+              <div class="vr-controls">
+                <button type="button" id="scope-voice-mic" class="vr-mic-btn" data-listening="false" aria-pressed="false">
+                  <span class="vr-mic-ico" aria-hidden="true">&#127908;</span>
+                  <span id="scope-voice-mic-label">Talk to it</span>
+                </button>
+              </div>
+            </div>
             <div id="scope-chat-offline" class="scope-chat-offline" role="status" hidden></div>
             <div id="scope-chat-messages" class="scope-chat-messages" role="log" aria-live="polite" aria-label="Conversation with Jason's AI"></div>
             <div id="scope-chat-disqualify" class="scope-disqualify" role="status" aria-label="Fit assessment" hidden></div>
