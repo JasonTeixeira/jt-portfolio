@@ -15,13 +15,151 @@
  *   ['cards', [[title, desc], ...]] grid of small cards
  *   ['proof', [[label, href], ...]] proof-link row
  *   ['cta', headline, sub]          call-to-action band
+ *   ['html', markup]                raw markup — used only for the code-native
+ *                                    SVG diagrams below (authored here, trusted)
  */
+
+/* ── diagrams: code-native inline SVG, rail/station idiom ──
+ * Mirrors the aesthetic already established in assets/scope-studio.mjs's
+ * buildBlueprint(): a horizontal rail, circular stations with halo rings,
+ * mono uppercase labels, thin hairline connectors. No decorative gimmicks,
+ * no fake 3D, no gratuitous animation — static, institutional, legible.
+ * Colors reuse the site's existing phase palette (see scope-studio.mjs
+ * PHASE_COLOR) so these diagrams read as the same system, not a new one.
+ */
+const DIAG = {
+  ink: '#F4F2EF', dim: '#A8A29E', faint: '#8E8882', line: '#211F1C', rail: '#2A2826', bg: '#09090B',
+  green: '#10b981', cyan: '#22d3ee', purple: '#a78bfa', amber: '#F59E0B', periwinkle: '#8FA0FF', rose: '#f43f5e',
+  mono: "'JetBrains Mono',monospace",
+};
+
+function diagramWrap({ label, svg, note }) {
+  return `<figure class="d-diagram" role="group" aria-label="${label}">
+    <figcaption class="d-diagram-cap"><span>Diagram — ${label}</span><span>SVG · code-native</span></figcaption>
+    <div class="d-diagram-body">${svg}</div>
+    ${note ? `<figcaption class="d-diagram-note">${note}</figcaption>` : ''}
+  </figure>`;
+}
+
+/* Diagram 1 — the engagement flow: Audit → Sprint → Build → Operate,
+ * an evidence gate between each stage, stoppable after any stage. */
+function diagramEngagementFlow() {
+  const railY = 96, x = { you: 30, a1: 210, a2: 400, a3: 590, a4: 780, end: 950 };
+  const stages = [
+    { x: x.a1, k: '01', t: 'AUDIT', dur: '~1 week', out: 'Failure mapped + quote', c: DIAG.periwinkle },
+    { x: x.a2, k: '02', t: 'SPRINT', dur: '~2 weeks', out: 'One shipped improvement', c: DIAG.cyan },
+    { x: x.a3, k: '03', t: 'BUILD', dur: '~4–8 weeks', out: 'Full system, owned by you', c: DIAG.purple },
+    { x: x.a4, k: '04', t: 'OPERATE', dur: 'ongoing · optional', out: 'Stays green, compounds', c: DIAG.green },
+  ];
+  const gates = [ (x.a1 + x.a2) / 2, (x.a2 + x.a3) / 2, (x.a3 + x.a4) / 2 ];
+  const stationSvg = stages.map((s) => `
+    <text x="${s.x}" y="${railY - 30}" text-anchor="middle" font-family="${DIAG.mono}" font-size="12.5" font-weight="700" letter-spacing="0.02em" fill="${s.c}">${s.k} · ${s.t}</text>
+    <circle cx="${s.x}" cy="${railY}" r="13" fill="none" stroke="${s.c}" stroke-opacity="0.32"/>
+    <circle cx="${s.x}" cy="${railY}" r="6" fill="${s.c}"/>
+    <text x="${s.x}" y="${railY + 24}" text-anchor="middle" font-family="${DIAG.mono}" font-size="10.5" fill="${DIAG.dim}">${s.dur}</text>
+    <text x="${s.x}" y="${railY + 39}" text-anchor="middle" font-family="${DIAG.mono}" font-size="9.5" fill="${DIAG.faint}">${s.out}</text>`).join('');
+  const gateSvg = gates.map((gx) => `
+    <g transform="translate(${gx},${railY}) rotate(45)"><rect x="-5" y="-5" width="10" height="10" rx="1.5" fill="${DIAG.bg}" stroke="${DIAG.green}" stroke-width="1.3"/></g>
+    <path d="M ${gx - 3},${railY} l 2,2.4 l 4,-5" stroke="${DIAG.green}" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="${gx}" y="${railY - 15}" text-anchor="middle" font-family="${DIAG.mono}" font-size="7.5" letter-spacing="0.08em" fill="${DIAG.green}" opacity="0.85">EVIDENCE</text>`).join('');
+  const stopTicks = [x.a1, x.a2, x.a3].map((sx) => `<line x1="${sx}" y1="${railY + 50}" x2="${sx}" y2="${railY + 64}" stroke="${DIAG.faint}" stroke-width="1.2" stroke-dasharray="2,3"/>`).join('');
+  const svg = `<svg viewBox="0 0 1000 200" style="width:100%;height:auto;min-width:640px;display:block" role="img" aria-labelledby="dg-eng-t dg-eng-d">
+  <title id="dg-eng-t">The engagement flow</title>
+  <desc id="dg-eng-d">Audit, Sprint, Build, and Operate connected on a single rail, with an evidence gate between each stage. You can stop after Audit, Sprint, or Build — everything shipped to that point is yours.</desc>
+  <line x1="${x.you}" y1="${railY}" x2="${x.end}" y2="${railY}" stroke="${DIAG.rail}" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="${x.you}" cy="${railY}" r="6" fill="${DIAG.ink}"/>
+  <text x="${x.you}" y="${railY - 20}" text-anchor="start" font-family="${DIAG.mono}" font-size="10" letter-spacing="0.08em" fill="${DIAG.faint}">YOU</text>
+  ${stationSvg}
+  ${gateSvg}
+  <circle cx="${x.end}" cy="${railY}" r="13" fill="none" stroke="${DIAG.green}" stroke-opacity="0.35"/>
+  <circle cx="${x.end}" cy="${railY}" r="6" fill="${DIAG.green}"/>
+  <text x="${x.end}" y="${railY - 30}" text-anchor="end" font-family="${DIAG.mono}" font-size="11.5" font-weight="700" fill="${DIAG.green}">SHIPPED &amp; OWNED</text>
+  <text x="${x.end}" y="${railY + 24}" text-anchor="end" font-family="${DIAG.mono}" font-size="10" fill="${DIAG.faint}">yours, not mine</text>
+  ${stopTicks}
+  <text x="400" y="${railY + 82}" text-anchor="middle" font-family="${DIAG.mono}" font-size="11" fill="${DIAG.faint}">you can stop after any stage — everything shipped to that point is yours to keep</text>
+</svg>`;
+  return diagramWrap({ label: 'the engagement flow', svg, note: '<b>Audit → Sprint → Build → Operate.</b> Each arrow is an evidence gate, not a handshake — a stage doesn’t count as done until there’s something to point at.' });
+}
+
+/* Diagram 2 — the eval gate: AI output through a probe battery, a CI gate
+ * that only ships green. This is the differentiator diagram. */
+function diagramEvalGate() {
+  const railY = 130;
+  const probes = [
+    { x: 352, y: 72, t: 'Correctness' }, { x: 352, y: 188, t: 'Safety' },
+    { x: 404, y: 38, t: 'Hallucination' }, { x: 404, y: 222, t: 'Regression' },
+  ];
+  const probeSvg = probes.map((p) => `
+    <line x1="300" y1="${railY}" x2="${p.x}" y2="${p.y}" stroke="${DIAG.faint}" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="${p.x}" cy="${p.y}" r="8" fill="none" stroke="${DIAG.faint}" stroke-opacity="0.25"/>
+    <circle cx="${p.x}" cy="${p.y}" r="4" fill="${DIAG.faint}"/>
+    <text x="${p.x + 12}" y="${p.y + 4}" text-anchor="start" font-family="${DIAG.mono}" font-size="10.5" fill="${DIAG.dim}">${p.t}</text>`).join('');
+  const svg = `<svg viewBox="0 0 980 258" style="width:100%;height:auto;min-width:640px;display:block" role="img" aria-labelledby="dg-gate-t dg-gate-d">
+  <title id="dg-gate-t">The eval gate</title>
+  <desc id="dg-gate-d">AI output runs through an eval battery — correctness, safety, hallucination, and regression checks — into a CI quality gate. Green ships. Red is blocked and sent back to fix and re-run. Nothing ships on a hunch.</desc>
+  <defs>
+    <marker id="dg-arr-ship" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${DIAG.green}"/></marker>
+    <marker id="dg-arr-block" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${DIAG.rose}"/></marker>
+  </defs>
+  <line x1="40" y1="${railY}" x2="672" y2="${railY}" stroke="${DIAG.rail}" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="40" cy="${railY}" r="6" fill="${DIAG.ink}"/>
+  <text x="40" y="${railY - 30}" text-anchor="start" font-family="${DIAG.mono}" font-size="12" font-weight="700" fill="${DIAG.ink}">AI OUTPUT</text>
+  <text x="40" y="${railY + 22}" text-anchor="start" font-family="${DIAG.mono}" font-size="10" fill="${DIAG.faint}">raw, unproven</text>
+  <circle cx="300" cy="${railY}" r="13" fill="none" stroke="${DIAG.faint}" stroke-opacity="0.3"/>
+  <circle cx="300" cy="${railY}" r="6" fill="${DIAG.ink}"/>
+  <text x="300" y="${railY - 30}" text-anchor="middle" font-family="${DIAG.mono}" font-size="12" font-weight="700" fill="${DIAG.ink}">EVAL BATTERY</text>
+  ${probeSvg}
+  <text x="620" y="${railY - 52}" text-anchor="middle" font-family="${DIAG.mono}" font-size="10" letter-spacing="0.08em" fill="${DIAG.purple}">CI QUALITY GATE</text>
+  <polygon points="620,78 672,130 620,182 568,130" fill="${DIAG.bg}" stroke="${DIAG.purple}" stroke-width="1.8"/>
+  <text x="620" y="${railY + 5}" text-anchor="middle" font-family="${DIAG.mono}" font-size="13" font-weight="700" fill="${DIAG.purple}">GATE</text>
+  <path d="M672,130 L884,74" stroke="${DIAG.green}" stroke-width="1.8" fill="none" marker-end="url(#dg-arr-ship)"/>
+  <path d="M672,130 L884,186" stroke="${DIAG.rose}" stroke-width="1.8" fill="none" marker-end="url(#dg-arr-block)"/>
+  <circle cx="900" cy="70" r="12" fill="none" stroke="${DIAG.green}" stroke-opacity="0.35"/>
+  <circle cx="900" cy="70" r="6" fill="${DIAG.green}"/>
+  <text x="900" y="48" text-anchor="middle" font-family="${DIAG.mono}" font-size="13" font-weight="700" fill="${DIAG.green}">SHIP</text>
+  <text x="900" y="90" text-anchor="middle" font-family="${DIAG.mono}" font-size="10" fill="${DIAG.faint}">green → deploy</text>
+  <circle cx="900" cy="190" r="12" fill="none" stroke="${DIAG.rose}" stroke-opacity="0.35"/>
+  <circle cx="900" cy="190" r="6" fill="${DIAG.rose}"/>
+  <text x="900" y="168" text-anchor="middle" font-family="${DIAG.mono}" font-size="13" font-weight="700" fill="${DIAG.rose}">BLOCKED</text>
+  <text x="900" y="212" text-anchor="middle" font-family="${DIAG.mono}" font-size="10" fill="${DIAG.faint}">red → fix &amp; re-run</text>
+</svg>`;
+  return diagramWrap({ label: 'the eval gate', svg, note: '<b>This is the differentiator.</b> Anyone can ship an AI feature. The gate is what proves it still works after the next prompt change — and it ships only when every check is green.' });
+}
+
+/* Diagram 3 — this site's own funnel, the same disciplined pipeline in miniature. */
+function diagramFunnel() {
+  const railY = 68;
+  const nodes = [
+    { x: 50, t: 'VISITOR', s: 'lands on the site', c: DIAG.ink, halo: false },
+    { x: 226, t: 'SCOPE', s: 'quick Q’s + AI chat', c: DIAG.cyan, halo: true },
+    { x: 402, t: 'PLAN', s: 'priced, rate-card', c: DIAG.periwinkle, halo: true },
+    { x: 578, t: 'PROPOSAL', s: 'human-approved', c: DIAG.purple, halo: true },
+    { x: 754, t: 'DEPOSIT', s: 'fixed-scope start', c: DIAG.amber, halo: true },
+    { x: 930, t: 'BUILD', s: 'milestone-based', c: DIAG.green, halo: true },
+  ];
+  const nodeSvg = nodes.map((n) => `
+    ${n.halo ? `<circle cx="${n.x}" cy="${railY}" r="10" fill="none" stroke="${n.c}" stroke-opacity="0.32"/>` : ''}
+    <circle cx="${n.x}" cy="${railY}" r="5" fill="${n.c}"/>
+    <text x="${n.x}" y="${railY - 16}" text-anchor="middle" font-family="${DIAG.mono}" font-size="11" font-weight="700" fill="${n.c}">${n.t}</text>
+    <text x="${n.x}" y="${railY + 20}" text-anchor="middle" font-family="${DIAG.mono}" font-size="9.5" fill="${DIAG.faint}">${n.s}</text>`).join('');
+  const svg = `<svg viewBox="0 0 1000 115" style="width:100%;height:auto;min-width:600px;display:block" role="img" aria-labelledby="dg-fun-t dg-fun-d">
+  <title id="dg-fun-t">This site's funnel</title>
+  <desc id="dg-fun-d">Visitor to Scope to Plan (priced) to Proposal (human-approved) to Deposit to Build, on a single rail — the same disciplined pipeline as a real engagement, compressed into the site you're using right now.</desc>
+  <line x1="50" y1="${railY}" x2="930" y2="${railY}" stroke="${DIAG.rail}" stroke-width="1.4" stroke-linecap="round"/>
+  ${nodeSvg}
+</svg>`;
+  return diagramWrap({ label: 'this site’s funnel', svg, note: 'The same pipeline, compressed: nothing here skips a step, and nothing here invents a number.' });
+}
+
+export const DIAGRAM_ENGAGEMENT_FLOW = diagramEngagementFlow();
+export const DIAGRAM_EVAL_GATE = diagramEvalGate();
+export const DIAGRAM_FUNNEL = diagramFunnel();
 
 // Sidebar structure. Internal pages reference a slug in PAGES; external items
 // (the animated deep-dive guides) link out with their own chrome.
 export const NAV = [
   { cat: 'Getting started', items: [
-    { slug: 'overview' }, { slug: 'start-here' }, { slug: 'how-engagements-work' },
+    { slug: 'overview' }, { slug: 'start-here' }, { slug: 'how-engagements-work' }, { slug: 'how-this-site-works' },
   ]},
   { cat: 'What I build', items: [
     { slug: 'ai-engineering' }, { slug: 'evaluation-and-quality' }, { slug: 'test-automation' },
@@ -110,6 +248,35 @@ export const PAGES = {
       ]],
       ['note', 'There is no fixed price list — scope varies too much for one to be honest. Every engagement is scoped and quoted after a short call, so you pay for your problem, not a package. See <a href="docs-pricing.html">Pricing</a>.'],
       ['cta', 'Scope your path', 'Book a call and we’ll figure out which stage you actually need.'],
+    ],
+  },
+
+  'how-this-site-works': {
+    title: 'How this site works',
+    cat: 'Getting started',
+    desc: 'What the interactive tools on this site actually do — Scope Studio’s priced plan, the AI associate, the proposal and deposit flow — and why the pipeline you’re standing in is the same one behind a real engagement.',
+    lead: 'This site isn’t a brochure. The tools on it are working software I built, and they’re the kind of thing I build for clients. Here’s what each one does.',
+    blocks: [
+      ['h', 'How I work, in one pipeline'],
+      ['p', 'Every engagement — including the one you’re scoping right now, if you’re on this page because of Scope Studio — runs the same four stages, in order, with something to point at between each one:'],
+      ['html', DIAGRAM_ENGAGEMENT_FLOW],
+      ['h', 'The eval gate — why the plan is trustworthy'],
+      ['p', 'The plan and price you get from this site aren’t a guess, and they’re not an AI improvising a number. They’re built the same way I build for clients: real logic behind the output, and — anywhere AI touches something you’ll act on — a gate that only ships what passes.'],
+      ['html', DIAGRAM_EVAL_GATE],
+      ['h', 'Scope Studio'],
+      ['p', '<a href="build.html">Build your plan</a> starts with a handful of quick questions, or a conversation with the AI if that’s faster. Either way, the plan you get back is <b>computed, not generated</b>: every line item comes from a fixed rate card, and the AI’s job is to route your answers into the right line items — never to invent a number. The total is an indicative range, itemized by phase, in the same Audit → Sprint → Build → Operate shape as the diagram above.'],
+      ['p', 'Email it to yourself and the same plan lands in your inbox — plus a follow-up from me, because I read every plan Scope Studio produces. No signup, no call required just to see it.'],
+      ['h', 'The AI associate'],
+      ['p', 'Atlas, the chat in the corner of every page, applies the same idea to conversation: grounded in what I actually build and what this site actually says, not a general-purpose chatbot free-associating about my career. Ask it something, or use the mic and talk instead of typing.'],
+      ['p', 'It’s tested the way I test a client’s AI: adversarially. I ran it through the same class of red-team battery I’d run for you — price-leak attempts, jailbreaks, scope creep — and published the results plainly, pass/fail, on <a href="ai-under-test.html">I red-team my own AI</a>. Ask it directly whether it’s AI and it’ll tell you the truth; pretending otherwise is the kind of thing that costs trust in one exchange, and I’m not interested in that trade.'],
+      ['p', 'Want the receptionist version of the same idea, wired for a real business instead of a portfolio? The <a href="front-desk.html">AI front desk demo</a> answers, qualifies, and books as a live voice agent.'],
+      ['h', 'After you scope: the proposal + deposit flow'],
+      ['p', 'Scope Studio’s number is real, but it’s a range, not the final word. What happens next mirrors the real engagement exactly: I turn the scope into a firm, itemized proposal and review it myself before it goes out — nothing auto-sends. You accept it and pay a deposit to start; the deposit reserves the work and is credited to the total, and the remaining balance is invoiced on delivery.'],
+      ['p', 'It’s fixed-scope: what’s itemized is what gets built, and anything new is quoted separately before it starts — never added quietly. That’s the same guarantee documented in <a href="docs-how-engagements-work.html">How engagements work</a>, just compressed into what you’ve been doing on this site:'],
+      ['html', DIAGRAM_FUNNEL],
+      ['h', 'Follow-up'],
+      ['p', 'If you email yourself a plan or ask Atlas something real, I follow up personally — not a drip sequence pretending to be me. You can unsubscribe from any follow-up email at any time, no friction attached.'],
+      ['cta', 'See it end to end', 'Scope a plan, talk to Atlas, or book a call — the tools are real, and so is what happens next.'],
     ],
   },
 
@@ -393,6 +560,7 @@ export const PAGES = {
       ['h', 'Live & interactive'],
       ['proof', [
         ['The live eval (grades an AI in real time)', 'eval.html'],
+        ['I red-team my own AI (10/10 probes, static results)', 'ai-under-test.html'],
         ['Live demos (AI receptionist, voice, pipeline)', 'demos.html'],
         ['Sample eval report', 'sample.html'],
         ['ROI calculator', 'roi.html'],
