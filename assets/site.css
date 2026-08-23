@@ -683,6 +683,35 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 .vr-voice-note[hidden] { display:none; }
 .vr-honesty { margin-top:16px; font-size:12px; line-height:1.6; color:#8E8882; max-width:64ch; }
 
+/* ═══ Scope Studio voice mode (build.html + assets/scope-chat.mjs) ═══ */
+/* reuses .vr-status / .vr-mute-btn / .vr-controls / .vr-mic-btn / .vr-voice-note above */
+.sc-voice-bar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.sc-voice-toggle-btn {
+  display:inline-flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace; font-size:11.5px;
+  letter-spacing:.03em; color:#A8A29E; background:#0C0C0E; border:1px solid #2A2826; border-radius:999px;
+  padding:8px 15px; cursor:pointer; transition:color .15s,border-color .15s,background .2s,box-shadow .2s;
+}
+.sc-voice-toggle-btn:hover { color:#F4F2EF; border-color:#8E8882; }
+.sc-voice-toggle-btn:focus-visible { outline:2px solid #22d3ee; outline-offset:2px; }
+.sc-voice-toggle-btn[aria-pressed="true"] {
+  color:#052e22; background:linear-gradient(135deg,#10b981,#0ea5b7); border-color:transparent; font-weight:600;
+  box-shadow:0 8px 22px -12px rgba(16,185,129,0.6);
+}
+.sc-voice-toggle-btn[hidden] { display:none; }
+.sc-voice-toggle-ico { font-size:14px; line-height:1; }
+
+.sc-voice-panel { margin-bottom:14px; animation:jt-fadeup .3s ease-out both; }
+.sc-voice-panel[hidden] { display:none; }
+
+/* premium listening ring — transform/opacity only, layered on top of .vr-mic-btn's own pulse */
+#scope-voice-mic { position:relative; }
+#scope-voice-mic::after {
+  content:""; position:absolute; inset:-6px; border-radius:999px; border:1px solid rgba(34,211,238,0.5);
+  opacity:0; transform:scale(1); pointer-events:none;
+}
+#scope-voice-mic[data-listening="true"]::after { animation:sc-mic-ring 1.6s ease-out infinite; }
+@keyframes sc-mic-ring { 0% { opacity:.65; transform:scale(1); } 100% { opacity:0; transform:scale(1.4); } }
+
 /* ═══════════════ P2 — risk-reversal + capacity (shared component, every page) ═══════════════ */
 /* ─── guarantee / risk-reversal block — reused near every primary CTA ─── */
 .jt-guarantee {

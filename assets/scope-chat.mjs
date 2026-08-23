@@ -9,6 +9,13 @@
 // the conversation is remembered locally (best-effort) so a same-day return visit
 // can resume where it left off. All dynamic text stays textContent-only — never
 // innerHTML — even while revealing.
+//
+// Voice mode (additive, opt-in via a toggle): browser-native Web Speech API only,
+// same pattern as assets/voice-receptionist.mjs. Tap-to-talk STT feeds transcripts
+// into the SAME send() path below — every grounding/degrade/qualification/handoff
+// guarantee applies unchanged, voice is just another input device. TTS speaks the
+// server's already price-safe `reply` string verbatim, nothing else. Feature-detects
+// and degrades calmly at every step; never throws.
 
 import { computePlan } from './scope-core.mjs';
 
@@ -18,8 +25,14 @@ const OFFLINE_MSG = "The AI's offline right now. Use the quick questions instead
 const NARRATION = "I've sketched a plan for you on the right. Tweak it or keep going.";
 const HANDOFF_COPY = "Want me to send this plan to your inbox? Jason reads every one, and he'll follow up himself.";
 const RESUME_COPY = 'Picking up where we left off.';
+const VOICE_HANDOFF_PROMPT = 'Want me to send this to your inbox?';
+const VOICE_UNSUPPORTED_NOTE = 'Voice works best in Chrome; type here otherwise.';
+const VOICE_DENIED_NOTE = 'Mic access is blocked — type here instead.';
 
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+const synth = window.speechSynthesis || null;
+const canSpeak = !!(synth && window.SpeechSynthesisUtterance);
 
 // per-word typewriter cadence — deterministic, not random, so it never flakes
 const REVEAL_BASE_MS = 34;
@@ -94,6 +107,17 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
   const handoffStatus = document.getElementById('sc-handoff-status');
   const handoffCopy = handoffEl && handoffEl.querySelector('.sc-handoff-copy');
 
+  // voice mode DOM (all optional — feature/DOM absence degrades to text-only, never throws)
+  const voiceToggleBtn = document.getElementById('scope-voice-toggle');
+  const voiceToggleLabelEl = document.getElementById('scope-voice-toggle-label');
+  const voiceFallbackNoteEl = document.getElementById('scope-voice-fallback-note');
+  const voicePanelEl = document.getElementById('scope-voice-panel');
+  const voiceStatusEl = document.getElementById('scope-voice-status');
+  const voiceStatusTextEl = document.getElementById('scope-voice-status-text');
+  const voiceMuteBtn = document.getElementById('scope-voice-mute');
+  const voiceMicBtn = document.getElementById('scope-voice-mic');
+  const voiceMicLabelEl = document.getElementById('scope-voice-mic-label');
+
   let hist = [];
   let opened = false;
   let notConfigured = false; // permanent offline — 501 only
@@ -104,6 +128,11 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
   let lastQualification = null; // persisted so a returning strong-fit visitor keeps the handoff CTA
   let lastDone = false;
   let typingEl = null;
+  let voiceMode = false;
+  let voiceMuted = false;
+  let listening = false;
+  let recognition = null;
+  let chosenVoice = null;
 
   function setMode(mode) {
     const chat = mode === 'chat';
@@ -291,7 +320,140 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     revealBotBubble(GREETING);
     hist.push({ role: 'assistant', content: GREETING });
   }
-  function setBusy(busy) { if (inputEl) inputEl.disabled = busy; if (sendBtn) sendBtn.disabled = busy; }
+  function setBusy(busy) {
+    if (inputEl) inputEl.disabled = busy;
+    if (sendBtn) sendBtn.disabled = busy;
+    if (voiceMicBtn) voiceMicBtn.disabled = busy || listening;
+  }
+
+  // ── voice mode: state indicator (idle / listening / thinking / speaking) ──
+  function setVoiceState(state, label) {
+    if (voiceStatusEl) voiceStatusEl.dataset.state = state;
+    if (voiceStatusTextEl) voiceStatusTextEl.textContent = label;
+  }
+
+  // ── voice mode: speech synthesis (TTS) — speaks the server's reply verbatim ──
+  function pickVoice() {
+    if (!canSpeak || chosenVoice) return chosenVoice;
+    const voices = synth.getVoices();
+    if (!voices.length) return null;
+    chosenVoice =
+      voices.find((v) => /en-US/i.test(v.lang) && /Google|Natural|Samantha|Aria/i.test(v.name)) ||
+      voices.find((v) => /^en/i.test(v.lang) && v.default) ||
+      voices.find((v) => /^en/i.test(v.lang)) ||
+      voices[0];
+    return chosenVoice;
+  }
+  if (canSpeak && typeof synth.addEventListener === 'function') {
+    synth.addEventListener('voiceschanged', () => pickVoice());
+  }
+  function speak(text) {
+    return new Promise((resolve) => {
+      if (!canSpeak || voiceMuted || !text) { resolve(); return; }
+      try {
+        synth.cancel(); // never let two turns overlap
+        const utter = new window.SpeechSynthesisUtterance(text);
+        const voice = pickVoice();
+        if (voice) utter.voice = voice;
+        utter.rate = 1;
+        utter.pitch = 1;
+        utter.onend = () => resolve();
+        utter.onerror = () => resolve(); // never throw to the console over a TTS glitch
+        setVoiceState('speaking', 'Speaking');
+        synth.speak(utter);
+      } catch { resolve(); }
+    });
+  }
+
+  // ── voice mode: mute control ──
+  function setVoiceMuted(next) {
+    voiceMuted = next;
+    if (voiceMuteBtn) {
+      voiceMuteBtn.setAttribute('aria-pressed', String(voiceMuted));
+      voiceMuteBtn.textContent = voiceMuted ? '🔇 Sound off' : '🔊 Sound on';
+    }
+    if (voiceMuted && canSpeak) { try { synth.cancel(); } catch { /* best-effort */ } }
+  }
+  if (voiceMuteBtn) {
+    if (!canSpeak) voiceMuteBtn.hidden = true;
+    else voiceMuteBtn.addEventListener('click', () => setVoiceMuted(!voiceMuted));
+  }
+
+  // ── voice mode: enter/exit — text chat stays fully usable throughout ──
+  function setVoiceMode(on) {
+    voiceMode = on;
+    if (voiceToggleBtn) voiceToggleBtn.setAttribute('aria-pressed', String(on));
+    if (voiceToggleLabelEl) voiceToggleLabelEl.textContent = on ? 'Voice mode on' : 'Voice mode';
+    if (voicePanelEl) voicePanelEl.hidden = !on;
+    if (!on) {
+      if (listening && recognition) { try { recognition.stop(); } catch { /* best-effort */ } }
+      if (canSpeak) { try { synth.cancel(); } catch { /* best-effort */ } }
+      setVoiceState('idle', 'Idle');
+    } else {
+      setVoiceState('idle', 'Idle');
+      if (voiceMicBtn) { try { voiceMicBtn.focus(); } catch { /* jsdom / detached */ } }
+    }
+  }
+
+  // permanently falls back to text-only: unsupported STT, or a denied mic mid-session
+  function disableVoiceEntirely(message) {
+    setVoiceMode(false);
+    if (voiceToggleBtn) voiceToggleBtn.hidden = true;
+    if (voiceFallbackNoteEl) { voiceFallbackNoteEl.hidden = false; voiceFallbackNoteEl.textContent = message; }
+  }
+
+  if (!SpeechRecognitionCtor) {
+    disableVoiceEntirely(VOICE_UNSUPPORTED_NOTE);
+  } else if (voiceToggleBtn && voiceMicBtn) {
+    voiceToggleBtn.addEventListener('click', () => setVoiceMode(!voiceMode));
+
+    function stopListening() {
+      listening = false;
+      if (voiceMicBtn) { voiceMicBtn.dataset.listening = 'false'; voiceMicBtn.setAttribute('aria-pressed', 'false'); }
+      if (voiceMicLabelEl) voiceMicLabelEl.textContent = 'Talk to it';
+      if (!inputEl || !inputEl.disabled) setBusy(false);
+      if (voiceStatusEl && voiceStatusEl.dataset.state === 'listening') setVoiceState('idle', 'Idle');
+    }
+
+    function startListening() {
+      try { recognition = new SpeechRecognitionCtor(); }
+      catch { disableVoiceEntirely(VOICE_UNSUPPORTED_NOTE); return; }
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        listening = true;
+        if (voiceMicBtn) { voiceMicBtn.dataset.listening = 'true'; voiceMicBtn.setAttribute('aria-pressed', 'true'); }
+        if (voiceMicLabelEl) voiceMicLabelEl.textContent = 'Listening… tap to stop';
+        setVoiceState('listening', 'Listening');
+      };
+      recognition.onresult = (event) => {
+        const transcript = event.results && event.results[0] && event.results[0][0] ? event.results[0][0].transcript : '';
+        stopListening();
+        if (transcript) send(transcript);
+      };
+      recognition.onerror = (event) => {
+        stopListening();
+        if (event && (event.error === 'not-allowed' || event.error === 'service-not-allowed')) {
+          disableVoiceEntirely(VOICE_DENIED_NOTE);
+          return;
+        }
+        if (event && event.error === 'no-speech') return; // quiet — just reset, no scary note
+        note("Didn't catch that — try again, or type instead.");
+      };
+      recognition.onend = () => { if (listening) stopListening(); };
+
+      try { recognition.start(); } catch { stopListening(); }
+    }
+
+    voiceMicBtn.addEventListener('click', () => {
+      if (listening && recognition) { try { recognition.stop(); } catch { /* best-effort */ } return; }
+      if (canSpeak) { try { synth.cancel(); } catch { /* best-effort */ } } // stop the AI talking before we listen, to avoid it hearing itself
+      startListening();
+    });
+  }
 
   function applySelection(selection, segment) {
     if (!Array.isArray(selection) || !selection.length) return;
@@ -344,6 +506,11 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     if (handoffCopy) handoffCopy.textContent = HANDOFF_COPY;
     handoffEl.hidden = false;
     try { handoffEl.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'nearest' }); } catch { /* jsdom */ }
+    // voice mode: a short spoken nudge alongside the on-screen handoff card (the
+    // email field itself stays typed-only, for accuracy — see module header)
+    if (voiceMode && canSpeak && !voiceMuted) {
+      speak(VOICE_HANDOFF_PROMPT).then(() => { if (voiceMode) setVoiceState('idle', 'Idle'); });
+    }
   }
   async function submitPlan(email) {
     const e = (email || '').trim();
@@ -399,22 +566,38 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     hist.push({ role: 'user', content: v });
     saveMemory(hist, lastKeys, lastSegment, lastQualification, lastDone);
     if (inputEl) inputEl.value = '';
-    if (notConfigured) { showOffline(); return; }
+    if (notConfigured) { showOffline(); if (voiceMode) setVoiceState('idle', 'Idle'); return; }
 
     setBusy(true); showTyping();
+    if (voiceMode) setVoiceState('thinking', 'Thinking');
     const result = await requestTurn();
 
-    if (result.status === 501) { hideTyping(); setBusy(false); notConfigured = true; showOffline(); return; }
-    if (result.status === 429) { hideTyping(); setBusy(false); note("I'm getting a lot of questions right now. Give it a second and try again."); return; }
+    if (result.status === 501) {
+      hideTyping(); setBusy(false); notConfigured = true; showOffline();
+      if (voiceMode) setVoiceState('idle', 'Idle');
+      return;
+    }
+    if (result.status === 429) {
+      hideTyping(); setBusy(false); note("I'm getting a lot of questions right now. Give it a second and try again.");
+      if (voiceMode) setVoiceState('idle', 'Idle');
+      return;
+    }
     const data = result.data;
     if (!data || !data.ok || typeof data.reply !== 'string' || !data.reply) {
       hideTyping(); setBusy(false);
       note("That didn't go through. Try again?");
+      if (voiceMode) setVoiceState('idle', 'Idle');
       return;
     }
-    // input stays disabled through the reveal — a second send can't land mid-turn
-    await revealBotBubble(data.reply);
+    // input stays disabled through the reveal — a second send can't land mid-turn.
+    // In voice mode the reply is spoken in parallel with the typewriter reveal —
+    // it's the exact same server string either way, never anything price-bearing
+    // the server didn't already send.
+    const revealPromise = revealBotBubble(data.reply);
+    const speakPromise = voiceMode ? speak(data.reply) : Promise.resolve();
+    await Promise.all([revealPromise, speakPromise]);
     setBusy(false);
+    if (voiceMode) setVoiceState('idle', 'Idle');
     if (inputEl) { try { inputEl.focus(); } catch { /* jsdom / detached */ } }
     hist.push({ role: 'assistant', content: data.reply });
     applySelection(data.selection, data.segment);
