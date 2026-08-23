@@ -31,6 +31,7 @@ function renderBlock(b) {
   if (t === 'proof') return `<div class="d-proof">${b[1].map(([lbl, h]) => `<a href="${h}" class="d-plink"${h.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${esc(lbl)} <span>→</span></a>`).join('')}</div>`;
   if (t === 'code') return `<figure class="d-codewrap"><figcaption class="d-codecap"><span>${esc(b[1] || 'code')}</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="${esc(b[1] || 'code')} code sample"><code>${escCode(b[2])}</code></pre></figure>`;
   if (t === 'cta') return `<div class="d-cta"><div><div class="d-cta-h">${esc(b[1] || 'Ready to start?')}</div><div class="d-cta-s">${esc(b[2] || '')}</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-cta">Book a call →</a></div>`;
+  if (t === 'html') return b[1]; // raw markup (e.g. a code-native diagram figure) — trusted, authored in docs.data.mjs
   return '';
 }
 
@@ -159,6 +160,14 @@ ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script
   .d-help { margin-top:26px; font-family:var(--mono); font-size:11px; color:var(--faint); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
   .d-help a { color:var(--cyan); }
   .d-foot { max-width:70ch; margin-top:30px; font-family:var(--mono); font-size:11px; color:var(--faint); }
+
+  /* code-native inline-SVG diagrams */
+  .d-diagram { margin:26px 0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#0B0B0D; max-width:none; }
+  .d-diagram-cap { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); background:#0E0E11; }
+  .d-diagram-body { padding:22px clamp(10px,3vw,26px); overflow-x:auto; }
+  .d-diagram-body svg { display:block; }
+  .d-diagram-note { padding:11px 16px 15px; border-top:1px solid var(--line); font-family:var(--mono); font-size:11px; line-height:1.6; color:var(--faint); }
+  .d-diagram-note b { color:var(--dim); font-weight:600; }
 
   /* right-rail on-this-page */
   .d-rail { position:sticky; top:48px; align-self:start; height:calc(100vh - 48px); overflow-y:auto; padding:34px 18px 40px 4px; }
