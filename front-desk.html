@@ -147,6 +147,43 @@
     <div class="always-on"><span class="dot"></span>Runs 24/7 &mdash; nights, weekends, while you're on a job</div>
   </div></section>
 
+  <!-- TRY IT YOURSELF -->
+  <section id="try-it"><div class="wrap">
+    <div class="kick" style="color:var(--green)">try it yourself</div>
+    <h2 style="margin-top:12px">Talk to the receptionist. Right now.</h2>
+    <p class="subtle lead" style="margin-top:14px">This is the real AI, live, answering as the front desk for a demo business called Sage Plumbing. Say you&rsquo;ve got a leak, or ask it a question &mdash; out loud or typed.</p>
+
+    <div id="vr-demo" class="scope-chat" style="margin-top:26px">
+      <div class="vr-topbar">
+        <div id="vr-status" class="vr-status" data-state="idle" role="status" aria-live="polite">
+          <span class="vr-status-dot" aria-hidden="true"></span>
+          <span id="vr-status-text">Idle</span>
+        </div>
+        <button type="button" id="vr-mute" class="vr-mute-btn" aria-pressed="false">🔊 Sound on</button>
+      </div>
+
+      <div id="vr-offline" class="scope-chat-offline" role="status" hidden></div>
+
+      <div id="vr-messages" class="scope-chat-messages" role="log" aria-live="polite" aria-label="Conversation with the AI receptionist"></div>
+
+      <div class="vr-controls">
+        <button type="button" id="vr-mic" class="vr-mic-btn" data-listening="false" aria-pressed="false">
+          <span class="vr-mic-ico" aria-hidden="true">🎙</span>
+          <span id="vr-mic-label">Talk to it</span>
+        </button>
+        <p id="vr-voice-note" class="vr-voice-note" hidden></p>
+      </div>
+
+      <form id="vr-form" class="scope-chat-form">
+        <label for="vr-input" class="sr-only">Or type a message to the receptionist</label>
+        <input id="vr-input" type="text" placeholder="or type instead&hellip;" autocomplete="off">
+        <button id="vr-send" type="submit" class="btn-solid green">Send</button>
+      </form>
+    </div>
+
+    <p class="vr-honesty">This is a demo receptionist on a sample business. Your production version wires into your real phone line, calendar, and CRM.</p>
+  </div></section>
+
   <!-- WHAT YOU GET -->
   <section><div class="wrap">
     <div class="kick" style="color:var(--green)">what you get</div>
@@ -234,5 +271,6 @@
 
 <script defer src="assets/agent.js"></script>
 <script defer src="assets/nav.js"></script>
+<script type="module" src="assets/voice-receptionist.mjs"></script>
 </body>
 </html>
