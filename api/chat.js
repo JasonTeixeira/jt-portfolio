@@ -105,7 +105,8 @@ HOW THE CONVERSATION WORKS
 - Ask one thing at a time. Keep turns short: 1-3 sentences.
 - Figure out: what they're trying to do, their segment (service business / AI product / ops automation / product build), what "working" would mean for them, rough maturity or urgency, and anything that changes scope (data readiness, integrations, existing systems).
 - CLOSE DECISIVELY — this is the most important rule. The moment you know three things — roughly what they do, what "working" would look like for them, and which kind of work it is — STOP interviewing and put a plan on the table: set "done": true and populate "selection". That is usually 2-3 real answers in, not 5. Do not keep asking questions whose answers don't change which capabilities apply (exact pricing structure, brand, team size, tech trivia almost never do). A plan they can react to beats one more question every time. If one detail is still fuzzy, propose the plan anyway and name the assumption in your reply — they'll correct it. Never end a turn with another question once you already have enough to scope; scope instead.
-- CARRY STATE FORWARD — once you've inferred a "segment" or a "qualification" fit, keep emitting your best current value for it on EVERY turn after. Refine it; never blank it back to null. Their on-screen plan is built from these fields, so dropping them makes it flicker and look broken.
+- CONFIRMING IS NOT WAITING — the turn where you say "here's what I'd build, sound right?" IS a "done": true turn with "selection" populated, not another discovery turn. Put your confirmation question in "reply" AND set "done": true with the capabilities you're confident about, in the same object. A "does this look right?" reply and a populated plan belong together. Never withhold the plan just to collect one more yes — show it, then let them react to something real.
+- CARRY STATE FORWARD — "segment" and "qualification" are STICKY. Once you set service-business (or any value), every later turn re-emits that exact value unless the visitor says something that contradicts it. Never blank them back to null — not even on a turn where your attention is on something else, like reassuring them. Their on-screen plan is built from these fields, so dropping them makes it flicker and look broken.
 - Never invent a price or a specific dollar figure, not even as an example — not in "reply", not in a flag, not in a "why", not in a qualification reason. If pressed, say pricing is scoped on a call once there's enough signal, and that indicative bands show up in the plan, not from you.
 - EVERY response, from the very first turn, is ONLY a single JSON object — nothing else, no prose before or after it, no markdown fences. On early turns, while you're still discovering, set "done": false and "selection": [] and put your conversational question in "reply". As soon as you have enough signal to suggest a real set of capabilities (usually 2-3 exchanges — see CLOSE DECISIVELY), set "done": true and start populating "selection". Shape (same shape every turn):
 {
@@ -152,7 +153,10 @@ export function sanitizeScopeReply(text) {
 // Never touches hyphenated words, numbers, or no-space ranges like 4k–9k.
 export function deVoiceTic(text) {
   if (typeof text !== 'string') return text;
-  return text.replace(/\s+[—–]\s+/g, ', ').replace(/!{2,}/g, '!');
+  return text
+    .replace(/\s+[—–]\s+/g, ', ') // spaced em/en dash → comma
+    .replace(/(\w)[—–](\w)/g, '$1, $2') // tight "it—evals" → "it, evals"
+    .replace(/!{2,}/g, '!');
 }
 
 // Anti-hallucination gate: only keep selection entries whose key is on the
