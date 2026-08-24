@@ -2,6 +2,8 @@ import { isEnabled, createProposal, getProposalByPublicId, updateProposal } from
 import { appendEvent } from '../lib/scope-db.mjs';
 import { sendOperator } from '../lib/notify.mjs';
 import { computePlan } from '../assets/scope-core.mjs';
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { withObserve } from '../lib/observe.mjs';
 import {
   firmCentsFromBand, depositCents, balanceCents, publicId, money,
   isExpired, DEPOSIT_PCT_DEFAULT, TERMS_VERSION, PROPOSAL_STATUS,
@@ -10,7 +12,6 @@ import {
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 const CLIENT_FIELDS = ['public_id', 'status', 'keys', 'segment', 'firm_cents', 'deposit_cents',
   'balance_cents', 'currency', 'scope_note', 'terms_version', 'expires_at', 'paid_at'];
-const hits = new Map();
 
 export function validate(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
@@ -35,13 +36,8 @@ export function serverBand(plan) {
   const p = computePlan(Array.isArray(plan && plan.keys) ? plan.keys : [], (plan && plan.segment) || null);
   return p.totalBand;
 }
-function throttled(req) {
-  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || 'unknown';
-  const now = Date.now(); const arr = (hits.get(ip) || []).filter((t) => now - t < 60000);
-  arr.push(now); hits.set(ip, arr); return arr.length > 20;
-}
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method === 'GET') {
     // GET always answers 200 with a body the client branches on. A private proposal that
     // does not exist is not an HTTP error for the visitor (a stale/invalid link is a normal
@@ -60,7 +56,7 @@ export default async function handler(req, res) {
   }
   if (req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
-  if (throttled(req)) return res.status(429).json({ ok: false, error: 'slow_down' });
+  if (await rateLimited(clientIp(req), 20, 'proposal')) return res.status(429).json({ ok: false, error: 'slow_down' });
   const body = req.body || {};
   const v = validate(body); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
   const plan = body.plan;
@@ -93,3 +89,5 @@ export default async function handler(req, res) {
   } catch {}
   return res.status(200).json({ ok: true, publicId: pid });
 }
+
+export default withObserve('/api/proposal', handler);

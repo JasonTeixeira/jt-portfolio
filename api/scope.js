@@ -16,6 +16,8 @@
  */
 
 import { isEnabled, upsertProspect, appendEvent, insertPlan } from '../lib/scope-db.mjs';
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { withObserve } from '../lib/observe.mjs';
 
 const EVENT_TYPES = new Set(['started', 'questioned', 'plan_built', 'lead_captured', 'handoff_clicked']);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -52,15 +54,6 @@ export function validate(body) {
 // tiny per-instance IP throttle (best-effort; resets on cold start) — same
 // shape as api/chat.js, just a looser cap since this is background telemetry
 // (a single Scope Studio session can legitimately fire several events).
-const hits = new Map();
-function throttled(ip) {
-  const now = Date.now();
-  const win = 60_000;
-  const arr = (hits.get(ip) || []).filter((t) => now - t < win);
-  arr.push(now);
-  hits.set(ip, arr);
-  return arr.length > 40; // >40 scope events/min per IP
-}
 
 function planRow(prospectId, plan, fallbackSegment) {
   const total = Array.isArray(plan.total) ? plan.total
@@ -81,7 +74,7 @@ function planRow(prospectId, plan, fallbackSegment) {
   };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'method not allowed' });
@@ -97,11 +90,8 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
   }
 
-  const ip =
-    (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
-    req.headers['x-real-ip'] ||
-    'unknown';
-  if (throttled(ip)) {
+  const ip = clientIp(req);
+  if (await rateLimited(ip, 40, 'scope')) {
     return res.status(429).json({ ok: false, error: 'slow_down' });
   }
 
@@ -141,3 +131,5 @@ export default async function handler(req, res) {
 
   return res.status(200).json(skipped ? { ok: true, skipped: true } : { ok: true });
 }
+
+export default withObserve('/api/scope', handler);

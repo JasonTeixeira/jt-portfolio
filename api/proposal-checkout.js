@@ -2,13 +2,9 @@ import { isEnabled, getProposalByPublicId, updateProposal } from '../lib/proposa
 import { appendEvent } from '../lib/scope-db.mjs';
 import * as stripe from '../lib/stripe.mjs';
 import { isExpired, PROPOSAL_STATUS } from '../assets/proposal-core.mjs';
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { withObserve } from '../lib/observe.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
-const hits = new Map();
-function throttled(req) {
-  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || 'unknown';
-  const now = Date.now(); const arr = (hits.get(ip) || []).filter((t) => now - t < 60000);
-  arr.push(now); hits.set(ip, arr); return arr.length > 20;
-}
 
 export function validate(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
@@ -19,11 +15,13 @@ export function validate(body) {
   return { ok: true };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   const v = validate(req.body || {}); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
-  if (throttled(req)) return res.status(429).json({ ok: false, error: 'slow_down' });
+  // Gate on config BEFORE spending a rate-limit round trip: when payments are
+  // off there's nothing to protect, so don't burn an Upstash call per request.
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
+  if (await rateLimited(clientIp(req), 20, 'proposal-checkout')) return res.status(429).json({ ok: false, error: 'slow_down' });
   const r = await getProposalByPublicId(req.body.publicId.trim());
   if (!r.ok || !r.data) return res.status(404).json({ ok: false, error: 'not_found' });
   const row = r.data;
@@ -55,3 +53,5 @@ export default async function handler(req, res) {
   appendEvent({ prospect_id: row.prospect_id, type: 'proposal_accepted', meta: { public_id: row.public_id } }).catch(() => {});
   return res.status(200).json({ ok: true, url: sess.url });
 }
+
+export default withObserve('/api/proposal-checkout', handler);

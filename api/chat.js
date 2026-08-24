@@ -1,4 +1,6 @@
 import { RATE_CARD } from '../assets/scope-core.mjs';
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { withObserve, captureError } from '../lib/observe.mjs';
 
 /**
  * /api/chat — Vercel serverless function powering the live demo AI receptionist.
@@ -155,7 +157,7 @@ export function deVoiceTic(text) {
   if (typeof text !== 'string') return text;
   return text
     .replace(/\s+[—–]\s+/g, ', ') // spaced em/en dash → comma
-    .replace(/(\w)[—–](\w)/g, '$1, $2') // tight "it—evals" → "it, evals"
+    .replace(/(\w)—(\w)/g, '$1, $2') // tight em-dash "it—evals" → "it, evals" (leave en-dash ranges like 4k–9k alone)
     .replace(/!{2,}/g, '!');
 }
 
@@ -184,18 +186,7 @@ export function scopeModelMessages(messages) {
   );
 }
 
-// tiny per-instance throttle (best-effort; resets on cold start)
-const hits = new Map();
-function throttled(ip) {
-  const now = Date.now();
-  const win = 60_000;
-  const arr = (hits.get(ip) || []).filter((t) => now - t < win);
-  arr.push(now);
-  hits.set(ip, arr);
-  return arr.length > 20; // >20 msgs/min per IP
-}
-
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'method not allowed' });
@@ -209,11 +200,8 @@ export default async function handler(req, res) {
     return res.status(501).json({ ok: false, error: 'llm_not_configured' });
   }
 
-  const ip =
-    (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
-    req.headers['x-real-ip'] ||
-    'unknown';
-  if (throttled(ip)) {
+  const ip = clientIp(req);
+  if (await rateLimited(ip, 20, 'chat')) {
     return res.status(429).json({ ok: false, error: 'slow_down' });
   }
 
@@ -315,6 +303,9 @@ export default async function handler(req, res) {
     }
   } catch (err) {
     console.error('[chat] error', err instanceof Error ? err.message : err);
+    captureError(err, { route: '/api/chat', kind: 'upstream_failed' });
     return res.status(502).json({ ok: false, error: 'upstream_failed' });
   }
 }
+
+export default withObserve('/api/chat', handler);

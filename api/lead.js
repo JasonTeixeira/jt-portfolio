@@ -22,19 +22,13 @@
  */
 
 import { isEnabled, upsertProspect, appendEvent } from '../lib/scope-db.mjs';
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { withObserve } from '../lib/observe.mjs';
 
 const RESEND = 'https://api.resend.com';
 const REPORT_URL = 'https://agency.sageideas.dev/sample-report.html';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const hits = new Map();
-function throttled(ip) {
-  const now = Date.now();
-  const arr = (hits.get(ip) || []).filter((t) => now - t < 60_000);
-  arr.push(now);
-  hits.set(ip, arr);
-  return arr.length > 10;
-}
 
 async function resend(path, key, body) {
   return fetch(`${RESEND}${path}`, {
@@ -84,7 +78,7 @@ function planSummaryText(plan) {
   return lines.length ? `\n\nScoped plan —\n${lines.join('\n')}` : '';
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'method not allowed' });
@@ -100,8 +94,8 @@ export default async function handler(req, res) {
   const { email, prospectId, plan } = req.body;
   const clean = email.trim();
 
-  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
-  if (throttled(ip)) return res.status(429).json({ ok: false, error: 'slow down' });
+  const ip = clientIp(req);
+  if (await rateLimited(ip, 10, 'lead')) return res.status(429).json({ ok: false, error: 'slow down' });
 
   // Link the lead to its Scope Studio prospect record, if any. Independent of
   // the Resend key below — never allowed to affect the { ok: true } response.
@@ -162,3 +156,5 @@ export default async function handler(req, res) {
 
   return res.status(200).json({ ok: true, report: REPORT_URL });
 }
+
+export default withObserve('/api/lead', handler);
