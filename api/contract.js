@@ -26,7 +26,9 @@ export default async function handler(req, res) {
     if (!row || !VISIBLE_STATUSES.has(row.status)) return res.status(200).json({ ok: false, reason: 'not_found' });
     return res.status(200).json({
       ok: true,
-      contract: { body: row.body, kind: row.kind, status: row.status, caveat: CONTRACT_CAVEAT },
+      // accepted_at is whitelisted alongside status so the client page can render
+      // "Accepted on <date>" on a repeat visit, without leaking name/ip/terms_version.
+      contract: { body: row.body, kind: row.kind, status: row.status, caveat: CONTRACT_CAVEAT, accepted_at: row.accepted_at || null },
     });
   }
   if (req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
