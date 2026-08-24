@@ -355,7 +355,7 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
         const utter = new window.SpeechSynthesisUtterance(text);
         const voice = pickVoice();
         if (voice) utter.voice = voice;
-        utter.rate = 1;
+        utter.rate = 0.95; // a touch measured reads more composed/deliberate aloud
         utter.pitch = 1;
         utter.onend = () => resolve();
         utter.onerror = () => resolve(); // never throw to the console over a TTS glitch
