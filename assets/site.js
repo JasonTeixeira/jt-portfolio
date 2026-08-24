@@ -189,7 +189,7 @@
         { t: 'negative? → email alert', c: '#f43f5e', b: 'rgba(244,63,94,0.35)', arrow: false }
       ],
       sections: [
-        { label: 'Problem', text: 'Customer feedback arrived through a form and sat unread. Negative signals surfaced days late — after the customer was already gone.' },
+        { label: 'Problem', text: 'Customer feedback arrived through a form and sat unread. Negative signals surfaced days late, after the customer was already gone.' },
         { label: 'Why not a chatbot', text: 'Nobody wants to converse with their own feedback queue. The value is deterministic: classify, summarize, route, alert. A chat interface would add latency and remove auditability.' },
         { label: 'Architecture', text: 'Make scenario, four steps end to end — see fig. 1. Each step re-runnable in isolation.' },
         { label: 'Retrieval / memory', text: 'None needed — each message is classified independently. Deliberately avoided: statelessness keeps the pipeline debuggable.' },
@@ -201,7 +201,7 @@
     },
     {
       num: 'BRIEF/02', fig: '08', color: '#10b981', title: 'RAG that cites or shuts up', repo: 'ai-research-dashboard',
-      outcome: '100% of answers cite their source. Not by prompt — by design.',
+      outcome: '100% of answers cite their source. The pipeline has no uncited path.',
       stack: 'FastAPI · pgvector · SQLite/Postgres · Gemini · React',
       flow: [
         { t: 'source', c: '#A8A29E', b: '#2A2826', arrow: true },
@@ -238,7 +238,7 @@
         { label: 'Why not a chatbot', text: 'An "AI QA assistant" that opines on quality is exactly the failure mode. The verdict must be computed by code from command exit codes — an LLM never grades its own homework here.' },
         { label: 'Architecture', text: 'One CLI driving fig. 1: every runner is a plugin (detect → plan → run → collectEvidence); one hung runner can’t stall a run. Two gates: <15ms pre-commit, full-repo merge gate.' },
         { label: 'Retrieval / memory', text: 'Evidence ledger instead of memory: every run’s exact command, exit code, and parsed metric recorded to a proof ledger, re-verifiable offline.' },
-        { label: 'Human approval points', text: 'The autonomous fix loop is bounded — fixes only what the harness can verify, commits on improvement, reverts on regression, stops on an honest stall for human review.' },
+        { label: 'Human approval points', text: 'The autonomous fix loop is bounded. It fixes only what the harness can verify, commits on improvement, reverts on regression, stops on an honest stall for human review.' },
         { label: 'Production safeguards', text: 'Anti-hallucination contract: no score without a backing artifact. Ratcheting coverage floors, honest-skip discipline, ed25519-signed redacted evidence.' },
         { label: 'Measured results', text: '3,759 tests, 91.12% line coverage, 13/13 gates. On 2026-08-15 the CVE gate went honestly red (15 high/critical in deps) and blocked its own release — patched and PROVEN again the same afternoon, both runs published verbatim. One command regenerates the scorecard.' },
         { label: 'LLM-eval coverage', text: 'Ten dedicated AI-safety runners: bias, consistency, hallucination, jailbreak, prompt-injection, refusal, toxicity, PII-leak, cost, latency — the harness I bring to client LLM features.' }
@@ -268,7 +268,7 @@
   ];
 
   var NOTES = [
-    { href: 'notes/eighteen-agent-audit-gauntlet.html', date: '2026·08', color: '#F59E0B', read: '5 min', title: 'Eighteen agents audited a live curriculum. One lesson was teaching a false error.', dek: 'Six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.' },
+    { href: 'notes/eighteen-agent-audit-gauntlet.html', date: '2026·08', color: '#F59E0B', read: '5 min', title: 'Eighteen agents audited a live curriculum. One lesson was teaching a false error.', dek: 'Six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.' },
     { href: 'notes/five-pages-five-agents.html', date: '2026·08', color: '#22d3ee', read: '4 min', title: 'Five pages, five agents, one design file — zero merge conflicts', dek: 'A parallel fleet shipped five production pages in five minutes of wall clock. The speed is the demo; the three rules that made it shippable are the product.' },
     { href: 'notes/gate-blocked-me.html', date: '2026·08', color: '#f43f5e', read: '4 min', title: 'The day my own quality gate blocked me', dek: 'At 11:39 the proof loop refused the PROVEN verdict — 15 CVEs had drifted into prod deps. Green by 14:35. Both runs published verbatim.' },
     { href: 'notes/promptfoo-ci-minimum-gate.html', date: '2026·08', color: '#a78bfa', read: '6 min', title: 'LLM regression testing with Promptfoo in CI: the minimum viable gate', dek: '30 golden traces, one judge, one failing exit code. The smallest setup that stops a bad prompt change — runnable this afternoon.' },

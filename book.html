@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Book a Call — Jason Teixeira · Sage Ideas LLC</title>
-<meta name="description" content="Book a 15-minute call to scope your AI or QA project — no fixed price list; every engagement is scoped and quoted after a short call.">
+<meta name="description" content="Book a 15-minute call to scope your AI or QA project. No fixed price list; every engagement is scoped and quoted after a short call.">
 <link rel="canonical" href="https://agency.sageideas.dev/book.html">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Book a call — Jason Teixeira · Sage Ideas">
-<meta property="og:description" content="Book a 15-minute call to scope your AI or QA project — every engagement scoped and quoted after a short call.">
+<meta property="og:description" content="Book a 15-minute call to scope your AI or QA project. Every engagement scoped and quoted after a short call.">
 <meta property="og:url" content="https://agency.sageideas.dev/book.html">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
@@ -76,7 +76,7 @@
       <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:18px">Book a 15-minute call — live availability</div>
       <!-- TODO(jason): replace YOUR-CAL-USERNAME with your real cal.com link -->
       <div id="cal-embed" data-cal-link="YOUR-CAL-USERNAME/intro" style="min-height:0;border-radius:10px;overflow:hidden"></div>
-      <p id="cal-embed-fallback-note" class="subtle" hidden style="margin:14px 0 0">The live scheduler didn&rsquo;t load. Use the form below and I&rsquo;ll reply within one business day &mdash; or email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> directly.</p>
+      <p id="cal-embed-fallback-note" class="subtle" hidden style="margin:14px 0 0">The live scheduler didn&rsquo;t load. Use the form below and I&rsquo;ll reply within one business day. Or email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> directly.</p>
       <noscript><p class="subtle" style="margin:14px 0 0">Enable JavaScript to see live availability, or use the form below.</p></noscript>
     </div>
   </section>
@@ -85,7 +85,7 @@
   <section class="wrap" id="book-form-section" style="padding-bottom:clamp(32px,5vw,52px)">
     <div class="card">
       <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px">Prefer email? Send a note instead</div>
-      <p class="subtle" style="margin:0 0 18px">No slot works, or you&rsquo;d rather write it out? Fill this in and I reply within one business day &mdash; a human, not a sequence.</p>
+      <p class="subtle" style="margin:0 0 18px">No slot works, or you&rsquo;d rather write it out? Fill this in and I reply within one business day. A real person writes back.</p>
       <form id="book-form" novalidate>
         <div class="grid2">
           <label class="fld"><span>name</span><input type="text" name="name" required autocomplete="name" placeholder="Ada Lovelace"></label>
@@ -107,7 +107,7 @@
           <button type="submit" class="cta">Send it &rarr;</button>
           <span id="book-status" role="status" aria-live="polite" class="mono" style="font-size:11.5px;color:var(--faint)"></span>
         </div>
-        <p class="mono" style="margin:12px 0 0;font-size:11px;color:var(--faint)">I reply within one business day: a human, not a sequence. Or email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a>.</p>
+        <p class="mono" style="margin:12px 0 0;font-size:11px;color:var(--faint)">I reply within one business day, and it's me replying. Or email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a>.</p>
       </form>
     </div>
   </section>
@@ -192,7 +192,7 @@
     statusEl.textContent='sending…';
     fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(f)})
       .then(function(r){
-        if(r.ok){ statusEl.textContent='got it — I reply within a business day.'; form.reset(); }
+        if(r.ok){ statusEl.textContent='got it. I reply within a business day.'; form.reset(); }
         else throw new Error('no api');
       })
       .catch(function(){
