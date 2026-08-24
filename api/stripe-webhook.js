@@ -1,10 +1,24 @@
 import { markPaidIfUnpaid, createProjectOnce, getProposalById } from '../lib/proposal-db.mjs';
+import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs';
 import { appendEvent } from '../lib/scope-db.mjs';
 import { sendOperator, sendClient } from '../lib/notify.mjs';
 import { constructEvent } from '../lib/stripe.mjs';
 import { money } from '../assets/proposal-core.mjs';
 
 export const config = { api: { bodyParser: false } };
+const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
+
+// Best-effort: resolve the project's portal token so the receipt email can link to it.
+// Never throws — a missing/failed lookup just means the email goes out without the line.
+async function portalLinkLine(proposalId) {
+  try {
+    const projGot = await getProjectByProposalId(proposalId);
+    if (!projGot.ok || !projGot.data) return '';
+    const tok = await ensurePortalToken(projGot.data.id);
+    if (!tok.ok || !tok.token) return '';
+    return `\n\nTrack your project here: ${SITE}/portal.html?id=${tok.token}\n`;
+  } catch { return ''; }
+}
 
 export async function collectRaw(stream) {
   const chunks = [];
@@ -45,10 +59,11 @@ export default async function handler(req, res) {
                 text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` });
             } catch {}
             if (row && row.client_email) {
+              const portalLine = await portalLinkLine(proposalId);
               try {
                 await sendClient({ to: row.client_email,
                   subject: 'Deposit received. We\'re starting.',
-                  text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n` });
+                  text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n${portalLine}` });
               } catch {}
             }
           }
