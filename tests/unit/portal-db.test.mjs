@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  isEnabled, getProjectByPortalToken, ensurePortalToken,
+  isEnabled, getProjectByPortalToken, getProjectByProposalId, ensurePortalToken,
   listMilestones, upsertMilestone, markDelivered, approveMilestone,
   createContract, getContractByPublicId, getContractsForProposal, sendContract, acceptContract,
 } from '../../lib/portal-db.mjs';
@@ -9,6 +9,7 @@ import {
 test('disabled without env — never throws, reports skipped', async () => {
   assert.equal(isEnabled(), false);
   assert.deepEqual(await getProjectByPortalToken('tok'), { ok: false, skipped: true });
+  assert.deepEqual(await getProjectByProposalId('proposal-id'), { ok: false, skipped: true });
   assert.deepEqual(await ensurePortalToken('project-id'), { ok: false, skipped: true });
   assert.deepEqual(await listMilestones('project-id'), { ok: false, skipped: true });
   assert.deepEqual(await upsertMilestone({ project_id: 'p', title: 'Kickoff' }), { ok: false, skipped: true });

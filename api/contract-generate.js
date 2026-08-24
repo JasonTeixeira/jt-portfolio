@@ -30,5 +30,6 @@ export default async function handler(req, res) {
     terms_version: CONTRACT_TERMS_VERSION, client_email: proposal.client_email || null, status: 'draft',
   });
   if (!created.ok) return res.status(200).json({ ok: false, skipped: true });
-  return res.status(200).json({ ok: true, publicId: pid });
+  // Return both the client-facing publicId and the row id — contract-send takes the row id.
+  return res.status(200).json({ ok: true, publicId: pid, id: created.data && created.data.id });
 }
