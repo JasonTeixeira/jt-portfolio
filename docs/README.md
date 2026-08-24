@@ -3,6 +3,7 @@
 ## Operator guides
 
 - [`PROPOSALS.md`](PROPOSALS.md) — the money path: scope → proposal → deposit.
+- [`PORTAL.md`](PORTAL.md) — the delivery layer: client portal, milestones, auto-generated contracts.
 - [`NURTURE.md`](NURTURE.md) — automated cold-lead/proposal follow-up (Subsystem C), dormant until enabled.
 - [`CHATBOT-EVAL.md`](CHATBOT-EVAL.md) — red-team + golden eval for the site chatbot, run and proven live.
 - [`SCOPE-EVAL.md`](SCOPE-EVAL.md) — golden-set eval gate for the Scope Studio AI.

@@ -13,3 +13,4 @@ proof-artifacts/
 # outreach: real prospect data + generated pages are private
 outreach/*.html
 outreach/prospects.json
+.superpowers/

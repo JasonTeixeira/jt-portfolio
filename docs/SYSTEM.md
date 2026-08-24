@@ -41,6 +41,14 @@ VISITOR ARRIVES (agency.sageideas.dev)
    │                                    Stripe Checkout          │  (Stripe → /api/stripe-webhook,
    │                                                             ▼   verified+idempotent → status=deposit_paid)
    │                                                        PROJECT (scope_projects)
+   │                                                             │
+   │        portal link emailed (portal_token) ──────────────────▼
+   │        /portal.html?id=TOKEN  ──► client tracks delivery   DELIVERY
+   │             • operator generates SOW/MSA + seeds/           │  (scope_milestones,
+   │               delivers milestones in /proposal-admin        │   scope_contracts)
+   │             • client approves delivered milestones          ▼
+   │        /contract.html?id=PUBLIC_ID  ──► client accepts CONTRACT ACCEPTED
+   │             the tailored SOW/MSA
    │
    └─ NURTURE (daily Vercel Cron → /api/cron/nurture)
         • lead, no proposal (48h) → nudge
@@ -70,10 +78,13 @@ VISITOR ARRIVES (agency.sageideas.dev)
 | Client proposal + accept | `proposal.html`, `assets/proposal.mjs` | `SUPABASE_*` |
 | Checkout (deposit) | `api/proposal-checkout.js`, `lib/stripe.mjs` | `STRIPE_SECRET_KEY` |
 | Webhook (paid → project) | `api/stripe-webhook.js` | `STRIPE_WEBHOOK_SECRET` |
+| Delivery: client portal | `portal.html`, `assets/portal.mjs`, `api/portal.js`, `lib/portal-db.mjs` | `SUPABASE_*` |
+| Delivery: milestones (operator) | `api/milestone.js`, admin's Milestones card in `assets/proposal-admin.mjs` | `SCOPE_ADMIN_TOKEN` + `SUPABASE_*` |
+| Delivery: contracts (SOW/MSA) | `assets/contract-core.mjs`, `api/contract-generate.js`, `api/contract-send.js`, `api/contract.js`, `contract.html`, `assets/contract.mjs` | `SCOPE_ADMIN_TOKEN` (generate/send) + `SUPABASE_*` |
 | Nurture cron | `api/cron/nurture.js`, `assets/nurture-core.mjs`, `lib/nurture-db.mjs` | `NURTURE_ENABLED=true` + `CRON_SECRET` + `SUPABASE_*` + `RESEND_*` |
 | Unsubscribe / suppress | `api/unsubscribe.js`, `api/suppress.js`, `unsubscribe.html` | `SUPABASE_*` (+ `SCOPE_ADMIN_TOKEN` for suppress) |
 
-Schema: `supabase/scope_schema.sql` (`scope_prospects`, `scope_plans`, `scope_conversations`, `scope_events`, `scope_proposals`, `scope_projects`, `scope_nurture_sends`). RLS: deny-all-anon; the server uses the service-role key only.
+Schema: `supabase/scope_schema.sql` (`scope_prospects`, `scope_plans`, `scope_conversations`, `scope_events`, `scope_proposals`, `scope_projects` + `portal_token`, `scope_milestones`, `scope_contracts`, `scope_nurture_sends`). RLS: deny-all-anon; the server uses the service-role key only.
 
 ## 4. Env vars — the master switchboard
 
@@ -90,6 +101,8 @@ Schema: `supabase/scope_schema.sql` (`scope_prospects`, `scope_plans`, `scope_co
 | `CRON_SECRET` | authorize the nurture cron | cron 401 fail-closed |
 
 **Status as of last activation:** `LLM_*`, `RESEND_*`, `SCOPE_ADMIN_TOKEN`, `SITE_URL`, `CRON_SECRET` are set. **Missing (the money back-half):** `SUPABASE_*` + `STRIPE_*`. `NURTURE_ENABLED` intentionally OFF until a verified sending domain + real leads.
+
+The delivery layer (portal + milestones + contracts, `docs/PORTAL.md`) adds no new switchboard vars — it reuses `SUPABASE_*` (persistence), `SCOPE_ADMIN_TOKEN` (operator generate/send/milestone writes), `RESEND_*` (portal-link + contract-ready emails), and `SITE_URL` (the links themselves) exactly as above.
 
 ## 5. Dormant → live activation checklist
 
@@ -122,6 +135,7 @@ Full money-path test once Supabase+Stripe are live: scope a plan → submit emai
 
 ## 7. Related operator docs
 - `docs/PROPOSALS.md` — proposal/deposit flow + go-live.
+- `docs/PORTAL.md` — delivery layer: client portal, milestones, auto-generated contracts (+ legal caveat).
 - `docs/NURTURE.md` — sequences, deliverability gate, cron.
 - `docs/CHATBOT-EVAL.md` — the bot's own eval harness.
 - `docs/SUPABASE.md` — schema/persistence setup.

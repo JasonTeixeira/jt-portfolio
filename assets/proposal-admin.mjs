@@ -12,6 +12,20 @@ const STATUS_META = {
   [PROPOSAL_STATUS.DECLINED]: { label: 'Declined', color: '#f43f5e' },
 };
 
+const CONTRACT_STATUS_META = {
+  draft: { label: 'Draft', color: '#8E8882' },
+  sent: { label: 'Sent', color: '#22d3ee' },
+  accepted: { label: 'Accepted', color: '#10b981' },
+  declined: { label: 'Declined', color: '#f43f5e' },
+};
+
+const MILESTONE_STATUS_META = {
+  pending: { label: 'Pending', color: '#8E8882' },
+  in_progress: { label: 'In progress', color: '#F59E0B' },
+  delivered: { label: 'Delivered', color: '#22d3ee' },
+  approved: { label: 'Approved', color: '#10b981' },
+};
+
 function h(tag, props, ...children) {
   const node = document.createElement(tag);
   if (props) {
@@ -31,13 +45,29 @@ function h(tag, props, ...children) {
 
 function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
-function statusChip(status) {
-  const meta = STATUS_META[status] || { label: status || 'unknown', color: '#8E8882' };
+function copyButton(text) {
+  const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:5px 10px;font-size:11.5px' }, 'Copy');
+  btn.addEventListener('click', () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(() => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500); })
+        .catch(() => {});
+    }
+  });
+  return btn;
+}
+
+function chipFor(status, metaMap) {
+  const meta = metaMap[status] || { label: status || 'unknown', color: '#8E8882' };
   return h('span', { class: 'chip', style: `color:${meta.color};border-color:${meta.color}44` },
     h('span', { class: 'dot', style: `background:${meta.color}` }),
     meta.label,
   );
 }
+
+function statusChip(status) { return chipFor(status, STATUS_META); }
+function contractStatusChip(status) { return chipFor(status, CONTRACT_STATUS_META); }
+function milestoneStatusChip(status) { return chipFor(status, MILESTONE_STATUS_META); }
 
 function formatAge(iso) {
   const t = new Date(iso).getTime();
@@ -138,10 +168,214 @@ async function openDetail(mount, id, key) {
     mount.appendChild(h('div', { class: 'admin-card' }, h('p', { class: 'subtle' }, 'Couldn’t load that proposal.')));
     return;
   }
-  renderDetail(mount, result.json.proposal, key);
+  const { proposal, project, milestones, contracts } = result.json;
+  renderDetail(mount, proposal, key, project || null, Array.isArray(milestones) ? milestones : [], Array.isArray(contracts) ? contracts : []);
 }
 
-function renderDetail(mount, row, key) {
+// ---- Contracts (generate + send) -------------------------------------------
+
+function contractRow(c, key) {
+  const link = `${location.origin}/contract.html?id=${c.public_id}`;
+  const row = h('div', { style: 'display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)' },
+    h('span', { class: 'chip mono' }, c.kind === 'msa' ? 'MSA' : 'SOW'),
+    contractStatusChip(c.status),
+    h('a', { href: link, style: 'color:var(--cyan);font-size:12.5px;word-break:break-all' }, link),
+    copyButton(link),
+  );
+  if (c.status === 'draft') {
+    const sendBtn = h('button', { type: 'button', class: 'btn-solid cyan', style: 'padding:5px 12px;font-size:11.5px' }, 'Send to client');
+    sendBtn.addEventListener('click', () => {
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending…';
+      fetch('/api/contract-send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+        body: JSON.stringify({ id: c.id }),
+      })
+        .then((res) => res.json().catch(() => null))
+        .then((data) => {
+          if (data && data.ok) {
+            const note = document.createTextNode('Sent.');
+            sendBtn.replaceWith(note);
+          } else {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send to client';
+          }
+        })
+        .catch(() => {
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'Send to client';
+        });
+    });
+    row.appendChild(sendBtn);
+  }
+  return row;
+}
+
+function renderContractsCard(row, key, contracts) {
+  const list = h('div', { id: 'contracts-list' });
+  for (const c of contracts) list.appendChild(contractRow(c, key));
+
+  const status = h('p', { class: 'subtle', style: 'font-size:12.5px;margin-top:8px;min-height:14px' });
+
+  function doGenerate(kind, btn) {
+    clear(status);
+    btn.disabled = true;
+    const orig = btn.textContent;
+    btn.textContent = 'Generating…';
+    fetch('/api/contract-generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+      body: JSON.stringify({ proposalId: row.id, kind }),
+    })
+      .then((res) => res.json().catch(() => null))
+      .then((data) => {
+        btn.disabled = false;
+        btn.textContent = orig;
+        if (data && data.ok && data.publicId) {
+          list.insertBefore(contractRow({ id: data.id, public_id: data.publicId, kind, status: 'draft' }, key), list.firstChild);
+        } else {
+          clear(status);
+          status.appendChild(document.createTextNode('Couldn’t generate that contract. Try again.'));
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = orig;
+        clear(status);
+        status.appendChild(document.createTextNode('Couldn’t reach the server.'));
+      });
+  }
+
+  const genSow = h('button', { type: 'button', class: 'btn-ghost' }, 'Generate SOW');
+  const genMsa = h('button', { type: 'button', class: 'btn-ghost' }, 'Generate MSA');
+  genSow.addEventListener('click', () => doGenerate('sow', genSow));
+  genMsa.addEventListener('click', () => doGenerate('msa', genMsa));
+
+  return h('div', { class: 'admin-card' },
+    h('h2', { class: 'sec-title', style: 'font-size:1.5rem;margin-top:0' }, 'Contracts'),
+    h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;margin-top:10px' }, genSow, genMsa),
+    status,
+    list,
+  );
+}
+
+// ---- Milestones (add + mark delivered) -------------------------------------
+
+function milestoneRow(m, key) {
+  const row = h('div', { style: 'display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)' },
+    h('span', { class: 'mono', style: 'color:var(--faint);font-size:11.5px;min-width:18px' }, String(m.seq ?? 0)),
+    h('span', { style: 'flex:1 1 160px' }, m.title || '—'),
+    h('span', { class: 'mono' }, money(m.amount_cents || 0)),
+    milestoneStatusChip(m.status || 'pending'),
+  );
+  if (m.status === 'pending' || m.status === 'in_progress' || !m.status) {
+    const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:5px 10px;font-size:11.5px' }, 'Mark delivered');
+    btn.addEventListener('click', () => {
+      btn.disabled = true;
+      btn.textContent = 'Marking…';
+      fetch('/api/milestone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+        body: JSON.stringify({ id: m.id, action: 'deliver' }),
+      })
+        .then((res) => res.json().catch(() => null))
+        .then((data) => {
+          if (data && data.ok) {
+            btn.replaceWith(milestoneStatusChip('delivered'));
+          } else {
+            btn.disabled = false;
+            btn.textContent = 'Mark delivered';
+          }
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.textContent = 'Mark delivered';
+        });
+    });
+    row.appendChild(btn);
+  }
+  return row;
+}
+
+function renderMilestonesCard(project, milestones, key) {
+  if (!project) {
+    return h('div', { class: 'admin-card' },
+      h('h2', { class: 'sec-title', style: 'font-size:1.5rem;margin-top:0' }, 'Milestones'),
+      h('p', { class: 'subtle', style: 'margin-top:10px' }, 'Milestones open once the deposit is paid.'),
+    );
+  }
+
+  const sorted = milestones.slice().sort((a, b) => (a.seq || 0) - (b.seq || 0));
+  const list = h('div', { id: 'milestones-list' });
+  for (const m of sorted) list.appendChild(milestoneRow(m, key));
+
+  const titleInput = h('input', { type: 'text', placeholder: 'e.g. Kickoff & discovery' });
+  const deliverablesInput = h('textarea', { rows: '2', placeholder: 'What gets delivered' });
+  const amountInput = h('input', { type: 'number', min: '0', step: '1', placeholder: '0' });
+  const seqInput = h('input', { type: 'number', min: '0', step: '1', value: String(sorted.length) });
+  const dueInput = h('input', { type: 'date' });
+  const addStatus = h('p', { class: 'subtle', style: 'font-size:12.5px;margin-top:8px;min-height:14px' });
+  const addBtn = h('button', { type: 'button', class: 'btn-solid green' }, 'Add milestone');
+
+  addBtn.addEventListener('click', () => {
+    const title = titleInput.value.trim();
+    clear(addStatus);
+    if (!title) { addStatus.appendChild(document.createTextNode('Title is required.')); return; }
+    addBtn.disabled = true;
+    addBtn.textContent = 'Adding…';
+    const amountCents = Math.round((parseFloat(amountInput.value) || 0) * 100);
+    const seq = Math.round(parseFloat(seqInput.value) || 0);
+    const dueAt = dueInput.value ? new Date(`${dueInput.value}T23:59:59`).toISOString() : undefined;
+    fetch('/api/milestone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+      body: JSON.stringify({ projectId: project.id, title, deliverables: deliverablesInput.value, amountCents, seq, dueAt }),
+    })
+      .then((res) => res.json().catch(() => null))
+      .then((data) => {
+        addBtn.disabled = false;
+        addBtn.textContent = 'Add milestone';
+        if (data && data.ok && data.milestone) {
+          list.appendChild(milestoneRow(data.milestone, key));
+          titleInput.value = '';
+          deliverablesInput.value = '';
+          amountInput.value = '';
+          dueInput.value = '';
+          seqInput.value = String(sorted.length + 1);
+        } else {
+          clear(addStatus);
+          addStatus.appendChild(document.createTextNode('Couldn’t add that milestone. Try again.'));
+        }
+      })
+      .catch(() => {
+        addBtn.disabled = false;
+        addBtn.textContent = 'Add milestone';
+        clear(addStatus);
+        addStatus.appendChild(document.createTextNode('Couldn’t reach the server.'));
+      });
+  });
+
+  return h('div', { class: 'admin-card' },
+    h('h2', { class: 'sec-title', style: 'font-size:1.5rem;margin-top:0' }, 'Milestones'),
+    list,
+    h('div', { style: 'border-top:1px solid var(--line);margin-top:16px;padding-top:16px' },
+      h('div', { class: 'grid2' },
+        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Title'), titleInput),
+        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Amount ($)'), amountInput),
+      ),
+      h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Deliverables'), deliverablesInput),
+      h('div', { class: 'grid2' },
+        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Seq'), seqInput),
+        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Due date (optional)'), dueInput),
+      ),
+      addBtn,
+      addStatus,
+    ),
+  );
+}
+
+function renderDetail(mount, row, key, project, milestones, contracts) {
   clear(mount);
   const currency = row.currency || 'usd';
 
@@ -233,6 +467,9 @@ function renderDetail(mount, row, key) {
     status,
     stateNote,
   ));
+
+  mount.appendChild(renderContractsCard(row, key, contracts));
+  mount.appendChild(renderMilestonesCard(project, milestones, key));
 }
 
 async function init() {

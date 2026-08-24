@@ -111,3 +111,46 @@ create unique index if not exists nurture_send_prospect on scope_nurture_sends(p
 create index if not exists nurture_send_prospect_all on scope_nurture_sends(prospect_id);
 alter table scope_nurture_sends enable row level security;
 -- (No policies created → deny-all-anon; service role bypasses RLS.)
+
+-- ============================================================================
+-- P6: Client portal (milestones) + auto-generated contracts. Money in CENTS.
+-- ============================================================================
+alter table scope_projects add column if not exists portal_token text;
+create unique index if not exists scope_projects_portal on scope_projects(portal_token) where portal_token is not null;
+
+create table if not exists scope_milestones (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references scope_projects(id) on delete cascade,
+  seq int not null default 0,
+  title text not null,
+  deliverables text,
+  amount_cents int not null default 0,
+  status text not null default 'pending',   -- pending | in_progress | delivered | approved
+  due_at timestamptz,
+  delivered_at timestamptz,
+  approved_at timestamptz,
+  approved_name text,
+  created_at timestamptz not null default now()
+);
+create index if not exists scope_milestones_project on scope_milestones(project_id, seq);
+
+create table if not exists scope_contracts (
+  id uuid primary key default gen_random_uuid(),
+  public_id text not null unique,
+  proposal_id uuid references scope_proposals(id) on delete set null,
+  project_id uuid references scope_projects(id) on delete set null,
+  kind text not null default 'sow',          -- sow | msa
+  body jsonb not null,
+  terms_version text not null,
+  status text not null default 'draft',       -- draft | sent | accepted | declined
+  client_email text,
+  accepted_name text,
+  accepted_at timestamptz,
+  accept_ip text,
+  created_at timestamptz not null default now(),
+  sent_at timestamptz
+);
+create unique index if not exists scope_contracts_public on scope_contracts(public_id);
+alter table scope_milestones enable row level security;
+alter table scope_contracts enable row level security;
+-- (No policies → deny-all-anon; service role bypasses.)
