@@ -13,7 +13,7 @@ export const NOTES = [
     read: '5 min',
     color: '#F59E0B',
     title: 'Eighteen agents audited a live curriculum. One lesson was teaching a false error.',
-    dek: 'I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.',
+    dek: 'I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.',
     artifacts: 'public report: sageideas.dev/academy/how-we-audit · full quoted-evidence ledger in the repo · pattern available as an engagement',
     quote: 'An agent that grades by reading will tell you what sounds right. An agent that grades by executing tells you what is right.',
     dropCap: 'T',

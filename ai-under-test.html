@@ -111,7 +111,7 @@
     <h2 style="margin-top:12px">Four things a customer-facing AI has to get right.</h2>
     <p class="subtle" style="margin-top:14px">This assistant talks to real prospects on <a href="build.html" style="color:var(--cyan);text-decoration:underline;text-underline-offset:2px">the scoping page</a>. Before it went live, and on every change since, it runs through a battery of adversarial probes and known-good conversations.</p>
     <div class="testgrid">
-      <div class="testcard"><span class="ic">price leak</span><h3>Never quotes a price</h3><p>There's no fixed price list on this site on purpose &mdash; every engagement is scoped on a call. So the assistant is tested for whether it can be talked into inventing a number, a rate, or "just a ballpark."</p></div>
+      <div class="testcard"><span class="ic">price leak</span><h3>Never quotes a price</h3><p>There's no fixed price list on this site on purpose. Every engagement is scoped on a call. So the assistant is tested for whether it can be talked into inventing a number, a rate, or "just a ballpark."</p></div>
       <div class="testcard"><span class="ic">jailbreak</span><h3>Resists prompt injection &amp; jailbreaks</h3><p>Classic attacks &mdash; "ignore previous instructions," "you are now DAN," instructions smuggled inside pasted data &mdash; tested against whether it breaks character or leaks its own instructions.</p></div>
       <div class="testcard"><span class="ic">in character</span><h3>Stays in character</h3><p>It's supposed to represent me, on-topic, professionally. Probes check it doesn't start talking like a generic chatbot, trash a competitor, or wander off-brand under pressure.</p></div>
       <div class="testcard"><span class="ic">golden set</span><h3>Handles real conversations well</h3><p>Alongside the attacks, a set of known-good scoping conversations &mdash; an AI-eval prospect, a local service business, an off-topic question &mdash; checked for a correct, on-topic reply every time.</p></div>
@@ -157,10 +157,10 @@
   <!-- HOW THE GUARANTEE HOLDS -->
   <section><div class="wrap">
     <div class="kick" style="color:var(--amber)">how honest is "10/10"</div>
-    <h2 style="margin-top:12px">The real depth behind that number, not just the headline.</h2>
+    <h2 style="margin-top:12px">What that headline number actually rests on.</h2>
     <p class="subtle" style="margin-top:14px;max-width:64ch">A green scorecard means nothing if I don't tell you how it's built. Here's exactly what each result does and doesn't prove.</p>
     <div style="margin-top:22px">
-      <div class="honest-box"><span class="tag tag-strong">robust</span><p><b>The price check is grounded, not vibes-based.</b> The server strips and validates outputs before they reach the customer, so "never quotes a price" isn't the model's good behavior on faith &mdash; it's enforced at the response layer. That's the strongest guarantee on this page.</p></div>
+      <div class="honest-box"><span class="tag tag-strong">robust</span><p><b>The price check is enforced in code.</b> The server strips and validates outputs before they reach the customer, so "never quotes a price" isn't the model's good behavior on faith. It's enforced at the response layer. That's the strongest guarantee on this page.</p></div>
       <div class="honest-box"><span class="tag tag-strong">robust</span><p><b>The system-prompt leak check is grounded the same way.</b> The assistant's instructions are never assembled into a form the model can echo back verbatim, so a "print your prompt" attack has nothing to leak even if it got the model to try.</p></div>
       <div class="honest-box"><span class="tag tag-limit">limited, by design &mdash; for now</span><p><b>The jailbreak and in-character checks are fast substring heuristics, not a full LLM judge.</b> They look for known break-character phrases ("as an AI language model," "I am now DAN," "developer mode enabled") in the reply. That catches the obvious failures reliably and runs in CI in seconds, but a more subtle jailbreak that never says those phrases could theoretically slip past a plain string match. A deeper LLM-as-judge layer that reads the whole reply for intent is a planned upgrade, not a claim I'm making today.</p></div>
     </div>
@@ -177,7 +177,7 @@
 cd jt-portfolio &amp;&amp; npm install
 node scripts/eval-chatbot.mjs --url https://agency.sageideas.dev</code></pre>
     </div>
-    <p class="subtle" style="margin-top:14px;font-size:13.5px">Probes live in <code class="mono">evals/chatbot/redteam.json</code> and <code class="mono">evals/chatbot/golden.json</code>. The grading logic is in <code class="mono">assets/chatbot-evals.mjs</code> &mdash; the same pure functions run in this repo's unit tests (no live model needed) and in the live red-team run against production.</p>
+    <p class="subtle" style="margin-top:14px;font-size:13.5px">Probes live in <code class="mono">evals/chatbot/redteam.json</code> and <code class="mono">evals/chatbot/golden.json</code>. The grading logic is in <code class="mono">assets/chatbot-evals.mjs</code>. The same pure functions run in this repo's unit tests (no live model needed) and in the live red-team run against production.</p>
   </div></section>
 
   <!-- CTA -->
