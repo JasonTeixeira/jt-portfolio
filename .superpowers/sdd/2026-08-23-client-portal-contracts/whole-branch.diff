@@ -1,0 +1,2541 @@
+### commits
+5e1f76a feat(p6): portal docs + system map + smoke + import cleanup
+45c607f feat(p6): email the client their portal link on deposit
+90541f4 feat(p6): operator contract-gen + milestone editor in admin
+be558c4 feat(p6): client contract page (view + accept, print-clean)
+82295b7 feat(p6): client portal page (milestones, approvals, payment)
+2940777 feat(p6): portal + milestone endpoints
+b277fb7 feat(p6): contract endpoints (generate/send/view/accept)
+a8fd569 feat(p6): portal-db gateway (milestones + contracts, guarded transitions)
+cbc6942 feat(p6): contract-core (SOW/MSA fill from proposal)
+6219e02 chore(p6): portal + milestones + contracts schema (RLS deny-all)
+f7e6d50 docs(p6): client portal + auto-contracts spec + plan
+
+### stat
+ .../2026-08-23-client-portal-contracts/progress.md |  16 ++
+ api/contract-generate.js                           |  35 +++
+ api/contract-send.js                               |  27 +++
+ api/contract.js                                    |  47 ++++
+ api/milestone.js                                   |  41 ++++
+ api/portal.js                                      |  91 ++++++++
+ api/proposal-admin.js                              |  16 +-
+ api/stripe-webhook.js                              |  17 +-
+ assets/contract-core.mjs                           |  50 +++++
+ assets/contract.mjs                                | 181 +++++++++++++++
+ assets/portal.mjs                                  | 238 ++++++++++++++++++++
+ assets/proposal-admin.mjs                          | 245 ++++++++++++++++++++-
+ assets/site.css                                    |  80 +++++++
+ contract.html                                      |  90 ++++++++
+ docs/PORTAL.md                                     | 144 ++++++++++++
+ docs/README.md                                     |   1 +
+ docs/SYSTEM.md                                     |  16 +-
+ .../plans/2026-08-23-client-portal-contracts.md    | 158 +++++++++++++
+ .../2026-08-23-client-portal-contracts-design.md   | 136 ++++++++++++
+ lib/portal-db.mjs                                  | 122 ++++++++++
+ portal.html                                        |  62 ++++++
+ supabase/scope_schema.sql                          |  43 ++++
+ tests/smoke.spec.js                                |  24 +-
+ tests/unit/api-contract-shape.test.mjs             |  44 ++++
+ tests/unit/api-portal-shape.test.mjs               | 103 +++++++++
+ tests/unit/contract-core.test.mjs                  |  84 +++++++
+ tests/unit/portal-db.test.mjs                      |  23 ++
+ 27 files changed, 2125 insertions(+), 9 deletions(-)
+
+### diff (excl lock)
+diff --git a/.superpowers/sdd/2026-08-23-client-portal-contracts/progress.md b/.superpowers/sdd/2026-08-23-client-portal-contracts/progress.md
+new file mode 100644
+index 0000000..72966ca
+--- /dev/null
++++ b/.superpowers/sdd/2026-08-23-client-portal-contracts/progress.md
+@@ -0,0 +1,16 @@
++# SDD ledger — plan: docs/superpowers/plans/2026-08-23-client-portal-contracts.md
++Pre-flight: clean. Linear: T2 contract-core + T3 portal-db → T4/T5 endpoints → T6/T7 pages → T8 admin → T9 webhook → T10 docs. Mirrors Plan 5 (proposal-*). All imports map (proposal-core exports publicId/money; scope-core computePlan/CARD_BY_KEY). Money-safety: client approves delivered-only + can't set amounts.
++Base: 3c578c5.
++Task 1: complete — 6219e02
++Task 2: complete — cbc6942 (contract-core; unused CARD_BY_KEY import = lint warning, clean in T10)
++Task 3: complete — a8fd569 (portal-db)
++105 pass.
++Task 4: complete — b277fb7 (contract endpoints)
++Task 5: complete — 2940777 (portal+milestone endpoints; clientView whitelist + membership guard)
++119 pass.
++Task 6: complete — 82295b7 (client portal, premium timeline)
++Task 7: complete — be558c4 (contract view+accept, print-clean; small additive accepted_at whitelist on api/contract.js GET)
++119 pass.
++Task 8: complete — 90541f4 (admin contract-gen + milestone editor; +getProjectByProposalId; contract-generate returns id too)
++Task 9: complete — 45c607f (webhook portal-link email)
++119 pass.
+diff --git a/api/contract-generate.js b/api/contract-generate.js
+new file mode 100644
+index 0000000..57d5b97
+--- /dev/null
++++ b/api/contract-generate.js
+@@ -0,0 +1,35 @@
++import { checkToken } from '../lib/admin-auth.mjs';
++import { isEnabled, createContract } from '../lib/portal-db.mjs';
++import { getProposalById } from '../lib/proposal-db.mjs';
++import { buildSow, buildMsa, publicId, CONTRACT_TERMS_VERSION } from '../assets/contract-core.mjs';
++
++export default async function handler(req, res) {
++  if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
++  // Fail-closed admin gate BEFORE any DB work.
++  if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
++  if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true });
++  const { proposalId, kind: kindIn } = req.body || {};
++  if (typeof proposalId !== 'string' || !proposalId.trim()) return res.status(400).json({ ok: false, error: 'proposalId required' });
++  const kind = kindIn === 'msa' ? 'msa' : 'sow';
++  const got = await getProposalById(proposalId);
++  if (!got.ok || !got.data) return res.status(404).json({ ok: false, error: 'not_found' });
++  const proposal = got.data;
++  const nowIso = new Date().toISOString();
++  const projectName = proposal.segment || 'Engagement';
++  // No invented figures — everything comes off the persisted proposal.
++  const built = kind === 'msa'
++    ? buildMsa({ clientName: null, nowIso })
++    : buildSow({
++      clientName: null, projectName, keys: proposal.keys,
++      firmCents: proposal.firm_cents, depositCents: proposal.deposit_cents, balanceCents: proposal.balance_cents,
++      nowIso,
++    });
++  const pid = publicId();
++  const created = await createContract({
++    public_id: pid, proposal_id: proposal.id, project_id: null, kind, body: built,
++    terms_version: CONTRACT_TERMS_VERSION, client_email: proposal.client_email || null, status: 'draft',
++  });
++  if (!created.ok) return res.status(200).json({ ok: false, skipped: true });
++  // Return both the client-facing publicId and the row id — contract-send takes the row id.
++  return res.status(200).json({ ok: true, publicId: pid, id: created.data && created.data.id });
++}
+diff --git a/api/contract-send.js b/api/contract-send.js
+new file mode 100644
+index 0000000..c9340a2
+--- /dev/null
++++ b/api/contract-send.js
+@@ -0,0 +1,27 @@
++import { checkToken } from '../lib/admin-auth.mjs';
++import { isEnabled, sendContract } from '../lib/portal-db.mjs';
++import { sendClient } from '../lib/notify.mjs';
++
++const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
++
++export default async function handler(req, res) {
++  if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
++  // Fail-closed admin gate BEFORE any DB work.
++  if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
++  if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true });
++  const { id } = req.body || {};
++  if (typeof id !== 'string' || !id.trim()) return res.status(400).json({ ok: false, error: 'id required' });
++  const r = await sendContract(id.trim());
++  if (!r.ok || !r.data) return res.status(200).json({ ok: false, skipped: true });
++  const row = r.data;
++  if (row.client_email) {
++    try {
++      await sendClient({
++        to: row.client_email,
++        subject: 'Your agreement is ready',
++        text: `Hi,\n\nYour agreement is ready to review and sign.\n\nView it here: ${SITE}/contract.html?id=${row.public_id}\n\nIf anything looks off, just reply and we'll sort it out.\n\n— Jason\n`,
++      });
++    } catch {}
++  }
++  return res.status(200).json({ ok: true, publicId: row.public_id });
++}
+diff --git a/api/contract.js b/api/contract.js
+new file mode 100644
+index 0000000..087a4a9
+--- /dev/null
++++ b/api/contract.js
+@@ -0,0 +1,47 @@
++import { isEnabled, getContractByPublicId, acceptContract } from '../lib/portal-db.mjs';
++import { CONTRACT_CAVEAT } from '../assets/contract-core.mjs';
++
++// Only a contract that has been sent (or already accepted) is visible to the client.
++// Drafts stay invisible — matches the proposal-draft convention.
++const VISIBLE_STATUSES = new Set(['sent', 'accepted']);
++
++export function validate(body) {
++  if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
++  if (typeof body.publicId !== 'string' || !body.publicId.trim()) return { ok: false, error: 'publicId required' };
++  if (body.agreed !== true) return { ok: false, error: 'must agree to terms' };
++  const n = typeof body.name === 'string' ? body.name.trim() : '';
++  if (n.length < 2 || n.length > 120) return { ok: false, error: 'name required' };
++  return { ok: true };
++}
++
++export default async function handler(req, res) {
++  if (req.method === 'GET') {
++    // GET always answers 200 with a body the client branches on — a stale/invalid/draft
++    // link is a normal state for a visitor, not an HTTP error. Matches api/proposal.js.
++    if (!isEnabled()) return res.status(200).json({ ok: false, reason: 'not_configured' });
++    const publicIdParam = String(req.query.publicId || '');
++    if (!publicIdParam) return res.status(200).json({ ok: false, reason: 'bad_request' });
++    const r = await getContractByPublicId(publicIdParam);
++    const row = r.ok ? r.data : null;
++    if (!row || !VISIBLE_STATUSES.has(row.status)) return res.status(200).json({ ok: false, reason: 'not_found' });
++    return res.status(200).json({
++      ok: true,
++      // accepted_at is whitelisted alongside status so the client page can render
++      // "Accepted on <date>" on a repeat visit, without leaking name/ip/terms_version.
++      contract: { body: row.body, kind: row.kind, status: row.status, caveat: CONTRACT_CAVEAT, accepted_at: row.accepted_at || null },
++    });
++  }
++  if (req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
++  const body = req.body || {};
++  if (body.action && body.action !== 'accept') return res.status(400).json({ ok: false, error: 'unknown action' });
++  const v = validate(body); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
++  if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
++  const r = await getContractByPublicId(body.publicId.trim());
++  if (!r.ok || !r.data) return res.status(404).json({ ok: false, error: 'not_found' });
++  const row = r.data;
++  if (row.status !== 'sent') return res.status(409).json({ ok: false, error: 'not_acceptable' });
++  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || null;
++  const acc = await acceptContract(row.id, { name: body.name.trim(), ip });
++  if (!acc.ok) return res.status(200).json({ ok: false, skipped: true });
++  return res.status(200).json({ ok: true, accepted: Boolean(acc.accepted) });
++}
+diff --git a/api/milestone.js b/api/milestone.js
+new file mode 100644
+index 0000000..ca32306
+--- /dev/null
++++ b/api/milestone.js
+@@ -0,0 +1,41 @@
++import { checkToken } from '../lib/admin-auth.mjs';
++import { isEnabled, upsertMilestone, markDelivered } from '../lib/portal-db.mjs';
++
++export function validate(body) {
++  if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
++  if (body.action === 'deliver') {
++    if (typeof body.id !== 'string' || !body.id.trim()) return { ok: false, error: 'id required' };
++    return { ok: true };
++  }
++  const hasId = typeof body.id === 'string' && Boolean(body.id.trim());
++  const hasProjectId = typeof body.projectId === 'string' && Boolean(body.projectId.trim());
++  if (!hasId && !hasProjectId) return { ok: false, error: 'projectId required' };
++  if (typeof body.title !== 'string' || !body.title.trim()) return { ok: false, error: 'title required' };
++  return { ok: true };
++}
++
++export default async function handler(req, res) {
++  if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
++  // Fail-closed admin gate BEFORE any DB work.
++  if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
++  if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true });
++  const body = req.body || {};
++  const v = validate(body); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
++  if (body.action === 'deliver') {
++    const r = await markDelivered(body.id.trim());
++    if (!r.ok) return res.status(200).json({ ok: false, skipped: true });
++    return res.status(200).json({ ok: true, milestone: r.data });
++  }
++  const row = {
++    id: typeof body.id === 'string' && body.id.trim() ? body.id.trim() : undefined,
++    project_id: body.projectId,
++    title: body.title.trim(),
++    deliverables: typeof body.deliverables === 'string' ? body.deliverables.slice(0, 4000) : null,
++    amount_cents: typeof body.amountCents === 'number' && Number.isFinite(body.amountCents) ? Math.round(body.amountCents) : 0,
++    seq: typeof body.seq === 'number' && Number.isFinite(body.seq) ? Math.round(body.seq) : 0,
++    due_at: body.dueAt || null,
++  };
++  const r = await upsertMilestone(row);
++  if (!r.ok) return res.status(200).json({ ok: false, skipped: true });
++  return res.status(200).json({ ok: true, milestone: r.data });
++}
+diff --git a/api/portal.js b/api/portal.js
+new file mode 100644
+index 0000000..e4eb3fd
+--- /dev/null
++++ b/api/portal.js
+@@ -0,0 +1,91 @@
++import {
++  isEnabled, getProjectByPortalToken, listMilestones, approveMilestone, getContractsForProposal,
++} from '../lib/portal-db.mjs';
++import { getProposalById } from '../lib/proposal-db.mjs';
++
++// Only a sent/accepted contract is worth surfacing to the client — a draft is invisible.
++const VISIBLE_CONTRACT_STATUSES = new Set(['sent', 'accepted']);
++
++export function validate(body) {
++  if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
++  if (typeof body.portalToken !== 'string' || !body.portalToken.trim()) return { ok: false, error: 'portalToken required' };
++  if (typeof body.milestoneId !== 'string' || !body.milestoneId.trim()) return { ok: false, error: 'milestoneId required' };
++  const n = typeof body.name === 'string' ? body.name.trim() : '';
++  if (n.length < 2 || n.length > 120) return { ok: false, error: 'name required' };
++  return { ok: true };
++}
++
++// True only when milestoneId is one of THIS project's own milestones. The client sends a
++// portal token (proves the project) and a milestone id (must be checked, not trusted) —
++// this stops a client from approving a milestone that belongs to a different project.
++export function milestoneBelongsToProject(milestones, milestoneId) {
++  return Array.isArray(milestones) && milestones.some((m) => m && m.id === milestoneId);
++}
++
++// Pure whitelist: turns raw DB rows into exactly what the client is allowed to see.
++// No client_email, ip, tokens, or internal proposal id — the milestone `id` IS included
++// so the client can send it back on approve.
++export function clientView(project, proposal, milestones, contract) {
++  if (!project) return null;
++  const plan = proposal ? {
++    keys: Array.isArray(proposal.keys) ? proposal.keys : [],
++    segment: proposal.segment || null,
++    firm_cents: proposal.firm_cents,
++    deposit_cents: proposal.deposit_cents,
++    balance_cents: proposal.balance_cents,
++    paid_at: proposal.paid_at || null,
++  } : null;
++  const ms = Array.isArray(milestones) ? milestones.map((m) => ({
++    id: m.id, seq: m.seq, title: m.title, deliverables: m.deliverables,
++    amount_cents: m.amount_cents, status: m.status, due_at: m.due_at,
++  })) : [];
++  const contractOut = (contract && VISIBLE_CONTRACT_STATUSES.has(contract.status))
++    ? { public_id: contract.public_id, status: contract.status } : null;
++  return { project: { status: project.status }, plan, milestones: ms, contract: contractOut };
++}
++
++async function loadContractSummary(proposalId) {
++  if (!proposalId) return null;
++  const r = await getContractsForProposal(proposalId);
++  if (!r.ok || !Array.isArray(r.data)) return null;
++  return r.data.find((c) => VISIBLE_CONTRACT_STATUSES.has(c.status)) || null;
++}
++
++export default async function handler(req, res) {
++  if (req.method === 'GET') {
++    // GET always answers 200 — an invalid/expired portal link is a normal visitor state,
++    // not an HTTP error. Matches api/proposal.js / api/contract.js.
++    if (!isEnabled()) return res.status(200).json({ ok: false, reason: 'not_configured' });
++    const token = String(req.query.id || '');
++    if (!token) return res.status(200).json({ ok: false, reason: 'bad_request' });
++    const projR = await getProjectByPortalToken(token);
++    if (!projR.ok || !projR.data) return res.status(200).json({ ok: false, reason: 'not_found' });
++    const project = projR.data;
++    const [proposalR, milestonesR, contract] = await Promise.all([
++      getProposalById(project.proposal_id),
++      listMilestones(project.id),
++      loadContractSummary(project.proposal_id),
++    ]);
++    const proposal = proposalR.ok ? proposalR.data : null;
++    const milestones = milestonesR.ok ? milestonesR.data : [];
++    const view = clientView(project, proposal, milestones, contract);
++    if (!view) return res.status(200).json({ ok: false, reason: 'not_found' });
++    return res.status(200).json({ ok: true, ...view });
++  }
++  if (req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
++  const body = req.body || {};
++  if (body.action && body.action !== 'approve_milestone') return res.status(400).json({ ok: false, error: 'unknown action' });
++  const v = validate(body); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
++  if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
++  const projR = await getProjectByPortalToken(body.portalToken.trim());
++  if (!projR.ok || !projR.data) return res.status(404).json({ ok: false, error: 'not_found' });
++  const project = projR.data;
++  const msR = await listMilestones(project.id);
++  const milestones = msR.ok ? msR.data : [];
++  const milestoneId = body.milestoneId.trim();
++  // Membership check BEFORE approving — a client only approves their own project's milestone.
++  if (!milestoneBelongsToProject(milestones, milestoneId)) return res.status(404).json({ ok: false, error: 'not_found' });
++  const approved = await approveMilestone(milestoneId, body.name.trim());
++  if (!approved.ok) return res.status(200).json({ ok: false, skipped: true });
++  return res.status(200).json({ ok: true, approved: Boolean(approved.approved) });
++}
+diff --git a/api/proposal-admin.js b/api/proposal-admin.js
+index 5915a9f..5012072 100644
+--- a/api/proposal-admin.js
++++ b/api/proposal-admin.js
+@@ -1,7 +1,8 @@
+ import { isEnabled, getProposalById, listProposals } from '../lib/proposal-db.mjs';
++import { getProjectByProposalId, listMilestones, getContractsForProposal } from '../lib/portal-db.mjs';
+ import { checkToken } from '../lib/admin-auth.mjs';
+ export default async function handler(req, res) {
+   if (req.method !== 'GET') { res.setHeader('Allow', 'GET'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
+   if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
+   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, list: [] });
+   if (req.query.list) {
+@@ -9,8 +10,21 @@ export default async function handler(req, res) {
+     return res.status(200).json({ ok: true, list: r.data || [] });
+   }
+   const id = String(req.query.id || '');
+   if (!id) return res.status(400).json({ ok: false, error: 'id required' });
+   const r = await getProposalById(id);
+   if (!r.ok || !r.data) return res.status(404).json({ ok: false, error: 'not_found' });
+-  return res.status(200).json({ ok: true, proposal: r.data });
++
++  // A project only exists once the deposit is paid; milestones attach to the project, not the proposal.
++  let project = null;
++  let milestones = [];
++  const projGot = await getProjectByProposalId(id);
++  if (projGot.ok && projGot.data) {
++    project = projGot.data;
++    const msGot = await listMilestones(project.id);
++    if (msGot.ok) milestones = msGot.data || [];
++  }
++  const contractsGot = await getContractsForProposal(id);
++  const contracts = contractsGot.ok ? (contractsGot.data || []) : [];
++
++  return res.status(200).json({ ok: true, proposal: r.data, project, milestones, contracts });
+ }
+diff --git a/api/stripe-webhook.js b/api/stripe-webhook.js
+index 60ce696..b32c07e 100644
+--- a/api/stripe-webhook.js
++++ b/api/stripe-webhook.js
+@@ -1,13 +1,27 @@
+ import { markPaidIfUnpaid, createProjectOnce, getProposalById } from '../lib/proposal-db.mjs';
++import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs';
+ import { appendEvent } from '../lib/scope-db.mjs';
+ import { sendOperator, sendClient } from '../lib/notify.mjs';
+ import { constructEvent } from '../lib/stripe.mjs';
+ import { money } from '../assets/proposal-core.mjs';
+ 
+ export const config = { api: { bodyParser: false } };
++const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
++
++// Best-effort: resolve the project's portal token so the receipt email can link to it.
++// Never throws — a missing/failed lookup just means the email goes out without the line.
++async function portalLinkLine(proposalId) {
++  try {
++    const projGot = await getProjectByProposalId(proposalId);
++    if (!projGot.ok || !projGot.data) return '';
++    const tok = await ensurePortalToken(projGot.data.id);
++    if (!tok.ok || !tok.token) return '';
++    return `\n\nTrack your project here: ${SITE}/portal.html?id=${tok.token}\n`;
++  } catch { return ''; }
++}
+ 
+ export async function collectRaw(stream) {
+   const chunks = [];
+   for await (const chunk of stream) chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+   return Buffer.concat(chunks);
+ }
+@@ -42,16 +56,17 @@ export default async function handler(req, res) {
+             appendEvent({ prospect_id: row && row.prospect_id, type: 'deposit_paid', meta: { proposalId } }).catch(() => {});
+             try {
+               await sendOperator({ subject: `Deposit paid — ${row ? money(row.deposit_cents) : ''}`,
+                 text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` });
+             } catch {}
+             if (row && row.client_email) {
++              const portalLine = await portalLinkLine(proposalId);
+               try {
+                 await sendClient({ to: row.client_email,
+                   subject: 'Deposit received. We\'re starting.',
+-                  text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n` });
++                  text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n${portalLine}` });
+               } catch {}
+             }
+           }
+         }
+       }
+     } else if (event.type === 'charge.dispute.created') {
+diff --git a/assets/contract-core.mjs b/assets/contract-core.mjs
+new file mode 100644
+index 0000000..3f0ca9e
+--- /dev/null
++++ b/assets/contract-core.mjs
+@@ -0,0 +1,50 @@
++import { publicId, money } from './proposal-core.mjs';
++import { computePlan } from './scope-core.mjs';
++
++export const CONTRACT_TERMS_VERSION = '2026-08-23';
++export const CONTRACT_CAVEAT = 'This is a drafting template generated from your proposal, not executed legal advice. Both parties should have it reviewed by counsel before signing.';
++export { publicId, money };
++
++// Deliverables derived from the catalog items the client scoped.
++function deliverablesFromKeys(keys) {
++  const plan = computePlan(Array.isArray(keys) ? keys : [], null);
++  return plan.items.map((i) => ({ name: i.name, why: i.why }));
++}
++
++// Statement of Work, filled from the proposal. No invented figures — all passed in.
++export function buildSow({ clientName, projectName, keys, firmCents, depositCents, balanceCents, nowIso }) {
++  const items = deliverablesFromKeys(keys);
++  const dList = items.length ? items.map((i) => `• ${i.name} — ${i.why}`).join('\n') : '• Scope as discussed and quoted.';
++  return {
++    kind: 'sow',
++    sections: [
++      { heading: 'Statement of Work', body: `This Statement of Work is between Sage Ideas LLC ("Consultant") and ${clientName || '[CLIENT]'} ("Client") for the project "${projectName || 'Engagement'}", dated ${nowIso.slice(0, 10)}.` },
++      { heading: 'Scope & Deliverables', body: dList },
++      { heading: 'Out of scope', body: 'Anything not listed above is not included and is quoted separately before any such work begins.' },
++      { heading: 'Fees', body: `Total: ${money(firmCents)}. Deposit: ${money(depositCents)} (credited to the total, due before work begins). Balance: ${money(balanceCents)}, invoiced on delivery.` },
++      { heading: 'Revisions', body: 'Two rounds of revisions per deliverable are included. Further rounds are billed at an hourly rate agreed in advance.' },
++      { heading: 'Timeline', body: 'Work begins once the deposit clears. The timeline is a working estimate and moves with the speed of feedback and access to systems.' },
++      { heading: 'Ownership', body: 'The delivered work transfers to Client on full payment of the balance. Until then, ownership stays with Consultant.' },
++      { heading: 'Acceptance', body: 'Client has five business days after delivery of each milestone to accept or send specific written change requests; no response within that period means the milestone is accepted.' },
++    ],
++    meta: { clientName: clientName || null, firmCents, depositCents, balanceCents },
++  };
++}
++
++// Master Services Agreement — the umbrella terms (client name filled).
++export function buildMsa({ clientName, nowIso }) {
++  return {
++    kind: 'msa',
++    sections: [
++      { heading: 'Master Services Agreement', body: `This Agreement is between Sage Ideas LLC ("Consultant") and ${clientName || '[CLIENT]'} ("Client"), effective ${nowIso.slice(0, 10)}. It governs all Statements of Work between the parties.` },
++      { heading: 'Independent contractor', body: 'Consultant is an independent contractor, responsible for its own taxes, insurance, and equipment. Nothing here creates an employment, partnership, or exclusive relationship.' },
++      { heading: 'Confidentiality', body: 'Each party will use the other’s non-public information only to perform or receive the services, protect it with reasonable care, and not disclose it except to people bound by similar obligations. Obligations survive termination.' },
++      { heading: 'Intellectual property', body: 'Deliverables created for Client transfer to Client on full payment. Consultant retains its pre-existing tools, frameworks, and general methods, and grants Client a license to use any that are embedded in a deliverable.' },
++      { heading: 'Warranties', body: 'Consultant will perform in a professional and workmanlike manner. Except as stated, services and deliverables are provided as is; the results of any AI system are probabilistic by nature.' },
++      { heading: 'Limitation of liability', body: 'Neither party is liable for indirect or consequential damages. Each party’s total liability under a Statement of Work will not exceed the fees paid under that Statement of Work.' },
++      { heading: 'Term & termination', body: 'Either party may terminate for convenience on fifteen days’ written notice, or immediately for uncured material breach. On termination, Client pays for work performed through that date.' },
++      { heading: 'Governing law', body: 'This Agreement is governed by the laws of the State of Illinois.' },
++    ],
++    meta: { clientName: clientName || null },
++  };
++}
+diff --git a/assets/contract.mjs b/assets/contract.mjs
+new file mode 100644
+index 0000000..ce2746a
+--- /dev/null
++++ b/assets/contract.mjs
+@@ -0,0 +1,181 @@
++// Client-facing contract page. Renders the tailored SOW/MSA from /api/contract and posts
++// acceptance. The caveat is always shown when a contract loads — this is a drafting aid,
++// not executed legal advice. All section text goes through textContent, never innerHTML,
++// because section bodies are operator-generated (and may contain the client's own name).
++const CONTACT_EMAIL = 'hello@sageideas.dev';
++
++/* ── tiny DOM builder: props become attrs/class/handlers, children are text or nodes ── */
++function h(tag, props, ...children) {
++  const node = document.createElement(tag);
++  if (props) {
++    for (const [k, v] of Object.entries(props)) {
++      if (v === undefined || v === null || v === false) continue;
++      if (k === 'class') node.className = v;
++      else if (k === 'text') node.textContent = v;
++      else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v);
++      else node.setAttribute(k, v);
++    }
++  }
++  for (const c of children.flat(Infinity)) {
++    if (c === undefined || c === null || c === false) continue;
++    node.appendChild(typeof c === 'string' || typeof c === 'number' ? document.createTextNode(String(c)) : c);
++  }
++  return node;
++}
++
++function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
++
++function formatDate(iso) {
++  const d = new Date(iso);
++  if (Number.isNaN(d.getTime())) return null;
++  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
++}
++
++function bookLink(label) {
++  return h('a', { href: 'book.html', class: 'btn-ghost', style: 'border-color:#a78bfa;color:#a78bfa;margin-top:16px;display:inline-flex' }, label || 'Talk to Jason →');
++}
++
++/* ── calm, single-note state — covers no id, not-ok (draft/missing), and dormant ── */
++function renderUnavailable(root) {
++  clear(root);
++  root.appendChild(h('div', { class: 'ctr-empty' },
++    h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'agreement'), h('span', { class: 'line' })),
++    h('h1', { class: 'sec-title', style: 'font-size:clamp(1.8rem,4vw,2.6rem)' }, "This agreement isn’t available."),
++    h('p', { class: 'subtle', style: 'margin-top:12px' }, 'It may have moved, or the link might be off. Talk to me and I’ll help you find it.'),
++    bookLink(),
++  ));
++}
++
++function renderCaveat(caveatText) {
++  return h('div', { class: 'ctr-caveat', role: 'note' },
++    h('span', { class: 'mk' }, '⚠'),
++    h('p', { style: 'margin:0' }, h('strong', {}, 'Heads up: '), caveatText || ''),
++  );
++}
++
++/* ── the real page: sections + caveat + (accepted confirmation | accept form) ── */
++function renderContract(root, contract, publicId) {
++  clear(root);
++  const kindLabel = contract.kind === 'msa' ? 'master services agreement' : 'statement of work';
++
++  root.appendChild(h('div', {},
++    h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, kindLabel), h('span', { class: 'line' })),
++    h('h1', { class: 'sec-title' }, 'Your agreement'),
++    h('p', { class: 'subtle', style: 'margin-top:12px' }, 'Please read it below. If anything looks off, tell me before you accept — nothing here is final until you do.'),
++  ));
++
++  root.appendChild(renderCaveat(contract.caveat));
++
++  const sections = Array.isArray(contract.body && contract.body.sections) ? contract.body.sections : [];
++  const doc = h('div', { class: 'ctr-card' });
++  if (sections.length === 0) {
++    doc.appendChild(h('p', { class: 'subtle' }, 'This agreement is being finalized.'));
++  } else {
++    for (const s of sections) {
++      doc.appendChild(h('div', { class: 'ctr-section' }, h('h3', {}, s.heading || ''), h('p', {}, s.body || '')));
++    }
++  }
++  root.appendChild(doc);
++
++  if (contract.status === 'accepted') {
++    const acceptedText = formatDate(contract.accepted_at);
++    root.appendChild(h('div', { class: 'ctr-card' },
++      h('span', { class: 'ctr-status-pill' }, acceptedText ? `✓ Accepted on ${acceptedText}` : '✓ Accepted'),
++      h('p', { class: 'subtle', style: 'margin-top:14px' }, 'Thanks — this agreement is signed. A copy is on this page any time you need it.'),
++    ));
++    return;
++  }
++
++  // Accept block — full name + explicit agree checkbox, posted to /api/contract.
++  const status = h('div', { class: 'ctr-status', role: 'status', 'aria-live': 'polite' });
++  const nameInput = h('input', { id: 'ctr-name', type: 'text', required: 'required', autocomplete: 'name' });
++  const agreeInput = h('input', { id: 'ctr-agree', type: 'checkbox', required: 'required' });
++  const submitBtn = h('button', { type: 'submit', class: 'btn-solid green' }, 'Accept agreement');
++
++  const form = h('form', { class: 'ctr-form' },
++    h('label', { class: 'fld', for: 'ctr-name' }, h('span', { class: 'lbl-text' }, 'Full name'), nameInput),
++    h('div', { class: 'ctr-check' }, agreeInput, h('label', { for: 'ctr-agree' }, 'I have read and agree to this agreement')),
++    submitBtn,
++    status,
++  );
++
++  form.addEventListener('submit', (ev) => {
++    ev.preventDefault();
++    const name = nameInput.value.trim();
++    if (name.length < 2 || !agreeInput.checked) {
++      clear(status); status.classList.remove('ok'); status.classList.add('err');
++      status.appendChild(document.createTextNode('Add your name and check the box to continue.'));
++      return;
++    }
++    status.classList.remove('err'); clear(status);
++    nameInput.disabled = true; agreeInput.disabled = true; submitBtn.disabled = true;
++    submitBtn.textContent = 'Sending…';
++
++    fetch('/api/contract', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({ publicId, action: 'accept', name, agreed: true }),
++    })
++      .then((res) => res.json().catch(() => null))
++      .then((data) => {
++        if (data && data.ok) {
++          clear(status); status.classList.add('ok');
++          status.appendChild(document.createTextNode('Agreement accepted. A copy is on this page.'));
++          submitBtn.textContent = 'Accepted';
++          return;
++        }
++        clear(status); status.classList.remove('ok'); status.classList.add('err');
++        if (data && data.skipped) {
++          status.appendChild(document.createTextNode('Acceptance isn’t switched on yet. Email Jason and he’ll confirm it another way. '));
++          status.appendChild(h('a', { href: 'book.html', style: 'color:var(--cyan)' }, 'Book a call →'));
++        } else {
++          status.appendChild(document.createTextNode('Something went wrong. Email '));
++          status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:var(--cyan)' }, CONTACT_EMAIL));
++          status.appendChild(document.createTextNode(' and I’ll get you sorted.'));
++        }
++        nameInput.disabled = false; agreeInput.disabled = false; submitBtn.disabled = false;
++        submitBtn.textContent = 'Accept agreement';
++      })
++      .catch(() => {
++        clear(status); status.classList.remove('ok'); status.classList.add('err');
++        status.appendChild(document.createTextNode('Couldn’t reach the server. Email '));
++        status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:var(--cyan)' }, CONTACT_EMAIL));
++        status.appendChild(document.createTextNode(' and I’ll get you sorted.'));
++        nameInput.disabled = false; agreeInput.disabled = false; submitBtn.disabled = false;
++        submitBtn.textContent = 'Accept agreement';
++      });
++  });
++
++  root.appendChild(h('div', { class: 'ctr-card' }, form));
++}
++
++async function init() {
++  const root = document.getElementById('contract-root');
++  if (!root) return;
++
++  const params = new URLSearchParams(location.search);
++  const id = (params.get('id') || '').trim();
++  if (!id) { renderUnavailable(root); return; }
++
++  // Immediate placeholder inside the reserved min-height so the fetch->render
++  // transition does not shift the page (keeps CLS ~0).
++  root.appendChild(h('p', { class: 'subtle', style: 'padding-top:8vh;text-align:center' }, 'Loading your agreement…'));
++
++  let json = null;
++  try {
++    const res = await fetch(`/api/contract?publicId=${encodeURIComponent(id)}`);
++    if (res.ok) json = await res.json().catch(() => null);
++  } catch {
++    // network error (e.g. static host with no API route) — fall through to unavailable
++  }
++
++  // Covers no id, {ok:false} (draft / not found), and dormant ({ok:false, reason:'not_configured'}).
++  const contract = json && json.ok ? json.contract : null;
++  if (!contract) { renderUnavailable(root); return; }
++  renderContract(root, contract, id);
++}
++
++init().catch(() => {
++  const root = document.getElementById('contract-root');
++  if (root) renderUnavailable(root);
++});
+diff --git a/assets/portal.mjs b/assets/portal.mjs
+new file mode 100644
+index 0000000..dae7adc
+--- /dev/null
++++ b/assets/portal.mjs
+@@ -0,0 +1,238 @@
++// Client-facing portal page. Renders the whitelisted /api/portal view — plan bought,
++// milestone timeline, payment summary, and agreement link — plus the milestone-approve
++// flow. Every dynamic value goes through textContent or DOM properties — never
++// innerHTML — because milestone titles/deliverables come from the operator's own input.
++import { computePlan, SEGMENTS } from './scope-core.mjs';
++import { money } from './proposal-core.mjs';
++
++const CONTACT_EMAIL = 'hello@sageideas.dev';
++
++/* ── tiny DOM builder: props become attrs/class/handlers, children are text or nodes ── */
++function h(tag, props, ...children) {
++  const node = document.createElement(tag);
++  if (props) {
++    for (const [k, v] of Object.entries(props)) {
++      if (v === undefined || v === null || v === false) continue;
++      if (k === 'class') node.className = v;
++      else if (k === 'text') node.textContent = v;
++      else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v);
++      else node.setAttribute(k, v);
++    }
++  }
++  for (const c of children.flat(Infinity)) {
++    if (c === undefined || c === null || c === false) continue;
++    node.appendChild(typeof c === 'string' || typeof c === 'number' ? document.createTextNode(String(c)) : c);
++  }
++  return node;
++}
++
++function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
++
++function bookLink(label) {
++  return h('a', { href: 'book.html', class: 'btn-ghost', style: 'border-color:#a78bfa;color:#a78bfa;margin-top:16px;display:inline-flex' }, label || 'Talk to Jason →');
++}
++
++/* ── project status chip — free-text status, mapped where known, title-cased otherwise ── */
++const PROJECT_STYLE = new Set(['kickoff', 'active', 'in_progress', 'delivered', 'complete', 'completed']);
++const PROJECT_LABEL = { kickoff: 'Kickoff', active: 'Active', in_progress: 'In progress', delivered: 'Delivered', complete: 'Complete', completed: 'Complete' };
++function titleCase(s) { return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()); }
++function statusChip(status) {
++  const raw = String(status || 'kickoff').toLowerCase();
++  const styleKey = PROJECT_STYLE.has(raw) ? raw : 'kickoff';
++  const label = PROJECT_LABEL[raw] || titleCase(raw);
++  return h('span', { class: `portal-chip st-${styleKey}` }, h('span', { class: 'dot' }), label);
++}
++
++/* ── milestone status badge: pending -> in_progress -> delivered -> approved ── */
++const MS_LABEL = { pending: 'Pending', in_progress: 'In progress', delivered: 'Delivered', approved: 'Approved' };
++function msStyleKey(status) {
++  const raw = String(status || 'pending').toLowerCase();
++  return MS_LABEL[raw] ? raw : 'pending';
++}
++function milestoneBadge(status) {
++  const key = msStyleKey(status);
++  return h('span', { class: `portal-badge st-${key}` }, MS_LABEL[key]);
++}
++
++/* ── calm, single-note unavailable state — covers no id, not-ok, and dormant (DB off) ── */
++function renderUnavailable(root) {
++  clear(root);
++  root.appendChild(h('div', { class: 'portal-empty' },
++    h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'portal'), h('span', { class: 'line' })),
++    h('h1', { class: 'portal-title', style: 'font-size:clamp(1.8rem,4vw,2.6rem)' }, "This project isn’t available."),
++    h('p', { class: 'subtle', style: 'margin-top:12px' }, 'It may have moved, or the link might be off. Talk to me and I’ll help you find it.'),
++    bookLink(),
++  ));
++}
++
++/* ── one milestone row: seq dot, title/badge/amount, deliverables, and (if delivered) an approve control ── */
++function buildMilestoneRow(m, portalToken) {
++  const statusKey = msStyleKey(m.status);
++  const row = h('div', { class: `portal-ms st-${statusKey}` });
++  row.appendChild(h('div', { class: 'portal-ms-dot' }, m.seq != null ? String(m.seq) : ''));
++
++  const titleBlock = h('div', {}, h('div', { class: 'portal-ms-title' }, m.title || 'Milestone'), milestoneBadge(m.status));
++  row.appendChild(h('div', { class: 'portal-ms-head' }, titleBlock, h('div', { class: 'portal-ms-amt' }, money(m.amount_cents))));
++
++  const delivWrap = h('div', { class: 'portal-ms-deliverables' });
++  const lines = String(m.deliverables || '').split('\n').map((s) => s.trim()).filter(Boolean);
++  if (lines.length === 0) {
++    delivWrap.appendChild(h('div', {}, 'Details to follow.'));
++  } else {
++    for (const line of lines) delivWrap.appendChild(h('div', {}, line));
++  }
++  row.appendChild(delivWrap);
++
++  // Approve control — only on a milestone that is exactly 'delivered' (server truth, not the
++  // display-normalized style key), matching the server's own guarded transition.
++  if (m.status === 'delivered') {
++    const status = h('div', { class: 'portal-approve-status', role: 'status', 'aria-live': 'polite' });
++    const nameId = `ms-name-${m.id}`;
++    const nameInput = h('input', { type: 'text', id: nameId, required: 'required', autocomplete: 'name' });
++    const submitBtn = h('button', { type: 'submit', class: 'btn-solid green', style: 'padding:10px 18px;font-size:13px' }, 'Approve delivery');
++    const form = h('form', { class: 'portal-approve' },
++      h('label', { for: nameId }, h('span', { class: 'lbl-text' }, 'Your full name'), nameInput),
++      submitBtn,
++      status,
++    );
++
++    form.addEventListener('submit', (ev) => {
++      ev.preventDefault();
++      const name = nameInput.value.trim();
++      if (name.length < 2) {
++        clear(status); status.classList.remove('ok'); status.classList.add('err');
++        status.appendChild(document.createTextNode('Add your name to approve.'));
++        return;
++      }
++      status.classList.remove('err'); clear(status);
++      nameInput.disabled = true; submitBtn.disabled = true; submitBtn.textContent = 'Approving…';
++
++      fetch('/api/portal', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({ portalToken, action: 'approve_milestone', milestoneId: m.id, name }),
++      })
++        .then((res) => res.json().catch(() => null))
++        .then((data) => {
++          if (data && data.ok) {
++            row.classList.remove('st-delivered');
++            row.classList.add('st-approved');
++            const badge = titleBlock.querySelector('.portal-badge');
++            if (badge) { badge.className = 'portal-badge st-approved'; clear(badge); badge.appendChild(document.createTextNode('Approved')); }
++            clear(status); status.classList.remove('err'); status.classList.add('ok');
++            status.appendChild(document.createTextNode('Approved. Thank you.'));
++            submitBtn.textContent = 'Approved';
++            return;
++          }
++          clear(status); status.classList.add('err');
++          if (data && data.skipped) {
++            status.appendChild(document.createTextNode('Approvals aren’t switched on yet. Email Jason to confirm.'));
++          } else {
++            status.appendChild(document.createTextNode('Something went wrong. Try again, or email '));
++            status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL));
++            status.appendChild(document.createTextNode('.'));
++          }
++          nameInput.disabled = false; submitBtn.disabled = false; submitBtn.textContent = 'Approve delivery';
++        })
++        .catch(() => {
++          clear(status); status.classList.add('err');
++          status.appendChild(document.createTextNode('Couldn’t reach the server. Try again in a moment.'));
++          nameInput.disabled = false; submitBtn.disabled = false; submitBtn.textContent = 'Approve delivery';
++        });
++    });
++
++    row.appendChild(form);
++  }
++
++  return row;
++}
++
++/* ── the real page: header + plan + milestone timeline + payment + agreement ── */
++function renderPortal(root, view, portalToken) {
++  clear(root);
++  const plan = view.plan || {};
++  const segLabel = plan.segment && SEGMENTS[plan.segment] ? SEGMENTS[plan.segment].label : null;
++
++  root.appendChild(h('div', { class: 'portal-head' },
++    h('div', {},
++      h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'client portal'), h('span', { class: 'line' })),
++      h('h1', { class: 'portal-title' }, 'Your project'),
++      segLabel ? h('p', { class: 'portal-sub' }, segLabel) : null,
++    ),
++    statusChip(view.project && view.project.status),
++  ));
++
++  // The plan they bought — itemized from the catalog keys, grouped by phase, display-only.
++  const planData = computePlan(Array.isArray(plan.keys) ? plan.keys : [], plan.segment || null);
++  const planCard = h('div', { class: 'portal-card' }, h('h2', { class: 'portal-card-title' }, 'The plan you bought'));
++  if (planData.phases.length === 0) {
++    planCard.appendChild(h('p', { class: 'subtle' }, 'Scope details are being finalized.'));
++  } else {
++    for (const phase of planData.phases) {
++      const phaseBlock = h('div', { class: 'portal-phase' }, h('h3', {}, phase.label));
++      for (const item of phase.items) {
++        phaseBlock.appendChild(h('div', { class: 'portal-plan-item' }, h('span', { class: 'nm' }, item.name), h('span', { class: 'tk' }, item.track)));
++      }
++      planCard.appendChild(phaseBlock);
++    }
++  }
++  root.appendChild(planCard);
++
++  // Milestone timeline — the centerpiece.
++  const msCard = h('div', { class: 'portal-card' }, h('h2', { class: 'portal-card-title' }, 'Milestones'));
++  const milestones = Array.isArray(view.milestones) ? [...view.milestones].sort((a, b) => (a.seq || 0) - (b.seq || 0)) : [];
++  if (milestones.length === 0) {
++    msCard.appendChild(h('p', { class: 'subtle' }, 'Milestones will appear here once the project kicks off.'));
++  } else {
++    const timeline = h('div', { class: 'portal-timeline' });
++    for (const m of milestones) timeline.appendChild(buildMilestoneRow(m, portalToken));
++    msCard.appendChild(timeline);
++  }
++  root.appendChild(msCard);
++
++  // Payment summary.
++  root.appendChild(h('div', { class: 'portal-card' },
++    h('h2', { class: 'portal-card-title' }, 'Payment'),
++    h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Deposit paid'), h('span', { class: 'val' }, money(plan.deposit_cents))),
++    h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance due on delivery'), h('span', { class: 'val' }, money(plan.balance_cents))),
++  ));
++
++  // Agreement — only shown once a contract has been sent (or accepted).
++  if (view.contract && view.contract.public_id) {
++    root.appendChild(h('div', { class: 'portal-card' },
++      h('h2', { class: 'portal-card-title' }, 'Agreement'),
++      h('a', { href: `contract.html?id=${encodeURIComponent(view.contract.public_id)}`, class: 'portal-agreement-link' }, 'View your agreement →'),
++      h('div', { class: 'portal-agreement-status' }, view.contract.status === 'accepted' ? 'Accepted' : 'Awaiting your review'),
++    ));
++  }
++}
++
++async function init() {
++  const root = document.getElementById('portal-root');
++  if (!root) return;
++
++  const params = new URLSearchParams(location.search);
++  const id = (params.get('id') || '').trim();
++  if (!id) { renderUnavailable(root); return; }
++
++  // Immediate placeholder inside the reserved min-height so the fetch->render
++  // transition does not shift the page (keeps CLS ~0).
++  root.appendChild(h('p', { class: 'subtle', style: 'padding-top:8vh;text-align:center' }, 'Loading your project…'));
++
++  let json = null;
++  try {
++    const res = await fetch(`/api/portal?id=${encodeURIComponent(id)}`);
++    if (res.ok) json = await res.json().catch(() => null);
++  } catch {
++    // network error (e.g. static host with no API route) — fall through to unavailable
++  }
++
++  // Covers no id, {ok:false} (not found / bad request), and dormant ({ok:false, reason:'not_configured'}).
++  if (!json || !json.ok) { renderUnavailable(root); return; }
++  renderPortal(root, json, id);
++}
++
++init().catch(() => {
++  const root = document.getElementById('portal-root');
++  if (root) renderUnavailable(root);
++});
+diff --git a/assets/proposal-admin.mjs b/assets/proposal-admin.mjs
+index 9d69b5a..01db03c 100644
+--- a/assets/proposal-admin.mjs
++++ b/assets/proposal-admin.mjs
+@@ -9,12 +9,26 @@ const STATUS_META = {
+   [PROPOSAL_STATUS.APPROVED]: { label: 'Approved', color: '#22d3ee' },
+   [PROPOSAL_STATUS.PAID]: { label: 'Paid', color: '#10b981' },
+   [PROPOSAL_STATUS.EXPIRED]: { label: 'Expired', color: '#8E8882' },
+   [PROPOSAL_STATUS.DECLINED]: { label: 'Declined', color: '#f43f5e' },
+ };
+ 
++const CONTRACT_STATUS_META = {
++  draft: { label: 'Draft', color: '#8E8882' },
++  sent: { label: 'Sent', color: '#22d3ee' },
++  accepted: { label: 'Accepted', color: '#10b981' },
++  declined: { label: 'Declined', color: '#f43f5e' },
++};
++
++const MILESTONE_STATUS_META = {
++  pending: { label: 'Pending', color: '#8E8882' },
++  in_progress: { label: 'In progress', color: '#F59E0B' },
++  delivered: { label: 'Delivered', color: '#22d3ee' },
++  approved: { label: 'Approved', color: '#10b981' },
++};
++
+ function h(tag, props, ...children) {
+   const node = document.createElement(tag);
+   if (props) {
+     for (const [k, v] of Object.entries(props)) {
+       if (v === undefined || v === null || v === false) continue;
+       if (k === 'class') node.className = v;
+@@ -28,20 +42,36 @@ function h(tag, props, ...children) {
+   }
+   return node;
+ }
+ 
+ function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+ 
+-function statusChip(status) {
+-  const meta = STATUS_META[status] || { label: status || 'unknown', color: '#8E8882' };
++function copyButton(text) {
++  const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:5px 10px;font-size:11.5px' }, 'Copy');
++  btn.addEventListener('click', () => {
++    if (navigator.clipboard && navigator.clipboard.writeText) {
++      navigator.clipboard.writeText(text)
++        .then(() => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500); })
++        .catch(() => {});
++    }
++  });
++  return btn;
++}
++
++function chipFor(status, metaMap) {
++  const meta = metaMap[status] || { label: status || 'unknown', color: '#8E8882' };
+   return h('span', { class: 'chip', style: `color:${meta.color};border-color:${meta.color}44` },
+     h('span', { class: 'dot', style: `background:${meta.color}` }),
+     meta.label,
+   );
+ }
+ 
++function statusChip(status) { return chipFor(status, STATUS_META); }
++function contractStatusChip(status) { return chipFor(status, CONTRACT_STATUS_META); }
++function milestoneStatusChip(status) { return chipFor(status, MILESTONE_STATUS_META); }
++
+ function formatAge(iso) {
+   const t = new Date(iso).getTime();
+   if (Number.isNaN(t)) return '—';
+   const days = Math.floor((Date.now() - t) / 864e5);
+   if (days <= 0) return 'today';
+   if (days === 1) return '1d ago';
+@@ -135,16 +165,220 @@ async function openDetail(mount, id, key) {
+   }
+   if (result.unauthorized || !result.json || !result.json.ok || !result.json.proposal) {
+     clear(mount);
+     mount.appendChild(h('div', { class: 'admin-card' }, h('p', { class: 'subtle' }, 'Couldn’t load that proposal.')));
+     return;
+   }
+-  renderDetail(mount, result.json.proposal, key);
++  const { proposal, project, milestones, contracts } = result.json;
++  renderDetail(mount, proposal, key, project || null, Array.isArray(milestones) ? milestones : [], Array.isArray(contracts) ? contracts : []);
++}
++
++// ---- Contracts (generate + send) -------------------------------------------
++
++function contractRow(c, key) {
++  const link = `${location.origin}/contract.html?id=${c.public_id}`;
++  const row = h('div', { style: 'display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)' },
++    h('span', { class: 'chip mono' }, c.kind === 'msa' ? 'MSA' : 'SOW'),
++    contractStatusChip(c.status),
++    h('a', { href: link, style: 'color:var(--cyan);font-size:12.5px;word-break:break-all' }, link),
++    copyButton(link),
++  );
++  if (c.status === 'draft') {
++    const sendBtn = h('button', { type: 'button', class: 'btn-solid cyan', style: 'padding:5px 12px;font-size:11.5px' }, 'Send to client');
++    sendBtn.addEventListener('click', () => {
++      sendBtn.disabled = true;
++      sendBtn.textContent = 'Sending…';
++      fetch('/api/contract-send', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
++        body: JSON.stringify({ id: c.id }),
++      })
++        .then((res) => res.json().catch(() => null))
++        .then((data) => {
++          if (data && data.ok) {
++            const note = document.createTextNode('Sent.');
++            sendBtn.replaceWith(note);
++          } else {
++            sendBtn.disabled = false;
++            sendBtn.textContent = 'Send to client';
++          }
++        })
++        .catch(() => {
++          sendBtn.disabled = false;
++          sendBtn.textContent = 'Send to client';
++        });
++    });
++    row.appendChild(sendBtn);
++  }
++  return row;
++}
++
++function renderContractsCard(row, key, contracts) {
++  const list = h('div', { id: 'contracts-list' });
++  for (const c of contracts) list.appendChild(contractRow(c, key));
++
++  const status = h('p', { class: 'subtle', style: 'font-size:12.5px;margin-top:8px;min-height:14px' });
++
++  function doGenerate(kind, btn) {
++    clear(status);
++    btn.disabled = true;
++    const orig = btn.textContent;
++    btn.textContent = 'Generating…';
++    fetch('/api/contract-generate', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
++      body: JSON.stringify({ proposalId: row.id, kind }),
++    })
++      .then((res) => res.json().catch(() => null))
++      .then((data) => {
++        btn.disabled = false;
++        btn.textContent = orig;
++        if (data && data.ok && data.publicId) {
++          list.insertBefore(contractRow({ id: data.id, public_id: data.publicId, kind, status: 'draft' }, key), list.firstChild);
++        } else {
++          clear(status);
++          status.appendChild(document.createTextNode('Couldn’t generate that contract. Try again.'));
++        }
++      })
++      .catch(() => {
++        btn.disabled = false;
++        btn.textContent = orig;
++        clear(status);
++        status.appendChild(document.createTextNode('Couldn’t reach the server.'));
++      });
++  }
++
++  const genSow = h('button', { type: 'button', class: 'btn-ghost' }, 'Generate SOW');
++  const genMsa = h('button', { type: 'button', class: 'btn-ghost' }, 'Generate MSA');
++  genSow.addEventListener('click', () => doGenerate('sow', genSow));
++  genMsa.addEventListener('click', () => doGenerate('msa', genMsa));
++
++  return h('div', { class: 'admin-card' },
++    h('h2', { class: 'sec-title', style: 'font-size:1.5rem;margin-top:0' }, 'Contracts'),
++    h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;margin-top:10px' }, genSow, genMsa),
++    status,
++    list,
++  );
++}
++
++// ---- Milestones (add + mark delivered) -------------------------------------
++
++function milestoneRow(m, key) {
++  const row = h('div', { style: 'display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)' },
++    h('span', { class: 'mono', style: 'color:var(--faint);font-size:11.5px;min-width:18px' }, String(m.seq ?? 0)),
++    h('span', { style: 'flex:1 1 160px' }, m.title || '—'),
++    h('span', { class: 'mono' }, money(m.amount_cents || 0)),
++    milestoneStatusChip(m.status || 'pending'),
++  );
++  if (m.status === 'pending' || m.status === 'in_progress' || !m.status) {
++    const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:5px 10px;font-size:11.5px' }, 'Mark delivered');
++    btn.addEventListener('click', () => {
++      btn.disabled = true;
++      btn.textContent = 'Marking…';
++      fetch('/api/milestone', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
++        body: JSON.stringify({ id: m.id, action: 'deliver' }),
++      })
++        .then((res) => res.json().catch(() => null))
++        .then((data) => {
++          if (data && data.ok) {
++            btn.replaceWith(milestoneStatusChip('delivered'));
++          } else {
++            btn.disabled = false;
++            btn.textContent = 'Mark delivered';
++          }
++        })
++        .catch(() => {
++          btn.disabled = false;
++          btn.textContent = 'Mark delivered';
++        });
++    });
++    row.appendChild(btn);
++  }
++  return row;
++}
++
++function renderMilestonesCard(project, milestones, key) {
++  if (!project) {
++    return h('div', { class: 'admin-card' },
++      h('h2', { class: 'sec-title', style: 'font-size:1.5rem;margin-top:0' }, 'Milestones'),
++      h('p', { class: 'subtle', style: 'margin-top:10px' }, 'Milestones open once the deposit is paid.'),
++    );
++  }
++
++  const sorted = milestones.slice().sort((a, b) => (a.seq || 0) - (b.seq || 0));
++  const list = h('div', { id: 'milestones-list' });
++  for (const m of sorted) list.appendChild(milestoneRow(m, key));
++
++  const titleInput = h('input', { type: 'text', placeholder: 'e.g. Kickoff & discovery' });
++  const deliverablesInput = h('textarea', { rows: '2', placeholder: 'What gets delivered' });
++  const amountInput = h('input', { type: 'number', min: '0', step: '1', placeholder: '0' });
++  const seqInput = h('input', { type: 'number', min: '0', step: '1', value: String(sorted.length) });
++  const dueInput = h('input', { type: 'date' });
++  const addStatus = h('p', { class: 'subtle', style: 'font-size:12.5px;margin-top:8px;min-height:14px' });
++  const addBtn = h('button', { type: 'button', class: 'btn-solid green' }, 'Add milestone');
++
++  addBtn.addEventListener('click', () => {
++    const title = titleInput.value.trim();
++    clear(addStatus);
++    if (!title) { addStatus.appendChild(document.createTextNode('Title is required.')); return; }
++    addBtn.disabled = true;
++    addBtn.textContent = 'Adding…';
++    const amountCents = Math.round((parseFloat(amountInput.value) || 0) * 100);
++    const seq = Math.round(parseFloat(seqInput.value) || 0);
++    const dueAt = dueInput.value ? new Date(`${dueInput.value}T23:59:59`).toISOString() : undefined;
++    fetch('/api/milestone', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
++      body: JSON.stringify({ projectId: project.id, title, deliverables: deliverablesInput.value, amountCents, seq, dueAt }),
++    })
++      .then((res) => res.json().catch(() => null))
++      .then((data) => {
++        addBtn.disabled = false;
++        addBtn.textContent = 'Add milestone';
++        if (data && data.ok && data.milestone) {
++          list.appendChild(milestoneRow(data.milestone, key));
++          titleInput.value = '';
++          deliverablesInput.value = '';
++          amountInput.value = '';
++          dueInput.value = '';
++          seqInput.value = String(sorted.length + 1);
++        } else {
++          clear(addStatus);
++          addStatus.appendChild(document.createTextNode('Couldn’t add that milestone. Try again.'));
++        }
++      })
++      .catch(() => {
++        addBtn.disabled = false;
++        addBtn.textContent = 'Add milestone';
++        clear(addStatus);
++        addStatus.appendChild(document.createTextNode('Couldn’t reach the server.'));
++      });
++  });
++
++  return h('div', { class: 'admin-card' },
++    h('h2', { class: 'sec-title', style: 'font-size:1.5rem;margin-top:0' }, 'Milestones'),
++    list,
++    h('div', { style: 'border-top:1px solid var(--line);margin-top:16px;padding-top:16px' },
++      h('div', { class: 'grid2' },
++        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Title'), titleInput),
++        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Amount ($)'), amountInput),
++      ),
++      h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Deliverables'), deliverablesInput),
++      h('div', { class: 'grid2' },
++        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Seq'), seqInput),
++        h('label', { class: 'fld' }, h('span', { class: 'lbl-text' }, 'Due date (optional)'), dueInput),
++      ),
++      addBtn,
++      addStatus,
++    ),
++  );
+ }
+ 
+-function renderDetail(mount, row, key) {
++function renderDetail(mount, row, key, project, milestones, contracts) {
+   clear(mount);
+   const currency = row.currency || 'usd';
+ 
+   const firmInput = h('input', { type: 'number', min: '0', step: '1', value: String(Math.round((row.firm_cents || 0) / 100)) });
+   const pctInput = h('input', { type: 'number', min: '0', max: '100', step: '1', value: String(Math.round((row.deposit_pct || 0.3) * 100)) });
+   const noteInput = h('textarea', { rows: '3' });
+@@ -230,12 +464,15 @@ function renderDetail(mount, row, key) {
+     h('div', { class: 'price-row', style: 'border-top:1px solid var(--line);padding-top:10px' }, h('span', { class: 'lbl' }, 'Deposit'), depositOut),
+     h('div', { class: 'price-row' }, h('span', { class: 'lbl' }, 'Balance'), balanceOut),
+     approveBtn,
+     status,
+     stateNote,
+   ));
++
++  mount.appendChild(renderContractsCard(row, key, contracts));
++  mount.appendChild(renderMilestonesCard(project, milestones, key));
+ }
+ 
+ async function init() {
+   const root = document.getElementById('admin-root');
+   if (!root) return;
+ 
+diff --git a/assets/site.css b/assets/site.css
+index 0828a4c..71aad66 100644
+--- a/assets/site.css
++++ b/assets/site.css
+@@ -740,6 +740,86 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
+ .jt-hero-wash {
+   position: absolute; inset: 0; z-index: -1; pointer-events: none;
+   background:
+     radial-gradient(60% 55% at 18% 0%, rgba(34,211,238,0.07), transparent 60%),
+     radial-gradient(55% 60% at 92% 15%, rgba(167,139,250,0.06), transparent 60%);
+ }
++
++/* ═══════════════ P6 — client portal (milestones / approvals / payment) ═══════════════ */
++.portal-wrap { max-width: 880px; margin: 0 auto; padding: clamp(40px,6vw,80px) clamp(18px,4vw,40px); }
++.portal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
++.portal-title { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: clamp(2rem,4.2vw,3rem); letter-spacing: -0.02em; line-height: 1.05; color: #F4F2EF; margin: 10px 0 0; }
++.portal-sub { color: #A8A29E; font-size: 14.5px; margin-top: 8px; }
++
++/* project status chip */
++.portal-chip { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 14px; border-radius: 999px; border: 1px solid; white-space: nowrap; flex-shrink: 0; }
++.portal-chip .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
++.portal-chip.st-kickoff { color: #a78bfa; border-color: rgba(167,139,250,0.35); background: rgba(167,139,250,0.06); }
++.portal-chip.st-kickoff .dot { background: #a78bfa; }
++.portal-chip.st-active, .portal-chip.st-in_progress { color: #22d3ee; border-color: rgba(34,211,238,0.35); background: rgba(34,211,238,0.06); }
++.portal-chip.st-active .dot, .portal-chip.st-in_progress .dot { background: #22d3ee; }
++.portal-chip.st-delivered, .portal-chip.st-complete, .portal-chip.st-completed { color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.06); }
++.portal-chip.st-delivered .dot, .portal-chip.st-complete .dot, .portal-chip.st-completed .dot { background: #10b981; }
++
++.portal-card { border: 1px solid #2A2826; background: #0C0C0E; border-radius: 16px; padding: clamp(20px,4vw,30px); margin-top: 22px; box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset; }
++.portal-card h2.portal-card-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #8E8882; margin: 0 0 16px; }
++
++/* the plan they bought — grouped, compact, display-only */
++.portal-phase + .portal-phase { margin-top: 16px; }
++.portal-phase h3 { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #22d3ee; margin: 0 0 8px; }
++.portal-plan-item { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; border-top: 1px solid #2A2826; padding: 10px 0; font-size: 14px; }
++.portal-plan-item:first-child { border-top: none; padding-top: 0; }
++.portal-plan-item .nm { color: #F4F2EF; }
++.portal-plan-item .tk { color: #8E8882; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.04em; white-space: nowrap; }
++
++/* ─── milestone timeline: the centerpiece ─── */
++.portal-timeline { position: relative; margin-top: 6px; }
++.portal-ms { position: relative; padding: 0 0 34px 44px; }
++.portal-ms:last-child { padding-bottom: 2px; }
++.portal-ms::before {
++  content: ""; position: absolute; left: 13px; top: 28px; bottom: -6px; width: 1px; background: #2A2826;
++}
++.portal-ms:last-child::before { display: none; }
++.portal-ms-dot {
++  position: absolute; left: 0; top: 2px; width: 28px; height: 28px; border-radius: 50%;
++  display: flex; align-items: center; justify-content: center;
++  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
++  border: 1px solid #2A2826; background: #0C0C0E; color: #8E8882;
++}
++.portal-ms.st-in_progress .portal-ms-dot { border-color: rgba(34,211,238,0.5); color: #22d3ee; box-shadow: 0 0 0 4px rgba(34,211,238,0.08); }
++.portal-ms.st-delivered .portal-ms-dot { border-color: rgba(245,158,11,0.5); color: #F59E0B; box-shadow: 0 0 0 4px rgba(245,158,11,0.08); }
++.portal-ms.st-approved .portal-ms-dot { border-color: rgba(16,185,129,0.5); color: #10b981; background: rgba(16,185,129,0.1); box-shadow: 0 0 0 4px rgba(16,185,129,0.08); }
++.portal-ms-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
++.portal-ms-title { font-size: 16px; font-weight: 600; color: #F4F2EF; }
++.portal-ms-amt { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #F4F2EF; font-weight: 600; white-space: nowrap; }
++.portal-ms-deliverables { margin-top: 10px; color: #A8A29E; font-size: 13.5px; line-height: 1.7; }
++.portal-ms-deliverables div + div { margin-top: 3px; }
++
++.portal-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid; margin-top: 8px; }
++.portal-badge.st-pending { color: #8E8882; border-color: #2A2826; background: rgba(142,136,130,0.06); }
++.portal-badge.st-in_progress { color: #22d3ee; border-color: rgba(34,211,238,0.35); background: rgba(34,211,238,0.06); }
++.portal-badge.st-delivered { color: #F59E0B; border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.06); }
++.portal-badge.st-approved { color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.06); }
++
++/* approve control — shown only on a delivered milestone */
++.portal-approve { margin-top: 16px; padding-top: 16px; border-top: 1px dashed #2A2826; display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
++.portal-approve label { display: block; }
++.portal-approve span.lbl-text { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8E8882; margin-bottom: 6px; }
++.portal-approve input[type="text"] { background: #0F0F13; border: 1px solid #2A2826; border-radius: 9px; padding: 10px 12px; font-size: 13.5px; color: #F4F2EF; font-family: inherit; outline: none; min-width: 200px; }
++.portal-approve input[type="text"]:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
++.portal-approve input[type="text"]:disabled { opacity: 0.5; }
++.portal-approve button { flex-shrink: 0; }
++.portal-approve-status { width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8E8882; margin-top: 4px; min-height: 14px; }
++.portal-approve-status.err { color: #f43f5e; }
++.portal-approve-status.ok { color: #10b981; }
++
++/* payment summary */
++.portal-pay-row { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid #2A2826; font-size: 14.5px; }
++.portal-pay-row:first-of-type { border-top: none; padding-top: 0; }
++.portal-pay-row .lbl { color: #A8A29E; }
++.portal-pay-row .val { font-family: 'JetBrains Mono', monospace; color: #F4F2EF; font-weight: 600; }
++
++/* agreement card */
++.portal-agreement-link { display: inline-flex; align-items: center; gap: 8px; color: #22d3ee; font-weight: 600; font-size: 14.5px; }
++.portal-agreement-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8E8882; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
++
++.portal-empty { text-align: center; padding: 60px 20px; }
+diff --git a/contract.html b/contract.html
+new file mode 100644
+index 0000000..51fe803
+--- /dev/null
++++ b/contract.html
+@@ -0,0 +1,90 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++<meta charset="utf-8">
++<meta name="viewport" content="width=device-width, initial-scale=1">
++<title>Your agreement · Jason Teixeira</title>
++<meta name="description" content="Your tailored agreement from Jason Teixeira — read it, and accept online.">
++<meta name="robots" content="noindex">
++<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
++<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
++<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
++<link rel="stylesheet" href="assets/site.css">
++<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
++<style>
++  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
++  * { box-sizing:border-box; }
++  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
++  a { color:inherit; text-decoration:none; }
++  .mono { font-family:var(--mono); }
++  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
++  h1.sec-title { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,4.5vw,3.4rem); letter-spacing:-0.02em; line-height:1.05; margin:26px 0 0; color:var(--ink); }
++  .ctr-wrap { max-width:760px; margin:0 auto; padding:clamp(40px,7vw,88px) clamp(18px,4vw,40px); }
++  .ctr-caveat { display:flex; gap:12px; align-items:flex-start; margin-top:22px; padding:16px 18px; border:1px solid rgba(245,158,11,0.35); border-radius:12px; background:rgba(245,158,11,0.07); font-size:13.5px; line-height:1.65; color:var(--dim); }
++  .ctr-caveat .mk { color:var(--amber); font-family:var(--mono); font-size:13px; flex-shrink:0; line-height:1.65; }
++  .ctr-caveat strong { color:var(--ink); font-weight:600; }
++  .ctr-card { border:1px solid var(--line); background:var(--card); border-radius:16px; padding:clamp(20px,4vw,30px); margin-top:22px; }
++  .ctr-section + .ctr-section { margin-top:22px; padding-top:22px; border-top:1px solid var(--line); }
++  .ctr-section h3 { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cyan); margin:0 0 10px; }
++  .ctr-section p { color:var(--dim); font-size:14px; line-height:1.8; margin:0; white-space:pre-wrap; }
++  .ctr-status-pill { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:8px 16px; border-radius:999px; border:1px solid rgba(16,185,129,0.35); background:rgba(16,185,129,0.07); color:var(--green); }
++  label.fld { display:block; margin-bottom:14px; }
++  label.fld span.lbl-text { display:block; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); margin-bottom:6px; }
++  .ctr-form input[type="text"] { width:100%; background:#0F0F13; border:1px solid var(--line); border-radius:9px; padding:12px 14px; font-size:14.5px; color:var(--ink); font-family:inherit; outline:none; }
++  .ctr-form input[type="text"]:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
++  .ctr-form input[type="text"]:disabled { opacity:0.5; }
++  .ctr-check { display:flex; align-items:flex-start; gap:10px; margin:16px 0; }
++  .ctr-check input[type="checkbox"] { width:18px; height:18px; margin-top:2px; accent-color:var(--green); flex-shrink:0; }
++  .ctr-check input[type="checkbox"]:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
++  .ctr-check label { font-size:13.5px; color:var(--dim); line-height:1.5; }
++  .ctr-status { margin-top:12px; font-family:var(--mono); font-size:12.5px; color:var(--faint); min-height:16px; }
++  .ctr-status.err { color:var(--rose); }
++  .ctr-status.ok { color:var(--green); }
++  #contract-root .btn-solid:focus-visible, #contract-root .btn-ghost:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
++  .ctr-empty { text-align:center; padding:60px 20px; }
++  @media (prefers-reduced-motion: reduce) {
++    .btn-solid.green:hover, .btn-solid.cyan:hover { transform:none; }
++  }
++  @media print {
++    nav, footer, .ctr-form, #contract-noscript { display:none !important; }
++    body, .ctr-wrap { background:#fff !important; color:#111 !important; }
++    .ctr-card, .ctr-caveat, .ctr-status-pill { border-color:#ccc !important; background:#fff !important; box-shadow:none !important; }
++    h1.sec-title, .ctr-section h3, .ctr-section p, .ctr-caveat, .ctr-caveat strong { color:#111 !important; }
++    a { color:#111 !important; text-decoration:underline; }
++  }
++</style>
++</head>
++<body>
++<div style="min-height:100vh;background:var(--bg)">
++  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
++    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
++      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
++      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
++    </a>
++    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
++      <a href="services.html" class="dim-link">services</a>
++      <a href="case-studies.html" class="dim-link">case studies</a>
++      <a href="docs.html" class="dim-link">guides</a>
++      <a href="book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Talk to Jason &rarr;</a>
++    </div>
++  </nav>
++
++  <main id="content">
++    <div class="ctr-wrap">
++      <noscript>
++        <div id="contract-noscript" class="ctr-card">
++          <p class="subtle">This agreement needs JavaScript to load. Email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> and I&rsquo;ll send it another way.</p>
++        </div>
++      </noscript>
++      <div id="contract-root" style="min-height:70vh"></div>
++    </div>
++  </main>
++
++  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
++    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
++    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
++  </footer>
++</div>
++<script type="module" src="assets/contract.mjs"></script>
++</body>
++</html>
+diff --git a/docs/PORTAL.md b/docs/PORTAL.md
+new file mode 100644
+index 0000000..8cbe388
+--- /dev/null
++++ b/docs/PORTAL.md
+@@ -0,0 +1,144 @@
++# Client Portal + Contracts — Operator Guide
++
++Once a deposit is paid, the client gets a private portal to track delivery —
++milestones, approvals, payment status — and a tailored contract generated
++from their approved proposal that they review and accept online. This doc is
++the operator runbook for that delivery layer. It sits downstream of
++`docs/PROPOSALS.md` (scope → proposal → deposit) — start there if you need
++the money path first.
++
++> ⚠️ **Legal caveat — read this before generating a contract.** Generated
++> contracts (SOW/MSA) are **drafting templates, not executed legal advice**.
++> They fill in scope, fees, and dates from the proposal — nothing is invented
++> — but neither party should treat a generated document as final. **Both
++> parties should have it reviewed by counsel before signing.** This caveat
++> is also rendered on every contract page the client sees
++> (`CONTRACT_CAVEAT` in `assets/contract-core.mjs`) — it is not optional and
++> should never be removed.
++
++## The flow
++
++1. **Deposit paid** — Stripe webhook (`api/stripe-webhook.js`) flips the
++   proposal to `deposit_paid`, creates the `scope_projects` row, and calls
++   `ensurePortalToken(projectId)` to mint (or reuse) a random portal token.
++   The client's receipt email includes their portal link:
++   `${SITE_URL}/portal.html?id=<portal_token>`.
++2. **Operator generates the contract** — from `/proposal-admin.html?key=…`,
++   open the paid proposal and click **Generate SOW** and/or **Generate MSA**.
++   Each builds the document from the proposal's own numbers (client name,
++   project name, scoped keys, deposit/balance/total in cents) via
++   `buildSow`/`buildMsa` in `assets/contract-core.mjs` — no figures are
++   typed in by hand or invented. The contract is created in `draft` status
++   (invisible to the client).
++3. **Operator sends it** — click **Send to client**. This flips the contract
++   to `sent` and emails the client the link:
++   `${SITE_URL}/contract.html?id=<public_id>`.
++4. **Operator seeds milestones** — in the same proposal's **Milestones**
++   card, add rows (title, deliverables, amount, sequence, due date) via
++   **Add milestone**. As work finishes, click **Mark delivered** on each one.
++5. **Client reviews and acts** — on `portal.html?id=<portal_token>` the
++   client sees their plan, the milestone timeline, and payment summary; on a
++   `delivered` milestone they can type their name and click **Approve
++   delivery**. On `contract.html?id=<public_id>` they read the full
++   document (with the caveat banner always visible), then type their name,
++   check "I have read and agree," and click **Accept agreement**.
++
++```
++deposit paid ──► portal link emailed ──► operator generates SOW/MSA
++                                              │
++                                              ▼
++                                        operator sends contract
++                                              │
++                     ┌────────────────────────┴───────────────────────┐
++                     ▼                                                ▼
++        operator seeds + delivers milestones            client reviews + accepts contract
++                     │                                                │
++                     ▼                                                ▼
++        client approves delivered milestones             contract.status = accepted
++```
++
++## Operator steps (admin console)
++
++All calls from `proposal-admin.html` carry the `x-admin-token` header — every
++action below fails closed (401) without a valid `SCOPE_ADMIN_TOKEN`.
++
++1. Open `https://agency.sageideas.dev/proposal-admin.html?key=SCOPE_ADMIN_TOKEN`.
++2. Click into a proposal that's at least `deposit_paid` (contracts and
++   milestones only make sense once there's a project).
++3. **Generate SOW** / **Generate MSA** → `POST /api/contract-generate`
++   `{proposalId, kind}` → creates a draft contract, returns its client link.
++4. **Send to client** → `POST /api/contract-send` `{id}` → flips the
++   contract to `sent`, emails the client the `contract.html` link.
++5. **Add milestone** → `POST /api/milestone` `{projectId, title,
++   deliverables, amountCents, seq, dueAt}` → appears in the client portal
++   immediately as `pending`.
++6. **Mark delivered** (per milestone) → `POST /api/milestone`
++   `{id, action:'deliver'}` → flips to `delivered`, which unlocks the
++   client's **Approve delivery** control on that row.
++
++## Client experience
++
++- **`portal.html?id=<portal_token>`** — the project's plan (itemized from the
++  scoped catalog keys, display-only), the milestone timeline with status
++  badges (`pending → in_progress → delivered → approved`), an approve
++  control on any `delivered` milestone, the deposit-paid/balance-due
++  summary, and — once a contract has been sent — a link to it.
++- **`contract.html?id=<public_id>`** — the full SOW or MSA text, the legal
++  caveat banner, and (if not yet accepted) a name + checkbox + **Accept
++  agreement** control. Once accepted, the page shows the acceptance
++  confirmation instead of the form. Print-clean (`@media print`) so the
++  client can save it as a PDF.
++- Both pages are `noindex`, unguessable-token-gated, and degrade to a calm
++  "isn't available" state (never a broken page) for a missing/bad/dormant
++  id — see `#portal-root` / `#contract-root` in each `.mjs`.
++
++## Env vars
++
++Nothing new — this reuses the same switchboard as the rest of the pipeline
++(`docs/SYSTEM.md` §4):
++
++| Var | What it turns on here |
++|---|---|
++| `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` | `scope_projects.portal_token`, `scope_milestones`, `scope_contracts` persistence. Absent ⇒ every portal/contract/milestone endpoint 200-skips (`{ok:false,skipped:true}`), pages show "isn't available." |
++| `SCOPE_ADMIN_TOKEN` | Gates `/api/contract-generate`, `/api/contract-send`, `/api/milestone` writes, and the proposal-admin UI. Absent/mismatched ⇒ 401 fail-closed. |
++| `RESEND_API_KEY` / `RESEND_FROM` / `RESEND_TO` | The portal-link line in the deposit receipt email, and the "your contract is ready" email on send. Absent ⇒ emails skip silently (operator still sees the link in the admin console). |
++| `SITE_URL` | Builds the absolute `portal.html`/`contract.html` links in emails. Falls back to `https://agency.sageideas.dev`. |
++
++## Dormant → live
++
++This layer is **schema-gated, not code-gated** — the endpoints and pages
++already ship and degrade cleanly with Supabase off. To make it live:
++
++1. Re-run `supabase/scope_schema.sql` in the Supabase SQL editor — it's
++   additive (`create table if not exists` / `alter table … add column if not
++   exists`), safe to re-run, and includes the `portal_token` column on
++   `scope_projects` plus the new `scope_milestones` and `scope_contracts`
++   tables (RLS enabled, deny-all-anon, service-role key only).
++2. Confirm `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` are set (same project as
++   the rest of Scope Studio/proposals — no separate project needed).
++3. Everything above activates automatically on the next deploy: the webhook
++   starts minting portal tokens, and the admin console's Generate/Send/
++   Milestone controls start writing instead of 200-skipping.
++
++## Testing it
++
++```bash
++npm run test:unit          # pure logic: contract-core, portal-db degrade-shapes
++npm run lint
++npx playwright test tests/smoke.spec.js --project=desktop
++```
++
++Full path once Supabase is live: pay a deposit (test card
++`4242 4242 4242 4242` per `docs/PROPOSALS.md`) → confirm the portal link in
++the client's receipt email → open `/proposal-admin.html?key=…` → generate +
++send a contract → add + deliver a milestone → open the client's
++`portal.html?id=…` and approve the milestone → open `contract.html?id=…`
++and accept it → confirm both flip status in Supabase.
++
++## Related docs
++
++- `docs/PROPOSALS.md` — the money path upstream of this (scope → proposal →
++  deposit).
++- `docs/SYSTEM.md` — the full pipeline map, env switchboard, and dormant→live
++  checklist.
++- `docs/SUPABASE.md` — schema/persistence setup shared by every stage.
+diff --git a/docs/README.md b/docs/README.md
+index 5aae71a..34acc37 100644
+--- a/docs/README.md
++++ b/docs/README.md
+@@ -1,11 +1,12 @@
+ # Docs map
+ 
+ ## Operator guides
+ 
+ - [`PROPOSALS.md`](PROPOSALS.md) — the money path: scope → proposal → deposit.
++- [`PORTAL.md`](PORTAL.md) — the delivery layer: client portal, milestones, auto-generated contracts.
+ - [`NURTURE.md`](NURTURE.md) — automated cold-lead/proposal follow-up (Subsystem C), dormant until enabled.
+ - [`CHATBOT-EVAL.md`](CHATBOT-EVAL.md) — red-team + golden eval for the site chatbot, run and proven live.
+ - [`SCOPE-EVAL.md`](SCOPE-EVAL.md) — golden-set eval gate for the Scope Studio AI.
+ - [`SUPABASE.md`](SUPABASE.md) — Supabase setup/activation for Scope Studio persistence.
+ - [`CONTENT_CADENCE.md`](CONTENT_CADENCE.md) — field-notes publishing rhythm.
+ - [`DISTRIBUTION.md`](DISTRIBUTION.md) — launch/distribution runbook.
+diff --git a/docs/SYSTEM.md b/docs/SYSTEM.md
+index 00af06a..b8e488d 100644
+--- a/docs/SYSTEM.md
++++ b/docs/SYSTEM.md
+@@ -38,12 +38,20 @@ VISITOR ARRIVES (agency.sageideas.dev)
+    │                                    (edits firm price)       │  (status=approved, client emailed)
+    │                                                             ▼
+    │        /proposal.html?id=PUBLIC_ID  ──► client accepts+pays DEPOSIT
+    │                                    Stripe Checkout          │  (Stripe → /api/stripe-webhook,
+    │                                                             ▼   verified+idempotent → status=deposit_paid)
+    │                                                        PROJECT (scope_projects)
++   │                                                             │
++   │        portal link emailed (portal_token) ──────────────────▼
++   │        /portal.html?id=TOKEN  ──► client tracks delivery   DELIVERY
++   │             • operator generates SOW/MSA + seeds/           │  (scope_milestones,
++   │               delivers milestones in /proposal-admin        │   scope_contracts)
++   │             • client approves delivered milestones          ▼
++   │        /contract.html?id=PUBLIC_ID  ──► client accepts CONTRACT ACCEPTED
++   │             the tailored SOW/MSA
+    │
+    └─ NURTURE (daily Vercel Cron → /api/cron/nurture)
+         • lead, no proposal (48h) → nudge
+         • proposal unpaid (day 3, day 8) → reminders
+         • proposal expiring (T-3d) → heads-up
+         • operator digest → stale drafts + run summary to Jason
+@@ -67,16 +75,19 @@ VISITOR ARRIVES (agency.sageideas.dev)
+ | Lead capture | `api/lead.js`, `lib/scope-db.mjs`, `lib/notify.mjs` | `SUPABASE_*` (persist) + `RESEND_*` (email) |
+ | Proposal create/read | `api/proposal.js`, `lib/proposal-db.mjs` | `SUPABASE_*` |
+ | Proposal approve/admin | `api/proposal-approve.js`, `api/proposal-admin.js`, `lib/admin-auth.mjs` | `SCOPE_ADMIN_TOKEN` + `SUPABASE_*` |
+ | Client proposal + accept | `proposal.html`, `assets/proposal.mjs` | `SUPABASE_*` |
+ | Checkout (deposit) | `api/proposal-checkout.js`, `lib/stripe.mjs` | `STRIPE_SECRET_KEY` |
+ | Webhook (paid → project) | `api/stripe-webhook.js` | `STRIPE_WEBHOOK_SECRET` |
++| Delivery: client portal | `portal.html`, `assets/portal.mjs`, `api/portal.js`, `lib/portal-db.mjs` | `SUPABASE_*` |
++| Delivery: milestones (operator) | `api/milestone.js`, admin's Milestones card in `assets/proposal-admin.mjs` | `SCOPE_ADMIN_TOKEN` + `SUPABASE_*` |
++| Delivery: contracts (SOW/MSA) | `assets/contract-core.mjs`, `api/contract-generate.js`, `api/contract-send.js`, `api/contract.js`, `contract.html`, `assets/contract.mjs` | `SCOPE_ADMIN_TOKEN` (generate/send) + `SUPABASE_*` |
+ | Nurture cron | `api/cron/nurture.js`, `assets/nurture-core.mjs`, `lib/nurture-db.mjs` | `NURTURE_ENABLED=true` + `CRON_SECRET` + `SUPABASE_*` + `RESEND_*` |
+ | Unsubscribe / suppress | `api/unsubscribe.js`, `api/suppress.js`, `unsubscribe.html` | `SUPABASE_*` (+ `SCOPE_ADMIN_TOKEN` for suppress) |
+ 
+-Schema: `supabase/scope_schema.sql` (`scope_prospects`, `scope_plans`, `scope_conversations`, `scope_events`, `scope_proposals`, `scope_projects`, `scope_nurture_sends`). RLS: deny-all-anon; the server uses the service-role key only.
++Schema: `supabase/scope_schema.sql` (`scope_prospects`, `scope_plans`, `scope_conversations`, `scope_events`, `scope_proposals`, `scope_projects` + `portal_token`, `scope_milestones`, `scope_contracts`, `scope_nurture_sends`). RLS: deny-all-anon; the server uses the service-role key only.
+ 
+ ## 4. Env vars — the master switchboard
+ 
+ | Var | Turns on | Absent ⇒ |
+ |---|---|---|
+ | `LLM_API_KEY` / `LLM_BASE_URL` / `LLM_MODEL` | the AI bot + voice/text receptionist | chat returns 501 → questionnaire fallback |
+@@ -88,12 +99,14 @@ Schema: `supabase/scope_schema.sql` (`scope_prospects`, `scope_plans`, `scope_co
+ | `RESEND_API_KEY` / `RESEND_FROM` / `RESEND_TO` | operator + client emails | emails skip silently |
+ | `NURTURE_ENABLED` (`'true'`) | nurture sends | cron 200-skip (default OFF) |
+ | `CRON_SECRET` | authorize the nurture cron | cron 401 fail-closed |
+ 
+ **Status as of last activation:** `LLM_*`, `RESEND_*`, `SCOPE_ADMIN_TOKEN`, `SITE_URL`, `CRON_SECRET` are set. **Missing (the money back-half):** `SUPABASE_*` + `STRIPE_*`. `NURTURE_ENABLED` intentionally OFF until a verified sending domain + real leads.
+ 
++The delivery layer (portal + milestones + contracts, `docs/PORTAL.md`) adds no new switchboard vars — it reuses `SUPABASE_*` (persistence), `SCOPE_ADMIN_TOKEN` (operator generate/send/milestone writes), `RESEND_*` (portal-link + contract-ready emails), and `SITE_URL` (the links themselves) exactly as above.
++
+ ## 5. Dormant → live activation checklist
+ 
+ 1. **Supabase** (dedicated "Sage Ideas Agency" project, Pro so it never auto-pauses): run `supabase/scope_schema.sql` → set `SUPABASE_URL` + `SUPABASE_SERVICE_KEY`.
+ 2. **Stripe** (test first): set `STRIPE_SECRET_KEY` (`sk_test_…`); add a webhook endpoint `/api/stripe-webhook` for `checkout.session.completed` + `charge.dispute.created` → set `STRIPE_WEBHOOK_SECRET`.
+ 3. **Deliverability** (hard gate before nurture): verify the sending domain in Resend (SPF/DKIM/DMARC), point `RESEND_FROM` at it. See `docs/NURTURE.md`.
+ 4. **Cal.com:** replace `YOUR-CAL-USERNAME/intro` in `book.html`.
+@@ -119,10 +132,11 @@ node scripts/eval-chatbot.mjs --url https://agency.sageideas.dev   # expect 11/1
+ ```
+ 
+ Full money-path test once Supabase+Stripe are live: scope a plan → submit email (row in `scope_prospects` + `scope_proposals`, operator email) → approve in `/proposal-admin.html?key=…` → open `/proposal.html?id=…` → pay with `4242 4242 4242 4242` → webhook flips to `deposit_paid`, `scope_projects` row created.
+ 
+ ## 7. Related operator docs
+ - `docs/PROPOSALS.md` — proposal/deposit flow + go-live.
++- `docs/PORTAL.md` — delivery layer: client portal, milestones, auto-generated contracts (+ legal caveat).
+ - `docs/NURTURE.md` — sequences, deliverability gate, cron.
+ - `docs/CHATBOT-EVAL.md` — the bot's own eval harness.
+ - `docs/SUPABASE.md` — schema/persistence setup.
+ - Private vault: activation runbook, sales kit, outreach playbook.
+diff --git a/docs/superpowers/plans/2026-08-23-client-portal-contracts.md b/docs/superpowers/plans/2026-08-23-client-portal-contracts.md
+new file mode 100644
+index 0000000..14c4349
+--- /dev/null
++++ b/docs/superpowers/plans/2026-08-23-client-portal-contracts.md
+@@ -0,0 +1,158 @@
++# Client Portal + Auto-Contracts (Plan 6) — Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development.
++
++**Goal:** client portal (milestones/approvals/payment) + auto-generated tailored contracts, dormant-safe. **Spec:** `docs/superpowers/specs/2026-08-23-client-portal-contracts-design.md`.
++
++## Global Constraints
++- ESM, Node ≥22. Degrade-safe: missing Supabase ⇒ clean 200 `{ok:false,skipped:true}` (client GETs ⇒ 200 `{ok:false,reason}`); admin ⇒ 401 fail-closed. Never 5xx.
++- No client-set money (milestone amounts/contract price server-persisted only; client can only APPROVE). Acceptance artifact recorded (name/at/ip/terms_version).
++- Tokens ≥128-bit random; drafts invisible to client; client reads field-whitelisted. RLS deny-all. XSS: textContent only.
++- Legal caveat visibly rendered on every contract.
++- **These mirror Plan 5. Use the shipped files as exact patterns:** `lib/proposal-db.mjs` (gateway shape), `api/proposal.js` (client GET + validate + degrade), `api/proposal-admin.js`/`api/proposal-approve.js` (admin `checkToken` fail-closed), `proposal.html`+`assets/proposal.mjs` (client page states + accept), `assets/proposal-core.mjs` (pure money + publicId). Read them before writing the analogue.
++
++---
++
++### Task 1: Schema
++Modify `supabase/scope_schema.sql` — append the block from spec §3 (portal_token on scope_projects + scope_milestones + scope_contracts + indexes + RLS). Commit `chore(p6): portal + milestones + contracts schema`.
++
++---
++
++### Task 2: `assets/contract-core.mjs` (pure) + tests
++Create `assets/contract-core.mjs`, `tests/unit/contract-core.test.mjs`.
++
++Import `publicId` + `money` from `./proposal-core.mjs` (reuse; don't duplicate). Import `computePlan`, `CARD_BY_KEY` from `./scope-core.mjs` for deriving deliverables from keys.
++
++```js
++import { publicId, money } from './proposal-core.mjs';
++import { computePlan, CARD_BY_KEY } from './scope-core.mjs';
++
++export const CONTRACT_TERMS_VERSION = '2026-08-23';
++export const CONTRACT_CAVEAT = 'This is a drafting template generated from your proposal, not executed legal advice. Both parties should have it reviewed by counsel before signing.';
++export { publicId, money };
++
++// Deliverables derived from the catalog items the client scoped.
++function deliverablesFromKeys(keys) {
++  const plan = computePlan(Array.isArray(keys) ? keys : [], null);
++  return plan.items.map((i) => ({ name: i.name, why: i.why }));
++}
++
++// Statement of Work, filled from the proposal. No invented figures — all passed in.
++export function buildSow({ clientName, projectName, keys, firmCents, depositCents, balanceCents, nowIso }) {
++  const items = deliverablesFromKeys(keys);
++  const dList = items.length ? items.map((i) => `• ${i.name} — ${i.why}`).join('\n') : '• Scope as discussed and quoted.';
++  return {
++    kind: 'sow',
++    sections: [
++      { heading: 'Statement of Work', body: `This Statement of Work is between Sage Ideas LLC ("Consultant") and ${clientName || '[CLIENT]'} ("Client") for the project "${projectName || 'Engagement'}", dated ${nowIso.slice(0, 10)}.` },
++      { heading: 'Scope & Deliverables', body: dList },
++      { heading: 'Out of scope', body: 'Anything not listed above is not included and is quoted separately before any such work begins.' },
++      { heading: 'Fees', body: `Total: ${money(firmCents)}. Deposit: ${money(depositCents)} (credited to the total, due before work begins). Balance: ${money(balanceCents)}, invoiced on delivery.` },
++      { heading: 'Revisions', body: 'Two rounds of revisions per deliverable are included. Further rounds are billed at an hourly rate agreed in advance.' },
++      { heading: 'Timeline', body: 'Work begins once the deposit clears. The timeline is a working estimate and moves with the speed of feedback and access to systems.' },
++      { heading: 'Ownership', body: 'The delivered work transfers to Client on full payment of the balance. Until then, ownership stays with Consultant.' },
++      { heading: 'Acceptance', body: 'Client has five business days after delivery of each milestone to accept or send specific written change requests; no response within that period means the milestone is accepted.' },
++    ],
++    meta: { clientName: clientName || null, firmCents, depositCents, balanceCents },
++  };
++}
++
++// Master Services Agreement — the umbrella terms (client name filled).
++export function buildMsa({ clientName, nowIso }) {
++  return {
++    kind: 'msa',
++    sections: [
++      { heading: 'Master Services Agreement', body: `This Agreement is between Sage Ideas LLC ("Consultant") and ${clientName || '[CLIENT]'} ("Client"), effective ${nowIso.slice(0, 10)}. It governs all Statements of Work between the parties.` },
++      { heading: 'Independent contractor', body: 'Consultant is an independent contractor, responsible for its own taxes, insurance, and equipment. Nothing here creates an employment, partnership, or exclusive relationship.' },
++      { heading: 'Confidentiality', body: 'Each party will use the other’s non-public information only to perform or receive the services, protect it with reasonable care, and not disclose it except to people bound by similar obligations. Obligations survive termination.' },
++      { heading: 'Intellectual property', body: 'Deliverables created for Client transfer to Client on full payment. Consultant retains its pre-existing tools, frameworks, and general methods, and grants Client a license to use any that are embedded in a deliverable.' },
++      { heading: 'Warranties', body: 'Consultant will perform in a professional and workmanlike manner. Except as stated, services and deliverables are provided as is; the results of any AI system are probabilistic by nature.' },
++      { heading: 'Limitation of liability', body: 'Neither party is liable for indirect or consequential damages. Each party’s total liability under a Statement of Work will not exceed the fees paid under that Statement of Work.' },
++      { heading: 'Term & termination', body: 'Either party may terminate for convenience on fifteen days’ written notice, or immediately for uncured material breach. On termination, Client pays for work performed through that date.' },
++      { heading: 'Governing law', body: 'This Agreement is governed by the laws of the State of Illinois.' },
++    ],
++    meta: { clientName: clientName || null },
++  };
++}
++```
++Tests: `buildSow` fills fees from passed cents (assert money strings present, no other $), deliverables from a real key (use `chatbot`), caveat + version exported, `buildMsa` includes Illinois + client name, `publicId` re-exported works. Commit `feat(p6): contract-core (SOW/MSA fill from proposal)`.
++
++---
++
++### Task 3: `lib/portal-db.mjs` gateway + tests
++Create mirroring `lib/proposal-db.mjs` EXACTLY (same `isEnabled`/`guard`/`{ok,skipped}` shape). Implement spec §5 functions. Key ones:
++```js
++export async function approveMilestone(id, name) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const { data } = await client().from('scope_milestones')
++      .update({ status: 'approved', approved_at: new Date().toISOString(), approved_name: (name || '').slice(0,120) })
++      .eq('id', id).eq('status', 'delivered').select();   // only a DELIVERED milestone can be approved
++    return { ok: true, approved: Array.isArray(data) && data.length === 1 };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++export async function acceptContract(id, { name, ip }) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const { data } = await client().from('scope_contracts')
++      .update({ status: 'accepted', accepted_name: (name||'').slice(0,120), accepted_at: new Date().toISOString(), accept_ip: ip || null })
++      .eq('id', id).eq('status', 'sent').select();        // only a SENT contract can be accepted
++    return { ok: true, accepted: Array.isArray(data) && data.length === 1 };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++export async function ensurePortalToken(projectId) { /* like proposal-db.ensureUnsubToken: return existing scope_projects.portal_token or generate+persist a random base62 token */ }
++```
++Plus: `getProjectByPortalToken`, `listMilestones`, `upsertMilestone`, `markDelivered`, `createContract`, `getContractByPublicId`, `getContractsForProposal`, `sendContract`. Test disabled-shape (`{ok:false,skipped:true}`). Commit `feat(p6): portal-db gateway (milestones + contracts, guarded transitions)`.
++
++---
++
++### Task 4: `api/contract.js` + `api/contract-generate.js` + `api/contract-send.js` + tests
++- `api/contract.js`: `GET ?publicId=` client read (only status sent/accepted → return `{body, kind, status, caveat: CONTRACT_CAVEAT}`; else 200 `{ok:false,reason:'not_found'}`); `POST` action=accept `{publicId,name,agreed}` → validate (name 2..120, agreed===true) → load by publicId → `acceptContract`. Mirror `api/proposal.js` degrade/whitelist. Export pure `validate`.
++- `api/contract-generate.js`: `POST` admin (`checkToken` first, 401) `{proposalId, kind}` → load proposal (getProposalById) → build via `buildSow`/`buildMsa` → `createContract({public_id, proposal_id, project_id?, kind, body, terms_version, client_email, status:'draft'})` → 200 `{publicId}`. 200-skip when DB off.
++- `api/contract-send.js`: `POST` admin `{id}` → `sendContract` (status→sent) → `notify.sendClient` the contract link `${SITE}/contract.html?id=<publicId>` → 200.
++Unit-test the two pure `validate` exports + admin fail-closed. Commit `feat(p6): contract endpoints (generate/send/view/accept)`.
++
++---
++
++### Task 5: `api/portal.js` + `api/milestone.js` + tests
++- `api/portal.js`: `GET ?id=<portal_token>` → `getProjectByPortalToken` → whitelisted client view (spec §6): project status, plan (from the joined proposal: keys/segment/firm/deposit/balance/paid_at), milestones (seq/title/deliverables/amount_cents/status/due_at — NO ids-except-milestone-id-needed-for-approve... include `id` for milestones so the client can approve, but nothing else sensitive), contract summary (public_id/status if sent+). Not found → 200 `{ok:false,reason}`. `POST` action=approve_milestone `{portalToken, milestoneId, name}` → verify the milestone belongs to that portal's project → `approveMilestone`. 
++- `api/milestone.js`: `POST` admin (checkToken) — upsert a milestone `{projectId, id?, title, deliverables, amountCents, seq, dueAt}` or `{id, action:'deliver'}` → `markDelivered`. 200-skip when off.
++Unit-test pure validates + admin fail-closed + the "approve only your own project's milestone" guard logic (pure helper). Commit `feat(p6): portal + milestone endpoints`.
++
++---
++
++### Task 6: `portal.html` + `assets/portal.mjs` — the client portal (PREMIUM)
++Mirror `proposal.html` shell (JT dark, noindex, print CSS). `?id=<portal_token>` → `fetch('/api/portal?id=')`. States: unavailable (calm), dormant. On found, render a **premium institutional dashboard** (Linear/Stripe-calibre on the dark system):
++- Header: project name + a status chip; the plan they bought (itemized from keys via `computePlan`, display-only).
++- **Milestone timeline** — each: seq, title, deliverables, an amount (`money`), and a status badge (pending → in_progress → delivered → approved with distinct colors). On a `delivered` milestone, an **Approve** control: a name input + "Approve delivery" → `POST /api/portal` approve_milestone → on ok, badge flips to approved.
++- **Payment summary** card: deposit paid (`money`), balance due (`money`).
++- **Contract** card: if a sent/accepted contract exists, a link "View your agreement →" `contract.html?id=<public_id>` + its status.
++All via `textContent`. Premium: generous spacing, clear hierarchy, subtle depth, status colors, a print-clean layout. This is the wow — make it feel like a real client portal. Add CSS to `assets/site.css`. Verify serve-200 + graceful unavailable on static host. Commit `feat(p6): client portal page (milestones, approvals, payment)`.
++
++---
++
++### Task 7: `contract.html` + `assets/contract.mjs` — client contract view + accept
++Mirror `proposal.html`/`assets/proposal.mjs`. `?id=<contract public_id>` → `fetch('/api/contract?publicId=')`. Render the contract `body.sections` (heading + body, body may contain `\n` → render as lines via textContent, preserve line breaks with white-space CSS). A visible **caveat banner** (CONTRACT_CAVEAT). An **accept** block: full-name input + "I have read and agree" checkbox + "Accept agreement" → `POST /api/contract` accept → confirmation ("Agreement accepted on {date}."). `@media print` clean so they can save a PDF. noindex. States: unavailable/accepted/dormant. textContent only. Commit `feat(p6): client contract page (view + accept, print-clean)`.
++
++---
++
++### Task 8: Operator surface in `proposal-admin`
++Modify `proposal-admin.html` + `assets/proposal-admin.mjs` (token-gated). On a proposal's detail panel add: **"Generate SOW" / "Generate MSA"** buttons → `POST /api/contract-generate` {proposalId, kind} with `x-admin-token` → show the returned client link + a **"Send to client"** button → `POST /api/contract-send` {id}. And a **Milestones** mini-editor: rows (title, deliverables, amount $, seq, due) → "Add/Save" → `POST /api/milestone` (with token); a "Mark delivered" per existing milestone. All textContent-safe, token on every call. Commit `feat(p6): operator contract-gen + milestone editor in admin`.
++
++---
++
++### Task 9: Webhook wire-in
++Modify `api/stripe-webhook.js`: in the `deposit_paid` transition (after `createProjectOnce`), call `ensurePortalToken(projectId)` and include the portal link `${SITE}/portal.html?id=<token>` in the existing client receipt email text. Additive; guarded. Commit `feat(p6): email the client their portal link on deposit`.
++
++---
++
++### Task 10: Docs + smoke + verify
++- `docs/PORTAL.md`: the delivery flow, the operator steps (generate contract, seed milestones, mark delivered), the client experience, the env (reuses SUPABASE/SCOPE_ADMIN_TOKEN/RESEND), the dormant→live note, and the **legal caveat** (contracts are drafting aids; attorney review required). 
++- Update `docs/SYSTEM.md`: add a "Delivery (portal + contracts)" stage to the pipeline map + env table.
++- `tests/smoke.spec.js`: extend the console-ignore to `/api/(portal|contract|milestone)`; add smoke that `portal.html?id=nope` + `contract.html?id=nope` render the unavailable state with no console error.
++- Run `npm run test:unit` + `npm run lint` + `npx playwright test tests/smoke.spec.js --project=desktop` → all green. Commit `feat(p6): portal docs + smoke + system map`.
++
++---
++
++## Self-review
++Spec coverage: schema(1), core(2), gateway(3), contract eps(4), portal/milestone eps(5), portal page(6), contract page(7), admin surface(8), webhook(9), docs+smoke(10). Money-safety: client approves only delivered milestones + cannot set amounts; contract price from proposal; acceptance recorded. Degrade/auth conventions mirror Plan 5. Legal caveat rendered. No placeholders; pure code full; endpoints/pages mirror in-repo Plan 5 files.
+diff --git a/docs/superpowers/specs/2026-08-23-client-portal-contracts-design.md b/docs/superpowers/specs/2026-08-23-client-portal-contracts-design.md
+new file mode 100644
+index 0000000..f1bc405
+--- /dev/null
++++ b/docs/superpowers/specs/2026-08-23-client-portal-contracts-design.md
+@@ -0,0 +1,136 @@
++# Client Portal + Auto-Contracts (Plan 6) — Design Spec
++
++**Status:** approved, 2026-08-23
++**Extends:** the proposal/deposit system (Plan 5) + the vault legal suite.
++**Goal:** the institutional delivery layer — after a client pays a deposit, they get (1) a premium **client portal** showing their project's milestones, deliverables, approvals, and payment status, and (2) a **contract auto-generated from their proposal** (SOW/MSA filled with their real scope) that they view and accept online. Dormant-safe: ships live, activates only when Supabase is wired.
++
++---
++
++## 1. The flow
++
++```
++deposit paid (Plan 5) ──► scope_projects row + portal_token
++   │  client emailed a portal link: /portal.html?id=<portal_token>
++   ▼
++CLIENT PORTAL (portal.html)  — token-gated, read-mostly
++   • project status + the plan they bought
++   • MILESTONES (seq, title, deliverables, status, amount) with an "Approve" action per delivered milestone
++   • payment status (deposit paid, balance due)
++   • their CONTRACT (view + accept)
++   │
++   ▼  operator side (proposal-admin, token-gated)
++JASON: generate contract from a proposal · seed/edit milestones · mark a milestone "delivered"
++   │
++   ▼
++CONTRACT (contract.html?id=<contract_public_id>)  — client views the tailored SOW/MSA, types name + agrees → recorded acceptance
++```
++
++## 2. Grounding / safety guarantees (carry from Plan 5)
++- **Degrade-safe, never 5xx:** every endpoint returns a clean 2xx/4xx when Supabase is absent (dormant). Admin/operator endpoints fail-closed 401 without `SCOPE_ADMIN_TOKEN`.
++- **No client-set money:** milestone amounts + contract price come from the persisted proposal/admin, never client input. The client can only *approve* a milestone, never set its value.
++- **Acceptance artifact:** contract acceptance records name + timestamp + IP + terms_version (dispute-proof, same as the proposal accept).
++- **Tokens unguessable:** `portal_token` and `contract public_id` are ≥128-bit random. Drafts/unsent contracts are invisible to the client.
++- **RLS deny-all-anon; service-role only.** XSS: all dynamic text via `textContent`.
++- **Legal caveat baked in:** the generated contract renders a visible "template — not legal advice; both parties should have counsel review" line, and the code/docs repeat it. This is a drafting aid, not executed legal counsel.
++
++## 3. Data — append to `supabase/scope_schema.sql`
++```sql
++alter table scope_projects add column if not exists portal_token text;
++create unique index if not exists scope_projects_portal on scope_projects(portal_token) where portal_token is not null;
++
++create table if not exists scope_milestones (
++  id uuid primary key default gen_random_uuid(),
++  project_id uuid not null references scope_projects(id) on delete cascade,
++  seq int not null default 0,
++  title text not null,
++  deliverables text,                 -- freeform / newline-separated
++  amount_cents int not null default 0,
++  status text not null default 'pending',   -- pending | in_progress | delivered | approved
++  due_at timestamptz,
++  delivered_at timestamptz,
++  approved_at timestamptz,
++  approved_name text,
++  created_at timestamptz not null default now()
++);
++create index if not exists scope_milestones_project on scope_milestones(project_id, seq);
++
++create table if not exists scope_contracts (
++  id uuid primary key default gen_random_uuid(),
++  public_id text not null unique,     -- unguessable client URL slug
++  proposal_id uuid references scope_proposals(id) on delete set null,
++  project_id uuid references scope_projects(id) on delete set null,
++  kind text not null default 'sow',   -- sow | msa
++  body jsonb not null,                -- the filled contract snapshot (sections/values at generation time)
++  terms_version text not null,
++  status text not null default 'draft',  -- draft | sent | accepted | declined
++  client_email text,
++  accepted_name text,
++  accepted_at timestamptz,
++  accept_ip text,
++  created_at timestamptz not null default now(),
++  sent_at timestamptz,
++  accepted_at2 timestamptz
++);
++create unique index if not exists scope_contracts_public on scope_contracts(public_id);
++alter table scope_milestones enable row level security;
++alter table scope_contracts enable row level security;
++-- deny-all-anon; service role bypasses.
++```
++
++## 4. Pure core — `assets/contract-core.mjs` (unit-tested)
++```
++CONTRACT_TERMS_VERSION = '2026-08-23'
++CONTRACT_CAVEAT = 'This is a drafting template generated from your proposal, not executed legal advice. Both parties should have it reviewed by counsel before signing.'
++publicId()                              // reuse the base62 random from proposal-core (or import it)
++buildSow({ clientName, clientEmail, projectName, keys, segment, firmCents, depositCents, balanceCents, milestones, nowIso })
++     → { kind:'sow', sections:[{heading, body}], meta:{...} }   // fills the SOW template from proposal data; deliverables derived from computePlan(keys) items
++buildMsa({ clientName, nowIso })        → { kind:'msa', sections:[...] }   // the umbrella terms (from the vault MSA), client-name filled
++money(cents)                            // display
++```
++The section text is the vault legal suite (MSA/SOW), parameterized. No prices invented — all from the passed proposal figures.
++
++## 5. Gateways — `lib/portal-db.mjs` (degrade-safe `{ok,skipped}`)
++```
++isEnabled()                             // reuse SUPABASE_* 
++getProjectByPortalToken(token)          // project + its proposal (for the plan/price)
++ensurePortalToken(projectId)            // generate+persist if null; returns token
++listMilestones(projectId)
++upsertMilestone(row)                    // operator
++approveMilestone(id, name)              // client: set status=approved, approved_at, approved_name — only if currently 'delivered'
++markDelivered(id)                       // operator
++createContract(row) / getContractByPublicId(id) / getContractsForProposal(proposalId)
++sendContract(id) / acceptContract(id, {name, ip})   // accept only if status='sent'
++```
++
++## 6. Endpoints (ESM, degrade-safe, method-guarded)
++- **`GET /api/portal?id=<portal_token>`** — client portal read. Returns whitelisted `{ project:{status}, plan:{keys,segment,firm_cents,deposit_cents,balance_cents,paid_at}, milestones:[{seq,title,deliverables,amount_cents,status,due_at}], contract:{public_id,status} }`. No ids/emails/ip/tokens leaked. 404 (200 `{ok:false}` body per client-page convention) if not found.
++- **`POST /api/portal` action=approve_milestone** `{ portalToken, milestoneId, name }` — client approves a *delivered* milestone. Records approver name. 200.
++- **`GET /api/contract?publicId=<id>`** — client contract read (only `status in sent/accepted`; draft → not found). Returns the `body` sections + status + caveat.
++- **`POST /api/contract` action=accept** `{ publicId, name, agreed:true }` — records acceptance (name/at/ip/terms_version) if `status='sent'`. 200.
++- **`POST /api/contract/generate`** (admin, token) `{ proposalId, kind }` — builds SOW/MSA from the proposal via contract-core, inserts `scope_contracts` (status draft), returns `{ publicId }`.
++- **`POST /api/contract/send`** (admin) `{ id }` — status→sent, emails the client the link. 
++- **`POST /api/milestone`** (admin) — upsert/mark-delivered milestones for a project.
++- All admin actions: `checkToken` fail-closed 401. All degrade to 200-skip when DB off.
++
++## 7. Client pages (premium, institutional design)
++- **`portal.html` + `assets/portal.mjs`** — the client portal. `?id=<portal_token>`. A clean, premium dashboard: project header + status chip, a **milestone timeline** (seq, title, deliverables, status badges pending→in_progress→delivered→approved, amount), an **Approve** button on delivered milestones (records their name), a **payment summary** (deposit paid / balance due via `money()`), and a **contract** card (view/accept link). States: not-found (calm), dormant. `<meta noindex>`. Print-clean. This is the "wow" — make it feel like a top-tier client portal (Linear/Stripe-dashboard calibre) on the JT dark system.
++- **`contract.html` + `assets/contract.mjs`** — `?id=<contract_public_id>`. Renders the tailored contract sections cleanly (SOW/MSA), the caveat banner, and an **accept** block (typed full name + "I agree" + Accept). On accept → POST → confirmation. Print/PDF-clean (`@media print`) so the client can save it. noindex.
++
++## 8. Operator surface
++Extend `proposal-admin.html` + `assets/proposal-admin.mjs` (already token-gated): on an approved/paid proposal's detail, add **"Generate SOW"** / **"Generate MSA"** (→ /api/contract/generate → shows the client link + a Send button), and a **Milestones** editor (add rows: title, deliverables, amount, due; "mark delivered" per row → /api/milestone). Keep it token-gated + textContent-safe.
++
++## 9. Wire-in
++On `deposit_paid` (Plan 5 webhook), also `ensurePortalToken(projectId)` and include the portal link `${SITE}/portal.html?id=<token>` in the client receipt email. (Additive to the existing webhook client email.)
++
++## 10. Security surface (security-reviewer MUST review)
++Admin fail-closed constant-time token; client can only approve *delivered* milestones and cannot set amounts; contract/milestone amounts server-persisted only; acceptance artifact stored; tokens ≥128-bit; drafts invisible; field-whitelist on all client reads; idempotent accept/approve; RLS deny-all; legal caveat present; no PII leak; XSS textContent-only.
++
++## 11. Testing
++Unit: contract-core (buildSow/buildMsa fill correctly, no invented price, caveat present, publicId); portal-db disabled-shape; each endpoint's pure `validate`/token-check; whitelist. Smoke: portal.html + contract.html with no backend → graceful unavailable, no console error (extend the ignore to `/api/(portal|contract|milestone)`). Live money/flow test is operator-run once Supabase is live (documented in docs/PORTAL.md).
++
++## 12. Out of scope (named)
++Real e-signature integration (DocuSign) — the click-accept + recorded artifact is v1; a true balance-invoice/payment collection UI (record only); file/deliverable uploads/storage; client login accounts (token-link is v1); real-time updates.
++
++## 13. Files
++Create: `assets/contract-core.mjs`, `lib/portal-db.mjs`, `api/portal.js`, `api/contract.js`, `api/contract-generate.js`, `api/contract-send.js`, `api/milestone.js`, `portal.html`, `assets/portal.mjs`, `contract.html`, `assets/contract.mjs`, `docs/PORTAL.md`, unit tests.
++Modify: `supabase/scope_schema.sql`, `assets/proposal-admin.html`+`.mjs` (operator surface), `api/stripe-webhook.js` (portal token + link), `tests/smoke.spec.js`, `docs/SYSTEM.md` (add the delivery stage).
+diff --git a/lib/portal-db.mjs b/lib/portal-db.mjs
+new file mode 100644
+index 0000000..a156386
+--- /dev/null
++++ b/lib/portal-db.mjs
+@@ -0,0 +1,122 @@
++import { createClient } from '@supabase/supabase-js';
++const URL = process.env.SUPABASE_URL;
++const KEY = process.env.SUPABASE_SERVICE_KEY;
++let _client = null;
++export function isEnabled() { return Boolean(URL && KEY); }
++function client() {
++  if (!isEnabled()) return null;
++  if (!_client) _client = createClient(URL, KEY, { auth: { persistSession: false } });
++  return _client;
++}
++async function guard(fn) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try { return { ok: true, data: await fn(client()) }; }
++  catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++const B62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
++function randToken() {
++  const bytes = new Uint8Array(16);
++  globalThis.crypto.getRandomValues(bytes);
++  let s = '';
++  for (const b of bytes) s += B62[b % 62];
++  return s;
++}
++
++// ---- Projects / portal token ----------------------------------------------
++export const getProjectByPortalToken = (token) =>
++  guard((c) => c.from('scope_projects').select('*').eq('portal_token', token).maybeSingle().then((r) => r.data));
++
++// One project per proposal (unique index) — used to find the project a proposal's
++// milestones/portal token live on, once the deposit has been paid.
++export const getProjectByProposalId = (proposalId) =>
++  guard((c) => c.from('scope_projects').select('*').eq('proposal_id', proposalId).maybeSingle().then((r) => r.data));
++
++// Return existing scope_projects.portal_token or generate+persist a random base62 token.
++export async function ensurePortalToken(projectId) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const c = client();
++    const { data } = await c.from('scope_projects').select('portal_token').eq('id', projectId).maybeSingle();
++    if (data && data.portal_token) return { ok: true, token: data.portal_token };
++    const token = randToken();
++    await c.from('scope_projects').update({ portal_token: token }).eq('id', projectId);
++    return { ok: true, token };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++
++// ---- Milestones -------------------------------------------------------------
++export const listMilestones = (projectId) =>
++  guard((c) => c.from('scope_milestones').select('*').eq('project_id', projectId).order('seq', { ascending: true }).then((r) => r.data || []));
++
++export async function upsertMilestone(row) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const c = client();
++    if (row && row.id) {
++      const patch = {};
++      if (row.title !== undefined) patch.title = row.title;
++      if (row.deliverables !== undefined) patch.deliverables = row.deliverables;
++      if (row.amount_cents !== undefined) patch.amount_cents = row.amount_cents;
++      if (row.seq !== undefined) patch.seq = row.seq;
++      if (row.due_at !== undefined) patch.due_at = row.due_at;
++      const { data } = await c.from('scope_milestones').update(patch).eq('id', row.id).select();
++      return { ok: true, data: data && data[0] };
++    }
++    const { data } = await c.from('scope_milestones').insert({
++      project_id: row.project_id, seq: row.seq || 0, title: row.title,
++      deliverables: row.deliverables || null, amount_cents: row.amount_cents || 0,
++      due_at: row.due_at || null,
++    }).select();
++    return { ok: true, data: data && data[0] };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++
++export async function markDelivered(id) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const { data } = await client().from('scope_milestones')
++      .update({ status: 'delivered', delivered_at: new Date().toISOString() })
++      .eq('id', id).select();
++    return { ok: true, data: data && data[0] };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++
++export async function approveMilestone(id, name) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const { data } = await client().from('scope_milestones')
++      .update({ status: 'approved', approved_at: new Date().toISOString(), approved_name: (name || '').slice(0,120) })
++      .eq('id', id).eq('status', 'delivered').select();   // only a DELIVERED milestone can be approved
++    return { ok: true, approved: Array.isArray(data) && data.length === 1 };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++
++// ---- Contracts ----------------------------------------------------------
++export const createContract = (row) =>
++  guard((c) => c.from('scope_contracts').insert(row).select().then((r) => r.data && r.data[0]));
++
++export const getContractByPublicId = (publicId) =>
++  guard((c) => c.from('scope_contracts').select('*').eq('public_id', publicId).maybeSingle().then((r) => r.data));
++
++export const getContractsForProposal = (proposalId) =>
++  guard((c) => c.from('scope_contracts').select('*').eq('proposal_id', proposalId).order('created_at', { ascending: false }).then((r) => r.data || []));
++
++export async function sendContract(id) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const { data } = await client().from('scope_contracts')
++      .update({ status: 'sent', sent_at: new Date().toISOString() })
++      .eq('id', id).select();
++    return { ok: true, data: data && data[0] };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
++
++export async function acceptContract(id, { name, ip }) {
++  if (!isEnabled()) return { ok: false, skipped: true };
++  try {
++    const { data } = await client().from('scope_contracts')
++      .update({ status: 'accepted', accepted_name: (name||'').slice(0,120), accepted_at: new Date().toISOString(), accept_ip: ip || null })
++      .eq('id', id).eq('status', 'sent').select();        // only a SENT contract can be accepted
++    return { ok: true, accepted: Array.isArray(data) && data.length === 1 };
++  } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
++}
+diff --git a/portal.html b/portal.html
+new file mode 100644
+index 0000000..b42367a
+--- /dev/null
++++ b/portal.html
+@@ -0,0 +1,62 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++<meta charset="utf-8">
++<meta name="viewport" content="width=device-width, initial-scale=1">
++<title>Your project · Jason Teixeira</title>
++<meta name="description" content="Your client portal from Jason Teixeira — milestones, approvals, and payment status in one place.">
++<meta name="robots" content="noindex">
++<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
++<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
++<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
++<link rel="stylesheet" href="assets/site.css">
++<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
++<style>
++  * { box-sizing:border-box; }
++  #portal-root .btn-solid:focus-visible, #portal-root .btn-ghost:focus-visible { outline:2px solid #22d3ee; outline-offset:3px; }
++  @media (prefers-reduced-motion: reduce) {
++    .btn-solid.green:hover, .btn-solid.cyan:hover { transform:none; }
++  }
++  @media print {
++    nav, footer, .portal-approve, #portal-noscript { display:none !important; }
++    body, .portal-wrap { background:#fff !important; color:#111 !important; }
++    .portal-card, .portal-ms-dot, .portal-badge, .portal-chip { border-color:#ccc !important; background:#fff !important; box-shadow:none !important; }
++    .portal-title, .portal-ms-title, .portal-ms-amt { color:#111 !important; }
++    a { color:#111 !important; text-decoration:underline; }
++  }
++</style>
++</head>
++<body>
++<div style="min-height:100vh;background:#09090B">
++  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
++    <a href="index.html" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
++      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
++      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:#10b981">()</span></span>
++    </a>
++    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
++      <a href="services.html" class="dim-link">services</a>
++      <a href="case-studies.html" class="dim-link">case studies</a>
++      <a href="docs.html" class="dim-link">guides</a>
++      <a href="book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Talk to Jason &rarr;</a>
++    </div>
++  </nav>
++
++  <main id="content">
++    <div class="portal-wrap">
++      <noscript>
++        <div id="portal-noscript" class="portal-card">
++          <p class="subtle">This portal needs JavaScript to load. Email <a href="mailto:hello@sageideas.dev" style="color:#22d3ee">hello@sageideas.dev</a> and I&rsquo;ll send you an update another way.</p>
++        </div>
++      </noscript>
++      <div id="portal-root" style="min-height:70vh"></div>
++    </div>
++  </main>
++
++  <footer style="border-top:1px solid #2A2826;padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">
++    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
++    <span><a href="index.html" class="dim-link" style="color:#8E8882">&larr; portfolio</a></span>
++  </footer>
++</div>
++<script type="module" src="assets/portal.mjs"></script>
++</body>
++</html>
+diff --git a/supabase/scope_schema.sql b/supabase/scope_schema.sql
+index c4237d2..42ce89a 100644
+--- a/supabase/scope_schema.sql
++++ b/supabase/scope_schema.sql
+@@ -108,6 +108,49 @@ create table if not exists scope_nurture_sends (
+ -- Idempotency: one send per (proposal, step) for proposal touches, one per (prospect, step) for lead touches.
+ create unique index if not exists nurture_send_proposal on scope_nurture_sends(proposal_id, step) where proposal_id is not null;
+ create unique index if not exists nurture_send_prospect on scope_nurture_sends(prospect_id, step) where proposal_id is null;
+ create index if not exists nurture_send_prospect_all on scope_nurture_sends(prospect_id);
+ alter table scope_nurture_sends enable row level security;
+ -- (No policies created → deny-all-anon; service role bypasses RLS.)
++
++-- ============================================================================
++-- P6: Client portal (milestones) + auto-generated contracts. Money in CENTS.
++-- ============================================================================
++alter table scope_projects add column if not exists portal_token text;
++create unique index if not exists scope_projects_portal on scope_projects(portal_token) where portal_token is not null;
++
++create table if not exists scope_milestones (
++  id uuid primary key default gen_random_uuid(),
++  project_id uuid not null references scope_projects(id) on delete cascade,
++  seq int not null default 0,
++  title text not null,
++  deliverables text,
++  amount_cents int not null default 0,
++  status text not null default 'pending',   -- pending | in_progress | delivered | approved
++  due_at timestamptz,
++  delivered_at timestamptz,
++  approved_at timestamptz,
++  approved_name text,
++  created_at timestamptz not null default now()
++);
++create index if not exists scope_milestones_project on scope_milestones(project_id, seq);
++
++create table if not exists scope_contracts (
++  id uuid primary key default gen_random_uuid(),
++  public_id text not null unique,
++  proposal_id uuid references scope_proposals(id) on delete set null,
++  project_id uuid references scope_projects(id) on delete set null,
++  kind text not null default 'sow',          -- sow | msa
++  body jsonb not null,
++  terms_version text not null,
++  status text not null default 'draft',       -- draft | sent | accepted | declined
++  client_email text,
++  accepted_name text,
++  accepted_at timestamptz,
++  accept_ip text,
++  created_at timestamptz not null default now(),
++  sent_at timestamptz
++);
++create unique index if not exists scope_contracts_public on scope_contracts(public_id);
++alter table scope_milestones enable row level security;
++alter table scope_contracts enable row level security;
++-- (No policies → deny-all-anon; service role bypasses.)
+diff --git a/tests/smoke.spec.js b/tests/smoke.spec.js
+index 225dbbd..68fa7e9 100644
+--- a/tests/smoke.spec.js
++++ b/tests/smoke.spec.js
+@@ -11,20 +11,22 @@ import { test, expect } from '@playwright/test';
+  * application bug, so it's filtered here; the same applies to /api/chat (see
+  * scope-chat.mjs) and /api/proposal (see scope-studio.mjs's post-lead trigger
+  * and proposal.mjs/proposal-admin.mjs's GETs), which the static server also
+  * has no handler for; `pageerror` (uncaught exceptions) is left untouched and
+  * still fails every test below. Same applies to /api/cron, /api/unsubscribe, and
+  * /api/suppress (nurture endpoints), which the static server also has no handler
+- * for. */
++ * for. Same applies to /api/portal, /api/contract, and /api/milestone (client
++ * portal + contracts delivery endpoints, see portal.mjs/contract.mjs), which the
++ * static server also has no handler for. */
+ function trackErrors(page) {
+   const errors = [];
+   page.on('console', (msg) => {
+     if (msg.type() !== 'error') return;
+     const text = msg.text();
+     const url = msg.location()?.url || '';
+-    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal|cron|unsubscribe|suppress)(\?|$)/.test(url)) return;
++    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal|cron|unsubscribe|suppress|portal|contract|milestone)(\?|$)/.test(url)) return;
+     errors.push(text);
+   });
+   page.on('pageerror', (err) => errors.push(String(err)));
+   return errors;
+ }
+ 
+@@ -888,12 +890,30 @@ test.describe('proposal page', () => {
+   test('admin console with no token shows "Not authorized"', async ({ page }) => {
+     await page.goto('/proposal-admin.html');
+     await expect(page.locator('body')).toContainText('Not authorized');
+   });
+ });
+ 
++test.describe('client portal + contract', () => {
++  test('unknown portal id degrades to a calm unavailable state', async ({ page }) => {
++    const errors = trackErrors(page);
++    await page.goto('/portal.html?id=nope');
++    await expect(page.locator('#portal-root')).toBeVisible();
++    await expect(page.locator('#portal-root')).toContainText(/isn.t available/i);
++    expect(errors).toEqual([]);
++  });
++
++  test('unknown contract id degrades to a calm unavailable state', async ({ page }) => {
++    const errors = trackErrors(page);
++    await page.goto('/contract.html?id=nope');
++    await expect(page.locator('#contract-root')).toBeVisible();
++    await expect(page.locator('#contract-root')).toContainText(/isn.t available/i);
++    expect(errors).toEqual([]);
++  });
++});
++
+ test.describe('unsubscribe page', () => {
+   test('renders the confirmation with no uncaught error', async ({ page }) => {
+     const errors = trackErrors(page);
+     await page.goto('/unsubscribe.html?done=1');
+     await expect(page.locator('body')).toContainText(/unsubscribed/i);
+     expect(errors).toEqual([]);
+diff --git a/tests/unit/api-contract-shape.test.mjs b/tests/unit/api-contract-shape.test.mjs
+new file mode 100644
+index 0000000..0c40f01
+--- /dev/null
++++ b/tests/unit/api-contract-shape.test.mjs
+@@ -0,0 +1,44 @@
++import { test } from 'node:test';
++import assert from 'node:assert/strict';
++import { validate } from '../../api/contract.js';
++import contractGenerate from '../../api/contract-generate.js';
++import contractSend from '../../api/contract-send.js';
++
++function mockRes() {
++  return {
++    code: 0, body: null, headers: {},
++    status(c) { this.code = c; return this; },
++    json(b) { this.body = b; return this; },
++    setHeader(k, v) { this.headers[k] = v; },
++  };
++}
++
++test('contract accept validate requires publicId, agreed true, a real name', () => {
++  assert.equal(validate({ publicId: 'a', agreed: true, name: 'Dana Lee' }).ok, true);
++  assert.equal(validate({ publicId: 'a', agreed: false, name: 'Dana Lee' }).ok, false);
++  assert.equal(validate({ publicId: 'a', agreed: true, name: 'D' }).ok, false);
++  assert.equal(validate({ agreed: true, name: 'Dana Lee' }).ok, false);
++  assert.equal(validate({ publicId: 'a', agreed: true, name: 'x'.repeat(121) }).ok, false);
++  assert.equal(validate(null).ok, false);
++});
++
++test('contract-generate fails closed without admin token (no DB work happens)', async () => {
++  const res = mockRes();
++  await contractGenerate({ method: 'POST', headers: {}, body: { proposalId: 'p1', kind: 'sow' } }, res);
++  assert.equal(res.code, 401);
++});
++
++test('contract-send fails closed without admin token (no DB work happens)', async () => {
++  const res = mockRes();
++  await contractSend({ method: 'POST', headers: {}, body: { id: 'c1' } }, res);
++  assert.equal(res.code, 401);
++});
++
++test('contract-generate/send reject non-POST', async () => {
++  const res1 = mockRes();
++  await contractGenerate({ method: 'GET', headers: {}, query: {} }, res1);
++  assert.equal(res1.code, 405);
++  const res2 = mockRes();
++  await contractSend({ method: 'GET', headers: {}, query: {} }, res2);
++  assert.equal(res2.code, 405);
++});
+diff --git a/tests/unit/api-portal-shape.test.mjs b/tests/unit/api-portal-shape.test.mjs
+new file mode 100644
+index 0000000..b4fdecd
+--- /dev/null
++++ b/tests/unit/api-portal-shape.test.mjs
+@@ -0,0 +1,103 @@
++import { test } from 'node:test';
++import assert from 'node:assert/strict';
++import { validate, clientView, milestoneBelongsToProject } from '../../api/portal.js';
++import { validate as validateMilestone } from '../../api/milestone.js';
++import portalHandler from '../../api/portal.js';
++import milestoneHandler from '../../api/milestone.js';
++
++function mockRes() {
++  return {
++    code: 0, body: null, headers: {},
++    status(c) { this.code = c; return this; },
++    json(b) { this.body = b; return this; },
++    setHeader(k, v) { this.headers[k] = v; },
++  };
++}
++
++test('portal approve validate requires portalToken, milestoneId, a real name', () => {
++  assert.equal(validate({ portalToken: 't', milestoneId: 'm1', name: 'Dana Lee' }).ok, true);
++  assert.equal(validate({ milestoneId: 'm1', name: 'Dana Lee' }).ok, false);
++  assert.equal(validate({ portalToken: 't', name: 'Dana Lee' }).ok, false);
++  assert.equal(validate({ portalToken: 't', milestoneId: 'm1', name: 'D' }).ok, false);
++  assert.equal(validate(null).ok, false);
++});
++
++test('clientView whitelists fields — no email/ip/internal-proposal-id leak, milestone id present', () => {
++  const project = { id: 'PROJECT-UUID', proposal_id: 'PROPOSAL-UUID', status: 'kickoff', portal_token: 'SECRET-TOKEN' };
++  const proposal = {
++    id: 'PROPOSAL-UUID', keys: ['chatbot'], segment: 'ai-product',
++    firm_cents: 650000, deposit_cents: 195000, balance_cents: 455000, paid_at: '2026-08-20T00:00:00Z',
++    client_email: 'client@example.com', accept_ip: '1.2.3.4', public_id: 'PROPOSAL-PUB',
++  };
++  const milestones = [
++    { id: 'M1', seq: 1, title: 'Kickoff', deliverables: 'Discovery doc', amount_cents: 100000, status: 'delivered', due_at: '2026-09-01T00:00:00Z' },
++  ];
++  const contract = { id: 'CONTRACT-UUID', public_id: 'CONTRACT-PUB', status: 'sent', client_email: 'client@example.com' };
++  const v = clientView(project, proposal, milestones, contract);
++
++  assert.equal(v.project.status, 'kickoff');
++  assert.equal(v.plan.firm_cents, 650000);
++  assert.equal(v.plan.paid_at, '2026-08-20T00:00:00Z');
++  assert.equal(v.milestones[0].id, 'M1', 'milestone id must be present so the client can approve');
++  assert.equal(v.contract.public_id, 'CONTRACT-PUB');
++  assert.equal(v.contract.status, 'sent');
++
++  const joined = JSON.stringify(v);
++  assert.ok(!joined.includes('client@example.com'), 'client_email must not leak');
++  assert.ok(!joined.includes('1.2.3.4'), 'accept_ip must not leak');
++  assert.ok(!joined.includes('SECRET-TOKEN'), 'portal_token must not leak');
++  assert.ok(!joined.includes('PROPOSAL-UUID'), 'internal proposal id must not leak');
++  assert.ok(!joined.includes('CONTRACT-UUID'), 'internal contract id must not leak');
++});
++
++test('clientView hides a draft contract (not sent/accepted yet)', () => {
++  const project = { id: 'p', proposal_id: 'pr', status: 'kickoff' };
++  const draft = { public_id: 'x', status: 'draft' };
++  const v = clientView(project, null, [], draft);
++  assert.equal(v.contract, null);
++});
++
++test('clientView returns null for a missing project', () => {
++  assert.equal(clientView(null, null, [], null), null);
++});
++
++test('milestoneBelongsToProject: only true when the id is in this project\'s own milestone list', () => {
++  const milestones = [{ id: 'M1' }, { id: 'M2' }];
++  assert.equal(milestoneBelongsToProject(milestones, 'M1'), true);
++  assert.equal(milestoneBelongsToProject(milestones, 'FROM-ANOTHER-PROJECT'), false);
++  assert.equal(milestoneBelongsToProject([], 'M1'), false);
++  assert.equal(milestoneBelongsToProject(null, 'M1'), false);
++});
++
++test('milestone upsert validate requires projectId (or an existing id) + a title', () => {
++  assert.equal(validateMilestone({ projectId: 'p1', title: 'Kickoff' }).ok, true);
++  assert.equal(validateMilestone({ id: 'm1', title: 'Kickoff' }).ok, true, 'an existing id substitutes for projectId on update');
++  assert.equal(validateMilestone({ title: 'Kickoff' }).ok, false);
++  assert.equal(validateMilestone({ projectId: 'p1' }).ok, false);
++  assert.equal(validateMilestone({ id: 'm1', action: 'deliver' }).ok, true);
++  assert.equal(validateMilestone({ action: 'deliver' }).ok, false);
++});
++
++test('portal POST fails closed shape check before DB (bad body -> 400, not 200-skip)', async () => {
++  const res = mockRes();
++  await portalHandler({ method: 'POST', headers: {}, body: {} }, res);
++  assert.equal(res.code, 400);
++});
++
++test('portal GET/POST reject bad methods gracefully', async () => {
++  const res = mockRes();
++  await portalHandler({ method: 'DELETE', headers: {}, query: {} }, res);
++  assert.equal(res.code, 405);
++});
++
++test('milestone endpoint fails closed without admin token (no DB work happens)', async () => {
++  const res = mockRes();
++  await milestoneHandler({ method: 'POST', headers: {}, body: { projectId: 'p1', title: 'Kickoff' } }, res);
++  assert.equal(res.code, 401);
++});
++
++test('milestone endpoint rejects non-POST', async () => {
++  const res = mockRes();
++  await milestoneHandler({ method: 'GET', headers: {}, query: {} }, res);
++  assert.equal(res.code, 405);
++});
+diff --git a/tests/unit/contract-core.test.mjs b/tests/unit/contract-core.test.mjs
+new file mode 100644
+index 0000000..818bff5
+--- /dev/null
++++ b/tests/unit/contract-core.test.mjs
+@@ -0,0 +1,84 @@
++import { test } from 'node:test';
++import assert from 'node:assert/strict';
++import {
++  buildSow, buildMsa, publicId, money, CONTRACT_CAVEAT, CONTRACT_TERMS_VERSION,
++} from '../../assets/contract-core.mjs';
++import { CARD_BY_KEY } from '../../assets/scope-core.mjs';
++
++const NOW = '2026-08-23T12:00:00.000Z';
++
++test('buildSow fills fees from passed cents, no stray $ beyond the fee figures', () => {
++  const sow = buildSow({
++    clientName: 'Acme Co', projectName: 'Support Bot', keys: ['chatbot'],
++    firmCents: 650000, depositCents: 195000, balanceCents: 455000, nowIso: NOW,
++  });
++  assert.equal(sow.kind, 'sow');
++  const feesSection = sow.sections.find((s) => s.heading === 'Fees');
++  assert.ok(feesSection);
++  assert.match(feesSection.body, /\$6,500/);
++  assert.match(feesSection.body, /\$1,950/);
++  assert.match(feesSection.body, /\$4,550/);
++
++  // No stray $ anywhere outside the Fees section.
++  for (const s of sow.sections) {
++    if (s.heading === 'Fees') continue;
++    assert.doesNotMatch(s.body, /\$/, `unexpected $ in section "${s.heading}"`);
++  }
++  // Exactly the three fee figures inside Fees — no extra $ signs.
++  const dollarCount = (feesSection.body.match(/\$/g) || []).length;
++  assert.equal(dollarCount, 3);
++});
++
++test('buildSow derives deliverables from a real rate-card key', () => {
++  const card = CARD_BY_KEY.get('chatbot');
++  assert.ok(card, 'expected "chatbot" to be a real rate-card key');
++  const sow = buildSow({
++    clientName: 'Acme Co', projectName: 'Support Bot', keys: ['chatbot'],
++    firmCents: 650000, depositCents: 195000, balanceCents: 455000, nowIso: NOW,
++  });
++  const scopeSection = sow.sections.find((s) => s.heading === 'Scope & Deliverables');
++  assert.ok(scopeSection);
++  assert.ok(scopeSection.body.includes(card.name), `expected "${card.name}" in Scope & Deliverables`);
++  assert.ok(scopeSection.body.includes(card.why));
++});
++
++test('buildSow falls back to generic scope line when no keys given', () => {
++  const sow = buildSow({
++    clientName: 'Acme Co', projectName: 'Support Bot', keys: [],
++    firmCents: 100000, depositCents: 30000, balanceCents: 70000, nowIso: NOW,
++  });
++  const scopeSection = sow.sections.find((s) => s.heading === 'Scope & Deliverables');
++  assert.match(scopeSection.body, /Scope as discussed and quoted\./);
++});
++
++test('CONTRACT_CAVEAT and CONTRACT_TERMS_VERSION are exported and non-empty', () => {
++  assert.equal(typeof CONTRACT_CAVEAT, 'string');
++  assert.ok(CONTRACT_CAVEAT.length > 20);
++  assert.equal(typeof CONTRACT_TERMS_VERSION, 'string');
++  assert.ok(CONTRACT_TERMS_VERSION.length >= 8);
++});
++
++test('buildMsa includes Illinois governing law and the client name', () => {
++  const msa = buildMsa({ clientName: 'Acme Co', nowIso: NOW });
++  assert.equal(msa.kind, 'msa');
++  const joined = msa.sections.map((s) => `${s.heading} ${s.body}`).join(' ');
++  assert.match(joined, /Illinois/);
++  assert.match(joined, /Acme Co/);
++  assert.equal(msa.meta.clientName, 'Acme Co');
++});
++
++test('buildMsa falls back to placeholder when clientName missing', () => {
++  const msa = buildMsa({ clientName: '', nowIso: NOW });
++  const joined = msa.sections.map((s) => s.body).join(' ');
++  assert.match(joined, /\[CLIENT\]/);
++});
++
++test('re-exported publicId() returns a url-safe unique string', () => {
++  const a = publicId(), b = publicId();
++  assert.notEqual(a, b);
++  assert.match(a, /^[0-9A-Za-z]{16,}$/);
++});
++
++test('re-exported money() formats usd', () => {
++  assert.equal(money(650000), '$6,500');
++});
+diff --git a/tests/unit/portal-db.test.mjs b/tests/unit/portal-db.test.mjs
+new file mode 100644
+index 0000000..2212874
+--- /dev/null
++++ b/tests/unit/portal-db.test.mjs
+@@ -0,0 +1,23 @@
++import { test } from 'node:test';
++import assert from 'node:assert/strict';
++import {
++  isEnabled, getProjectByPortalToken, getProjectByProposalId, ensurePortalToken,
++  listMilestones, upsertMilestone, markDelivered, approveMilestone,
++  createContract, getContractByPublicId, getContractsForProposal, sendContract, acceptContract,
++} from '../../lib/portal-db.mjs';
++
++test('disabled without env — never throws, reports skipped', async () => {
++  assert.equal(isEnabled(), false);
++  assert.deepEqual(await getProjectByPortalToken('tok'), { ok: false, skipped: true });
++  assert.deepEqual(await getProjectByProposalId('proposal-id'), { ok: false, skipped: true });
++  assert.deepEqual(await ensurePortalToken('project-id'), { ok: false, skipped: true });
++  assert.deepEqual(await listMilestones('project-id'), { ok: false, skipped: true });
++  assert.deepEqual(await upsertMilestone({ project_id: 'p', title: 'Kickoff' }), { ok: false, skipped: true });
++  assert.deepEqual(await markDelivered('milestone-id'), { ok: false, skipped: true });
++  assert.deepEqual(await approveMilestone('milestone-id', 'Client Name'), { ok: false, skipped: true });
++  assert.deepEqual(await createContract({ public_id: 'x' }), { ok: false, skipped: true });
++  assert.deepEqual(await getContractByPublicId('pub-id'), { ok: false, skipped: true });
++  assert.deepEqual(await getContractsForProposal('proposal-id'), { ok: false, skipped: true });
++  assert.deepEqual(await sendContract('contract-id'), { ok: false, skipped: true });
++  assert.deepEqual(await acceptContract('contract-id', { name: 'Client Name', ip: '1.2.3.4' }), { ok: false, skipped: true });
++});

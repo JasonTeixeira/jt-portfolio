@@ -26,12 +26,16 @@ export default async function handler(req, res) {
     if (!r.ok) return res.status(200).json({ ok: false, skipped: true });
     return res.status(200).json({ ok: true, milestone: r.data });
   }
+  const isEdit = typeof body.id === 'string' && Boolean(body.id.trim());
+  const hasAmount = typeof body.amountCents === 'number' && Number.isFinite(body.amountCents);
   const row = {
-    id: typeof body.id === 'string' && body.id.trim() ? body.id.trim() : undefined,
+    id: isEdit ? body.id.trim() : undefined,
     project_id: body.projectId,
-    title: body.title.trim(),
+    title: body.title.trim().slice(0, 200),
     deliverables: typeof body.deliverables === 'string' ? body.deliverables.slice(0, 4000) : null,
-    amount_cents: typeof body.amountCents === 'number' && Number.isFinite(body.amountCents) ? Math.round(body.amountCents) : 0,
+    // On insert, default to 0 cents. On edit, an omitted amount stays undefined so
+    // upsertMilestone's conditional patch leaves the existing amount untouched.
+    amount_cents: hasAmount ? Math.round(body.amountCents) : (isEdit ? undefined : 0),
     seq: typeof body.seq === 'number' && Number.isFinite(body.seq) ? Math.round(body.seq) : 0,
     due_at: body.dueAt || null,
   };

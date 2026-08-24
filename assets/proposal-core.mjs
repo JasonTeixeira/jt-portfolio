@@ -33,12 +33,16 @@ export function clampFirmCents(cents, band) {
   return { cents: out, clamped };
 }
 const B62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+// 22 base62 chars ~= 131 bits. Rejection sampling (reject bytes >= 248 = 4*62) keeps the
+// `% 62` map uniform — a naive modulo would bias low code points ever so slightly.
 export function publicId() {
-  const bytes = new Uint8Array(16);
-  globalThis.crypto.getRandomValues(bytes);
-  let s = '';
-  for (const b of bytes) s += B62[b % 62];
-  return s;
+  const out = [];
+  while (out.length < 22) {
+    const bytes = new Uint8Array(32);
+    globalThis.crypto.getRandomValues(bytes);
+    for (const b of bytes) { if (b < 248) { out.push(B62[b % 62]); if (out.length === 22) break; } }
+  }
+  return out.join('');
 }
 export function money(cents, currency = 'usd') {
   const n = Math.round(Number(cents) || 0) / 100;

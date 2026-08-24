@@ -14,3 +14,5 @@ Task 7: complete — be558c4 (contract view+accept, print-clean; small additive 
 Task 8: complete — 90541f4 (admin contract-gen + milestone editor; +getProjectByProposalId; contract-generate returns id too)
 Task 9: complete — 45c607f (webhook portal-link email)
 119 pass.
+Task 10: complete — 5e1f76a (docs/PORTAL.md + SYSTEM.md + smoke + CARD_BY_KEY cleanup). 119 unit, lint 0 err, smoke 74 passed.
+ALL TASKS DONE. Dispatching final security+quality review.

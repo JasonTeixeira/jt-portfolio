@@ -85,7 +85,7 @@ export default async function handler(req, res) {
   const milestoneId = body.milestoneId.trim();
   // Membership check BEFORE approving — a client only approves their own project's milestone.
   if (!milestoneBelongsToProject(milestones, milestoneId)) return res.status(404).json({ ok: false, error: 'not_found' });
-  const approved = await approveMilestone(milestoneId, body.name.trim());
+  const approved = await approveMilestone(milestoneId, body.name.trim(), project.id);
   if (!approved.ok) return res.status(200).json({ ok: false, skipped: true });
   return res.status(200).json({ ok: true, approved: Boolean(approved.approved) });
 }
