@@ -1,5 +1,5 @@
 import { publicId, money } from './proposal-core.mjs';
-import { computePlan, CARD_BY_KEY } from './scope-core.mjs';
+import { computePlan } from './scope-core.mjs';
 
 export const CONTRACT_TERMS_VERSION = '2026-08-23';
 export const CONTRACT_CAVEAT = 'This is a drafting template generated from your proposal, not executed legal advice. Both parties should have it reviewed by counsel before signing.';

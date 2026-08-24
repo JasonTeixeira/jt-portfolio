@@ -14,14 +14,16 @@ import { test, expect } from '@playwright/test';
  * has no handler for; `pageerror` (uncaught exceptions) is left untouched and
  * still fails every test below. Same applies to /api/cron, /api/unsubscribe, and
  * /api/suppress (nurture endpoints), which the static server also has no handler
- * for. */
+ * for. Same applies to /api/portal, /api/contract, and /api/milestone (client
+ * portal + contracts delivery endpoints, see portal.mjs/contract.mjs), which the
+ * static server also has no handler for. */
 function trackErrors(page) {
   const errors = [];
   page.on('console', (msg) => {
     if (msg.type() !== 'error') return;
     const text = msg.text();
     const url = msg.location()?.url || '';
-    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal|cron|unsubscribe|suppress)(\?|$)/.test(url)) return;
+    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal|cron|unsubscribe|suppress|portal|contract|milestone)(\?|$)/.test(url)) return;
     errors.push(text);
   });
   page.on('pageerror', (err) => errors.push(String(err)));
@@ -888,6 +890,24 @@ test.describe('proposal page', () => {
   test('admin console with no token shows "Not authorized"', async ({ page }) => {
     await page.goto('/proposal-admin.html');
     await expect(page.locator('body')).toContainText('Not authorized');
+  });
+});
+
+test.describe('client portal + contract', () => {
+  test('unknown portal id degrades to a calm unavailable state', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/portal.html?id=nope');
+    await expect(page.locator('#portal-root')).toBeVisible();
+    await expect(page.locator('#portal-root')).toContainText(/isn.t available/i);
+    expect(errors).toEqual([]);
+  });
+
+  test('unknown contract id degrades to a calm unavailable state', async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto('/contract.html?id=nope');
+    await expect(page.locator('#contract-root')).toBeVisible();
+    await expect(page.locator('#contract-root')).toContainText(/isn.t available/i);
+    expect(errors).toEqual([]);
   });
 });
 
