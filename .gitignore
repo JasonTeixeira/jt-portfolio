@@ -14,3 +14,6 @@ proof-artifacts/
 outreach/*.html
 outreach/prospects.json
 .superpowers/
+outreach/leads-raw.csv
+outreach/shortlist.csv
+outreach/openers.md
