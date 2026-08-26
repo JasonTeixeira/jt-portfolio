@@ -202,38 +202,38 @@
   /* ===== shared receptionist brain (scripted, honest demo) ===== */
   function Brain(){ this.reset(); }
   Brain.prototype.reset = function(){ this.step='service'; this.d={}; };
-  Brain.prototype.greeting = function(){ return "Hi, you've reached Sage Plumbing. This is the front desk. What's going on, and I'll get you booked?"; };
+  Brain.prototype.greeting = function(){ return "Hola, se ha comunicado con Sage Plumbing. Habla la recepción. ¿Qué está pasando? Con gusto le agendo una visita."; };
   Brain.prototype.reply = function(t){
     t = (t||'').toLowerCase().trim();
     var d = this.d;
     if (/reset|start over|again/.test(t)) { this.reset(); return this.greeting(); }
     switch(this.step){
       case 'service':
-        d.service = /leak|drip|water/.test(t) ? 'a leak' : /drain|clog|block/.test(t) ? 'a clogged drain'
-                  : /heater|hot water|boiler/.test(t) ? 'a water heater' : /toilet/.test(t) ? 'a toilet'
-                  : /install|new|replace/.test(t) ? 'an installation' : 'a plumbing issue';
+        d.service = /leak|drip|water/.test(t) ? 'una fuga' : /drain|clog|block/.test(t) ? 'un drenaje tapado'
+                  : /heater|hot water|boiler/.test(t) ? 'un calentador de agua' : /toilet/.test(t) ? 'un inodoro'
+                  : /install|new|replace/.test(t) ? 'una instalación' : 'un problema de plomería';
         this.step='urgency';
-        return "Got it — sounds like " + d.service + ". Is this an emergency, or should we schedule a normal visit?";
+        return "Entendido, parece que es " + d.service + ". ¿Es una emergencia o prefiere agendar una visita normal?";
       case 'urgency':
         d.urgency = /emerg|now|asap|flood|urgent|burst/.test(t) ? 'emergency' : 'scheduled';
         this.step='name';
         return d.urgency==='emergency'
-          ? "Understood. I'm flagging this as urgent. Can I get your name? A tech can be routed right away."
-          : "No problem. Can I get your name to put on the booking?";
+          ? "Entendido. Voy a marcar esto como urgente. ¿Me puede dar su nombre? Podemos enviar un técnico de inmediato."
+          : "No hay problema. ¿Me puede dar su nombre para la reserva?";
       case 'name':
-        d.name = t.replace(/^(i'?m|my name is|this is|it'?s)\s+/,'').replace(/[^a-z\s'-]/gi,'').trim() || 'there';
+        d.name = t.replace(/^(i'?m|my name is|this is|it'?s)\s+/,'').replace(/[^a-z\s'-]/gi,'').trim() || 'estimado cliente';
         d.name = d.name.replace(/\b\w/g, function(c){return c.toUpperCase();});
         this.step='contact';
-        return "Thanks, " + d.name + ". What's the best number and a time window that works — morning or afternoon?";
+        return "Gracias, " + d.name + ". ¿Cuál es el mejor número y un horario que le funcione: mañana o tarde?";
       case 'contact':
         var num = (t.match(/\d[\d\s().-]{6,}\d/)||[''])[0].trim();
-        d.phone = num || 'the number you called from';
-        d.window = /morning|am|early/.test(t) ? 'tomorrow morning (8–11am)' : /after|pm|noon|evening/.test(t) ? 'tomorrow afternoon (1–4pm)' : 'the next available window';
+        d.phone = num || 'el número desde el que llamó';
+        d.window = /morning|am|early/.test(t) ? 'mañana por la mañana (8–11am)' : /after|pm|noon|evening/.test(t) ? 'mañana por la tarde (1–4pm)' : 'el próximo horario disponible';
         this.step='done';
-        return "Perfect. You're booked. Here's what I'm sending the team:\n\n• Job: " + d.service + (d.urgency==='emergency'?' (EMERGENCY)':'') + "\n• Name: " + d.name + "\n• Callback: " + d.phone + "\n• Window: " + d.window + "\n\nYou'll get a confirmation text in a moment. Anything else?";
+        return "Perfecto. Ya quedó agendado. Esto es lo que le voy a enviar al equipo:\n\n• Trabajo: " + d.service + (d.urgency==='emergency'?' (EMERGENCIA)':'') + "\n• Nombre: " + d.name + "\n• Teléfono: " + d.phone + "\n• Horario: " + d.window + "\n\nEn un momento recibirá un mensaje de confirmación. ¿Algo más?";
       default:
         this.reset();
-        return "You're all set. The office has it. Want to book another? Just tell me what's going on.";
+        return "Ya está todo listo. La oficina ya lo tiene. ¿Quiere agendar otra visita? Solo cuénteme qué está pasando.";
     }
   };
 
@@ -241,8 +241,8 @@
   var realAI = null; // null=unknown, true=live model, false=scripted fallback
   function setTag(){
     var el=document.getElementById('rectag');
-    if(realAI===true){ el.textContent='◆ live · real AI · demo business'; el.style.color='var(--green)'; el.style.borderColor='rgba(16,185,129,0.4)'; }
-    else if(realAI===false){ el.textContent='◆ demo · scripted brain, real flow'; el.style.color='var(--amber)'; el.style.borderColor='rgba(245,158,11,0.35)'; }
+    if(realAI===true){ el.textContent='◆ en vivo · IA real · negocio de demostración'; el.style.color='var(--green)'; el.style.borderColor='rgba(16,185,129,0.4)'; }
+    else if(realAI===false){ el.textContent='◆ demo · cerebro guionado, flujo real'; el.style.color='var(--amber)'; el.style.borderColor='rgba(245,158,11,0.35)'; }
   }
   function askAI(history){
     return fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messages:history}) })
@@ -263,13 +263,13 @@
     if(chatMode==='script'){ setTimeout(function(){ done(cbrain.reply(v)); }, 420); return; }
     askAI(chatHist).then(function(reply){
       if(reply){ if(realAI!==true){ realAI=true; setTag(); } chatMode='ai'; done(reply); }
-      else if(chatMode==='ai'){ done('Sorry, could you say that once more?'); }
+      else if(chatMode==='ai'){ done('Disculpe, ¿podría repetir eso una vez más?'); }
       else { chatMode='script'; if(realAI===null){ realAI=false; setTag(); } setTimeout(function(){ done(cbrain.reply(v)); }, 300); }
     });
   }
   document.getElementById('csend').onclick=function(){ csend(cin.value); };
   cin.addEventListener('keydown',function(e){ if(e.key==='Enter') csend(cin.value); });
-  var CHIPS=['My kitchen sink is leaking','Emergency — pipe burst!','I need a new water heater'];
+  var CHIPS=['Se me está goteando el fregadero de la cocina','¡Emergencia — se reventó una tubería!','Necesito un calentador de agua nuevo'];
   var chipWrap=document.getElementById('cchips');
   CHIPS.forEach(function(c){ var b=document.createElement('button'); b.className='chip'; b.textContent=c; b.onclick=function(){ csend(c); }; chipWrap.appendChild(b); });
   var GREET = cbrain.greeting();
@@ -288,7 +288,7 @@
     var u=new SpeechSynthesisUtterance(txt.replace(/•/g,'').replace(/\n+/g,'. '));
     u.rate=1.02; u.pitch=1.0;
     u.onend=function(){ if(then) then(); };
-    orb.classList.add('live'); vstat.textContent='speaking…';
+    orb.classList.add('live'); vstat.textContent='hablando…';
     u.onend=function(){ orb.classList.remove('live'); if(then) then(); };
     synth.speak(u);
   }
@@ -296,20 +296,20 @@
     if(!SR) return;
     rec=new SR(); rec.lang='en-US'; rec.interimResults=true; rec.maxAlternatives=1;
     var finalT='';
-    orb.classList.add('live'); vstat.textContent='listening…';
+    orb.classList.add('live'); vstat.textContent='escuchando…';
     rec.onresult=function(e){ var s=''; for(var i=0;i<e.results.length;i++){ s+=e.results[i][0].transcript; if(e.results[i].isFinal) finalT+=e.results[i][0].transcript; } vtx.textContent='"'+s+'"'; };
-    rec.onerror=function(){ vstat.textContent='(didn\'t catch that, tap to retry)'; orb.classList.remove('live'); };
+    rec.onerror=function(){ vstat.textContent='(no entendí eso, toque para reintentar)'; orb.classList.remove('live'); };
     rec.onend=function(){
       orb.classList.remove('live');
       var said=(finalT||'').trim();
-      if(!said){ if(listening){ vstat.textContent='(silence, tap to talk again)'; } return; }
-      vtx.textContent='"'+said+'"'; vstat.textContent='thinking…'; vHist.push({role:'user',content:said});
+      if(!said){ if(listening){ vstat.textContent='(silencio, toque para hablar de nuevo)'; } return; }
+      vtx.textContent='"'+said+'"'; vstat.textContent='pensando…'; vHist.push({role:'user',content:said});
       track('demo-voice-turn');
       function respondVoice(resp){ vHist.push({role:'assistant',content:resp}); speak(resp, function(){ vtx.textContent=resp.split('\n')[0]; if(listening){ setTimeout(listenOnce, 250); } }); }
       if(vMode==='script'){ respondVoice(vbrain.reply(said)); return; }
       askAI(vHist).then(function(reply){
         if(reply){ if(realAI!==true){ realAI=true; setTag(); } vMode='ai'; respondVoice(reply); }
-        else if(vMode==='ai'){ respondVoice('Sorry, could you say that once more?'); }
+        else if(vMode==='ai'){ respondVoice('Disculpe, ¿podría repetir eso una vez más?'); }
         else { vMode='script'; if(realAI===null){ realAI=false; setTag(); } respondVoice(vbrain.reply(said)); }
       });
     };
@@ -317,24 +317,24 @@
   }
   var MIC='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>';
   vbtn.onclick=function(){
-    if(!SR || !synth){ vstat.textContent='Voice needs Chrome or Safari. Try the chat on the left.'; vnote.textContent='your browser doesn\'t support in-browser speech'; return; }
-    if(listening){ listening=false; if(rec) rec.stop(); synth.cancel(); orb.classList.remove('live'); vbtn.innerHTML=MIC+'<span>Start talking</span>'; vbtn.classList.remove('stop'); vstat.textContent='paused — tap to resume'; return; }
-    listening=true; vbtn.innerHTML='<span style="font-size:11px">\u25FC</span><span>Stop</span>'; vbtn.classList.add('stop'); vbrain.reset(); vMode=null; vHist=[];
+    if(!SR || !synth){ vstat.textContent='La voz necesita Chrome o Safari. Pruebe el chat de la izquierda.'; vnote.textContent='su navegador no admite voz integrada'; return; }
+    if(listening){ listening=false; if(rec) rec.stop(); synth.cancel(); orb.classList.remove('live'); vbtn.innerHTML=MIC+'<span>Empezar a hablar</span>'; vbtn.classList.remove('stop'); vstat.textContent='pausado — toque para continuar'; return; }
+    listening=true; vbtn.innerHTML='<span style="font-size:11px">\u25FC</span><span>Detener</span>'; vbtn.classList.add('stop'); vbrain.reset(); vMode=null; vHist=[];
     var g=vbrain.greeting(); vtx.textContent=g; vHist.push({role:'assistant',content:g});
     speak(g, function(){ if(listening) listenOnce(); });
     track('demo-voice-start');
   };
-  if(!SR || !synth){ document.getElementById('vlive').textContent='not supported here'; }
+  if(!SR || !synth){ document.getElementById('vlive').textContent='no compatible aquí'; }
 
   /* ===== LEAD PIPELINE (animated SVG sim) ===== */
   var svg=document.getElementById('pipe-svg');
   var NODES=[
-    {x:70,y:110,l:'Lead in',s:'form / call / DM',c:'#A8A29E'},
-    {x:250,y:110,l:'Classify',s:'AI reads intent',c:'#F59E0B'},
-    {x:430,y:60,l:'Route',s:'right team',c:'#22d3ee'},
-    {x:430,y:160,l:'Enrich',s:'company data',c:'#22d3ee'},
-    {x:620,y:110,l:'Draft reply',s:'AI writes it',c:'#F59E0B'},
-    {x:800,y:110,l:'Human OK → send',s:'booked + logged',c:'#10b981'}
+    {x:70,y:110,l:'Entra el lead',s:'formulario / llamada / DM',c:'#A8A29E'},
+    {x:250,y:110,l:'Clasificar',s:'la IA lee la intención',c:'#F59E0B'},
+    {x:430,y:60,l:'Enrutar',s:'equipo correcto',c:'#22d3ee'},
+    {x:430,y:160,l:'Enriquecer',s:'datos de la empresa',c:'#22d3ee'},
+    {x:620,y:110,l:'Redactar respuesta',s:'la IA la escribe',c:'#F59E0B'},
+    {x:800,y:110,l:'Aprobación humana → enviar',s:'agendado + registrado',c:'#10b981'}
   ];
   var EDGES=[[0,1],[1,2],[1,3],[2,4],[3,4],[4,5]];
   var svgNS='http://www.w3.org/2000/svg';
@@ -353,11 +353,11 @@
   var running=false;
   function flash(i,ok){ var el=document.getElementById('node'+i); if(!el)return; var c=ok?'#10b981':NODES[i].c; el.setAttribute('stroke',c); el.setAttribute('stroke-opacity','1'); el.setAttribute('fill', ok?'rgba(16,185,129,0.08)':'rgba(255,255,255,0.03)'); setTimeout(function(){ el.setAttribute('stroke-opacity','0.7'); el.setAttribute('fill','#0C0C0E'); },900); }
   function runLead(){
-    if(running) return; running=true; playBtn.textContent='running…';
-    var labels=['lead captured','AI classified: "plumbing · urgent"','routed to on-call tech','AI drafted the reply','human approved → booked + logged'];
+    if(running) return; running=true; playBtn.textContent='ejecutando…';
+    var labels=['lead capturado','la IA clasificó: "plomería · urgente"','enrutado al técnico de guardia','la IA redactó la respuesta','aprobación humana → agendado + registrado'];
     var i=0;
     function step(){
-      if(i>=PATH.length){ running=false; playBtn.textContent='▶ run another'; statusEl.textContent='✓ booked in 4.2s — zero missed'; statusEl.style.color='#10b981'; return; }
+      if(i>=PATH.length){ running=false; playBtn.textContent='▶ ejecutar otra vez'; statusEl.textContent='✓ agendado en 4.2s — cero perdidos'; statusEl.style.color='#10b981'; return; }
       var n=NODES[PATH[i]]; pkt.setAttribute('opacity','1'); pkt.setAttribute('cx',n.x); pkt.setAttribute('cy',n.y);
       pkt.setAttribute('fill', i>=4?'#10b981':i>=1?'#F59E0B':'#22d3ee');
       flash(PATH[i], i>=4); statusEl.style.color=''; statusEl.textContent=labels[i]||'';
@@ -369,25 +369,25 @@
 
   /* ===== CAPABILITY MATRIX ===== */
   var CAPS=[
-    {cat:'AI systems',ic:'phone',n:'AI receptionist',p:'Answers every call, qualifies, books, texts you the summary.',o:'→ zero missed jobs, 24/7'},
-    {cat:'AI systems',ic:'voice',n:'Voice agents',p:'Outbound + inbound voice that sounds human and gets tasks done.',o:'→ reminders, intake, follow-up'},
-    {cat:'AI systems',ic:'chat',n:'Knowledge assistant',p:'Answers from your docs, policies, and past tickets.',o:'→ support deflection, internal Q&A'},
-    {cat:'AI systems',ic:'doc',n:'Document intake',p:'Invoices, forms, applications turned into clean structured data.',o:'→ no more manual data entry'},
-    {cat:'AI systems',ic:'workflow',n:'Lead automation',p:'Every lead captured, scored, routed, followed up in minutes.',o:'→ the pipeline demo above'},
-    {cat:'AI systems',ic:'pen',n:'Workflow copilots',p:'Quotes, emails, reports drafted inside your existing process.',o:'→ hours back per week'},
-    {cat:'Quality',ic:'flask',n:'LLM eval harness',p:'Prove your AI feature works: scoring, safety gates, CI.',o:'→ ship without the 3am fear'},
-    {cat:'Quality',ic:'check',n:'Test automation + CI',p:'Regression suites with traces and a green gate that means it.',o:'→ releases stop breaking'},
-    {cat:'Quality',ic:'mobile',n:'Mobile app testing',p:'Real-device end-to-end certification for iOS/Android.',o:'→ ship backed by real proof'},
-    {cat:'Quality',ic:'bars',n:'Release gates',p:'A clear ship/no-ship signal backed by evidence.',o:'→ decisions backed by evidence'},
-    {cat:'Product',ic:'monitor',n:'Web apps & portals',p:'Auth, payments, dashboards, production-grade.',o:'→ fully built, ready to ship'},
-    {cat:'Product',ic:'tools',n:'Internal tools',p:'The admin panel your team runs by hand in spreadsheets.',o:'→ automate the busywork'}
+    {cat:'Sistemas de IA',ic:'phone',n:'Recepcionista de IA',p:'Responde cada llamada, califica, agenda y le envía un resumen por mensaje de texto.',o:'→ cero trabajos perdidos, 24/7'},
+    {cat:'Sistemas de IA',ic:'voice',n:'Agentes de voz',p:'Voz saliente y entrante que suena humana y completa tareas.',o:'→ recordatorios, admisión, seguimiento'},
+    {cat:'Sistemas de IA',ic:'chat',n:'Asistente de conocimiento',p:'Responde con base en sus documentos, políticas y tickets anteriores.',o:'→ reduce tickets de soporte, preguntas internas'},
+    {cat:'Sistemas de IA',ic:'doc',n:'Recepción de documentos',p:'Facturas, formularios y solicitudes convertidos en datos estructurados y limpios.',o:'→ se acabó la captura manual de datos'},
+    {cat:'Sistemas de IA',ic:'workflow',n:'Automatización de leads',p:'Cada lead se captura, califica, enruta y da seguimiento en minutos.',o:'→ la demostración del flujo de arriba'},
+    {cat:'Sistemas de IA',ic:'pen',n:'Copilotos de flujo de trabajo',p:'Cotizaciones, correos e informes redactados dentro de su proceso actual.',o:'→ recupera horas cada semana'},
+    {cat:'Calidad',ic:'flask',n:'Marco de evaluación de LLM',p:'Demuestre que su función de IA funciona: puntuación, filtros de seguridad, CI.',o:'→ lance sin el miedo de las 3am'},
+    {cat:'Calidad',ic:'check',n:'Automatización de pruebas + CI',p:'Suites de regresión con trazas y una validación verde que realmente significa algo.',o:'→ los lanzamientos dejan de romperse'},
+    {cat:'Calidad',ic:'mobile',n:'Pruebas de apps móviles',p:'Certificación end-to-end en dispositivos reales para iOS/Android.',o:'→ lance respaldado por pruebas reales'},
+    {cat:'Calidad',ic:'bars',n:'Filtros de lanzamiento',p:'Una señal clara de lanzar o no lanzar, respaldada por evidencia.',o:'→ decisiones respaldadas por evidencia'},
+    {cat:'Producto',ic:'monitor',n:'Apps web y portales',p:'Autenticación, pagos, paneles, listos para producción.',o:'→ completamente construido, listo para lanzar'},
+    {cat:'Producto',ic:'tools',n:'Herramientas internas',p:'El panel de administración que su equipo maneja a mano en hojas de cálculo.',o:'→ automatiza el trabajo repetitivo'}
   ];
-  var CATS=['All','AI systems','Quality','Product'];
-  var CATCOLOR={'AI systems':'#22d3ee','Quality':'#10b981','Product':'#a78bfa'};
-  var grid=document.getElementById('matrix-grid'), catWrap=document.getElementById('cats'), curCat='All';
+  var CATS=['Todos','Sistemas de IA','Calidad','Producto'];
+  var CATCOLOR={'Sistemas de IA':'#22d3ee','Calidad':'#10b981','Producto':'#a78bfa'};
+  var grid=document.getElementById('matrix-grid'), catWrap=document.getElementById('cats'), curCat='Todos';
   function renderMatrix(){
     grid.innerHTML='';
-    CAPS.filter(function(c){ return curCat==='All'||c.cat===curCat; }).forEach(function(c,i){
+    CAPS.filter(function(c){ return curCat==='Todos'||c.cat===curCat; }).forEach(function(c,i){
       var col=CATCOLOR[c.cat]||'#888';
       var t=document.createElement('div'); t.className='tile'; t.style.animationDelay=(i*0.04)+'s'; t.style.borderColor='var(--line)';
       t.onmouseenter=function(){ t.style.borderColor=col; }; t.onmouseleave=function(){ t.style.borderColor='var(--line)'; };

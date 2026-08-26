@@ -64,7 +64,7 @@
     <div class="site-nav-links" id="site-nav-panel">
       <a href="/es/services.html" class="site-nav-link">Servicios</a>
       <a href="/es/case-studies.html" class="site-nav-link">Trabajo</a>
-      <a href="/es/build.html" class="site-nav-link">Define un proyecto</a>
+      <a href="/es/build.html" class="site-nav-link">Definir un proyecto</a>
       <a href="/es/docs.html" class="site-nav-link">Guías</a>
       <a href="/es/book.html" class="btn-solid green site-nav-cta" aria-current="page">Agenda una llamada &rarr;</a>
     </div>
@@ -197,16 +197,16 @@
       message:form.elements.message.value.trim(),
       company:(form.elements.company&&form.elements.company.value.trim())||'',
       stage:(form.elements.stage&&form.elements.stage.value)||'', website:form.elements.website.value };
-    if(f.website) { statusEl.textContent='sent — talk soon.'; return; } // honeypot
-    statusEl.textContent='sending…';
+    if(f.website) { statusEl.textContent='enviado — hablamos pronto.'; return; } // honeypot
+    statusEl.textContent='enviando…';
     fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(f)})
       .then(function(r){
-        if(r.ok){ statusEl.textContent='got it. I reply within a business day.'; form.reset(); }
+        if(r.ok){ statusEl.textContent='recibido. Te respondo dentro de un día hábil.'; form.reset(); }
         else throw new Error('no api');
       })
       .catch(function(){
         var body='Company: '+(f.company||'—')+'\nStage: '+(f.stage||'—')+'\n\n'+f.message;
-        statusEl.textContent='opening your email app…';
+        statusEl.textContent='abriendo tu app de correo…';
         window.location.href='mailto:hello@sageideas.dev?subject='+encodeURIComponent('Project inquiry — '+f.name)+'&body='+encodeURIComponent(body);
       });
     try { if(typeof window.va==='function') window.va('event',{name:'book-submit'}); } catch(_){}

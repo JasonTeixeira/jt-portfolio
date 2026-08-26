@@ -103,7 +103,7 @@
     <div class="site-nav-links" id="site-nav-panel">
       <a href="/pt/services.html" class="site-nav-link">Serviços</a>
       <a href="/pt/case-studies.html" class="site-nav-link">Trabalhos</a>
-      <a href="/pt/build.html" class="site-nav-link">Definir um projeto</a>
+      <a href="/pt/build.html" class="site-nav-link">Escopar um projeto</a>
       <a href="/pt/docs.html" class="site-nav-link">Guias</a>
       <a href="/pt/book.html" class="btn-solid green site-nav-cta" data-evt="demos-book-nav">Agendar uma chamada &rarr;</a>
     </div>
@@ -202,38 +202,38 @@
   /* ===== shared receptionist brain (scripted, honest demo) ===== */
   function Brain(){ this.reset(); }
   Brain.prototype.reset = function(){ this.step='service'; this.d={}; };
-  Brain.prototype.greeting = function(){ return "Hi, you've reached Sage Plumbing. This is the front desk. What's going on, and I'll get you booked?"; };
+  Brain.prototype.greeting = function(){ return "Olá, você ligou para a Sage Plumbing. Aqui é a recepção. O que está acontecendo? Vou agendar seu atendimento."; };
   Brain.prototype.reply = function(t){
     t = (t||'').toLowerCase().trim();
     var d = this.d;
     if (/reset|start over|again/.test(t)) { this.reset(); return this.greeting(); }
     switch(this.step){
       case 'service':
-        d.service = /leak|drip|water/.test(t) ? 'a leak' : /drain|clog|block/.test(t) ? 'a clogged drain'
-                  : /heater|hot water|boiler/.test(t) ? 'a water heater' : /toilet/.test(t) ? 'a toilet'
-                  : /install|new|replace/.test(t) ? 'an installation' : 'a plumbing issue';
+        d.service = /leak|drip|water/.test(t) ? 'um vazamento' : /drain|clog|block/.test(t) ? 'um ralo entupido'
+                  : /heater|hot water|boiler/.test(t) ? 'um aquecedor de água' : /toilet/.test(t) ? 'um vaso sanitário'
+                  : /install|new|replace/.test(t) ? 'uma instalação' : 'um problema de encanamento';
         this.step='urgency';
-        return "Got it — sounds like " + d.service + ". Is this an emergency, or should we schedule a normal visit?";
+        return "Entendi — parece ser " + d.service + ". É uma emergência ou prefere agendar uma visita normal?";
       case 'urgency':
         d.urgency = /emerg|now|asap|flood|urgent|burst/.test(t) ? 'emergency' : 'scheduled';
         this.step='name';
         return d.urgency==='emergency'
-          ? "Understood. I'm flagging this as urgent. Can I get your name? A tech can be routed right away."
-          : "No problem. Can I get your name to put on the booking?";
+          ? "Entendido. Vou marcar isso como urgente. Pode me dizer seu nome? Um técnico pode ser enviado imediatamente."
+          : "Sem problema. Pode me dizer seu nome para o agendamento?";
       case 'name':
-        d.name = t.replace(/^(i'?m|my name is|this is|it'?s)\s+/,'').replace(/[^a-z\s'-]/gi,'').trim() || 'there';
+        d.name = t.replace(/^(i'?m|my name is|this is|it'?s)\s+/,'').replace(/[^a-z\s'-]/gi,'').trim() || 'prezado cliente';
         d.name = d.name.replace(/\b\w/g, function(c){return c.toUpperCase();});
         this.step='contact';
-        return "Thanks, " + d.name + ". What's the best number and a time window that works — morning or afternoon?";
+        return "Obrigado, " + d.name + ". Qual é o melhor número e um horário que funcione — manhã ou tarde?";
       case 'contact':
         var num = (t.match(/\d[\d\s().-]{6,}\d/)||[''])[0].trim();
-        d.phone = num || 'the number you called from';
-        d.window = /morning|am|early/.test(t) ? 'tomorrow morning (8–11am)' : /after|pm|noon|evening/.test(t) ? 'tomorrow afternoon (1–4pm)' : 'the next available window';
+        d.phone = num || 'o número de onde você ligou';
+        d.window = /morning|am|early/.test(t) ? 'amanhã de manhã (8h–11h)' : /after|pm|noon|evening/.test(t) ? 'amanhã à tarde (13h–16h)' : 'o próximo horário disponível';
         this.step='done';
-        return "Perfect. You're booked. Here's what I'm sending the team:\n\n• Job: " + d.service + (d.urgency==='emergency'?' (EMERGENCY)':'') + "\n• Name: " + d.name + "\n• Callback: " + d.phone + "\n• Window: " + d.window + "\n\nYou'll get a confirmation text in a moment. Anything else?";
+        return "Perfeito. Está agendado. Aqui está o que vou enviar para a equipe:\n\n• Serviço: " + d.service + (d.urgency==='emergency'?' (EMERGÊNCIA)':'') + "\n• Nome: " + d.name + "\n• Telefone: " + d.phone + "\n• Horário: " + d.window + "\n\nVocê vai receber uma mensagem de confirmação em instantes. Mais alguma coisa?";
       default:
         this.reset();
-        return "You're all set. The office has it. Want to book another? Just tell me what's going on.";
+        return "Está tudo certo. O escritório já recebeu. Quer agendar outro atendimento? É só me contar o que está acontecendo.";
     }
   };
 
@@ -241,8 +241,8 @@
   var realAI = null; // null=unknown, true=live model, false=scripted fallback
   function setTag(){
     var el=document.getElementById('rectag');
-    if(realAI===true){ el.textContent='◆ live · real AI · demo business'; el.style.color='var(--green)'; el.style.borderColor='rgba(16,185,129,0.4)'; }
-    else if(realAI===false){ el.textContent='◆ demo · scripted brain, real flow'; el.style.color='var(--amber)'; el.style.borderColor='rgba(245,158,11,0.35)'; }
+    if(realAI===true){ el.textContent='◆ ao vivo · IA real · negócio de demonstração'; el.style.color='var(--green)'; el.style.borderColor='rgba(16,185,129,0.4)'; }
+    else if(realAI===false){ el.textContent='◆ demo · cérebro roteirizado, fluxo real'; el.style.color='var(--amber)'; el.style.borderColor='rgba(245,158,11,0.35)'; }
   }
   function askAI(history){
     return fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messages:history}) })
@@ -263,13 +263,13 @@
     if(chatMode==='script'){ setTimeout(function(){ done(cbrain.reply(v)); }, 420); return; }
     askAI(chatHist).then(function(reply){
       if(reply){ if(realAI!==true){ realAI=true; setTag(); } chatMode='ai'; done(reply); }
-      else if(chatMode==='ai'){ done('Sorry, could you say that once more?'); }
+      else if(chatMode==='ai'){ done('Desculpe, pode repetir mais uma vez?'); }
       else { chatMode='script'; if(realAI===null){ realAI=false; setTag(); } setTimeout(function(){ done(cbrain.reply(v)); }, 300); }
     });
   }
   document.getElementById('csend').onclick=function(){ csend(cin.value); };
   cin.addEventListener('keydown',function(e){ if(e.key==='Enter') csend(cin.value); });
-  var CHIPS=['My kitchen sink is leaking','Emergency — pipe burst!','I need a new water heater'];
+  var CHIPS=['A pia da minha cozinha está vazando','Emergência — estourou um cano!','Preciso de um aquecedor de água novo'];
   var chipWrap=document.getElementById('cchips');
   CHIPS.forEach(function(c){ var b=document.createElement('button'); b.className='chip'; b.textContent=c; b.onclick=function(){ csend(c); }; chipWrap.appendChild(b); });
   var GREET = cbrain.greeting();
@@ -288,7 +288,7 @@
     var u=new SpeechSynthesisUtterance(txt.replace(/•/g,'').replace(/\n+/g,'. '));
     u.rate=1.02; u.pitch=1.0;
     u.onend=function(){ if(then) then(); };
-    orb.classList.add('live'); vstat.textContent='speaking…';
+    orb.classList.add('live'); vstat.textContent='falando…';
     u.onend=function(){ orb.classList.remove('live'); if(then) then(); };
     synth.speak(u);
   }
@@ -296,20 +296,20 @@
     if(!SR) return;
     rec=new SR(); rec.lang='en-US'; rec.interimResults=true; rec.maxAlternatives=1;
     var finalT='';
-    orb.classList.add('live'); vstat.textContent='listening…';
+    orb.classList.add('live'); vstat.textContent='ouvindo…';
     rec.onresult=function(e){ var s=''; for(var i=0;i<e.results.length;i++){ s+=e.results[i][0].transcript; if(e.results[i].isFinal) finalT+=e.results[i][0].transcript; } vtx.textContent='"'+s+'"'; };
-    rec.onerror=function(){ vstat.textContent='(didn\'t catch that, tap to retry)'; orb.classList.remove('live'); };
+    rec.onerror=function(){ vstat.textContent='(não entendi, toque para tentar de novo)'; orb.classList.remove('live'); };
     rec.onend=function(){
       orb.classList.remove('live');
       var said=(finalT||'').trim();
-      if(!said){ if(listening){ vstat.textContent='(silence, tap to talk again)'; } return; }
-      vtx.textContent='"'+said+'"'; vstat.textContent='thinking…'; vHist.push({role:'user',content:said});
+      if(!said){ if(listening){ vstat.textContent='(silêncio, toque para falar novamente)'; } return; }
+      vtx.textContent='"'+said+'"'; vstat.textContent='pensando…'; vHist.push({role:'user',content:said});
       track('demo-voice-turn');
       function respondVoice(resp){ vHist.push({role:'assistant',content:resp}); speak(resp, function(){ vtx.textContent=resp.split('\n')[0]; if(listening){ setTimeout(listenOnce, 250); } }); }
       if(vMode==='script'){ respondVoice(vbrain.reply(said)); return; }
       askAI(vHist).then(function(reply){
         if(reply){ if(realAI!==true){ realAI=true; setTag(); } vMode='ai'; respondVoice(reply); }
-        else if(vMode==='ai'){ respondVoice('Sorry, could you say that once more?'); }
+        else if(vMode==='ai'){ respondVoice('Desculpe, pode repetir mais uma vez?'); }
         else { vMode='script'; if(realAI===null){ realAI=false; setTag(); } respondVoice(vbrain.reply(said)); }
       });
     };
@@ -317,24 +317,24 @@
   }
   var MIC='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>';
   vbtn.onclick=function(){
-    if(!SR || !synth){ vstat.textContent='Voice needs Chrome or Safari. Try the chat on the left.'; vnote.textContent='your browser doesn\'t support in-browser speech'; return; }
-    if(listening){ listening=false; if(rec) rec.stop(); synth.cancel(); orb.classList.remove('live'); vbtn.innerHTML=MIC+'<span>Start talking</span>'; vbtn.classList.remove('stop'); vstat.textContent='paused — tap to resume'; return; }
-    listening=true; vbtn.innerHTML='<span style="font-size:11px">\u25FC</span><span>Stop</span>'; vbtn.classList.add('stop'); vbrain.reset(); vMode=null; vHist=[];
+    if(!SR || !synth){ vstat.textContent='A voz precisa do Chrome ou Safari. Experimente o chat à esquerda.'; vnote.textContent='seu navegador não é compatível com voz integrada'; return; }
+    if(listening){ listening=false; if(rec) rec.stop(); synth.cancel(); orb.classList.remove('live'); vbtn.innerHTML=MIC+'<span>Começar a falar</span>'; vbtn.classList.remove('stop'); vstat.textContent='pausado — toque para continuar'; return; }
+    listening=true; vbtn.innerHTML='<span style="font-size:11px">\u25FC</span><span>Parar</span>'; vbtn.classList.add('stop'); vbrain.reset(); vMode=null; vHist=[];
     var g=vbrain.greeting(); vtx.textContent=g; vHist.push({role:'assistant',content:g});
     speak(g, function(){ if(listening) listenOnce(); });
     track('demo-voice-start');
   };
-  if(!SR || !synth){ document.getElementById('vlive').textContent='not supported here'; }
+  if(!SR || !synth){ document.getElementById('vlive').textContent='não compatível aqui'; }
 
   /* ===== LEAD PIPELINE (animated SVG sim) ===== */
   var svg=document.getElementById('pipe-svg');
   var NODES=[
-    {x:70,y:110,l:'Lead in',s:'form / call / DM',c:'#A8A29E'},
-    {x:250,y:110,l:'Classify',s:'AI reads intent',c:'#F59E0B'},
-    {x:430,y:60,l:'Route',s:'right team',c:'#22d3ee'},
-    {x:430,y:160,l:'Enrich',s:'company data',c:'#22d3ee'},
-    {x:620,y:110,l:'Draft reply',s:'AI writes it',c:'#F59E0B'},
-    {x:800,y:110,l:'Human OK → send',s:'booked + logged',c:'#10b981'}
+    {x:70,y:110,l:'Lead chega',s:'formulário / ligação / DM',c:'#A8A29E'},
+    {x:250,y:110,l:'Classificar',s:'a IA lê a intenção',c:'#F59E0B'},
+    {x:430,y:60,l:'Rotear',s:'equipe certa',c:'#22d3ee'},
+    {x:430,y:160,l:'Enriquecer',s:'dados da empresa',c:'#22d3ee'},
+    {x:620,y:110,l:'Rascunhar resposta',s:'a IA escreve',c:'#F59E0B'},
+    {x:800,y:110,l:'Aprovação humana → enviar',s:'agendado + registrado',c:'#10b981'}
   ];
   var EDGES=[[0,1],[1,2],[1,3],[2,4],[3,4],[4,5]];
   var svgNS='http://www.w3.org/2000/svg';
@@ -353,11 +353,11 @@
   var running=false;
   function flash(i,ok){ var el=document.getElementById('node'+i); if(!el)return; var c=ok?'#10b981':NODES[i].c; el.setAttribute('stroke',c); el.setAttribute('stroke-opacity','1'); el.setAttribute('fill', ok?'rgba(16,185,129,0.08)':'rgba(255,255,255,0.03)'); setTimeout(function(){ el.setAttribute('stroke-opacity','0.7'); el.setAttribute('fill','#0C0C0E'); },900); }
   function runLead(){
-    if(running) return; running=true; playBtn.textContent='running…';
-    var labels=['lead captured','AI classified: "plumbing · urgent"','routed to on-call tech','AI drafted the reply','human approved → booked + logged'];
+    if(running) return; running=true; playBtn.textContent='executando…';
+    var labels=['lead capturado','IA classificou: "encanamento · urgente"','roteado para o técnico de plantão','a IA redigiu a resposta','aprovação humana → agendado + registrado'];
     var i=0;
     function step(){
-      if(i>=PATH.length){ running=false; playBtn.textContent='▶ run another'; statusEl.textContent='✓ booked in 4.2s — zero missed'; statusEl.style.color='#10b981'; return; }
+      if(i>=PATH.length){ running=false; playBtn.textContent='▶ executar outra vez'; statusEl.textContent='✓ agendado em 4.2s — zero perdidos'; statusEl.style.color='#10b981'; return; }
       var n=NODES[PATH[i]]; pkt.setAttribute('opacity','1'); pkt.setAttribute('cx',n.x); pkt.setAttribute('cy',n.y);
       pkt.setAttribute('fill', i>=4?'#10b981':i>=1?'#F59E0B':'#22d3ee');
       flash(PATH[i], i>=4); statusEl.style.color=''; statusEl.textContent=labels[i]||'';
@@ -369,25 +369,25 @@
 
   /* ===== CAPABILITY MATRIX ===== */
   var CAPS=[
-    {cat:'AI systems',ic:'phone',n:'AI receptionist',p:'Answers every call, qualifies, books, texts you the summary.',o:'→ zero missed jobs, 24/7'},
-    {cat:'AI systems',ic:'voice',n:'Voice agents',p:'Outbound + inbound voice that sounds human and gets tasks done.',o:'→ reminders, intake, follow-up'},
-    {cat:'AI systems',ic:'chat',n:'Knowledge assistant',p:'Answers from your docs, policies, and past tickets.',o:'→ support deflection, internal Q&A'},
-    {cat:'AI systems',ic:'doc',n:'Document intake',p:'Invoices, forms, applications turned into clean structured data.',o:'→ no more manual data entry'},
-    {cat:'AI systems',ic:'workflow',n:'Lead automation',p:'Every lead captured, scored, routed, followed up in minutes.',o:'→ the pipeline demo above'},
-    {cat:'AI systems',ic:'pen',n:'Workflow copilots',p:'Quotes, emails, reports drafted inside your existing process.',o:'→ hours back per week'},
-    {cat:'Quality',ic:'flask',n:'LLM eval harness',p:'Prove your AI feature works: scoring, safety gates, CI.',o:'→ ship without the 3am fear'},
-    {cat:'Quality',ic:'check',n:'Test automation + CI',p:'Regression suites with traces and a green gate that means it.',o:'→ releases stop breaking'},
-    {cat:'Quality',ic:'mobile',n:'Mobile app testing',p:'Real-device end-to-end certification for iOS/Android.',o:'→ ship backed by real proof'},
-    {cat:'Quality',ic:'bars',n:'Release gates',p:'A clear ship/no-ship signal backed by evidence.',o:'→ decisions backed by evidence'},
-    {cat:'Product',ic:'monitor',n:'Web apps & portals',p:'Auth, payments, dashboards, production-grade.',o:'→ fully built, ready to ship'},
-    {cat:'Product',ic:'tools',n:'Internal tools',p:'The admin panel your team runs by hand in spreadsheets.',o:'→ automate the busywork'}
+    {cat:'Sistemas de IA',ic:'phone',n:'Recepcionista de IA',p:'Atende todas as ligações, qualifica, agenda e envia um resumo por mensagem.',o:'→ zero atendimentos perdidos, 24/7'},
+    {cat:'Sistemas de IA',ic:'voice',n:'Agentes de voz',p:'Voz ativa e receptiva que soa humana e executa as tarefas.',o:'→ lembretes, triagem, acompanhamento'},
+    {cat:'Sistemas de IA',ic:'chat',n:'Assistente de conhecimento',p:'Responde com base nos seus documentos, políticas e tickets anteriores.',o:'→ reduz chamados de suporte, perguntas internas'},
+    {cat:'Sistemas de IA',ic:'doc',n:'Recepção de documentos',p:'Faturas, formulários e solicitações transformados em dados estruturados e limpos.',o:'→ fim da digitação manual de dados'},
+    {cat:'Sistemas de IA',ic:'workflow',n:'Automação de leads',p:'Cada lead é capturado, pontuado, roteado e acompanhado em minutos.',o:'→ a demonstração do fluxo acima'},
+    {cat:'Sistemas de IA',ic:'pen',n:'Copilotos de fluxo de trabalho',p:'Orçamentos, e-mails e relatórios redigidos dentro do seu processo atual.',o:'→ recupera horas por semana'},
+    {cat:'Qualidade',ic:'flask',n:'Estrutura de avaliação de LLM',p:'Comprove que seu recurso de IA funciona: pontuação, filtros de segurança, CI.',o:'→ lance sem o medo das 3h da manhã'},
+    {cat:'Qualidade',ic:'check',n:'Automação de testes + CI',p:'Suítes de regressão com rastros e um sinal verde que realmente significa algo.',o:'→ os lançamentos param de quebrar'},
+    {cat:'Qualidade',ic:'mobile',n:'Testes de apps móveis',p:'Certificação end-to-end em dispositivos reais para iOS/Android.',o:'→ lance com provas reais'},
+    {cat:'Qualidade',ic:'bars',n:'Portões de lançamento',p:'Um sinal claro de lançar ou não lançar, respaldado por evidências.',o:'→ decisões respaldadas por evidências'},
+    {cat:'Produto',ic:'monitor',n:'Apps web e portais',p:'Autenticação, pagamentos, painéis, prontos para produção.',o:'→ totalmente construído, pronto para lançar'},
+    {cat:'Produto',ic:'tools',n:'Ferramentas internas',p:'O painel administrativo que sua equipe roda manualmente em planilhas.',o:'→ automatiza o trabalho repetitivo'}
   ];
-  var CATS=['All','AI systems','Quality','Product'];
-  var CATCOLOR={'AI systems':'#22d3ee','Quality':'#10b981','Product':'#a78bfa'};
-  var grid=document.getElementById('matrix-grid'), catWrap=document.getElementById('cats'), curCat='All';
+  var CATS=['Todos','Sistemas de IA','Qualidade','Produto'];
+  var CATCOLOR={'Sistemas de IA':'#22d3ee','Qualidade':'#10b981','Produto':'#a78bfa'};
+  var grid=document.getElementById('matrix-grid'), catWrap=document.getElementById('cats'), curCat='Todos';
   function renderMatrix(){
     grid.innerHTML='';
-    CAPS.filter(function(c){ return curCat==='All'||c.cat===curCat; }).forEach(function(c,i){
+    CAPS.filter(function(c){ return curCat==='Todos'||c.cat===curCat; }).forEach(function(c,i){
       var col=CATCOLOR[c.cat]||'#888';
       var t=document.createElement('div'); t.className='tile'; t.style.animationDelay=(i*0.04)+'s'; t.style.borderColor='var(--line)';
       t.onmouseenter=function(){ t.style.borderColor=col; }; t.onmouseleave=function(){ t.style.borderColor='var(--line)'; };

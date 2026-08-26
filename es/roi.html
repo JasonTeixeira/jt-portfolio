@@ -179,8 +179,8 @@
 <script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
-  var fmtInt = function(n){ return Math.round(n).toLocaleString('en-US'); };
-  var fmtUsd = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
+  var fmtInt = function(n){ return Math.round(n).toLocaleString('es-ES'); };
+  var fmtUsd = function(n){ return '$' + Math.round(n).toLocaleString('es-ES'); };
   var GATE_CATCH = 0.8; // illustrative: a well-built gate catches ~80% before ship
   var ids = ['users','bad','costly','cpi'];
   function recalc(){
@@ -195,7 +195,7 @@
     $('incidents').textContent = fmtInt(incidents);
     $('monthly').textContent = fmtUsd(monthly);
     $('annual').textContent = fmtUsd(annual);
-    $('recovered').textContent = fmtUsd(annual * GATE_CATCH) + '/yr';
+    $('recovered').textContent = fmtUsd(annual * GATE_CATCH) + '/año';
   }
   ids.forEach(function(id){ $(id).addEventListener('input', recalc); });
   recalc();
