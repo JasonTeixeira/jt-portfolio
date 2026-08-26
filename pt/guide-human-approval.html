@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onde Colocar o Ponto de Aprovação Humana na Automação com IA · Jason Teixeira</title>
+<meta name="description" content="A pergunta mais difícil na automação com IA não é se o agente consegue fazer a tarefa — é onde um humano dá o aval. Padrões de aprovação (antes de cada envio, antes de casos novos, revisão posterior) e como conquistar autonomia com evidência.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/guide-human-approval.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Onde Colocar o Ponto de Aprovação Humana na Automação com IA">
+<meta property="og:description" content="Não é 'o agente consegue fazer' e sim 'onde um humano dá o aval.' Padrões de aprovação e como conquistar autonomia com evidência.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/guide-human-approval.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Where to Put the Human Approval Point in AI Automation","description":"Approval patterns for AI automation — before every send, before novel cases, after-the-fact review — and how to earn autonomy down with evidence.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Organization","name":"Sage Ideas LLC"},"mainEntityOfPage":"https://agency.sageideas.dev/guide-human-approval.html"}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --acc:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  .tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 9px; border-radius:5px; color:var(--acc); border:1px solid rgba(245,158,11,0.4); background:rgba(245,158,11,0.07); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.06; letter-spacing:-0.02em; margin:20px 0 0; text-wrap:balance; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:44px 0 0; }
+  h3 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1.02rem; margin:26px 0 0; color:var(--ink); }
+  .mono { font-family:var(--mono); }
+  .lede { font-size:16.5px; line-height:1.7; color:var(--dim); margin:22px 0 0; }
+  .prose p { font-size:15px; line-height:1.78; color:#CFC9C1; margin:16px 0 0; }
+  .prose strong { color:var(--ink); font-weight:600; }
+  .prose em { color:#D9D3CB; }
+  .prose ul { margin:14px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:9px; }
+  .prose li { font-size:14.5px; line-height:1.7; color:#CFC9C1; }
+  .prose code { font-family:var(--mono); font-size:0.86em; background:#141311; border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:#E4DFD7; }
+  figure { margin:32px 0 0; }
+  .diagram { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:clamp(16px,3vw,26px); }
+  figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:12px; text-align:center; }
+  .pat { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:20px 22px; margin:16px 0 0; }
+  .pat h3 { margin:0; display:flex; align-items:baseline; gap:10px; }
+  .pat .g { font-family:var(--mono); font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border-radius:5px; }
+  .pat p { font-size:14px; line-height:1.7; color:#CFC9C1; margin:12px 0 0; }
+  .pat .when { font-family:var(--mono); font-size:11.5px; color:var(--dim); margin:12px 0 0; padding-left:12px; border-left:2px solid var(--acc); }
+  .callout { border:1px solid var(--line); background:var(--card); border-left:2px solid var(--acc); border-radius:0 10px 10px 0; padding:18px 20px; margin:24px 0 0; }
+  .callout .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--acc); }
+  .callout p { font-size:14px; line-height:1.7; color:var(--dim); margin:8px 0 0; }
+  .ctabox { border:1px solid var(--line); background:linear-gradient(180deg,#0C0C0E,#0a0a0c); border-radius:16px; padding:clamp(26px,4vw,40px); margin:52px 0 0; }
+  .btn { display:inline-flex; align-items:center; gap:9px; border-radius:26px; padding:13px 24px; font-size:14.5px; font-weight:700; font-family:inherit; }
+  .btn.green { background:var(--green); color:#052e22; }
+  hr.sep { border:none; border-top:1px solid var(--line); margin:36px 0 0; }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/guide-human-approval.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/guide-human-approval.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/guide-human-approval.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/guide-human-approval.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/guide-human-approval.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/guide-human-approval.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="/pt/index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="/pt/docs.html" class="dim-link" style="color:var(--ink)">guias</a>
+      <a href="/pt/demos.html" class="dim-link">demos</a>
+      <a href="/pt/what-i-build.html" class="dim-link">o que eu construo</a>
+      <a href="/pt/book.html" class="btn-solid green" data-evt="guide-book-nav" style="padding:9px 16px;font-size:12.5px">Agende uma ligação &rarr;</a>
+    </div>
+  </nav>
+
+  <article class="wrap" style="padding-top:clamp(48px,7vw,80px);padding-bottom:clamp(56px,8vw,88px)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="tag">Automação</span>
+      <span class="mono" style="font-size:11px;color:var(--faint)">6 min de leitura &middot; <a href="/pt/docs.html" class="dim-link">guias de campo</a></span>
+    </div>
+    <h1>Onde Colocar o Ponto de Aprovação Humana na Automação com IA</h1>
+    <p class="lede">A pergunta mais difícil na automação com IA não é &ldquo;o agente consegue fazer a tarefa.&rdquo; Com um modelo capaz, geralmente consegue. A pergunta difícil é <em>onde um humano dá o aval</em> &mdash; porque essa única decisão de posicionamento define seu raio de impacto, seu throughput, e se a coisa toda é segura para ligar.</p>
+
+    <div class="prose">
+      <p>Erre o ponto de aprovação numa direção e você construiu uma caixinha de sugestões caríssima: um humano revisa cada ação trivial, a automação não economiza tempo de ninguém, e ela acaba sendo desligada em silêncio. Erre na outra direção e o agente manda o reembolso, escreve pro cliente, ou bate na API sem ninguém vigiando o caso que nunca foi seguro automatizar &mdash; e você descobre pelo estrago.</p>
+      <p>A boa notícia: isso não é um único interruptor global. O ponto de aprovação vai <strong>na borda arriscada</strong> do fluxo, e a maioria dos fluxos tem exatamente uma ou duas bordas que carregam quase todo o risco. Encontre essas, coloque um gate nelas, e deixe o resto correr.</p>
+
+      <figure>
+        <div class="diagram">
+          <svg viewBox="0 0 860 300" style="width:100%;height:auto;display:block" role="img" aria-label="Um fluxo de automação: entrada, depois classificação por IA, depois uma decisão de risco. Casos de baixo risco já vistos se auto-executam; casos novos ou de alto risco passam por um gate de aprovação humana antes de executar.">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A4642"></path></marker>
+              <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"></path></marker>
+              <marker id="aa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#F59E0B"></path></marker>
+              <radialGradient id="ha-amber" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.42"></stop>
+                <stop offset="70%" stop-color="#F59E0B" stop-opacity="0"></stop>
+              </radialGradient>
+              <radialGradient id="ha-green" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.45"></stop>
+                <stop offset="70%" stop-color="#10b981" stop-opacity="0"></stop>
+              </radialGradient>
+              <style>
+                .ha-diamond { animation: ha-pulse 2.4s ease-in-out infinite; }
+                @keyframes ha-pulse { 0%,100%{stroke-opacity:.9} 50%{stroke-opacity:.35} }
+                .ha-gate { animation: ha-gatepulse 2s ease-in-out infinite; }
+                @keyframes ha-gatepulse { 0%,100%{stroke-opacity:1} 50%{stroke-opacity:.45} }
+                .ha-halo { animation: ha-breathe 3.2s ease-in-out infinite; }
+                .ha-halo.d { animation-delay: 1.2s; }
+                @keyframes ha-breathe { 0%,100%{opacity:.35} 50%{opacity:.9} }
+                @media (prefers-reduced-motion: reduce){
+                  .ha-packet{display:none}
+                  .ha-diamond,.ha-gate,.ha-halo{animation:none;opacity:.6}
+                }
+              </style>
+            </defs>
+            <!-- glow halos (behind) -->
+            <ellipse class="ha-halo" cx="360" cy="150" rx="66" ry="50" fill="url(#ha-amber)"></ellipse>
+            <ellipse class="ha-halo d" cx="535" cy="228" rx="88" ry="44" fill="url(#ha-amber)"></ellipse>
+            <ellipse class="ha-halo" cx="630" cy="78" rx="90" ry="44" fill="url(#ha-green)"></ellipse>
+            <!-- edges -->
+            <line x1="128" y1="150" x2="168" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="292" y1="150" x2="312" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <!-- low risk path (green) -->
+            <path d="M408 150 H500 V78 H560" fill="none" stroke="#10b981" stroke-width="1.6" marker-end="url(#ag)"></path>
+            <text x="512" y="140" text-anchor="middle" fill="#6ee7b7" font-family="'JetBrains Mono',monospace" font-size="9">baixo risco &middot; já visto</text>
+            <!-- high risk path (amber) -->
+            <path d="M360 182 V228 H470" fill="none" stroke="#F59E0B" stroke-width="1.6" marker-end="url(#aa)"></path>
+            <text x="372" y="210" text-anchor="start" fill="#fbbf24" font-family="'JetBrains Mono',monospace" font-size="9">novo / alto risco</text>
+            <line x1="600" y1="228" x2="650" y2="228" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <!-- intake -->
+            <g><rect x="28" y="128" width="100" height="44" rx="9" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5" stroke-opacity="0.75"></rect><text x="78" y="148" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Entrada</text><text x="78" y="163" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8.5">lead / ticket / DM</text></g>
+            <!-- classify -->
+            <g><rect x="168" y="128" width="124" height="44" rx="9" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.8"></rect><text x="230" y="148" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Classificar</text><text x="230" y="163" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8.5">a IA lê a intenção</text></g>
+            <!-- decision diamond -->
+            <g>
+              <path class="ha-diamond" d="M312 150 L360 118 L408 150 L360 182 Z" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.85"></path>
+              <text x="360" y="147" text-anchor="middle" fill="#F4F2EF" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" font-weight="600">risco?</text>
+              <text x="360" y="160" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="8">rota</text>
+            </g>
+            <!-- auto execute -->
+            <g><rect x="560" y="56" width="140" height="44" rx="9" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"></rect><text x="630" y="76" text-anchor="middle" fill="#6ee7b7" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Auto-executar</text><text x="630" y="91" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="8.5">envia &middot; registrado</text></g>
+            <!-- human gate -->
+            <g><rect class="ha-gate" x="470" y="206" width="130" height="44" rx="9" fill="rgba(245,158,11,0.09)" stroke="#F59E0B" stroke-width="1.75"></rect><text x="535" y="226" text-anchor="middle" fill="#fbbf24" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Humano aprova</text><text x="535" y="241" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="8.5">a borda arriscada</text></g>
+            <!-- execute after approval -->
+            <g><rect x="650" y="206" width="140" height="44" rx="9" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"></rect><text x="720" y="226" text-anchor="middle" fill="#6ee7b7" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="600">Executar</text><text x="720" y="241" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="8.5">envia &middot; registrado</text></g>
+            <!-- packet flow -->
+            <circle class="ha-packet" r="3.6" fill="#22d3ee"><animateMotion dur="2.6s" repeatCount="indefinite" path="M78 150 H340"></animateMotion></circle>
+            <circle class="ha-packet" r="3.4" fill="#10b981"><animateMotion dur="3s" begin="0.4s" repeatCount="indefinite" path="M408 150 H500 V78 H560"></animateMotion></circle>
+            <circle class="ha-packet" r="3.4" fill="#F59E0B"><animateMotion dur="3s" begin="1.2s" repeatCount="indefinite" path="M360 182 V228 H470"></animateMotion></circle>
+            <circle class="ha-packet" r="3.4" fill="#10b981"><animateMotion dur="2.4s" begin="2.6s" repeatCount="indefinite" path="M600 228 H720"></animateMotion></circle>
+          </svg>
+        </div>
+        <figcaption>O gate vai na borda arriscada &mdash; não em cada ação. Casos de rotina fluem; os novos ou de alto risco esperam por um humano.</figcaption>
+      </figure>
+
+      <h2>Três padrões, do cauteloso ao conquistado</h2>
+      <p>Na real só existem três lugares onde o ponto de aprovação pode ficar. Eles não são concorrentes &mdash; são uma progressão pela qual você avança conforme a evidência se acumula.</p>
+
+      <div class="pat">
+        <h3><span>Antes de cada envio</span><span class="g" style="color:var(--red);background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.3)">máxima cautela</span></h3>
+        <p>O agente rascunha, um humano aprova, aí ele age. Nada chega ao mundo externo sem uma pessoa clicar em sim. É aqui que toda automação nova deveria começar &mdash; é um copiloto, não um piloto automático, e é assim que você constrói a evidência de que algo mais é seguro.</p>
+        <p class="when">use quando &rsaquo; a ação é irreversível ou visível externamente, a automação é nova, ou você ainda não tem histórico</p>
+      </div>
+
+      <div class="pat">
+        <h3><span>Só antes de casos novos</span><span class="g" style="color:var(--amber);background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3)">seletivo</span></h3>
+        <p>O interessante, e onde a maioria das automações maduras deveria viver. Os casos que o sistema já viu &mdash; alta confiança do classificador, um input próximo de exemplos conhecidos como bons, um valor abaixo de um limite &mdash; executam automaticamente. Tudo que é novo ou de alto risco é roteado para um humano. O gate fica exatamente na borda que carrega o risco, então o throughput é alto nos 90% de rotina enquanto uma pessoa continua responsável pelos 10% que podem dar errado.</p>
+        <p class="when">use quando &rsaquo; você consegue medir confiança ou novidade, a maioria dos casos é de rotina, e você tem prova de que o caminho de rotina é confiável</p>
+      </div>
+
+      <div class="pat">
+        <h3><span>Revisão posterior</span><span class="g" style="color:var(--green);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3)">autonomia conquistada</span></h3>
+        <p>O agente age imediatamente; humanos amostram e revisam uma fatia das ações depois, além de tudo que o sistema marcar como baixa confiança. Isso só cabe em ações reversíveis e de baixo risco, onde o custo de um erro raro é pequeno e recuperável &mdash; e só depois que os padrões anteriores produziram um histórico limpo. A revisão deixa de ser gate e vira auditoria.</p>
+        <p class="when">use quando &rsaquo; as ações são reversíveis e de baixo custo, o volume é alto, e você tem um histórico monitorado que conquista a confiança</p>
+      </div>
+
+      <h2>Conquistando autonomia aos poucos &mdash; com evidência, não com instinto</h2>
+      <p>O erro é tratar a autonomia como uma decisão do dia do lançamento: alguém escolhe &ldquo;full auto&rdquo; ou &ldquo;humano no loop&rdquo; numa reunião de planejamento e já lança assim. Autonomia não se escolhe &mdash; <strong>se conquista, borda por borda, com dados.</strong></p>
+      <p>A jogada que funciona: comece cada borda arriscada em &ldquo;antes de cada envio.&rdquo; Registre cada caso &mdash; o que o agente propôs, o que o humano decidiu, se concordaram. Depois de volume suficiente você tem uma medição real: nessa classe de caso, com que frequência o humano só carimba a proposta do agente? Quando a taxa de concordância numa fatia bem definida é consistentemente alta e as falhas são baratas, você conquistou o direito de deixar essa fatia rodar automaticamente &mdash; e continua de olho nela. A autonomia vai se soltando aos poucos da mesma forma que o piso de avaliação vai ficando mais rígido aos poucos: só com evidência, uma fatia de cada vez, sempre reversível.</p>
+
+      <div class="callout">
+        <span class="lbl">a versão honesta</span>
+        <p>&ldquo;O humano aprova tudo&rdquo; é um bom lugar para <em>lançar</em> e um lugar ruim para <em>ficar</em> &mdash; treina as pessoas a clicar em sim sem ler, o que é pior do que não ter gate nenhum. &ldquo;Autonomia total desde o dia um&rdquo; é como você consegue o incidente que mata o projeto. A resposta de verdade é um gate na borda arriscada que você move, deliberadamente, conforme o histórico o conquista.</p>
+      </div>
+
+      <p>Duas coisas fazem essa abordagem inteira funcionar na prática, e nenhuma delas é glamorosa. Primeiro, <strong>o registro</strong>: você não consegue conquistar autonomia sem um histórico de proposto-pelo-agente-versus-decidido-pelo-humano, então instrumente isso desde o primeiro dia. Segundo, <strong>um caminho de reversão</strong>: a confiança para automatizar uma borda vem, em grande parte, de saber que você pode desfazer um erro &mdash; uma janela de espera, um recall, um rollback. Reversibilidade é o que transforma &ldquo;arriscado demais para automatizar&rdquo; em &ldquo;seguro para automatizar com uma saída de emergência.&rdquo;</p>
+
+      <hr class="sep">
+      <p style="margin-top:24px;font-size:14px;color:var(--dim)">O ponto de aprovação é uma decisão de design, não uma flag de configuração &mdash; e é ela que decide se uma automação com IA é um ativo ou um passivo. Coloque-o na borda arriscada, comece com cautela, e deixe a evidência movê-lo.</p>
+    </div>
+
+    <div class="ctabox">
+      <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc)">o que eu faria na sua funcionalidade</div>
+      <h2 style="margin:12px 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-0.015em">Vou mapear as bordas arriscadas e posicionar o gate.</h2>
+      <p style="margin:12px 0 0;font-size:14.5px;line-height:1.7;color:var(--dim);max-width:52ch">Percorremos seu fluxo de automação, encontramos a uma ou duas bordas que carregam o raio de impacto real, posicionamos o ponto de aprovação ali, e instrumentamos o registro que te permite conquistar autonomia com segurança mais adiante. A ligação é gratuita e você sai com o fluxo mapeado de qualquer jeito.</p>
+      <div style="display:flex;gap:14px;margin-top:22px;flex-wrap:wrap">
+        <a href="/pt/book.html" class="btn green" data-evt="guide-human-approval-cta">Agende uma ligação &rarr;</a>
+        <a href="/pt/docs.html" class="mono" style="display:inline-flex;align-items:center;padding:13px 6px;font-size:13px;color:var(--acc)">voltar para todos os guias de campo &rarr;</a>
+      </div>
+    </div>
+  </article>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> &middot; <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a></span>
+    <span><a href="/pt/docs.html" class="dim-link" style="color:var(--faint)">&larr; todos os guias de campo</a></span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js"></script>
+</body>
+</html>

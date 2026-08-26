@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propostas · admin</title>
+<meta name="robots" content="noindex">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  h1.sec-title { font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-size:clamp(2rem,4vw,3rem); letter-spacing:-0.02em; line-height:1.05; margin:26px 0 0; color:#F4F2EF; }
+  .admin-wrap { max-width:1080px; margin:0 auto; padding:clamp(32px,6vw,64px) clamp(18px,4vw,40px); }
+  .admin-card { border:1px solid var(--line); background:var(--card); border-radius:16px; padding:clamp(18px,3vw,26px); margin-top:20px; }
+  .stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-top:22px; }
+  .stat { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:16px 18px; }
+  .stat .n { font-family:var(--serif); font-size:2rem; color:var(--ink); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); margin-top:6px; }
+  table.admin-table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.admin-table th { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); padding:8px 10px; border-bottom:1px solid var(--line); }
+  table.admin-table td { padding:10px; border-bottom:1px solid var(--line); vertical-align:middle; color:var(--ink); }
+  .chip { display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid var(--line); white-space:nowrap; }
+  .chip .dot { width:6px; height:6px; border-radius:50%; }
+  label.fld { display:block; margin-bottom:14px; }
+  label.fld span.lbl-text { display:block; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); margin-bottom:6px; }
+  .admin-card input, .admin-card textarea { width:100%; background:#0F0F13; border:1px solid var(--line); border-radius:9px; padding:11px 13px; font-size:14px; color:var(--ink); font-family:inherit; outline:none; }
+  .admin-card input:focus-visible, .admin-card textarea:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:560px){ .grid2 { grid-template-columns:1fr; } }
+  .admin-wrap .btn-solid:focus-visible, .admin-wrap .btn-ghost:focus-visible, .admin-wrap button:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-solid.green:hover, .btn-solid.cyan:hover { transform:none; }
+  }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/proposal-admin.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/proposal-admin.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/proposal-admin.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/proposal-admin.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/proposal-admin.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/proposal-admin.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="/pt/index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="/pt/index.html" class="dim-link">portfólio</a>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="admin-wrap">
+      <div id="admin-root"></div>
+    </div>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC</span>
+    <span><a href="/pt/index.html" class="dim-link" style="color:var(--faint)">&larr; portfólio</a></span>
+  </footer>
+</div>
+<script type="module" src="/assets/proposal-admin.mjs"></script>
+</body>
+</html>

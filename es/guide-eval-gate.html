@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Eval Gate Mínimo Viable — Levántalo en una Tarde · Jason Teixeira</title>
+<meta name="description" content="Cómo levantar un eval gate de regresión para LLM en una tarde: el conjunto dorado, el juez y el paso de CI que puede bloquear un merge. Una guía de campo práctica y agnóstica de herramientas para equipos que lanzan funciones de IA.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/es/guide-eval-gate.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="El Eval Gate Mínimo Viable">
+<meta property="og:description" content="Levanta un eval gate de regresión para LLM en una tarde: un conjunto dorado, un juez y un paso de CI que puede bloquear un merge.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/guide-eval-gate.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"The Minimum Viable Eval Gate","description":"How to stand up an LLM regression gate in an afternoon: the golden set, the judge, and the CI step that can block a merge.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Organization","name":"Sage Ideas LLC"},"mainEntityOfPage":"https://agency.sageideas.dev/guide-eval-gate.html"}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --acc:#22d3ee; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  .tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 9px; border-radius:5px; color:var(--acc); border:1px solid rgba(34,211,238,0.4); background:rgba(34,211,238,0.07); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.06; letter-spacing:-0.02em; margin:20px 0 0; text-wrap:balance; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:44px 0 0; }
+  h3 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1.02rem; margin:26px 0 0; color:var(--ink); }
+  .mono { font-family:var(--mono); }
+  .lede { font-size:16.5px; line-height:1.7; color:var(--dim); margin:22px 0 0; }
+  .prose p { font-size:15px; line-height:1.78; color:#CFC9C1; margin:16px 0 0; }
+  .prose strong { color:var(--ink); font-weight:600; }
+  .prose em { color:#D9D3CB; }
+  .prose ul { margin:14px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:9px; }
+  .prose li { font-size:14.5px; line-height:1.7; color:#CFC9C1; }
+  .prose code { font-family:var(--mono); font-size:0.86em; background:#141311; border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:#E4DFD7; }
+  pre { font-family:var(--mono); font-size:12.5px; line-height:1.65; background:#0b0a08; border:1px solid var(--line); border-left:2px solid var(--acc); border-radius:0 8px 8px 0; padding:16px 18px; overflow-x:auto; color:#C9C4BD; margin:20px 0 0; }
+  pre .c { color:var(--faint); }
+  pre .k { color:var(--purple); }
+  pre .g { color:var(--green); }
+  pre .r { color:var(--red); }
+  figure { margin:32px 0 0; }
+  .diagram { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:clamp(16px,3vw,26px); }
+  figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:12px; text-align:center; }
+  .callout { border:1px solid var(--line); background:var(--card); border-left:2px solid var(--acc); border-radius:0 10px 10px 0; padding:18px 20px; margin:24px 0 0; }
+  .callout .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--acc); }
+  .callout p { font-size:14px; line-height:1.7; color:var(--dim); margin:8px 0 0; }
+  .ctabox { border:1px solid var(--line); background:linear-gradient(180deg,#0C0C0E,#0a0a0c); border-radius:16px; padding:clamp(26px,4vw,40px); margin:52px 0 0; }
+  .btn { display:inline-flex; align-items:center; gap:9px; border-radius:26px; padding:13px 24px; font-size:14.5px; font-weight:700; font-family:inherit; }
+  .btn.green { background:var(--green); color:#052e22; }
+  .toc { display:flex; gap:14px; flex-wrap:wrap; font-family:var(--mono); font-size:11.5px; color:var(--faint); margin-top:22px; }
+  .toc a { color:var(--acc); }
+  hr.sep { border:none; border-top:1px solid var(--line); margin:36px 0 0; }
+  .svgbox rect.node { fill:#0C0C0E; stroke-width:1.5; }
+  .svgbox text.l { fill:#F4F2EF; font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:600; }
+  .svgbox text.s { fill:#8E8882; font-family:'JetBrains Mono',monospace; font-size:8.5px; }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/guide-eval-gate.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/guide-eval-gate.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/guide-eval-gate.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/guide-eval-gate.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/guide-eval-gate.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/guide-eval-gate.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="/es/index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="/es/docs.html" class="dim-link" style="color:var(--ink)">guías</a>
+      <a href="/es/demos.html" class="dim-link">demos</a>
+      <a href="/es/what-i-build.html" class="dim-link">lo que construyo</a>
+      <a href="/es/book.html" class="btn-solid green" data-evt="guide-book-nav" style="padding:9px 16px;font-size:12.5px">Reservar una llamada &rarr;</a>
+    </div>
+  </nav>
+
+  <article class="wrap" style="padding-top:clamp(48px,7vw,80px);padding-bottom:clamp(56px,8vw,88px)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="tag">Evaluación</span>
+      <span class="mono" style="font-size:11px;color:var(--faint)">7 min de lectura &middot; <a href="/es/docs.html" class="dim-link">guías de campo</a></span>
+    </div>
+    <h1>El Eval Gate Mínimo Viable</h1>
+    <p class="lede">Puedes levantar un eval gate real de regresión para LLM en una tarde. Tiene exactamente tres piezas móviles &mdash; un conjunto dorado, un juez, y un paso de CI que puede bloquear un merge &mdash; y una vez que existe, &ldquo;el cambio de prompt parece mejor&rdquo; deja de ser un argumento y se convierte en un número.</p>
+    <div class="toc"><span>ir &rarr;</span><a href="#why">por qué un gate</a><a href="#parts">las tres partes</a><a href="#flow">el flujo</a><a href="#afternoon">la construcción de una tarde</a><a href="#floor">fijar el umbral</a></div>
+
+    <div class="prose">
+      <h2 id="why">Por qué un gate, no un dashboard</h2>
+      <p>La mayoría de los equipos que lanzan una función de LLM tienen un dashboard en algún lugar &mdash; un notebook, una hoja de cálculo con ejemplos de salidas, un canal de Slack donde alguien pega &ldquo;esto se ve mejor ahora.&rdquo; Nada de eso bloquea algo. Un ajuste de prompt, un salto de versión del modelo, un cambio en el retrieval: todos se lanzan porque <em>parecen</em> estar bien, y la regresión que causaron aparece tres semanas después en una queja de un cliente que nadie puede rastrear hasta el diff.</p>
+      <p>Un gate se diferencia de un dashboard en algo que importa: <strong>un gate puede decir que no.</strong> Vive en tu pipeline de pull request, se ejecuta en cada cambio que toca la IA, y cuando el puntaje de calidad cae por debajo de un umbral que acordaste, el merge queda en rojo. Esa es toda la idea. No necesitas una plataforma, un contrato con un proveedor, ni un equipo de etiquetado de datos para llegar ahí. Necesitas treinta ejemplos, una regla de puntaje y un job de CI.</p>
+
+      <h2 id="parts">Las tres partes</h2>
+      <p>Reduce un sistema de eval a su núcleo irreducible y obtienes tres cosas. Todo lo demás &mdash; ejecutores de seguridad, métricas de retrieval de RAG, presupuestos de costo, umbrales que solo suben &mdash; es elaboración sobre estas tres.</p>
+      <h3>1. El conjunto dorado</h3>
+      <p>Una colección pequeña de entradas reales emparejadas con lo que se ve una buena respuesta. Treinta a cincuenta es suficiente para empezar &mdash; sacadas de tus logs reales y tickets de soporte, no inventadas en tu escritorio. Este conjunto <em>es</em> tu definición de &ldquo;funciona,&rdquo; así que tiene que reflejar los casos que realmente te importan: el camino común, los casos límite que muerden, y los que un cliente ya reclamó. (Hay una guía completa sobre cómo construir esto bien; la versión corta es: cosecha, no imagines.)</p>
+      <h3>2. El juez</h3>
+      <p>Algo que puntúa cada salida. Para salidas estructuradas, eso son aserciones determinísticas &mdash; coincidencia exacta, regex, validación de esquema JSON, una subcadena requerida. Para texto abierto, es un <strong>LLM-as-judge</strong>: un segundo modelo al que se le da la entrada, la respuesta y una rúbrica, y se le pide puntuar fidelidad, relevancia o seguridad en una escala fija. El truco que hace confiable a un juez es una rúbrica escrita con criterios concretos de aprobado/reprobado &mdash; no &ldquo;califica esto de 1 a 10,&rdquo; sino &ldquo;puntúa 0 si la respuesta afirma un hecho no respaldado por el contexto provisto.&rdquo;</p>
+      <h3>3. El gate</h3>
+      <p>Un paso de CI que hace pasar el conjunto dorado por el juez, agrega los puntajes y compara el resultado con un umbral. Por encima del umbral: exit 0, el merge se permite. Por debajo: exit distinto de cero, el check queda en rojo, el merge se bloquea. Se ejecuta en cada pull request que toca un prompt, una config de modelo, un índice de retrieval, o el código alrededor de ellos.</p>
+
+      <figure>
+        <div class="diagram svgbox">
+          <svg viewBox="0 0 860 300" style="width:100%;height:auto;display:block" role="img" aria-label="Diagrama de flujo: un pull request ejecuta la suite de eval, un juez la puntúa, y el puntaje se compara con un umbral que permite el merge o lo bloquea.">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#4A4642"></path>
+              </marker>
+              <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#10b981"></path>
+              </marker>
+              <marker id="ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#f43f5e"></path>
+              </marker>
+              <radialGradient id="eg-amber" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.4"></stop>
+                <stop offset="70%" stop-color="#F59E0B" stop-opacity="0"></stop>
+              </radialGradient>
+              <radialGradient id="eg-green" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.45"></stop>
+                <stop offset="70%" stop-color="#10b981" stop-opacity="0"></stop>
+              </radialGradient>
+              <radialGradient id="eg-red" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.4"></stop>
+                <stop offset="70%" stop-color="#f43f5e" stop-opacity="0"></stop>
+              </radialGradient>
+              <style>
+                .eg-diamond { animation: eg-pulse 2.4s ease-in-out infinite; }
+                @keyframes eg-pulse { 0%,100%{stroke-opacity:.9} 50%{stroke-opacity:.35} }
+                .eg-halo { animation: eg-breathe 3.2s ease-in-out infinite; }
+                .eg-halo.r { animation-delay: 1.1s; }
+                @keyframes eg-breathe { 0%,100%{opacity:.35} 50%{opacity:.9} }
+                @media (prefers-reduced-motion: reduce){
+                  .eg-packet{display:none}
+                  .eg-diamond,.eg-halo{animation:none;opacity:.6}
+                }
+              </style>
+            </defs>
+            <!-- glow halos (behind) -->
+            <ellipse class="eg-halo amber" cx="636" cy="150" rx="70" ry="52" fill="url(#eg-amber)"></ellipse>
+            <ellipse class="eg-halo g" cx="775" cy="78" rx="96" ry="46" fill="url(#eg-green)"></ellipse>
+            <ellipse class="eg-halo r" cx="775" cy="222" rx="96" ry="46" fill="url(#eg-red)"></ellipse>
+            <!-- edges -->
+            <line x1="132" y1="150" x2="176" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="308" y1="150" x2="352" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <line x1="484" y1="150" x2="540" y2="150" stroke="#4A4642" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <path d="M636 128 L636 78 L716 78" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#ahg)"></path>
+            <path d="M636 172 L636 222 L716 222" fill="none" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#ahr)"></path>
+            <text x="648" y="98" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="9">&ge; umbral</text>
+            <text x="648" y="242" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="9">&lt; umbral</text>
+            <!-- PR -->
+            <g><rect class="node" x="28" y="128" width="104" height="44" rx="9" stroke="#22d3ee" stroke-opacity="0.75"></rect><text class="l" x="80" y="148" text-anchor="middle">PR abierto</text><text class="s" x="80" y="163" text-anchor="middle">prompt / diff de modelo</text></g>
+            <!-- Eval -->
+            <g><rect class="node" x="176" y="128" width="132" height="44" rx="9" stroke="#22d3ee" stroke-opacity="0.75"></rect><text class="l" x="242" y="148" text-anchor="middle">Corre la suite</text><text class="s" x="242" y="163" text-anchor="middle">40 trazas doradas</text></g>
+            <!-- Judge -->
+            <g><rect class="node" x="352" y="128" width="132" height="44" rx="9" stroke="#a78bfa" stroke-opacity="0.8"></rect><text class="l" x="418" y="148" text-anchor="middle">El juez puntúa</text><text class="s" x="418" y="163" text-anchor="middle">rúbrica &rarr; 0&ndash;100</text></g>
+            <!-- Decision diamond -->
+            <g>
+              <path class="eg-diamond" d="M588 150 L636 118 L684 150 L636 182 Z" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.85"></path>
+              <text class="l" x="636" y="147" text-anchor="middle" font-size="11">puntaje vs</text>
+              <text class="l" x="636" y="160" text-anchor="middle" font-size="11">&iquest;umbral?</text>
+            </g>
+            <!-- Merge (pass) -->
+            <g><rect class="node" x="716" y="56" width="118" height="44" rx="9" stroke="#10b981" fill="rgba(16,185,129,0.08)"></rect><text class="l" x="775" y="76" text-anchor="middle" fill="#6ee7b7">Merge permitido</text><text class="s" x="775" y="91" text-anchor="middle" fill="#10b981">exit 0 &middot; verde</text></g>
+            <!-- Blocked -->
+            <g><rect class="node" x="716" y="200" width="118" height="44" rx="9" stroke="#f43f5e" fill="rgba(244,63,94,0.08)"></rect><text class="l" x="775" y="220" text-anchor="middle" fill="#fda4af">Merge bloqueado</text><text class="s" x="775" y="235" text-anchor="middle" fill="#f43f5e">exit 1 &middot; rojo</text></g>
+            <!-- packet flow -->
+            <circle class="eg-packet" r="3.6" fill="#22d3ee"><animateMotion dur="2.8s" repeatCount="indefinite" path="M80 150 H600"></animateMotion></circle>
+            <circle class="eg-packet" r="3.6" fill="#22d3ee"><animateMotion dur="2.8s" begin="1.4s" repeatCount="indefinite" path="M80 150 H600"></animateMotion></circle>
+            <circle class="eg-packet" r="3.4" fill="#10b981"><animateMotion dur="3.2s" repeatCount="indefinite" path="M636 150 L636 78 L775 78"></animateMotion></circle>
+            <circle class="eg-packet" r="3.4" fill="#f43f5e"><animateMotion dur="3.2s" begin="1.6s" repeatCount="indefinite" path="M636 150 L636 222 L775 222"></animateMotion></circle>
+          </svg>
+        </div>
+        <figcaption>Todo el gate en una línea: diff &rarr; ejecutar &rarr; juez &rarr; comparar con el umbral &rarr; pasa o bloquea.</figcaption>
+      </figure>
+
+      <h2 id="afternoon">La construcción de una tarde</h2>
+      <p>Aquí está la secuencia honesta. Ninguno de estos pasos es investigación; son ensamblaje.</p>
+      <ul>
+        <li><strong>Hora 1 &mdash; cosecha.</strong> Saca 30&ndash;50 entradas reales de tus logs de producción o tu cola de soporte. Para cada una, escribe (o acuerda) qué contiene una buena respuesta. Guárdalo como un archivo plano &mdash; JSONL o YAML &mdash; en el repo, junto al código que prueba.</li>
+        <li><strong>Hora 2 &mdash; el juez.</strong> Escribe la rúbrica. Para cada salida, decide si es una verificación determinística (aserción) o una abierta (LLM-as-judge). Mantén la rúbrica también en control de versiones &mdash; cambia a medida que cambia tu definición de bueno, y quieres ese historial.</li>
+        <li><strong>Hora 3 &mdash; el ejecutor.</strong> Un script que hace pasar el conjunto dorado por tu función en un loop, puntúa cada salida y imprime un resumen. Ejecutores open-source como Promptfoo o DeepEval te dan este loop, tipos de aserción y un harness de LLM-judge listos para usar, así que escribes config, no plomería.</li>
+        <li><strong>Hora 4 &mdash; el gate.</strong> Conecta el ejecutor a CI como un check obligatorio en los pull requests. Haz fallar el job cuando el puntaje agregado esté por debajo del umbral. Esa es la línea que convierte un script en un gate.</li>
+      </ul>
+
+      <p>El paso de CI es más pequeño de lo que la gente espera. Conceptualmente:</p>
+      <pre><span class="c"># .github/workflows/eval-gate.yml (shape, not gospel)</span>
+<span class="k">on:</span> pull_request
+<span class="k">jobs:</span>
+  eval-gate:
+    steps:
+      - run: npm ci
+      - run: <span class="g">npx promptfoo eval -c eval/gate.yaml --output out.json</span>
+      - run: <span class="g">node eval/check-floor.js out.json --floor 0.85</span>
+        <span class="c"># check-floor.js exits 1 if the aggregate pass-rate &lt; 0.85</span></pre>
+      <p>Marca el job como <strong>required status check</strong> en tu rama protegida, y la plataforma hace el cumplimiento por ti: un gate en rojo significa que el botón de merge está deshabilitado. Ningún humano tiene que acordarse de revisar.</p>
+
+      <div class="callout">
+        <span class="lbl">el punto</span>
+        <p>El valor no es el puntaje. Es que una persona específica ya no tiene que <em>acordarse de revisar</em> si la IA empeoró. El pipeline se acuerda, en cada cambio, para siempre &mdash; y puede decir que no.</p>
+      </div>
+
+      <h2 id="floor">Fijar el umbral sin mentirte a ti mismo</h2>
+      <p>El primer umbral es fácil de equivocar en dos direcciones opuestas. Ponlo demasiado alto y cada PR honesto queda en rojo, así que el equipo aprende a saltarse el check &mdash; un gate que todos evitan es peor que ningún gate, porque blanquea cambios malos con una insignia verde. Ponlo demasiado bajo y nada falla nunca, así que construiste un dashboard con pasos extra.</p>
+      <p>La jugada que funciona: corre la suite sobre tu <code>main</code> actual para obtener el puntaje base de hoy, y luego fija el umbral <em>en</em> ese punto base. Ahora el único trabajo del gate el primer día es <strong>&ldquo;no empeorar de lo que ya estamos.&rdquo;</strong> Esa es una afirmación que puedes defender y una barra que cualquier mejora real supera. Con el tiempo lo vas subiendo: cuando un cambio eleva el puntaje de forma legítima y se sostiene, subes el umbral para igualarlo. El umbral solo sube, y sube con evidencia.</p>
+      <p>Una disciplina más: cuando el gate bloquea un PR, la salida del fallo tiene que ser legible para la persona que escribió el diff &mdash; qué trazas fallaron, qué dijo el juez, y el delta respecto al punto base. Un gate que solo dice &ldquo;puntaje 0.81, umbral 0.85, bloqueado&rdquo; genera resentimiento. Un gate que dice &ldquo;estas 3 de 40 trazas retrocedieron en fidelidad, esto dijo cada una&rdquo; genera confianza, y los gates confiables sobreviven.</p>
+
+      <hr class="sep">
+      <p style="margin-top:24px;font-size:14px;color:var(--dim)">Esa es la versión mínima viable. La elaboración &mdash; una batería de sondas de seguridad, métricas de retrieval de RAG, presupuestos de costo por corrida, umbrales que suben automáticamente &mdash; es la siguiente sección del mismo sistema. Pero nada de eso importa hasta que las tres partes de arriba existan y el gate pueda ponerse en rojo. Construye eso primero.</p>
+    </div>
+
+    <div class="ctabox">
+      <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc)">lo que haría con tu función</div>
+      <h2 style="margin:12px 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-0.015em">Levanto el gate en tu repo, en tu CI.</h2>
+      <p style="margin:12px 0 0;font-size:14.5px;line-height:1.7;color:var(--dim);max-width:52ch">Trae la función de IA que te tiene nervioso. Mapeamos su superficie real de fallas, cosechamos un conjunto dorado de tus propios logs, escribimos el juez, y conectamos el check que bloquea el merge &mdash; que tu equipo pasa a manejar cuando yo me voy. La llamada es gratis y sales con un plan de cualquier forma.</p>
+      <div style="display:flex;gap:14px;margin-top:22px;flex-wrap:wrap">
+        <a href="/es/book.html" class="btn green" data-evt="guide-eval-gate-cta">Reservar una llamada &rarr;</a>
+        <a href="/es/guide-golden-set.html" class="mono" style="display:inline-flex;align-items:center;padding:13px 6px;font-size:13px;color:var(--acc)">siguiente: construir el conjunto dorado &rarr;</a>
+      </div>
+    </div>
+  </article>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> &middot; <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a></span>
+    <span><a href="/es/docs.html" class="dim-link" style="color:var(--faint)">&larr; todas las guías de campo</a></span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js"></script>
+</body>
+</html>

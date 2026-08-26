@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudios de Caso — Resultados Medibles, Prueba Verificable · Jason Teixeira</title>
+<meta name="description" content="Cuatro resultados verificados de clientes: un gate de QA que rechazó un falso verde, una suite de 37/37 sin fallos intermitentes, 100% de cobertura de citas RAG, y una reducción de fallos intermitentes del 10% a menos del 1%.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/es/case-studies.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Estudios de Caso — Resultados Medibles, Prueba Verificable">
+<meta property="og:description" content="Cuatro sistemas, cuatro resultados medibles, cada uno con prueba pública. Cada afirmación aquí enlaza a un comprobante.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/case-studies.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+
+  /* credibility strip */
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* case study */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; max-width:22ch; }
+  .metric { display:flex; align-items:baseline; gap:12px; margin:20px 0; flex-wrap:wrap; }
+  .metric .big { font-family:var(--serif); font-size:clamp(2.2rem,5vw,3rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .metric .lbl { font-family:var(--mono); font-size:11.5px; color:var(--faint); max-width:26ch; line-height:1.5; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:8px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:4px; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(40px,6vw,64px) 0; }
+  .rule { border-top:1px solid var(--line); }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/case-studies.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/case-studies.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/case-studies.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/case-studies.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/case-studies.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/case-studies.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/es/index.html" class="site-nav-brand" aria-label="Jason Teixeira — inicio">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menú" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/es/services.html" class="site-nav-link">Servicios</a>
+      <a href="/es/case-studies.html" class="site-nav-link" aria-current="page">Trabajo</a>
+      <a href="/es/build.html" class="site-nav-link">Escala un proyecto</a>
+      <a href="/es/docs.html" class="site-nav-link">Guías</a>
+      <a href="/es/book.html" class="btn-solid green site-nav-cta">Reservar una llamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick">Estudios de caso &middot; prueba que puedes abrir</div>
+    <h1 style="margin-top:20px;max-width:18ch">Cuatro sistemas. Cuatro resultados medibles. <em style="color:var(--green)">Todos enlazan al comprobante.</em></h1>
+    <p class="subtle" style="margin-top:20px;max-width:62ch">Sin logos que no pueda respaldar y sin números que no pueda mostrarte. Cada uno de estos es un sistema que construí o rescaté, con la métrica que importó, y un enlace al repositorio público, la ejecución textual, o la captura de pantalla en vivo que lo demuestra.</p>
+    <div class="cred">
+      <span class="pill"><span class="dot" style="background:var(--green)"></span>Ingeniería de pruebas Fortune-50</span>
+      <span class="pill"><b>ISTQB</b> Ingeniero de Automatización de Pruebas</span>
+      <span class="pill"><span class="dot" style="background:var(--cyan)"></span>Código abierto: <b>llm-eval-gate</b> · <b>playwright-sdet</b></span>
+      <span class="pill"><span class="dot" style="background:var(--purple)"></span>Este sitio ejecuta su propio QA — <b>100+ verificaciones</b>, limpio en axe</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- CASE 1 -->
+    <section>
+    <article class="case" style="--ac:var(--rose)">
+      <div class="tag">Calidad y evaluación de IA · nexural-qa-os</div>
+      <h3>La plataforma de QA que se negó a mostrar un falso verde.</h3>
+      <div class="metric">
+        <span class="big">rojo&nbsp;→&nbsp;verde</span>
+        <span class="lbl">El gate de CVE se puso en rojo a las 11:39, bloqueó el lanzamiento, y volvió a un comprobado 13/13 a las 14:35. Ambas ejecuciones publicadas de forma textual.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">El problema</div><p>Una plataforma de calidad solo es confiable si puede fallar. En una ejecución real, el gate de auditoría de dependencias encontró 15 CVEs de alta/crítica severidad. El veredicto honesto fue <b>no apto para lanzamiento</b>, no una insignia verde.</p></div>
+        <div class="blk"><div class="h">Qué hice</div><ul><li>Dejé que el gate se pusiera en rojo y publiqué la ejecución textual: sin anulación silenciosa</li><li>Corregí la desviación en la fuente: 9 pisos de seguridad fijados, eliminando la cadena transitiva no parcheable</li><li>Volví a ejecutar la batería completa: 85 runners incl. 10 evaluaciones de seguridad de LLM</li></ul></div>
+        <div class="blk"><div class="h">El resultado</div><p><b>3,759 pruebas · 91% de cobertura · 13/13 gates.</b> CVEs de alta/crítica severidad: 15 → 0. Todo el arco de detectado→bloqueado→parcheado→comprobado está en el sitio, ambas capturas incluidas.</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="captures/nexural-qa-os.html">▸ la ejecución en rojo (textual)</a>
+        <a class="plink" href="captures/nexural-qa-os-fixed.html">▸ la reejecución en verde</a>
+        <span class="verified">verificado 2026-08-15 · ambas ejecuciones publicadas</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- CASE 2 -->
+    <section style="padding-top:0">
+    <article class="case" style="--ac:var(--green)">
+      <div class="tag">Automatización de pruebas · playwright-sdet-regression-suite</div>
+      <h3>Una suite de regresión en la que un gerente de lanzamiento puede confiar.</h3>
+      <div class="metric">
+        <span class="big">37/37</span>
+        <span class="lbl">specs en verde en CI · 15.3s · <b>0 fallos intermitentes</b> — con trazas, capturas de pantalla, y un modelo de riesgo por escrito.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">El problema</div><p>La mayoría de las suites son una sopa de scripts: la cobertura sigue a quien escribió pruebas por última vez, el rojo se ignora porque es intermitente, y cada fallo inicia una cacería de capturas de pantalla.</p></div>
+        <div class="blk"><div class="h">Qué hice</div><ul><li>Modelo de riesgo → matriz de cobertura, para que la cobertura siga el riesgo del lanzamiento</li><li>Page Object Model, fixtures, traza en reintento, cuatro reporteros</li><li>Conectado a CI con retención de artefactos, una insignia verde que significa algo</li></ul></div>
+        <div class="blk"><div class="h">El resultado</div><p><b>37/37 specs, cero fallos intermitentes, 15.3s.</b> La carpeta de evidencia — trazas y capturas de pantalla — se envía en el repositorio público. Clónalo y reproduce la ejecución.</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite">▸ repositorio público</a>
+        <a class="plink" href="captures/playwright-suite.html">▸ la ejecución</a>
+        <span class="verified">verificado · ejecución fechada 2026-07-10, evidencia en el repositorio</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- CASE 3 -->
+    <section style="padding-top:0">
+    <article class="case" style="--ac:var(--cyan)">
+      <div class="tag">Ingeniería de IA · panel de investigación RAG</div>
+      <h3>Un asistente de IA que no puede responder sin una cita.</h3>
+      <div class="metric">
+        <span class="big">100%</span>
+        <span class="lbl">de las respuestas citan su fuente, incorporado en el diseño en lugar de solicitado por prompt. No existe una ruta de generación sin cita.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">El problema</div><p>La mayoría de las demos de RAG alucinan con confianza. Se afirma "fundamentado" en el prompt y se viola silenciosamente en producción la primera vez que la recuperación regresa escasa.</p></div>
+        <div class="blk"><div class="h">Qué hice</div><ul><li>Construí la recuperación para que cada respuesta esté vinculada a fragmentos clasificados y seleccionados</li><li>Eliminé por completo la ruta de generación sin cita: se abstiene cuando no hay evidencia</li><li>Registré calidad, seguridad, latencia y costo por consulta en un endpoint de analítica</li></ul></div>
+        <div class="blk"><div class="h">El resultado</div><p><b>100% de cobertura de citas, por construcción.</b> Verificado en vivo. Lo ejecuté, hice una pregunta real, y capturé la respuesta citada real (captura de pantalla en la página principal).</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="/es/index.html#work">▸ captura de pantalla en vivo + arquitectura</a>
+        <span class="verified">verificado 2026-08-15 · ejecutado en vivo, consulta real capturada</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- CASE 4 -->
+    <section style="padding-top:0">
+    <article class="case" style="--ac:var(--amber)">
+      <div class="tag">Rescate de CI · HighStrike (suite de producción)</div>
+      <h3>Hacer que el rojo vuelva a significar algo en una suite en vivo.</h3>
+      <div class="metric">
+        <span class="big">10% → &lt;1%</span>
+        <span class="lbl">tasa de fallos intermitentes en una suite de producción en vivo — reducida con lógica de reintento y correcciones de aislamiento de pruebas, sin necesidad de reconstrucción.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">El problema</div><p>Una suite intermitente es peor que ninguna: cuando el rojo es ruido, el equipo aprende a ignorarlo, y la regresión real pasa junto con las falsas alarmas.</p></div>
+        <div class="blk"><div class="h">Qué hice</div><ul><li>Diagnostiqué las fuentes de los fallos intermitentes: estado compartido, tiempos, orden</li><li>Instalé un protocolo de fallos intermitentes: carril de cuarentena, política de reintento, correcciones de aislamiento</li><li>Mantuve la suite existente y traté la reconstrucción como último recurso</li></ul></div>
+        <div class="blk"><div class="h">El resultado</div><p><b>Tasa de fallos intermitentes 10% → menos del 1%.</b> El rojo volvió a ser una señal real, sostenido con la misma disciplina de nivel Fortune-50 detrás de una infraestructura de 500+ pruebas al inicio de mi carrera.</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="services/test-automation-ci.html">▸ el servicio en que esto se convirtió</a>
+        <a class="plink" href="/es/index.html#work">▸ historial completo</a>
+        <span class="verified">de un compromiso con cliente en vivo · método productizado</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- TESTIMONIALS (renders only when real quotes are added below) -->
+    <section id="testimonials" class="rule" style="display:none">
+      <div class="kick" style="color:var(--purple)">en sus palabras</div>
+      <h2 style="margin-top:12px">Lo que dice la gente después de que el trabajo se entrega.</h2>
+      <div id="tq" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-top:24px"></div>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>¿Quieres que tu sistema sea el próximo en esta página?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:44ch">Comienza con una mini-evaluación gratuita de tu función de IA en vivo, o reserva una llamada y definiremos el camino más rápido hacia un resultado medible.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/es/book.html" class="cta" data-evt="cs-book">Reservar una llamada &rarr;</a>
+        <a href="/es/sample.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">o consigue el informe de evaluación de muestra &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> &middot; <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a></span>
+    <span><a href="/es/index.html" class="dim-link" style="color:var(--faint)">&larr; portafolio</a></span>
+  </footer>
+</div>
+<script>
+/* TESTIMONIALS — add real quotes here and the section appears automatically.
+   Keep them real: only quote people who actually said it, ideally with a
+   LinkedIn recommendation you can link. Empty = section stays hidden. */
+(function () {
+  var TESTIMONIALS = [
+    // { quote: "…", name: "Full Name", role: "Title, Company", href: "https://linkedin.com/in/…" },
+  ];
+  if (!TESTIMONIALS.length) return;
+  var wrap = document.getElementById('tq');
+  TESTIMONIALS.forEach(function (t) {
+    var card = document.createElement('figure');
+    card.style.cssText = 'margin:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:22px';
+    var attribution = t.name + (t.role ? ' — ' + t.role : '');
+    card.innerHTML = '<blockquote style="margin:0;font-size:14.5px;line-height:1.7;color:var(--ink)">“' + t.quote + '”</blockquote>' +
+      '<figcaption style="margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--faint)">' +
+      (t.href ? '<a href="' + t.href + '" style="color:var(--cyan)">' + attribution + ' ↗</a>' : attribution) + '</figcaption>';
+    wrap.appendChild(card);
+  });
+  document.getElementById('testimonials').style.display = '';
+})();
+</script>
+<script defer src="/assets/agent.js"></script>
+<script defer src="/assets/nav.js"></script>
+</body>
+</html>

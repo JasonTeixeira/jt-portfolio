@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O checklist de avaliação pré-lançamento para funcionalidades de LLM — Jason Teixeira</title>
+<meta name="description" content="Os 18 checks a fazer antes de lançar sua funcionalidade de LLM — golden sets, LLM-as-judge, safety runners, gates de CI e pontos de aprovação humana. Do engenheiro por trás de uma plataforma de QA com 85 runners.">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/checklist.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="O checklist de avaliação pré-lançamento para funcionalidades de LLM">
+<meta property="og:description" content="18 checks antes de lançar sua funcionalidade de LLM — golden sets, juízes, safety runners, gates de CI, pontos de aprovação.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/checklist.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  .ck-group { border: 1px solid #2A2826; background: #0C0C0E; padding: clamp(20px, 3vw, 30px); margin-top: 20px; }
+  .ck-group h2 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 1.35rem; margin: 0 0 4px; }
+  .ck-group .why { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+  .ck { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px dashed #1F1D1B; font-size: 13.5px; line-height: 1.6; color: #C9C4BF; cursor: pointer; }
+  .ck:last-child { border-bottom: none; }
+  .ck input { accent-color: #10b981; width: 15px; height: 15px; margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+  .ck input:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
+  .ck:has(input:checked) span { color: #8E8882; }
+  .ck b { color: #F4F2EF; }
+  .ck:has(input:checked) b { color: #A8A29E; }
+  #ck-score {
+    position: sticky; bottom: 0; z-index: 40; margin-top: 36px;
+    background: rgba(9,9,11,0.92); backdrop-filter: blur(12px);
+    border: 1px solid #2A2826; border-radius: 12px 12px 0 0; border-bottom: none;
+    padding: 14px clamp(16px, 3vw, 26px); display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  #ck-score .num { font-family: 'Instrument Serif', Georgia, serif; font-size: 1.9rem; line-height: 1; }
+  #ck-score .bar { flex: 1; min-width: 120px; height: 6px; background: #1A1917; border-radius: 3px; overflow: hidden; }
+  #ck-score .bar i { display: block; height: 100%; width: 0%; background: #10b981; transition: width 300ms ease, background 300ms ease; }
+  #ck-score .gap { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8E8882; }
+  @media print {
+    body { background: #fff !important; color: #111 !important; }
+    nav, .no-print { display: none !important; }
+    .ck-group { border-color: #ccc; background: #fff; break-inside: avoid; }
+    .ck { color: #333; border-color: #eee; }
+    .ck b, .ck-group h2 { color: #111 !important; }
+    a { color: #0e7490 !important; }
+  }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/checklist.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/checklist.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/checklist.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/checklist.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/checklist.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/checklist.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:#09090B;position:relative">
+  <nav class="site-nav">
+    <a href="/pt/index.html" class="site-nav-brand" aria-label="Jason Teixeira — início">
+      <span class="site-nav-mk"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:#10b981">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/pt/services.html" class="site-nav-link">Serviços</a>
+      <a href="/pt/case-studies.html" class="site-nav-link">Trabalho</a>
+      <a href="/pt/build.html" class="site-nav-link">Escopar um projeto</a>
+      <a href="/pt/docs.html" class="site-nav-link">Guias</a>
+      <a href="/assets/llm-eval-checklist.pdf" class="site-nav-link" download data-evt="checklist-pdf">Baixar PDF ↓</a>
+      <a href="/pt/book.html" class="btn-solid green site-nav-cta">Agendar uma chamada &rarr;</a>
+    </div>
+  </nav>
+
+  <main style="max-width:820px;margin:0 auto;padding:72px clamp(18px,4vw,40px) 88px">
+    <div style="display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882">
+      <span style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:jt-blink 2.4s ease-in-out infinite"></span>
+      <span>artefato gratuito — sem muro de email</span>
+    </div>
+    <h1 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.4rem,5.4vw,3.8rem);line-height:1.08;letter-spacing:-0.02em;margin:22px 0 0;text-wrap:balance">O checklist de avaliação pré-lançamento para funcionalidades de LLM</h1>
+    <p style="margin:18px 0 0;font-size:15px;line-height:1.75;color:#A8A29E;max-width:60ch">Dezoito checks antes de sua funcionalidade de LLM chegar a um cliente — destilados de uma plataforma de QA com 85 runners e dez evals de segurança de IA dedicados. Se você consegue marcar todas as caixas, lance. Se não consegue, sabe exatamente o que construir primeiro.</p>
+
+    <div class="ck-group">
+      <h2>Ground truth</h2>
+      <div class="why" style="color:#22d3ee">sem isso, qualquer outro check é apenas opinião</div>
+      <label class="ck"><input type="checkbox" data-ck><span>Existe um <b>golden set</b>: 30–200 inputs reais com outputs combinados como corretos, versionado no repositório junto ao código — não na planilha de alguém.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>Alguém com <b>autoridade de domínio aprovou</b> os outputs golden — não o engenheiro que escreveu o prompt.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>O golden set inclui <b>casos difíceis</b>: inputs ambíguos, formulações adversariais, solicitações fora de escopo, e pelo menos um exemplo "deveria recusar".</span></label>
+    </div>
+
+    <div class="ck-group">
+      <h2>Medição</h2>
+      <div class="why" style="color:#a78bfa">"parece melhor" não é uma métrica</div>
+      <label class="ck"><input type="checkbox" data-ck><span>Um <b>LLM-as-judge</b> (ou um scorer determinístico) avalia a fidelidade e a relevância em relação ao golden set — ser imperfeito tudo bem, ser consistente é obrigatório.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>Os scores do juiz são <b>calculados por um comando</b>, de forma reprodutível — você roda duas vezes e obtém o mesmo número.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>Um <b>score base é registrado</b> para que a próxima mudança de prompt/modelo produza um diff, não um debate.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>Existem <b>orçamentos de custo e latência</b> por requisição, e a execução do eval reporta contra eles.</span></label>
+    </div>
+
+    <div class="ck-group">
+      <h2>Bateria de segurança</h2>
+      <div class="why" style="color:#f43f5e">os modos de falha que acabam em prints de tela</div>
+      <label class="ck"><input type="checkbox" data-ck><span><b>Alucinação</b>: as afirmações são checadas contra os dados-fonte em respostas baseadas em retrieval; caminhos de geração sem citação ficam fechados ou sinalizados.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span><b>Injeção de prompt</b>: inputs adversariais que tentam sobrescrever as instruções do sistema são testados e bloqueados.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span><b>Jailbreak e recusa</b>: a funcionalidade recusa o que deve — e não recusa o que não deve.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span><b>Toxicidade e viés</b>: os outputs são avaliados sobre seus inputs reais de usuário, não apenas sobre um conjunto de benchmark.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span><b>Vazamento de PII</b>: a funcionalidade não pode repetir dados de outros usuários nem resíduos de treinamento; os logs são higienizados.</span></label>
+    </div>
+
+    <div class="ck-group">
+      <h2>O gate</h2>
+      <div class="why" style="color:#10b981">um eval vermelho que não bloqueia nada é decoração</div>
+      <label class="ck"><input type="checkbox" data-ck><span>A suíte de eval roda <b>em CI a cada PR</b> que toca prompts, modelos, retrieval ou tools.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>Um score abaixo do piso <b>bloqueia o merge</b> — o gate para o deploy, não a retro.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>O piso <b>só sobe</b>: cada melhoria vira o novo mínimo.</span></label>
+    </div>
+
+    <div class="ck-group">
+      <h2>Controle do raio de impacto</h2>
+      <div class="why" style="color:#F59E0B">a autonomia se conquista com evidência, nunca se presume</div>
+      <label class="ck"><input type="checkbox" data-ck><span>Existe um <b>ponto de aprovação humana</b> onde está o risco: antes de cada envio (novo), antes de casos inéditos (comprovado), ou revisão posterior (maduro).</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>As etapas de LLM emitem <b>output estruturado e validado por schema</b> com um rótulo de fallback em caso de falha de parsing — o input bruto sempre fica registrado ao lado da decisão.</span></label>
+      <label class="ck"><input type="checkbox" data-ck><span>Existe um <b>kill switch</b> que uma pessoa não engenheira consegue acionar, e todo mundo sabe onde ele está.</span></label>
+    </div>
+
+    <div class="no-print" style="margin-top:44px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.04);padding:clamp(24px,4vw,36px);text-align:center">
+      <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.5rem,3vw,2rem);margin:0">Não conseguiu marcar todas as caixas?</h2>
+      <p style="margin:12px auto 0;font-size:14px;color:#A8A29E;max-width:46ch">Essa é a lacuna que eu fecho em um projeto de 4 semanas com escopo fixo — a suíte, o gate e o runbook, no seu repositório.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:22px;flex-wrap:wrap">
+        <a href="services/llm-evaluation-qa.html" class="btn-solid green" data-evt="checklist-to-service">Como eu construo isso →</a>
+        <a href="/assets/llm-eval-checklist.pdf" class="btn-ghost" download data-evt="checklist-pdf">Baixar o PDF</a>
+      </div>
+    </div>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</span>
+    <span><a href="/pt/index.html" class="dim-link" style="color:#837D77">← portfólio</a></span>
+  </footer>
+</div>
+<script>
+document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});
+
+/* scored diagnostic — client-side only, state stays in the visitor's browser */
+(function () {
+  'use strict';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('[data-ck]'));
+  if (!boxes.length) return;
+  var main = document.querySelector('main');
+  var groups = Array.prototype.slice.call(document.querySelectorAll('.ck-group'));
+  var GAP_CTA = {
+    'Ground truth': { t: 'your gap: no ground truth — everything else is opinion until this exists', href: 'services/llm-evaluation-qa.html' },
+    'Measurement': { t: 'your gap: measurement — scores, baselines, budgets', href: 'services/llm-evaluation-qa.html' },
+    'Safety battery': { t: 'your gap: the safety battery — the screenshot-generating failure modes', href: 'services/llm-evaluation-qa.html' },
+    'The gate': { t: 'your gap: the CI gate — evals that block nothing are decoration', href: 'services/test-automation-ci.html' },
+    'Blast-radius control': { t: 'your gap: blast-radius control — approval points and kill switches', href: 'services/ai-workflow-automation.html' }
+  };
+
+  var bar = document.createElement('div');
+  bar.id = 'ck-score';
+  bar.className = 'no-print';
+  bar.setAttribute('role', 'status');
+  bar.setAttribute('aria-live', 'polite');
+  bar.innerHTML = '<span class="num">0/18</span><span class="bar"><i></i></span><span class="gap">tick what you already have — scored locally, nothing leaves your browser</span>' +
+    '<a class="btn-solid green" style="padding:9px 18px;font-size:12.5px;display:none" href="services/llm-evaluation-qa.html" data-evt="diagnostic-cta">Close the gap →</a>';
+  main.appendChild(bar);
+  var numEl = bar.querySelector('.num');
+  var fillEl = bar.querySelector('.bar i');
+  var gapEl = bar.querySelector('.gap');
+  var ctaEl = bar.querySelector('a');
+
+  function persist() {
+    try { localStorage.setItem('jt-ck', boxes.map(function (b) { return b.checked ? 1 : 0; }).join('')); } catch (e) { /* private mode */ }
+  }
+  function restore() {
+    try {
+      var s = localStorage.getItem('jt-ck') || '';
+      boxes.forEach(function (b, i) { if (s[i] === '1') b.checked = true; });
+    } catch (e) { /* private mode */ }
+  }
+  function score() {
+    var done = boxes.filter(function (b) { return b.checked; }).length;
+    numEl.textContent = done + '/18';
+    numEl.style.color = done === 18 ? '#10b981' : done >= 12 ? '#F4F2EF' : '#F59E0B';
+    fillEl.style.width = (done / 18 * 100) + '%';
+    fillEl.style.background = done === 18 ? '#10b981' : done >= 12 ? '#22d3ee' : '#F59E0B';
+    if (done === 0) {
+      gapEl.textContent = 'tick what you already have — scored locally, nothing leaves your browser';
+      ctaEl.style.display = 'none';
+      return;
+    }
+    if (done === 18) {
+      gapEl.textContent = 'all 18 — ship it. (and I\'d genuinely like to hear about your setup)';
+      ctaEl.textContent = 'Say hi →';
+      ctaEl.href = 'index.html#contact';
+      ctaEl.style.display = 'inline-flex';
+      return;
+    }
+    // weakest group = lowest completion ratio
+    var worst = null, worstRatio = 2;
+    groups.forEach(function (g) {
+      var gb = Array.prototype.slice.call(g.querySelectorAll('[data-ck]'));
+      var r = gb.filter(function (b) { return b.checked; }).length / gb.length;
+      if (r < worstRatio) { worstRatio = r; worst = g.querySelector('h2').textContent; }
+    });
+    var cta = GAP_CTA[worst];
+    gapEl.textContent = cta ? cta.t : '';
+    ctaEl.textContent = 'Close the gap →';
+    ctaEl.href = cta ? cta.href : 'services/llm-evaluation-qa.html';
+    ctaEl.style.display = 'inline-flex';
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', function () { score(); persist(); }); });
+  restore();
+  score();
+})();
+</script>
+<script defer src="/assets/nav.js"></script>
+</body>
+</html>

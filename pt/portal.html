@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seu projeto · Jason Teixeira</title>
+<meta name="description" content="Seu portal de cliente da Jason Teixeira — marcos, aprovações e status de pagamento em um só lugar.">
+<meta name="robots" content="noindex">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  * { box-sizing:border-box; }
+  #portal-root .btn-solid:focus-visible, #portal-root .btn-ghost:focus-visible { outline:2px solid #22d3ee; outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-solid.green:hover, .btn-solid.cyan:hover { transform:none; }
+  }
+  @media print {
+    nav, footer, .portal-approve, #portal-noscript { display:none !important; }
+    body, .portal-wrap { background:#fff !important; color:#111 !important; }
+    .portal-card, .portal-ms-dot, .portal-badge, .portal-chip { border-color:#ccc !important; background:#fff !important; box-shadow:none !important; }
+    .portal-title, .portal-ms-title, .portal-ms-amt { color:#111 !important; }
+    a { color:#111 !important; text-decoration:underline; }
+  }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/portal.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/portal.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/portal.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/portal.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/portal.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/portal.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:#09090B">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
+    <a href="/pt/index.html" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
+      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:#10b981">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="/pt/services.html" class="dim-link">serviços</a>
+      <a href="/pt/case-studies.html" class="dim-link">estudos de caso</a>
+      <a href="/pt/docs.html" class="dim-link">guias</a>
+      <a href="/pt/book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Fale com Jason &rarr;</a>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="portal-wrap">
+      <noscript>
+        <div id="portal-noscript" class="portal-card">
+          <p class="subtle">Este portal precisa de JavaScript para carregar. Envie um e-mail para <a href="mailto:hello@sageideas.dev" style="color:#22d3ee">hello@sageideas.dev</a> e eu te envio uma atualização de outra forma.</p>
+        </div>
+      </noscript>
+      <div id="portal-root" style="min-height:70vh"></div>
+    </div>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> &middot; <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a></span>
+    <span><a href="/pt/index.html" class="dim-link" style="color:#8E8882">&larr; portfólio</a></span>
+  </footer>
+</div>
+<script type="module" src="/assets/portal.mjs"></script>
+</body>
+</html>

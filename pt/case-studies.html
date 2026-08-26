@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudos de Caso — Resultados Medidos, Prova Verificável · Jason Teixeira</title>
+<meta name="description" content="Quatro resultados verificados de clientes: um gate de QA que recusou um falso verde, uma suíte de 37/37 sem flakes, 100% de cobertura de citações RAG, e taxa de flake reduzida de 10% para menos de 1%.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/case-studies.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Estudos de Caso — Resultados Medidos, Prova Verificável">
+<meta property="og:description" content="Quatro sistemas, quatro resultados medidos, cada um com prova pública. Cada afirmação aqui tem um link para o comprovante.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/case-studies.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+
+  /* credibility strip */
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* case study */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; max-width:22ch; }
+  .metric { display:flex; align-items:baseline; gap:12px; margin:20px 0; flex-wrap:wrap; }
+  .metric .big { font-family:var(--serif); font-size:clamp(2.2rem,5vw,3rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .metric .lbl { font-family:var(--mono); font-size:11.5px; color:var(--faint); max-width:26ch; line-height:1.5; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:8px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:4px; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(40px,6vw,64px) 0; }
+  .rule { border-top:1px solid var(--line); }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/case-studies.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/case-studies.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/case-studies.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/case-studies.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/case-studies.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/case-studies.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/pt/index.html" class="site-nav-brand" aria-label="Jason Teixeira — início">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/pt/services.html" class="site-nav-link">Serviços</a>
+      <a href="/pt/case-studies.html" class="site-nav-link" aria-current="page">Trabalho</a>
+      <a href="/pt/build.html" class="site-nav-link">Escopar um projeto</a>
+      <a href="/pt/docs.html" class="site-nav-link">Guias</a>
+      <a href="/pt/book.html" class="btn-solid green site-nav-cta">Agendar uma chamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick">Estudos de caso &middot; prova que você pode abrir</div>
+    <h1 style="margin-top:20px;max-width:18ch">Quatro sistemas. Quatro resultados medidos. <em style="color:var(--green)">Todos com link para o comprovante.</em></h1>
+    <p class="subtle" style="margin-top:20px;max-width:62ch">Sem logos que eu não possa comprovar e sem números que eu não possa mostrar. Cada um destes é um sistema que construí ou resgatei, com a métrica que importou, e um link para o repositório público, a execução literal, ou a captura de tela ao vivo que comprova isso.</p>
+    <div class="cred">
+      <span class="pill"><span class="dot" style="background:var(--green)"></span>Engenharia de testes Fortune-50</span>
+      <span class="pill"><b>ISTQB</b> Engenheiro de Automação de Testes</span>
+      <span class="pill"><span class="dot" style="background:var(--cyan)"></span>Código aberto: <b>llm-eval-gate</b> · <b>playwright-sdet</b></span>
+      <span class="pill"><span class="dot" style="background:var(--purple)"></span>Este site executa seu próprio QA — <b>100+ verificações</b>, limpo no axe</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- CASE 1 -->
+    <section>
+    <article class="case" style="--ac:var(--rose)">
+      <div class="tag">Qualidade e avaliação de IA · nexural-qa-os</div>
+      <h3>A plataforma de QA que se recusou a mostrar um falso verde.</h3>
+      <div class="metric">
+        <span class="big">vermelho&nbsp;→&nbsp;verde</span>
+        <span class="lbl">O gate de CVE ficou vermelho às 11:39, bloqueou o lançamento, e voltou a um comprovado 13/13 às 14:35. Ambas as execuções publicadas na íntegra.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">O problema</div><p>Uma plataforma de qualidade só é confiável se puder falhar. Em uma execução real, o gate de auditoria de dependências encontrou 15 CVEs de alta/crítica severidade. O veredito honesto foi <b>não apto para lançamento</b>, não um selo verde.</p></div>
+        <div class="blk"><div class="h">O que eu fiz</div><ul><li>Deixei o gate ficar vermelho e publiquei a execução na íntegra: sem substituição silenciosa</li><li>Corrigi o desvio na origem: 9 pisos de segurança fixados, eliminando a cadeia transitiva não corrigível</li><li>Executei novamente toda a bateria: 85 runners incl. 10 avaliações de segurança de LLM</li></ul></div>
+        <div class="blk"><div class="h">O resultado</div><p><b>3,759 testes · 91% de cobertura · 13/13 gates.</b> CVEs de alta/crítica severidade: 15 → 0. Todo o arco de detectado→bloqueado→corrigido→comprovado está no site, ambas as capturas incluídas.</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="captures/nexural-qa-os.html">▸ a execução em vermelho (na íntegra)</a>
+        <a class="plink" href="captures/nexural-qa-os-fixed.html">▸ a nova execução em verde</a>
+        <span class="verified">verificado 2026-08-15 · ambas as execuções publicadas</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- CASE 2 -->
+    <section style="padding-top:0">
+    <article class="case" style="--ac:var(--green)">
+      <div class="tag">Automação de testes · playwright-sdet-regression-suite</div>
+      <h3>Uma suíte de regressão em que um gerente de lançamento pode confiar.</h3>
+      <div class="metric">
+        <span class="big">37/37</span>
+        <span class="lbl">specs verdes no CI · 15.3s · <b>0 flakes</b> — com traces, capturas de tela, e um modelo de risco documentado.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">O problema</div><p>A maioria das suítes é uma sopa de scripts: a cobertura segue quem escreveu testes por último, o vermelho é ignorado porque é flaky, e cada falha inicia uma caça ao tesouro por capturas de tela.</p></div>
+        <div class="blk"><div class="h">O que eu fiz</div><ul><li>Modelo de risco → matriz de cobertura, para que a cobertura acompanhe o risco do lançamento</li><li>Page Object Model, fixtures, trace no retry, quatro reporters</li><li>Conectado ao CI com retenção de artefatos, um selo verde que significa algo</li></ul></div>
+        <div class="blk"><div class="h">O resultado</div><p><b>37/37 specs, zero flakes, 15.3s.</b> A pasta de evidências — traces e capturas de tela — é publicada no repositório público. Clone e reproduza a execução.</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite">▸ repositório público</a>
+        <a class="plink" href="captures/playwright-suite.html">▸ a execução</a>
+        <span class="verified">verificado · execução datada de 2026-07-10, evidência no repositório</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- CASE 3 -->
+    <section style="padding-top:0">
+    <article class="case" style="--ac:var(--cyan)">
+      <div class="tag">Engenharia de IA · painel de pesquisa RAG</div>
+      <h3>Um assistente de IA que não consegue responder sem uma citação.</h3>
+      <div class="metric">
+        <span class="big">100%</span>
+        <span class="lbl">das respostas citam sua fonte, incorporado ao design em vez de solicitado por prompt. Não existe caminho de geração sem citação.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">O problema</div><p>A maioria das demos de RAG alucina com confiança. "Fundamentado" é afirmado no prompt e silenciosamente violado em produção na primeira vez que a recuperação retorna escassa.</p></div>
+        <div class="blk"><div class="h">O que eu fiz</div><ul><li>Construí a recuperação para que toda resposta esteja vinculada a trechos classificados e selecionados</li><li>Removi completamente o caminho de geração sem citação: abstém quando não há evidência</li><li>Rastreei qualidade, segurança, latência e custo por consulta em um endpoint de analytics</li></ul></div>
+        <div class="blk"><div class="h">O resultado</div><p><b>100% de cobertura de citações, por construção.</b> Verificado ao vivo. Executei, fiz uma pergunta real, e capturei a resposta citada real (captura de tela na página inicial).</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="/pt/index.html#work">▸ captura de tela ao vivo + arquitetura</a>
+        <span class="verified">verificado 2026-08-15 · executado ao vivo, consulta real capturada</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- CASE 4 -->
+    <section style="padding-top:0">
+    <article class="case" style="--ac:var(--amber)">
+      <div class="tag">Resgate de CI · HighStrike (suíte de produção)</div>
+      <h3>Fazendo o vermelho voltar a significar algo em uma suíte ao vivo.</h3>
+      <div class="metric">
+        <span class="big">10% → &lt;1%</span>
+        <span class="lbl">taxa de flake em uma suíte de produção ao vivo — reduzida com lógica de retry e correções de isolamento de testes, sem necessidade de reconstrução.</span>
+      </div>
+      <div class="grid">
+        <div class="blk"><div class="h">O problema</div><p>Uma suíte flaky é pior do que nenhuma: quando o vermelho é ruído, a equipe aprende a ignorá-lo, e a regressão real passa despercebida junto com os falsos alarmes.</p></div>
+        <div class="blk"><div class="h">O que eu fiz</div><ul><li>Diagnostiquei as fontes de flake: estado compartilhado, timing, ordenação</li><li>Instalei um protocolo de flake: faixa de quarentena, política de retry, correções de isolamento</li><li>Mantive a suíte existente e tratei a reconstrução como último recurso</li></ul></div>
+        <div class="blk"><div class="h">O resultado</div><p><b>Taxa de flake 10% → abaixo de 1%.</b> O vermelho voltou a ser um sinal real, sustentado pela mesma disciplina de nível Fortune-50 por trás da infraestrutura de 500+ testes no início da minha carreira.</p></div>
+      </div>
+      <div class="proofrow">
+        <a class="plink" href="services/test-automation-ci.html">▸ o serviço em que isso se tornou</a>
+        <a class="plink" href="/pt/index.html#work">▸ histórico completo</a>
+        <span class="verified">de um engajamento real com cliente · método produtizado</span>
+      </div>
+    </article>
+    </section>
+
+    <!-- TESTIMONIALS (renders only when real quotes are added below) -->
+    <section id="testimonials" class="rule" style="display:none">
+      <div class="kick" style="color:var(--purple)">nas palavras deles</div>
+      <h2 style="margin-top:12px">O que as pessoas dizem depois que o trabalho é entregue.</h2>
+      <div id="tq" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-top:24px"></div>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Quer que seu sistema seja o próximo nesta página?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:44ch">Comece com uma mini-avaliação gratuita da sua funcionalidade de IA ao vivo, ou agende uma chamada e vamos definir o caminho mais rápido para um resultado medido.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/pt/book.html" class="cta" data-evt="cs-book">Agendar uma chamada &rarr;</a>
+        <a href="/pt/sample.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">ou obtenha o relatório de avaliação de amostra &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> &middot; <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a></span>
+    <span><a href="/pt/index.html" class="dim-link" style="color:var(--faint)">&larr; portfólio</a></span>
+  </footer>
+</div>
+<script>
+/* TESTIMONIALS — add real quotes here and the section appears automatically.
+   Keep them real: only quote people who actually said it, ideally with a
+   LinkedIn recommendation you can link. Empty = section stays hidden. */
+(function () {
+  var TESTIMONIALS = [
+    // { quote: "…", name: "Full Name", role: "Title, Company", href: "https://linkedin.com/in/…" },
+  ];
+  if (!TESTIMONIALS.length) return;
+  var wrap = document.getElementById('tq');
+  TESTIMONIALS.forEach(function (t) {
+    var card = document.createElement('figure');
+    card.style.cssText = 'margin:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:22px';
+    var attribution = t.name + (t.role ? ' — ' + t.role : '');
+    card.innerHTML = '<blockquote style="margin:0;font-size:14.5px;line-height:1.7;color:var(--ink)">“' + t.quote + '”</blockquote>' +
+      '<figcaption style="margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--faint)">' +
+      (t.href ? '<a href="' + t.href + '" style="color:var(--cyan)">' + attribution + ' ↗</a>' : attribution) + '</figcaption>';
+    wrap.appendChild(card);
+  });
+  document.getElementById('testimonials').style.display = '';
+})();
+</script>
+<script defer src="/assets/agent.js"></script>
+<script defer src="/assets/nav.js"></script>
+</body>
+</html>

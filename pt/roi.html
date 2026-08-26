@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O Que uma Função de IA Ruim Custa a Você — Calculadora de ROI · Jason Teixeira</title>
+<meta name="description" content="Uma estimativa ilustrativa de 60 segundos do que respostas de IA não confiáveis custam a você por ano, e o que um eval gate recupera. Além de uma verificação rápida de encaixe.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/roi.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="O Que uma Função de IA Ruim Custa a Você — Calculadora de ROI">
+<meta property="og:description" content="Uma estimativa de 60 segundos do que a IA não confiável custa a você por ano — e o que um eval gate recupera.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/roi.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.3rem,5.6vw,3.8rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+
+  .calc { display:grid; grid-template-columns:1fr 0.9fr; gap:20px; margin-top:28px; }
+  @media (max-width:780px){ .calc { grid-template-columns:1fr; } }
+  .inputs, .output { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:clamp(20px,3vw,28px); }
+  .field { margin-bottom:22px; }
+  .field:last-child { margin-bottom:0; }
+  .field label { display:flex; justify-content:space-between; align-items:baseline; font-family:var(--mono); font-size:11px; letter-spacing:0.04em; color:var(--dim); margin-bottom:10px; }
+  .field label .val { color:var(--cyan); font-weight:600; font-size:13px; }
+  input[type=range] { width:100%; -webkit-appearance:none; appearance:none; height:5px; border-radius:3px; background:#1c1a17; outline:none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--green); cursor:pointer; box-shadow:0 0 0 4px rgba(16,185,129,0.15); }
+  input[type=range]::-moz-range-thumb { width:18px; height:18px; border:none; border-radius:50%; background:var(--green); cursor:pointer; }
+  .hint { font-family:var(--mono); font-size:10px; color:var(--faint); margin-top:6px; }
+
+  .output { display:flex; flex-direction:column; }
+  .bignum { font-family:var(--serif); font-size:clamp(2.6rem,7vw,3.8rem); letter-spacing:-0.02em; line-height:1; color:var(--rose); }
+  .out-lbl { font-family:var(--mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--faint); margin-top:8px; }
+  .subout { margin-top:20px; padding-top:18px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:12px; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; font-size:13px; }
+  .row .k { color:var(--dim); } .row .v { font-family:var(--mono); color:var(--ink); font-weight:600; }
+  .recovered { color:var(--green); }
+  .disclaimer { font-family:var(--mono); font-size:10px; color:var(--faint); line-height:1.5; margin-top:16px; }
+
+  .fit { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:26px; }
+  @media (max-width:640px){ .fit { grid-template-columns:1fr; } }
+  .fitcard { border:1px solid var(--line); border-radius:14px; padding:22px; background:var(--card); }
+  .fitcard h3 { font-family:var(--serif); font-weight:400; font-size:1.25rem; margin:0 0 12px; }
+  .fitcard.yes h3 { color:var(--green); } .fitcard.no h3 { color:var(--amber); }
+  .fitcard li { font-size:13px; line-height:1.6; color:var(--dim); margin-bottom:8px; list-style:none; padding-left:20px; position:relative; }
+  .fitcard.yes li::before { content:'✓'; position:absolute; left:0; color:var(--green); font-family:var(--mono); }
+  .fitcard.no li::before { content:'—'; position:absolute; left:0; color:var(--amber); font-family:var(--mono); }
+  .fitcard ul { margin:0; padding:0; }
+
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .rule { border-top:1px solid var(--line); }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/roi.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/roi.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/roi.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/roi.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/roi.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/roi.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="/pt/index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="/pt/services.html" class="dim-link">serviços</a>
+      <a href="/pt/case-studies.html" class="dim-link">estudos de caso</a>
+      <a href="/pt/book.html" class="btn-solid green" style="padding:9px 16px;font-size:12.5px">Agende uma chamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,88px);padding-bottom:8px">
+    <div class="kick">Calculadora de ROI &middot; 60 segundos, ilustrativo</div>
+    <h1 style="margin-top:20px;max-width:17ch">O que uma função de IA <em style="color:var(--rose)">não confiável</em> está custando a você, silenciosamente?</h1>
+    <p class="subtle" style="margin-top:20px;max-width:60ch">Toda resposta de IA errada, insegura ou fora da marca tem um custo: um chamado de suporte, um reembolso, um cliente perdido, um print ruim nas redes sociais. Mova os controles para a sua realidade e veja a exposição anual. É uma estimativa para enquadrar a conversa, não uma fatura &mdash; o número real vem dos seus dados.</p>
+  </header>
+
+  <main class="wrap">
+    <section style="padding-top:16px">
+    <div class="calc">
+      <div class="inputs">
+        <div class="field">
+          <label for="users">Respostas de IA / mês <span class="val" id="users-v">50,000</span></label>
+          <input type="range" id="users" min="1000" max="1000000" step="1000" value="50000">
+          <div class="hint">conversas, mensagens ou gerações que sua IA produz mensalmente</div>
+        </div>
+        <div class="field">
+          <label for="bad">Taxa de respostas ruins sem um gate <span class="val" id="bad-v">4%</span></label>
+          <input type="range" id="bad" min="0.5" max="20" step="0.5" value="4">
+          <div class="hint">erradas, inseguras, alucinadas ou fora de escopo: os intervalos do setor vão de alguns % a dois dígitos</div>
+        </div>
+        <div class="field">
+          <label for="costly">Proporção de respostas ruins que causam custo real <span class="val" id="costly-v">15%</span></label>
+          <input type="range" id="costly" min="1" max="60" step="1" value="15">
+          <div class="hint">a maioria das respostas ruins é ignorada; algumas viram um chamado, reembolso ou churn</div>
+        </div>
+        <div class="field">
+          <label for="cpi">Custo médio por incidente custoso <span class="val" id="cpi-v">$45</span></label>
+          <input type="range" id="cpi" min="5" max="500" step="5" value="45">
+          <div class="hint">tempo de suporte + boa vontade + reembolso/churn ocasional, combinados</div>
+        </div>
+      </div>
+
+      <div class="output">
+        <div class="out-lbl">Exposição anual estimada</div>
+        <div class="bignum" id="annual">$486,000</div>
+        <div class="subout">
+          <div class="row"><span class="k">Incidentes custosos / mês</span><span class="v" id="incidents">900</span></div>
+          <div class="row"><span class="k">Exposição mensal</span><span class="v" id="monthly">$40,500</span></div>
+          <div class="row"><span class="k recovered">Recuperado por um gate que detecta ~80%</span><span class="v recovered" id="recovered">$388,800/yr</span></div>
+        </div>
+        <p class="disclaimer">Apenas ilustrativo. Um eval gate de CI não consegue detectar tudo, e suas taxas reais são diferentes. É exatamente isso que um mini-eval mede. A exposição quase sempre é maior que o custo de testá-la, independentemente do número exato.</p>
+      </div>
+    </div>
+    </section>
+
+    <!-- FIT QUALIFIER -->
+    <section>
+      <div class="kick" style="color:var(--cyan)">isso já vale a pena para você?</div>
+      <h2 style="margin-top:12px">Uma verificação de encaixe de 10 segundos.</h2>
+      <div class="fit">
+        <div class="fitcard yes">
+          <h3>Vale a pena se…</h3>
+          <ul>
+            <li>Você lança uma função com LLM — chatbot, agente, RAG, gerador — para usuários reais</li>
+            <li>Uma resposta errada ou insegura tem custo real: suporte, reembolsos, churn, marca, compliance</li>
+            <li>Você não consegue provar hoje que uma mudança de prompt ou modelo não piorou as coisas</li>
+            <li>Você quer avançar mais rápido sem o medo das 3h da manhã de "aquela atualização quebrou isso?"</li>
+          </ul>
+        </div>
+        <div class="fitcard no">
+          <h3>Ainda não se…</h3>
+          <ul>
+            <li>Você não tem uma função de IA em produção (nem no roadmap de curto prazo)</li>
+            <li>É um experimento puramente interno, sem usuários e sem nenhuma desvantagem</li>
+            <li>Você já tem um eval gate maduro no CI em que sua equipe confia</li>
+            <li>Você precisa primeiro de um produto completo construído. Essa é outra conversa (com prazer temos essa também)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Quer o número real em vez da estimativa?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:46ch">Um mini-eval gratuito mede sua taxa real de respostas ruins na sua função em produção. Ou agende uma chamada e vamos escopar o gate que fecha a lacuna.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/pt/sample.html" class="cta" data-evt="roi-minieval">Obtenha um mini-eval gratuito &rarr;</a>
+        <a href="/pt/book.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">ou agende uma chamada &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> &middot; <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a></span>
+    <span><a href="/pt/index.html" class="dim-link" style="color:var(--faint)">&larr; portfólio</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var fmtInt = function(n){ return Math.round(n).toLocaleString('en-US'); };
+  var fmtUsd = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
+  var GATE_CATCH = 0.8; // illustrative: a well-built gate catches ~80% before ship
+  var ids = ['users','bad','costly','cpi'];
+  function recalc(){
+    var users = +$('users').value, bad = +$('bad').value/100, costly = +$('costly').value/100, cpi = +$('cpi').value;
+    $('users-v').textContent = fmtInt(users);
+    $('bad-v').textContent = $('bad').value + '%';
+    $('costly-v').textContent = $('costly').value + '%';
+    $('cpi-v').textContent = fmtUsd(cpi);
+    var incidents = users * bad * costly;      // costly incidents / month
+    var monthly = incidents * cpi;
+    var annual = monthly * 12;
+    $('incidents').textContent = fmtInt(incidents);
+    $('monthly').textContent = fmtUsd(monthly);
+    $('annual').textContent = fmtUsd(annual);
+    $('recovered').textContent = fmtUsd(annual * GATE_CATCH) + '/yr';
+  }
+  ids.forEach(function(id){ $(id).addEventListener('input', recalc); });
+  recalc();
+})();
+</script>
+<script defer src="/assets/agent.js"></script>
+</body>
+</html>

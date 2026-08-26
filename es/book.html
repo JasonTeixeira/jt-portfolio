@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agenda una llamada — Jason Teixeira · Sage Ideas LLC</title>
+<meta name="description" content="Agenda una llamada de 15 minutos para definir tu proyecto de IA o QA. Sin lista de precios fija; cada proyecto se define y cotiza después de una llamada breve.">
+<link rel="canonical" href="https://agency.sageideas.dev/es/book.html">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Agenda una llamada — Jason Teixeira · Sage Ideas">
+<meta property="og:description" content="Agenda una llamada de 15 minutos para definir tu proyecto de IA o QA. Cada proyecto se define y cotiza después de una llamada breve.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/book.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.3rem,5.5vw,3.6rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:14.5px; line-height:1.7; }
+  .card { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:clamp(22px,4vw,32px); }
+  label.fld { display:block; margin-bottom:14px; }
+  label.fld span { display:block; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); margin-bottom:6px; }
+  input, select, textarea { width:100%; background:#0F0F13; border:1px solid var(--line); border-radius:9px; padding:11px 13px; font-size:14px; color:var(--ink); font-family:inherit; outline:none; }
+  input:focus, select:focus, textarea:focus { border-color:rgba(34,211,238,0.5); }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:560px){ .grid2 { grid-template-columns:1fr; } }
+  .hp { position:absolute; left:-9999px; }
+  .btn-solid.green { border:none; cursor:pointer; }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .step { display:flex; gap:12px; align-items:baseline; padding:10px 0; }
+  .step .n { font-family:var(--serif); font-size:1.2rem; color:var(--cyan); min-width:1.4em; }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/book.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/book.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/book.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/book.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/book.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/book.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/es/index.html" class="site-nav-brand" aria-label="Jason Teixeira — inicio">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menú" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/es/services.html" class="site-nav-link">Servicios</a>
+      <a href="/es/case-studies.html" class="site-nav-link">Trabajo</a>
+      <a href="/es/build.html" class="site-nav-link">Define un proyecto</a>
+      <a href="/es/docs.html" class="site-nav-link">Guías</a>
+      <a href="/es/book.html" class="btn-solid green site-nav-cta" aria-current="page">Agenda una llamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,88px);padding-bottom:clamp(24px,4vw,36px)">
+    <div class="kick">Agenda una llamada · o inicia la auditoría</div>
+    <h1 style="margin-top:18px;max-width:16ch">Cuéntame qué se te está escapando.</h1>
+    <p class="subtle" style="margin-top:18px;max-width:58ch">Una llamada de 15 minutos: describes el problema, te digo honestamente si vale la pena automatizarlo o probarlo y cuánto cuesta. Te vas con un plan concreto de cualquier forma. La llamada es gratuita y el plan es tuyo.</p>
+    <span class="jt-capacity"><span class="dot"></span>un proyecto a la vez — <!-- TODO(jason): update capacity -->actualmente agendando para el Q4 2026</span>
+  </header>
+
+  <main id="content" style="display:block">
+
+  <!-- SCHEDULE — Cal.com inline embed. Falls back to the contact form below if it can't load. -->
+  <section class="wrap" style="padding-bottom:clamp(18px,3vw,26px)">
+    <div class="card">
+      <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:18px">Agenda una llamada de 15 minutos — disponibilidad en vivo</div>
+      <!-- TODO(jason): replace YOUR-CAL-USERNAME with your real cal.com link -->
+      <div id="cal-embed" data-cal-link="YOUR-CAL-USERNAME/intro" style="min-height:0;border-radius:10px;overflow:hidden"></div>
+      <p id="cal-embed-fallback-note" class="subtle" hidden style="margin:14px 0 0">El programador en vivo no cargó. Usa el formulario de abajo y te responderé dentro de un día hábil. O escribe directamente a <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a>.</p>
+      <noscript><p class="subtle" style="margin:14px 0 0">Activa JavaScript para ver la disponibilidad en vivo, o usa el formulario de abajo.</p></noscript>
+    </div>
+  </section>
+
+  <!-- BOOK (fallback) -->
+  <section class="wrap" id="book-form-section" style="padding-bottom:clamp(32px,5vw,52px)">
+    <div class="card">
+      <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px">¿Prefieres correo? Envía una nota en su lugar</div>
+      <p class="subtle" style="margin:0 0 18px">¿Ningún horario te funciona, o prefieres escribirlo? Completa esto y te respondo dentro de un día hábil. Una persona real responde.</p>
+      <form id="book-form" novalidate>
+        <div class="grid2">
+          <label class="fld"><span>nombre</span><input type="text" name="name" required autocomplete="name" placeholder="Ada Lovelace"></label>
+          <label class="fld"><span>correo laboral</span><input type="email" name="email" required autocomplete="email" placeholder="ada@company.com"></label>
+        </div>
+        <div class="grid2">
+          <label class="fld"><span>empresa / sitio</span><input type="text" name="company" autocomplete="organization" placeholder="acme.com"></label>
+          <label class="fld"><span>etapa</span>
+            <select name="stage">
+              <option value="exploring">explorando</option>
+              <option value="scoping">definiendo un proyecto</option>
+              <option value="ready">listo para empezar</option>
+            </select>
+          </label>
+        </div>
+        <label class="fld"><span>qué estás lanzando / el problema</span><textarea name="message" rows="4" required placeholder="La función de IA o el dolor del lanzamiento, el stack, y qué debe significar 'funcionar'…"></textarea></label>
+        <label class="hp" aria-hidden="true"><span>sitio web de la empresa</span><input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:4px">
+          <button type="submit" class="cta">Envíalo &rarr;</button>
+          <span id="book-status" role="status" aria-live="polite" class="mono" style="font-size:11.5px;color:var(--faint)"></span>
+        </div>
+        <p class="mono" style="margin:12px 0 0;font-size:11px;color:var(--faint)">Te respondo dentro de un día hábil, y soy yo quien responde. O escribe a <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a>.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- AUDIT -->
+  <section class="wrap" id="audit" style="padding-bottom:clamp(56px,8vw,88px)">
+    <div class="card" style="border-color:rgba(16,185,129,0.35)">
+      <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:12px">¿Listo para avanzar? Empieza con la auditoría</div>
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+        <span style="font-family:var(--serif);font-size:2.2rem;letter-spacing:-0.02em">Una auditoría breve y enfocada: definida y cotizada para ti</span>
+      </div>
+      <p class="subtle" style="margin-top:12px;max-width:58ch">En aproximadamente una semana mapeo tu cuello de botella de mayor impacto &mdash; la superficie de fallas de IA, la brecha de pruebas o el ROI de automatización &mdash; y te entrego un plan priorizado que es tuyo, más una cotización concreta para la construcción. Si el análisis muestra que no puedo ayudar, te lo diré y no tiene costo.</p>
+      <div style="display:flex;gap:14px;margin-top:22px;flex-wrap:wrap;align-items:center">
+        <a href="#book-form" class="cta" data-evt="audit-quote" id="audit-buy">Solicita la auditoría &rarr;</a>
+        <span class="mono" style="font-size:11px;color:var(--faint)">o agenda primero la llamada, lo que prefieras</span>
+      </div>
+      <div class="jt-guarantee"><span class="g-mk">&check;</span><span>Cotizado por escrito antes de comenzar. La <b>tarifa de la auditoría se acredita directamente a la construcción</b> si continúas. Si el análisis muestra que no puedo ayudar, no tiene costo.</span></div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> &middot; <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a></span>
+    <span><a href="/es/index.html" class="dim-link" style="color:var(--faint)">&larr; portafolio</a></span>
+  </footer>
+</div>
+
+<!-- Cal.com inline embed (open-source scheduling). See TODO above the #cal-embed div. -->
+<script>
+(function(){
+  var mount = document.getElementById('cal-embed');
+  var fallbackNote = document.getElementById('cal-embed-fallback-note');
+  if (!mount) return;
+  var calLink = mount.getAttribute('data-cal-link');
+  // Not configured yet: don't mount a broken scheduler that would show a Cal
+  // "wrong link" error to a live visitor. Hide the scheduling section entirely
+  // and let the contact form below be the primary path until a real link is set.
+  if (!calLink || calLink.indexOf('YOUR-CAL-USERNAME') !== -1) {
+    var host = mount.closest('section') || mount.parentElement;
+    if (host) host.hidden = true;
+    return;
+  }
+
+  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+
+  try {
+    window.Cal("init", "intro", { origin: "https://cal.com" });
+    window.Cal.ns.intro("inline", {
+      elementOrSelector: "#cal-embed",
+      config: { layout: "month_view", theme: "dark" },
+      calLink: calLink
+    });
+    window.Cal.ns.intro("ui", { theme: "dark", hideEventTypeDetails: false, layout: "month_view" });
+  } catch (e) {
+    if (fallbackNote) fallbackNote.hidden = false;
+  }
+
+  // If the embed hasn't mounted an iframe after a few seconds (bad link, network
+  // block, ad-blocker), surface the fallback note pointing at the form below.
+  window.setTimeout(function () {
+    if (!mount.querySelector('iframe')) {
+      mount.style.display = 'none';
+      if (fallbackNote) fallbackNote.hidden = false;
+    }
+  }, 4000);
+})();
+</script>
+
+<script>
+(function(){
+  var form=document.getElementById('book-form'), statusEl=document.getElementById('book-status');
+  if(!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!form.reportValidity()) return;
+    var f={ name:form.elements.name.value.trim(), email:form.elements.email.value.trim(),
+      message:form.elements.message.value.trim(),
+      company:(form.elements.company&&form.elements.company.value.trim())||'',
+      stage:(form.elements.stage&&form.elements.stage.value)||'', website:form.elements.website.value };
+    if(f.website) { statusEl.textContent='sent — talk soon.'; return; } // honeypot
+    statusEl.textContent='sending…';
+    fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(f)})
+      .then(function(r){
+        if(r.ok){ statusEl.textContent='got it. I reply within a business day.'; form.reset(); }
+        else throw new Error('no api');
+      })
+      .catch(function(){
+        var body='Company: '+(f.company||'—')+'\nStage: '+(f.stage||'—')+'\n\n'+f.message;
+        statusEl.textContent='opening your email app…';
+        window.location.href='mailto:hello@sageideas.dev?subject='+encodeURIComponent('Project inquiry — '+f.name)+'&body='+encodeURIComponent(body);
+      });
+    try { if(typeof window.va==='function') window.va('event',{name:'book-submit'}); } catch(_){}
+  });
+})();
+</script>
+<script>/* analytics: Google Analytics 4 — loads only on production once GA_ID is set */
+window.va=function(){};var GA_ID='__GA_ID__';
+if(GA_ID.charAt(0)==='G'&&GA_ID.indexOf('X')<0&&location.hostname.endsWith('sageideas.dev')){
+var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(g);
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config',GA_ID);
+window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,(payload&&payload.data)||{});}catch(e){}};}</script>
+<script defer src="/assets/agent.js"></script>
+<script defer src="/assets/nav.js"></script>
+</body>
+</html>

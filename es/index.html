@@ -59,7 +59,7 @@
 <meta property="og:locale" content="es_ES">
 </head>
 <body>
-<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/es/" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/" style="color:#8E8882;text-decoration:none">PT</a></div>
 <a href="#work" class="skip-link">Saltar al contenido</a>
 <div id="jt-root" data-funnel="client" style="min-height:100vh;background:#09090B;position:relative;overflow-x:clip">
   <!-- grain -->
@@ -270,3 +270,425 @@
     <p style="margin:16px 0 0;font-size:14px;color:#8E8882;max-width:64ch">El resultado primero; la ficha técnica completa de ocho secciones — incluyendo las partes que la mayoría de los casos de estudio esconden — está a un clic de distancia. Cada cifra destacada indica cómo fue medida.</p>
     <div id="jt-briefs" style="display:flex;flex-direction:column;gap:36px;margin-top:40px">
 <article style="position:relative;background:#0C0C0E;border:1px solid #2A2826;padding:clamp(26px,4vw,44px)" class="rise"><span style="position:absolute;width:14px;height:14px;top:-1px;left:-1px;border-top:1px solid #8E8882;border-left:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;top:-1px;right:-1px;border-top:1px solid #8E8882;border-right:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;left:-1px;border-bottom:1px solid #8E8882;border-left:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;right:-1px;border-bottom:1px solid #8E8882;border-right:1px solid #8E8882"></span><div style="position:absolute;top:14px;right:18px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.14em;color:#837D77;text-transform:uppercase;white-space:nowrap">ficha BRIEF/01 · rev A</div><div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#22d3ee">BRIEF/01</span><h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.6rem,2.6vw,2.1rem);margin:0;letter-spacing:-0.01em;flex:1;min-width:240px">Triaje de feedback que se ejecuta solo</h3><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">Flujo de trabajo con Make + Gemini</span></div><p style="border-left:2px solid #22d3ee;padding-left:16px" class="brief-outcome">El feedback negativo ahora aparece en segundos. Antes esperaba hasta la revisión del viernes.</p><div style="padding:18px 20px 14px;background:#08090c;border:1px solid #1A1917;margin-bottom:8px"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px"><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:#2A2826;--chip-c:#A8A29E" class="flow-chip">Google Forms</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#A8A29E;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(34,211,238,0.35);--chip-c:#22d3ee" class="flow-chip">Make webhook</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#22d3ee;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(34,211,238,0.35);--chip-c:#22d3ee" class="flow-chip">Gemini 2.5 Flash · clasificar + resumir</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#22d3ee;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:#2A2826;--chip-c:#A8A29E" class="flow-chip">registro en Sheets</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#A8A29E;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(244,63,94,0.35);--chip-c:#f43f5e" class="flow-chip">¿negativo? → alerta por correo</span></span></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.1em;color:#837D77;text-transform:uppercase;margin-bottom:24px">fig. 07 · flujo del sistema, de izquierda a derecha</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;border-top:1px solid #2A2826;padding-top:24px"><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Problema</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">El feedback de los clientes llegaba a través de un formulario y quedaba sin leer. Las señales negativas surgían días tarde, cuando el cliente ya se había ido.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Resultados medidos</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">El feedback negativo surge en tiempo real en lugar de en la revisión de fin de semana — medido como una latencia de webhook a alerta de segundos, frente a una revisión manual semanal.</p></div></div><details style="border-top:1px solid #2A2826;margin-top:24px" class="brief-more"><summary><span style="color:#22d3ee" class="chev">▸</span>ver ficha completa: 6 secciones más</summary><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;padding-top:20px"><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Por qué no un chatbot</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Nadie quiere conversar con su propia cola de feedback. El valor es determinista: clasificar, resumir, enrutar, alertar. Una interfaz de chat añadiría latencia y eliminaría la auditabilidad.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Arquitectura</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Escenario de Make, cuatro pasos de principio a fin (ver fig. 1). Cada paso puede reejecutarse de forma aislada.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Recuperación / memoria</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">No se necesita ninguna. Cada mensaje se clasifica de forma independiente. Evitado deliberadamente: la ausencia de estado mantiene el pipeline depurable.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Puntos de aprobación humana</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">La IA nunca responde a un cliente. Enruta a un humano con un resumen; el correo de alerta es el traspaso. No resuelve nada por sí sola.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Salvaguardas de producción</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Esquema de salida estructurada en el paso del LLM, etiqueta de respaldo ante fallos de parseo, y el mensaje original siempre registrado junto con la clasificación.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:8px">Qué reforzaría a continuación</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Un conjunto dorado de mensajes etiquetados ejecutado cada noche a través de Promptfoo para detectar desviaciones de clasificación cuando cambia la versión del modelo.</p></div></div><div style="margin-top:26px;padding-top:20px;border-top:1px dashed #2A2826;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882">stack · <span style="color:#F4F2EF">Make · Gemini 2.5 Flash · Google Forms · Sheets · Gmail</span></div></details></article><article style="position:relative;background:#0C0C0E;border:1px solid #2A2826;padding:clamp(26px,4vw,44px)" class="rise"><span style="position:absolute;width:14px;height:14px;top:-1px;left:-1px;border-top:1px solid #8E8882;border-left:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;top:-1px;right:-1px;border-top:1px solid #8E8882;border-right:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;left:-1px;border-bottom:1px solid #8E8882;border-left:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;right:-1px;border-bottom:1px solid #8E8882;border-right:1px solid #8E8882"></span><div style="position:absolute;top:14px;right:18px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.14em;color:#837D77;text-transform:uppercase;white-space:nowrap">ficha BRIEF/02 · rev A</div><div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#10b981">BRIEF/02</span><h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.6rem,2.6vw,2.1rem);margin:0;letter-spacing:-0.01em;flex:1;min-width:240px">RAG que cita o se calla</h3><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">ai-research-dashboard</span></div><p style="border-left:2px solid #10b981;padding-left:16px" class="brief-outcome">El 100% de las respuestas cita su fuente. El pipeline no tiene ninguna ruta sin citar.</p><div style="padding:18px 20px 14px;background:#08090c;border:1px solid #1A1917;margin-bottom:8px"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px"><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:#2A2826;--chip-c:#A8A29E" class="flow-chip">fuente</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#A8A29E;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(34,211,238,0.35);--chip-c:#22d3ee" class="flow-chip">fragmentador</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#22d3ee;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(34,211,238,0.35);--chip-c:#22d3ee" class="flow-chip">embeddings → pgvector</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#22d3ee;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(167,139,250,0.35);--chip-c:#a78bfa" class="flow-chip">recuperación por coseno</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#a78bfa;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(16,185,129,0.35);--chip-c:#10b981" class="flow-chip">respuesta extractiva + citas</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#10b981;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:#2A2826;--chip-c:#A8A29E" class="flow-chip">registro de auditoría</span></span></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.1em;color:#837D77;text-transform:uppercase;margin-bottom:24px">fig. 08 · flujo del sistema, de izquierda a derecha</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;border-top:1px solid #2A2826;padding-top:24px"><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Problema</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Los equipos de investigación necesitan respuestas de su propio corpus. Un sistema RAG que parafrasea con confianza sin fuentes es un pasivo, no una herramienta.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Resultados medidos</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">100% de las respuestas respaldadas por citas — verificado por diseño: no existe ninguna ruta de generación sin citar. Calidad, seguridad, latencia y costo se rastrean por consulta en el endpoint de analítica.</p></div></div><details style="border-top:1px solid #2A2826;margin-top:24px" class="brief-more"><summary><span style="color:#10b981" class="chev">▸</span>ver ficha completa: 6 secciones más</summary><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;padding-top:20px"><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Por qué no un chatbot</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Un wrapper de chat sobre el corpus era la construcción obvia. La necesidad real era un dashboard operativo: fuentes, trabajos de ingesta, ejecuciones de evaluación y feedback, todo inspeccionable. El Q&amp;A es solo una función dentro de él.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Arquitectura</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">API en FastAPI + proceso de ingesta duradero que alimenta la fig. 1; un gateway de proveedores intercambia embeddings deterministas locales por Gemini según el entorno. Dashboard en React por encima.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Recuperación / memoria</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Consultas, respuestas y citas persistidas. Eliminar una fuente se propaga en cascada: fragmentos, embeddings, trabajos, payloads, citas. Sin memoria huérfana.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Puntos de aprobación humana</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Un endpoint de feedback a nivel de respuesta alimenta un ciclo de revisión; las ejecuciones de evaluación se disparan y persisten vía API para que un humano dé el visto bueno antes de lanzar cambios de proveedor o de umbral.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Salvaguardas de producción</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Respuestas solo extractivas (citar o abstenerse), registro de auditoría completo sobre eventos de fuente/consulta/evaluación/feedback, proveedores locales deterministas para desarrollo reproducible, respaldo de Gemini a local cuando faltan claves.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981;margin-bottom:8px">Qué reforzaría a continuación</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Convertir los umbrales de evaluación en barreras de despliegue para que una regresión de recuperación bloquee el lanzamiento antes de que llegue a la retro.</p></div></div><div style="margin-top:26px;padding-top:20px;border-top:1px dashed #2A2826;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882">stack · <span style="color:#F4F2EF">FastAPI · pgvector · SQLite/Postgres · Gemini · React</span></div></details></article><article style="position:relative;background:#0C0C0E;border:1px solid #2A2826;padding:clamp(26px,4vw,44px)" class="rise"><span style="position:absolute;width:14px;height:14px;top:-1px;left:-1px;border-top:1px solid #8E8882;border-left:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;top:-1px;right:-1px;border-top:1px solid #8E8882;border-right:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;left:-1px;border-bottom:1px solid #8E8882;border-left:1px solid #8E8882"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;right:-1px;border-bottom:1px solid #8E8882;border-right:1px solid #8E8882"></span><div style="position:absolute;top:14px;right:18px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.14em;color:#837D77;text-transform:uppercase;white-space:nowrap">ficha BRIEF/03 · rev A</div><div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#a78bfa">BRIEF/03</span><h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.6rem,2.6vw,2.1rem);margin:0;letter-spacing:-0.01em;flex:1;min-width:240px">El sistema operativo de QA que no puede mentir</h3><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">nexural-qa-os</span></div><p style="border-left:2px solid #a78bfa;padding-left:16px" class="brief-outcome">3,759 pruebas. El día de publicación, la barrera detectó una desviación real de CVE, me bloqueó, y volvió a estar en verde por la tarde.</p><div style="padding:18px 20px 14px;background:#08090c;border:1px solid #1A1917;margin-bottom:8px"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px"><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:#2A2826;--chip-c:#A8A29E" class="flow-chip">qa init · detectar stack</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#A8A29E;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(34,211,238,0.35);--chip-c:#22d3ee" class="flow-chip">orquestador DAG</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#22d3ee;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(167,139,250,0.35);--chip-c:#a78bfa" class="flow-chip">85 runners · incl. 10 evaluaciones de seguridad de LLM</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#a78bfa;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(16,185,129,0.35);--chip-c:#10b981" class="flow-chip">veredicto calculado</span><span style="color:#3D3A37;display:inline-flex;align-items:center;gap:3px"><span style="width:4px;height:4px;border-radius:50%;background:#10b981;animation:jt-blink 2s ease-in-out infinite"></span>→</span></span><span style="display:inline-flex;align-items:center;gap:10px"><span style="--chip-b:rgba(16,185,129,0.35);--chip-c:#10b981" class="flow-chip">evidencia firmada con ed25519</span></span></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.1em;color:#837D77;text-transform:uppercase;margin-bottom:24px">fig. 09 · flujo del sistema, de izquierda a derecha</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;border-top:1px solid #2A2826;padding-top:24px"><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Problema</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Los dashboards de calidad muestran números que no pueden defender. Para las funciones de LLM es peor: los equipos lanzan cambios de prompt sin ninguna señal de regresión.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Resultados medidos</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">3,759 pruebas, 91.12% de cobertura de líneas, 13/13 barreras. El 2026-08-15, la barrera de CVE se puso honestamente en rojo (15 altos/críticos en dependencias) y bloqueó su propio lanzamiento — parchado y PROBADO de nuevo esa misma tarde, ambas ejecuciones publicadas textualmente. Un solo comando regenera el scorecard.</p></div></div><details style="border-top:1px solid #2A2826;margin-top:24px" class="brief-more"><summary><span style="color:#a78bfa" class="chev">▸</span>ver ficha completa: 6 secciones más</summary><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px 44px;padding-top:20px"><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Por qué no un chatbot</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Un "asistente de QA con IA" que opina sobre la calidad es exactamente el modo de falla. El veredicto debe ser calculado por código a partir de los códigos de salida de los comandos. Aquí, un LLM nunca califica su propia tarea.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Arquitectura</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Un solo CLI que impulsa la fig. 1: cada runner es un plugin (detect → plan → run → collectEvidence); un runner colgado no puede detener toda una ejecución. Dos barreras: pre-commit de &lt;15ms, barrera de merge de repositorio completo.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Recuperación / memoria</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Un libro de evidencia en lugar de memoria: el comando exacto, el código de salida y la métrica interpretada de cada ejecución se registran en un libro de pruebas, reverificable sin conexión.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Puntos de aprobación humana</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">El ciclo de corrección autónomo está acotado. Solo corrige lo que el harness puede verificar, hace commit ante una mejora, revierte ante una regresión y se detiene ante un estancamiento honesto para revisión humana.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Salvaguardas de producción</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Contrato anti-alucinación: ninguna puntuación sin una evidencia que la respalde. Pisos de cobertura crecientes, disciplina de omisión honesta, evidencia redactada y firmada con ed25519.</p></div><div><div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px">Cobertura de evaluación de LLM</div><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;text-wrap:pretty">Diez runners dedicados a la seguridad de IA: sesgo, consistencia, alucinación, jailbreak, inyección de prompts, rechazo, toxicidad, fuga de PII, costo, latencia. Ese es el harness que aporto a las funciones de LLM de mis clientes.</p></div></div><div style="margin-top:26px;padding-top:20px;border-top:1px dashed #2A2826;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882">stack · <span style="color:#F4F2EF">TypeScript · Turbo/pnpm · vitest · Playwright · k6 · ed25519</span></div></details></article>
+</div>
+  </section>
+
+  <!-- SERVICES — LIGHT BAND -->
+  <!-- SERVICES — dark band, elevated (P3.2: converted from a stray light band to the site's disciplined dark surface) -->
+  <section id="services" style="border-top:1px solid #2A2826;background:#0C0C0E;margin-top:120px;position:relative;overflow:hidden">
+    <div class="jt-hero-wash"></div>
+    <div style="position:absolute;top:0;right:clamp(18px,4vw,40px);transform:translateY(-52%);font-family:'Instrument Serif',Georgia,serif;font-size:clamp(90px,14vw,180px);line-height:0.8;color:transparent;-webkit-text-stroke:1px #1F1D1B;user-select:none;pointer-events:none;z-index:1">04</div>
+    <div class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px);position:relative">
+      <div class="sec-rule">
+        <span class="sec-label" style="color:#22d3ee">04 — trabaja conmigo</span>
+        <span class="line"></span>
+      </div>
+      <h2 class="sec-title" style="color:#F4F2EF">Servicios empaquetados</h2>
+      <p class="only-client" style="margin:16px 0 0;font-size:14px;color:#A8A29E;max-width:60ch">Alcance fijo, entregables fijos, evidencia incluida. Cada oferta es una versión productizada de algo de los resúmenes de arriba.</p>
+      <p class="only-hire" style="margin:16px 0 0;font-size:14px;color:#A8A29E;max-width:60ch">¿Contratando a tiempo completo? Estas son las tres capacidades que aportaría a tu equipo desde el primer día, cada una respaldada por un sistema ya lanzado, arriba.</p>
+      <div id="jt-services" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:20px;margin-top:36px">
+<article class="svc-card"><span style="width:34px;height:3px;border-radius:2px;background:#a78bfa"></span><h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.4rem;margin:0;color:#F4F2EF">QA y arnés de evaluación para funciones de LLM</h3><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;flex:1">Tu función de LLM obtiene una suite de regresión: trazas doradas, puntuación LLM-as-judge para fidelidad y seguridad, y una barrera de CI que bloquea el despliegue cuando la calidad baja.</p><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.8;color:#A8A29E"><div><span style="color:#a78bfa">→</span> Suite de Promptfoo / DeepEval sobre tus patrones de tráfico reales</div><div><span style="color:#a78bfa">→</span> Runners de alucinación, inyección y toxicidad</div><div><span style="color:#a78bfa">→</span> Barrera de CI + scorecard que tu PM puede leer</div></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;border-top:1px dashed #2A2826;padding-top:12px">evidencia: <span style="color:#F4F2EF">nexural-qa-os · 85 runners incl. 10 evaluaciones de seguridad de IA</span></div><a style="font-size:13px;font-weight:700;color:#22d3ee" href="services/llm-evaluation-qa.html">Ver todos los detalles →</a></article>
+<article class="svc-card"><span style="width:34px;height:3px;border-radius:2px;background:#10b981"></span><h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.4rem;margin:0;color:#F4F2EF">Automatización de pruebas + configuración de CI</h3><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;flex:1">Una suite de Playwright/Pytest con alcance basado en riesgo y la disciplina de evidencia de un gerente de lanzamientos: trazas, reportes, artefactos, conectados a GitHub Actions desde el primer día.</p><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.8;color:#A8A29E"><div><span style="color:#10b981">→</span> Modelo de riesgo → matriz de cobertura en lugar de un caos de scripts</div><div><span style="color:#10b981">→</span> Cuatro reporters, trazas en cada reintento, retención de artefactos</div><div><span style="color:#10b981">→</span> Línea base de carga con k6 en la ruta crítica</div></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;border-top:1px dashed #2A2826;padding-top:12px">evidencia: <span style="color:#F4F2EF">playwright-sdet-regression-suite · 37/37 en CI</span></div><a style="font-size:13px;font-weight:700;color:#22d3ee" href="services/test-automation-ci.html">Ver todos los detalles →</a></article>
+<article class="svc-card"><span style="width:34px;height:3px;border-radius:2px;background:#22d3ee"></span><h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.4rem;margin:0;color:#F4F2EF">Construcción de automatización de flujos de trabajo con IA</h3><p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;flex:1">Una automatización funcional (recepción, triaje, enrutamiento, respuestas respaldadas por RAG) construida sobre n8n/Make o LangGraph, con puntos de aprobación humana donde corresponden y registros que puedes auditar.</p><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.8;color:#A8A29E"><div><span style="color:#22d3ee">→</span> n8n / Make / Zapier o LangGraph a nivel de código</div><div><span style="color:#22d3ee">→</span> Barreras human-in-the-loop, salidas estructuradas</div><div><span style="color:#22d3ee">→</span> Runbook + traspaso para que tu equipo se haga cargo</div></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;border-top:1px dashed #2A2826;padding-top:12px">evidencia: <span style="color:#F4F2EF">plantillas de sage-agents · pipeline de triaje de feedback</span></div><a style="font-size:13px;font-weight:700;color:#22d3ee" href="services/ai-workflow-automation.html">Ver todos los detalles →</a></article>
+</div>
+      <a href="/es/services.html" data-evt="services-matrix" style="display:inline-flex;align-items:center;gap:10px;margin-top:28px;padding:14px 22px;border:1px solid rgba(34,211,238,0.35);background:#101014;color:#22d3ee;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;border-radius:8px;transition:border-color 150ms ease,box-shadow 150ms ease" onmouseover="this.style.boxShadow='0 0 24px rgba(34,211,238,0.12)'" onmouseout="this.style.boxShadow='none'">Ver la matriz completa de servicios: cada capacidad, con precio y visual <span style="font-size:15px">→</span></a>
+      <div class="only-client" style="display:contents">
+<div style="margin-top:28px">
+<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:14px">el camino del proyecto · cómo trabajamos juntos</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:14px">
+<div style="border:1px solid rgba(143,160,255,0.4);background:#101014;padding:22px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 32px -18px rgba(143,160,255,0.25)"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#8FA0FF">01 · Auditoría</div><div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.02em;color:#F4F2EF">~1 semana</span> <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8E8882">· empieza aquí</span></div><p style="margin:0;font-size:12.5px;line-height:1.6;color:#A8A29E;flex:1">Un solo cuello de botella de mayor impacto, mapeado. Te vas con un plan priorizado y una cotización concreta que es tuya.</p><a href="/es/book.html" class="btn-solid green" data-evt="path-audit-quote" style="align-self:flex-start;padding:9px 16px;font-size:12.5px">Iniciar una conversación →</a></div>
+<div style="border:1px solid #2A2826;background:#101014;padding:22px;display:flex;flex-direction:column;gap:8px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#22d3ee">02 · Sprint</div><div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.02em;color:#F4F2EF">~2 semanas</span> <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8E8882">· con alcance y cotizado</span></div><p style="margin:0;font-size:12.5px;line-height:1.6;color:#A8A29E;flex:1">Una mejora visible, de calidad de producción: lanzada, medida, en tu repositorio.</p></div>
+<div style="border:1px solid #2A2826;background:#101014;padding:22px;display:flex;flex-direction:column;gap:8px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a78bfa">03 · Construcción</div><div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.02em;color:#F4F2EF">~4–8 semanas</span> <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8E8882">· con alcance y cotizado</span></div><p style="margin:0;font-size:12.5px;line-height:1.6;color:#A8A29E;flex:1">El sistema completo: suite, barrera, automatización, runbook, propiedad de tu equipo al momento del traspaso.</p></div>
+<div style="border:1px solid #2A2826;background:#101014;padding:22px;display:flex;flex-direction:column;gap:8px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#10b981">04 · Operar</div><div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.02em;color:#F4F2EF">continuo</span> <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8E8882">· opcional</span></div><p style="margin:0;font-size:12.5px;line-height:1.6;color:#A8A29E;flex:1">Medir, mejorar, publicar: el sistema se compone en lugar de decaer silenciosamente.</p></div>
+</div>
+<div style="position:relative;margin-top:28px;background:#0C0C0E;border:1px solid #2A2826;padding:clamp(24px,3.5vw,36px)">
+<span style="position:absolute;width:14px;height:14px;top:-1px;left:-1px;border-top:1px solid #10b981;border-left:1px solid #10b981"></span><span style="position:absolute;width:14px;height:14px;top:-1px;right:-1px;border-top:1px solid #10b981;border-right:1px solid #10b981"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;left:-1px;border-bottom:1px solid #10b981;border-left:1px solid #10b981"></span><span style="position:absolute;width:14px;height:14px;bottom:-1px;right:-1px;border-bottom:1px solid #10b981;border-right:1px solid #10b981"></span>
+<div style="position:absolute;top:14px;right:18px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.14em;color:#837D77;text-transform:uppercase;white-space:nowrap">ficha OFFER/01 · precio fijo</div>
+<div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding-bottom:8px">
+<span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#10b981">OFFER/01</span>
+<h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.6rem,2.6vw,2.1rem);margin:0;letter-spacing:-0.01em;flex:1;min-width:240px">La Auditoría de Evaluación</h3>
+<span style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.8rem,3vw,2.3rem);color:#10b981;white-space:nowrap"><!-- TODO(jason): confirm entry-offer price -->$2,500</span>
+</div>
+<p style="border-left:2px solid #10b981;padding-left:16px" class="brief-outcome">Una semana, precio fijo.</p>
+<p style="margin:0;font-size:13.5px;line-height:1.75;color:#A8A29E;max-width:64ch">Someto tu función de IA en producción a una batería de evaluación real — corrección, seguridad, alucinación, inyección de prompts — y te entrego un reporte con puntuación, las transcripciones que fallaron, y una lista priorizada de correcciones. <b style="color:#F4F2EF;font-weight:600">Los $2,500 se acreditan directamente al proyecto de construcción si decides continuar.</b> La construcción en sí se cotiza según lo que revele la auditoría, así que sigues pagando por tu problema, no por un paquete.</p>
+<div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">El único entregable estandarizado y de precio fijo que vendo. Todo lo que viene después — la construcción — se mantiene con alcance y cotización según lo que revele la auditoría.</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;align-items:center">
+<a href="/es/book.html" class="btn-solid green" data-evt="eval-audit-book" style="padding:12px 24px;font-size:13px">Reservar la auditoría →</a>
+<a href="#mini-eval" class="btn-ghost" data-evt="eval-audit-mini-eval" style="padding:12px 20px;font-size:13px">o prueba primero la mini-evaluación gratuita →</a>
+</div>
+</div>
+<!-- P2: honest risk-reversal + capacity, repeated verbatim at every major CTA on the site -->
+<div class="jt-guarantee"><span class="g-mk">✓</span><span>Cada proyecto se cotiza por escrito antes de comenzar el trabajo: alcance fijo, nunca horas abiertas. La <b>tarifa de la auditoría se acredita directamente al proyecto de construcción</b> si continúas. Si el scoping muestra que no puedo ayudar, te lo diré y no tendrá ningún costo.</span></div>
+<span class="jt-capacity"><span class="dot"></span>un proyecto a la vez — <!-- TODO(jason): update capacity -->actualmente agendando para Q4 2026</span>
+</div>
+</div>
+      <div style="margin-top:44px;border:1px solid #2A2826;padding:clamp(20px,3vw,32px);background:#101014;border-radius:12px;box-shadow:0 1px 0 rgba(255,255,255,0.02) inset">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882;margin-bottom:22px">cómo transcurre un proyecto típico de 4 semanas</div>
+        <div id="jt-timeline" style="display:flex;align-items:flex-start;gap:0;flex-wrap:wrap">
+<div style="flex:1;min-width:min(200px,100%);display:flex;flex-direction:column;gap:10px;position:relative;padding-right:24px"><div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:50%;background:#22d3ee;flex-shrink:0;animation:jt-nodepulse 3.2s ease-in-out infinite;animation-delay:0s"></span><span style="flex:1;height:1px;background:#2A2826"></span></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">SEMANA 1</div><div style="font-size:13.5px;font-weight:600;color:#F4F2EF">Alcance y mapa de riesgo</div><div style="font-size:12.5px;line-height:1.6;color:#8E8882">Tu función, tus modos de falla. Acordamos qué significa "funcionar" y cómo se medirá.</div></div>
+<div style="flex:1;min-width:min(200px,100%);display:flex;flex-direction:column;gap:10px;position:relative;padding-right:24px"><div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:50%;background:#8E8882;flex-shrink:0;animation:jt-nodepulse 3.2s ease-in-out infinite;animation-delay:0.5s"></span><span style="flex:1;height:1px;background:#2A2826"></span></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">SEMANA 2–3</div><div style="font-size:13.5px;font-weight:600;color:#F4F2EF">Construcción</div><div style="font-size:12.5px;line-height:1.6;color:#8E8882">La automatización, el agente o la suite: en tu repositorio, tu CI, tus convenciones.</div></div>
+<div style="flex:1;min-width:min(200px,100%);display:flex;flex-direction:column;gap:10px;position:relative;padding-right:24px"><div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:50%;background:#a78bfa;flex-shrink:0;animation:jt-nodepulse 3.2s ease-in-out infinite;animation-delay:1s"></span><span style="flex:1;height:1px;background:#2A2826"></span></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">SEMANA 3–4</div><div style="font-size:13.5px;font-weight:600;color:#F4F2EF">Harness y barrera</div><div style="font-size:12.5px;line-height:1.6;color:#8E8882">Evaluaciones y regresión conectadas a CI. Una barrera en rojo bloquea el despliegue antes de que llegue a la retro.</div></div>
+<div style="flex:1;min-width:min(200px,100%);display:flex;flex-direction:column;gap:10px;position:relative;padding-right:24px"><div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0;animation:jt-nodepulse 3.2s ease-in-out infinite;animation-delay:1.5s"></span><span style="flex:1;height:1px;background:#2A2826"></span></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">TRASPASO</div><div style="font-size:13.5px;font-weight:600;color:#F4F2EF">Runbook y evidencia</div><div style="font-size:12.5px;line-height:1.6;color:#8E8882">Documentación, scorecard y una demostración guiada para que tu equipo se haga cargo sin mí.</div></div>
+</div>
+      </div>
+      <!-- FAQ -->
+      <div style="margin-top:44px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882;margin-bottom:18px">preguntas frecuentes</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:0 44px">
+          <details class="faq">
+            <summary>Ya tenemos QA. ¿Por qué contratarte a ti?</summary>
+            <p>Tu equipo de QA casi seguro cubre la superficie determinista. La brecha está en la función de LLM: sin conjunto dorado, sin juez, sin barrera. Los cambios de prompt se lanzan a ojo. Yo añado la capa de evaluación a tu pipeline existente; tu equipo se hace cargo cuando me voy.</p>
+          </details>
+          <details class="faq">
+            <summary>¿Trabajas en nuestro stack o en el tuyo?</summary>
+            <p>En el tuyo. Tu repositorio, tu CI, tus convenciones. Cada proyecto termina con un runbook y una demostración guiada. El entregable es un sistema que tu equipo ejecuta sin mí. No hay ninguna dependencia hacia mí.</p>
+          </details>
+          <details class="faq">
+            <summary>¿Cuánto cuesta un proyecto?</summary>
+            <p>No hay una lista de precios fija, porque el alcance varía demasiado como para que una sea honesta. Cada proyecto se cotiza por escrito después de una breve llamada de scoping: alcance fijo, nunca horas abiertas. La llamada introductoria de 30 minutos es gratuita y termina con un plan concreto y una cifra real, en cualquier caso. Empieza con la auditoría y la cotización para la construcción más grande viene incluida.</p>
+          </details>
+          <details class="faq">
+            <summary>¿Qué tan rápido puedes empezar?</summary>
+            <p>Agendo un proyecto a la vez (ver la etiqueta de disponibilidad en la parte superior de la página). La semana 1 es de scoping, así que el riesgo de calendario es bajo: sabrás exactamente qué vas a obtener antes de que comience la construcción.</p>
+          </details>
+          <details class="faq">
+            <summary>¿Cuál es el cronograma típico?</summary>
+            <p>La auditoría dura una semana. Los sprints tipo piloto duran de 2 a 3 semanas; las construcciones completas, de 4 a 8, según el alcance. Cada proyecto entrega algo visible dentro de las primeras dos semanas. No hay fases largas y silenciosas.</p>
+          </details>
+          <details class="faq">
+            <summary>¿Cómo manejas nuestros datos y código?</summary>
+            <p>Compatible con NDA. El acceso se limita al alcance del proyecto, las credenciales permanecen en tus sistemas, el código permanece en tus repositorios, y nada se conserva después del traspaso. El resumen de una página sobre el manejo de datos está disponible antes de comenzar.</p>
+          </details>
+          <details class="faq">
+            <summary>¿Qué pasa si las evaluaciones muestran que nuestra función de IA está bien?</summary>
+            <p>Entonces lanzas con evidencia en lugar de esperanza. Esa es la victoria. La suite permanece en CI, detectando la regresión que habría llegado seis semanas después.</p>
+          </details>
+          <details class="faq">
+            <summary>¿Puestos a tiempo completo?</summary>
+            <p>Abierto al puesto correcto. El interruptor "Contrátame" en la parte superior reenfoca esta página para reclutadores, y el currículum en PDF está a un clic de distancia.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 40px;position:relative">
+    <div class="sec-ghost-num">05</div>
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#10b981">05 — acerca de</span>
+      <span class="line"></span>
+    </div>
+    <!-- FOUNDER NOTE — photo auto-appears when assets/jason.webp is added (HEAD-probed; no 404 console noise) -->
+    <div style="display:flex;gap:clamp(22px,4vw,48px);align-items:center;margin-top:36px;flex-wrap:wrap">
+      <div id="founder-photo" style="flex:0 0 auto;width:clamp(150px,20vw,210px);aspect-ratio:5/6;border-radius:16px;border:1px solid #2A2826;background:radial-gradient(120% 120% at 30% 20%,#111114,#0A0A0C);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;overflow:hidden">
+        <span style="width:64px;height:64px;border-radius:50%;border:1px solid #10b981;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#10b981;box-shadow:0 0 30px rgba(16,185,129,0.22)">JT</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.12em;color:#8E8882">Jason Teixeira</span>
+      </div>
+      <div style="flex:1;min-width:min(320px,100%)">
+        <blockquote style="margin:0;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2.2vw,1.7rem);line-height:1.5;letter-spacing:-0.01em;color:#F4F2EF;max-width:42ch;text-wrap:balance">Durante trece años mi trabajo fue asegurarme de que el software realmente funcionara. El tipo de QA donde un bug pasado por alto cuesta dinero de verdad. Luego las funciones de IA empezaron a lanzarse con una demo y una plegaria, y vi cómo buenos productos fallaban de maneras que el cliente descubría primero. Así que ahora construyo ambas mitades: <em style="font-style:italic;color:#10b981">la IA, y la prueba de que funciona.</em></blockquote>
+        <p style="margin:18px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882">— Jason Teixeira · fundador, Sage Ideas</p>
+      </div>
+    </div>
+    <script>/* To show the real headshot: drop the file in assets/ and set PHOTO to its path (e.g. 'assets/jason.webp'). Empty = monogram placeholder, zero network noise. */
+    (function(){var PHOTO='';var m=document.getElementById('founder-photo');if(!m||!PHOTO)return;m.innerHTML='<img src="'+PHOTO+'" alt="Jason Teixeira, founder of Sage Ideas" style="width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(0.12) contrast(1.03)">';m.style.background='none';})();</script>
+    <div style="display:flex;flex-wrap:wrap;gap:32px;margin-top:44px">
+      <div style="flex:1;min-width:min(480px,100%)">
+        <p style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.4rem,2.4vw,1.8rem);line-height:1.45;letter-spacing:-0.01em;margin:0;color:#F4F2EF;max-width:30ch;text-wrap:balance">Dirijo Sage Ideas, un estudio nativo de IA, y he pasado años construyendo lo mismo en cada capa: <em style="color:#10b981">sistemas que se niegan a decir "listo" sin evidencia.</em></p>
+        <p style="margin:24px 0 0;font-size:14.5px;line-height:1.8;color:#A8A29E;max-width:62ch">Esa tesis se manifiesta como un sistema operativo de ingeniería con un libro de pruebas encadenado por hash, una plataforma de QA donde cada puntuación se calcula a partir de un comando real, y pipelines de agentes con evaluaciones de trazas doradas conectadas a CI. El patrón siempre es el mismo: lanzar la función, y luego lanzar la maquinaria que la detecta cuando regresa.</p>
+        <p style="margin:18px 0 0;font-size:14.5px;line-height:1.8;color:#A8A29E;max-width:62ch">Si tu equipo está lanzando funciones de LLM a ojo (sin suite de evaluación, sin barrera de regresión, sin idea de si el cambio de prompt de la semana pasada empeoró las cosas), esa es exactamente la brecha que cierro.</p>
+        <div style="display:flex;align-items:stretch;gap:0;margin-top:40px;flex-wrap:wrap">
+          <div style="flex:1;min-width:min(240px,100%);border:1px solid rgba(34,211,238,0.3);padding:24px;background:rgba(34,211,238,0.03)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#22d3ee;margin-bottom:14px">Construyo</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2.1;color:#A8A29E">
+              <div>LangGraph · agentes Mastra</div>
+              <div>RAG — pgvector · citas</div>
+              <div>flujos de n8n · Make · Zapier</div>
+              <div>Next.js · FastAPI · Supabase</div>
+              <div>agentes de voz — Retell · Vapi</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 18px;gap:6px;border-top:1px solid #2A2826;border-bottom:1px solid #2A2826;background:#0C0C0E">
+            <span style="width:46px;height:46px;border-radius:50%;border:1px solid #10b981;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#10b981;box-shadow:0 0 24px rgba(16,185,129,0.2)">JT</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#8E8882;text-align:center">un<br>ingeniero</span>
+          </div>
+          <div style="flex:1;min-width:min(240px,100%);border:1px solid rgba(167,139,250,0.3);padding:24px;background:rgba(167,139,250,0.03)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:14px">Demuestro</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2.1;color:#A8A29E">
+              <div>Playwright · Pytest · k6</div>
+              <div>Promptfoo · DeepEval</div>
+              <div>LLM-as-judge — fidelidad</div>
+              <div>evaluaciones de jailbreak · inyección · PII</div>
+              <div>barreras de CI · evidencia firmada</div>
+            </div>
+          </div>
+        </div>
+        <div id="cmp-table" style="overflow-x:auto;margin-top:40px" tabindex="0" role="region" aria-label="Tabla de comparación de capacidades, desplazable">
+          <table class="cmp" aria-label="Comparación de capacidades">
+            <thead>
+              <tr><th scope="col">capacidad</th><th scope="col">constructor de IA típico</th><th scope="col">ingeniero de QA típico</th><th scope="col">yo</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Lanza funciones de LLM (RAG, agentes, automatización)</th><td class="y">✓</td><td class="n">—</td><td class="y">✓</td></tr>
+              <tr><th scope="row">Construye suites de evaluación y barreras LLM-as-judge</th><td class="n">raro</td><td class="n">raro</td><td class="y">✓ lanzado</td></tr>
+              <tr><th scope="row">Disciplina de regresión en CI (Playwright/Pytest)</th><td class="n">—</td><td class="y">✓</td><td class="y">✓ 13 años</td></tr>
+              <tr><th scope="row">Batería de seguridad de IA (inyección · PII · toxicidad)</th><td class="n">—</td><td class="n">—</td><td class="y">✓ 10 runners</td></tr>
+              <tr><th scope="row">Evidencia que puedes auditar (firmada, reproducible)</th><td class="n">—</td><td class="n">raro</td><td class="y">✓ por diseño</td></tr>
+              <tr><th scope="row">Certificado para ello (ISTQB CT-AI + TAE)</th><td class="n">—</td><td class="n">raro</td><td class="y">✓ ambas</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACK RECORD -->
+  <section id="record" class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 40px;position:relative">
+    <div class="sec-ghost-num">06</div>
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#22d3ee">06 — trayectoria</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="sec-title" style="max-width:22ch">Rigor de Fortune 50, velocidad de fundador.</h2>
+    <p style="margin:16px 0 0;font-size:14px;color:#8E8882;max-width:60ch">Trece años entre retail empresarial y fintech, además de un estudio nativo de IA. Cada puesto en la misma disciplina: automatización que demuestra que el software funciona. <a href="/assets/Jason-Teixeira-Resume.pdf" download style="color:#22d3ee">Currículum completo (PDF) ↓</a></p>
+    <div style="margin-top:44px;display:flex;flex-direction:column">
+
+      <div class="xp-row" style="--xc:#10b981">
+        <div class="xp-rail"><span class="xp-dot"></span><span class="xp-line"></span></div>
+        <div class="xp-body">
+          <div class="xp-head">
+            <h3 class="xp-org">Sage Ideas · Nexural</h3>
+            <span class="xp-role">Fundador, Ingeniero de Automatización de IA y QA</span>
+            <span class="xp-dates">2024 — presente · Orlando, FL / remoto</span>
+          </div>
+          <ul class="xp-points">
+            <li>Construí todo lo del índice de arriba: el almacén de agentes, el sistema operativo de ingeniería proof-first, y una plataforma de QA de 85 runners con diez evaluaciones dedicadas de seguridad de LLM.</li>
+            <li>Nexural Research: <b>58 endpoints de FastAPI · 604 pruebas · 93% de cobertura</b>, validación de respuestas de IA que contrasta las afirmaciones del modelo con métricas de origen deterministas.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="xp-row" style="--xc:#a78bfa">
+        <div class="xp-rail"><span class="xp-dot"></span><span class="xp-line"></span></div>
+        <div class="xp-body">
+          <div class="xp-head">
+            <h3 class="xp-org">HighStrike</h3>
+            <span class="xp-role">Finanzas Cuantitativas y Automatización, Analista Senior / Full-Stack</span>
+            <span class="xp-dates">2021 — 2026 · fintech, remoto</span>
+          </div>
+          <ul class="xp-points">
+            <li>Infraestructura de pruebas basada en Kubernetes que ejecuta <b>más de 500 pruebas</b> contra flujos de trading en vivo (más de $100k de volumen diario); tasa de pruebas inestables reducida de <b>10% → &lt;1%</b> con reintento inteligente.</li>
+            <li>Tiempo de ejecución de pruebas de <b>45 min → 8 min (−82%)</b> mediante contenedorización con Docker y ejecuciones paralelas entre microservicios.</li>
+          </ul>
+          <div class="delta" aria-label="Tiempo de ejecución de pruebas: antes 45 minutos, después 8 minutos">
+            <span class="delta-label">ejecución de pruebas</span>
+            <span class="delta-bars"><i class="before" style="width:100%"></i><i class="after" style="width:18%;background:var(--xc)"></i></span>
+            <span class="delta-nums">45m → 8m</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="xp-row" style="--xc:#22d3ee">
+        <div class="xp-rail"><span class="xp-dot"></span><span class="xp-line" style="background:transparent"></span></div>
+        <div class="xp-body">
+          <div class="xp-head">
+            <h3 class="xp-org">The Home Depot</h3>
+            <span class="xp-role">Tester de Software → Ingeniero de Automatización → Ingeniero Cloud</span>
+            <span class="xp-dates">2012 — 2021 · Fortune 50</span>
+          </div>
+          <ul class="xp-points">
+            <li>Framework de Selenium + Python para sistemas que dan servicio a <b>más de 2,300 tiendas</b>: regresión <b>4 h → 75 min (−70%)</b>, más de 300 casos automatizados con <b>99.5% de estabilidad</b>.</li>
+            <li>Lideré la migración empresarial a AWS (Terraform, Kubernetes): <b>−35% en costo de infraestructura</b>, despliegues <b>4 h → 15 min</b> mediante pipelines de Jenkins/GitLab.</li>
+          </ul>
+          <div class="delta" aria-label="Tiempo de regresión: antes 4 horas, después 75 minutos">
+            <span class="delta-label">regresión</span>
+            <span class="delta-bars"><i class="before" style="width:100%"></i><i class="after" style="width:31%;background:var(--xc)"></i></span>
+            <span class="delta-nums">4h → 75m</span>
+          </div>
+          <div class="delta" aria-label="Tiempo de despliegue: antes 4 horas, después 15 minutos">
+            <span class="delta-label">despliegues</span>
+            <span class="delta-bars"><i class="before" style="width:100%"></i><i class="after" style="width:6%;background:var(--xc)"></i></span>
+            <span class="delta-nums">4h → 15m</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div style="margin-top:36px;border:1px solid #2A2826;background:#0C0C0E;padding:22px clamp(18px,3vw,30px);display:flex;flex-wrap:wrap;gap:22px;align-items:center">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981">certificaciones</span>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span class="cred-chip" style="--cc:#a78bfa">ISTQB CT-AI — pruebas de IA</span>
+        <span class="cred-chip">ISTQB Test Automation Engineer</span>
+        <span class="cred-chip">ISTQB CTFL</span>
+        <span class="cred-chip" style="--cc:#22d3ee">AWS Cloud Practitioner</span>
+        <span class="cred-chip" style="--cc:#22d3ee">AWS ML Foundations</span>
+        <span class="cred-chip">TripleTen AI Automation</span>
+      </div>
+      <span style="flex-basis:100%;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">Lic. en Ciencias de la Computación, Full Sail · Lic. en Finanzas, Kean · Inglés y portugués nativo · Español profesional</span>
+    </div>
+  </section>
+
+  <!-- BY THE NUMBERS -->
+  <section id="numbers" class="rise" style="max-width:1240px;margin:0 auto;padding:64px clamp(18px,4vw,40px) 40px">
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#F59E0B">07 — en números</span>
+      <span class="line"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:1px;background:#2A2826;border:1px solid #2A2826;margin-top:32px">
+      <div style="background:#09090B;padding:28px 24px">
+        <div data-countup="13" data-suffix="+" style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1">13+</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">años en calidad y automatización</div>
+      </div>
+      <div style="background:#09090B;padding:28px 24px">
+        <div data-countup="140" style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;color:#22d3ee">140</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">repositorios públicos en GitHub</div>
+      </div>
+      <div style="background:#09090B;padding:28px 24px">
+        <div data-countup="85" style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;color:#a78bfa">85</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">runners de calidad construidos</div>
+      </div>
+      <div style="background:#09090B;padding:28px 24px">
+        <div data-countup="78" style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;color:#10b981">78</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8E8882;margin-top:8px">barreras de lanzamiento, todas en verde</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIELD NOTES -->
+  <section id="notes" class="rise" style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 24px;position:relative">
+    <div class="sec-ghost-num">08</div>
+    <div class="sec-rule">
+      <span class="sec-label" style="color:#22d3ee">08 — notas de campo</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="sec-title" style="max-width:22ch">Notas de trabajo desde las trincheras del proof-first.</h2>
+    <div id="jt-notes" style="margin-top:40px;border-top:1px solid #2A2826">
+<a style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826" href="notes/eighteen-agent-audit-gauntlet.html" class="note-row"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</span><span style="flex:1;min-width:min(300px,100%)"><span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Dieciocho agentes auditaron un currículo en vivo. Una lección estaba enseñando un error falso.</span><span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Seis auditores ejecutando cada afirmación de código, seis reescritores, seis verificadores independientes. 73 defectos, 17 críticos o altos. Cada uno anclado a una cita textual. Trece minutos de tiempo real.</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#F59E0B;white-space:nowrap">5 min · leer →</span></a><a style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826" href="notes/five-pages-five-agents.html" class="note-row"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</span><span style="flex:1;min-width:min(300px,100%)"><span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Cinco páginas, cinco agentes, un archivo de diseño: cero conflictos de merge</span><span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Una flota en paralelo lanzó cinco páginas de producción en cinco minutos de tiempo real. La velocidad es la demo; las tres reglas que lo hicieron lanzable son el producto.</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#22d3ee;white-space:nowrap">4 min · leer →</span></a><a style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826" href="notes/gate-blocked-me.html" class="note-row"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</span><span style="flex:1;min-width:min(300px,100%)"><span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">El día en que mi propia barrera de calidad me bloqueó</span><span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">A las 11:39 el ciclo de pruebas rechazó el veredicto PROBADO. 15 CVEs se habían filtrado en las dependencias de producción. En verde a las 14:35. Ambas ejecuciones publicadas textualmente.</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f43f5e;white-space:nowrap">4 min · leer →</span></a><a style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826" href="notes/promptfoo-ci-minimum-gate.html" class="note-row"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</span><span style="flex:1;min-width:min(300px,100%)"><span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Pruebas de regresión de LLM con Promptfoo en CI: la barrera mínima viable</span><span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">30 trazas doradas, un juez, un código de salida de fallo. La configuración más pequeña que detiene un mal cambio de prompt, ejecutable esta misma tarde.</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#a78bfa;white-space:nowrap">6 min · leer →</span></a><a style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826" href="notes/no-fake-green.html" class="note-row"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</span><span style="flex:1;min-width:min(300px,100%)"><span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Sin verde falso: lo que un libro de pruebas me enseñó sobre los agentes de IA</span><span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Los agentes reportarán con gusto un éxito que nunca ganaron. Un mejor prompt no arreglaría esto. La solución es una barrera de evidencia que el agente físicamente no puede sortear hablando.</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#10b981;white-space:nowrap">6 min · leer →</span></a><a style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826" href="notes/llm-regression-suite.html" class="note-row"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·07</span><span style="flex:1;min-width:min(300px,100%)"><span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Tu función de LLM necesita una suite de regresión más que un mejor prompt</span><span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Los ajustes de prompt se sienten como progreso porque nadie está midiendo. Las trazas doradas + LLM-as-judge en CI convierten el "parece mejor" en un diff sobre el cual puedes poner una barrera.</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#a78bfa;white-space:nowrap">5 min · leer →</span></a><a style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826" href="notes/automation-that-never-talks.html" class="note-row"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·06</span><span style="flex:1;min-width:min(300px,100%)"><span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Automatización que nunca le habla a tu cliente</span><span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">El flujo de trabajo de IA con mejor conversión que he lanzado envía cero mensajes escritos por IA. Dónde colocar el punto de aprobación humana, y por qué supera a la autonomía total.</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#22d3ee;white-space:nowrap">4 min · leer →</span></a>
+</div>
+    <p style="margin:14px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">los escritos más extensos viven en <a href="https://sageafterdark.com" class="dim-link">sageafterdark.com</a> · recurso gratuito: <a href="/es/checklist.html" class="dim-link" style="color:#a78bfa" data-evt="checklist-open">la lista de verificación de evaluación previa al lanzamiento de LLM →</a></p>
+    <div data-subscribe style="margin-top:32px;max-width:640px"></div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" style="border-top:1px solid #2A2826;margin-top:64px;position:relative;overflow:hidden">
+    <div class="rise" style="max-width:1240px;margin:0 auto;padding:110px clamp(18px,4vw,40px) 40px;text-align:center;position:relative">
+      <span class="only-client" style="display:contents">
+        <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.6rem,6vw,4.6rem);letter-spacing:-0.02em;margin:0;line-height:1.05">Hagamos que tu IA sea <em style="color:#10b981">demostrable</em>.</h2>
+        <p style="margin:22px auto 0;font-size:15px;color:#A8A29E;max-width:48ch">30 minutos. Trae la función que te da miedo. Sal con un plan concreto de evaluación y automatización.</p>
+      </span>
+      <span class="only-hire" style="display:contents">
+        <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.6rem,6vw,4.6rem);letter-spacing:-0.02em;margin:0;line-height:1.05">Una contratación, <em style="color:#22d3ee">dos</em> disciplinas.</h2>
+        <p style="margin:22px auto 0;font-size:15px;color:#A8A29E;max-width:48ch">El ingeniero que lanza la función de LLM y el harness que la protege. Hablemos de tu equipo.</p>
+      </span>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:36px;flex-wrap:wrap">
+        <a href="/es/book.html" class="btn-solid green" style="padding:14px 30px" data-evt="book-call">Reservar una llamada introductoria →</a>
+        <a href="mailto:hello@sageideas.dev?subject=Intro%20call%20—%20via%20portfolio" class="btn-ghost" data-evt="email-intro">o simplemente escríbeme</a>
+        <a href="mailto:hello@sageideas.dev" class="btn-ghost" style="padding:14px 30px">Escríbeme</a>
+        <button type="button" id="jt-copy-email" class="btn-ghost" style="padding:14px 20px;cursor:pointer;background:transparent;font-family:'Plus Jakarta Sans',sans-serif" aria-label="Copiar dirección de correo">⧉ copiar</button>
+      </div>
+      <div class="only-client" style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:6px">
+        <div class="jt-guarantee" style="text-align:left"><span class="g-mk">✓</span><span>Cada proyecto se cotiza por escrito antes de comenzar el trabajo: alcance fijo, nunca horas abiertas. La <b>tarifa de la auditoría se acredita directamente al proyecto de construcción</b> si continúas. Si el scoping muestra que no puedo ayudar, te lo diré y no tendrá ningún costo.</span></div>
+        <span class="jt-capacity"><span class="dot"></span>un proyecto a la vez — <!-- TODO(jason): update capacity -->actualmente agendando para Q4 2026</span>
+      </div>
+      <!-- CONTACT FORM -->
+
+      <div class="only-client" style="display:contents"><div id="mini-eval" style="max-width:560px;margin:36px auto 0;border:1px solid #a78bfa;background:#0C0C0E;padding:clamp(20px,3.5vw,30px);text-align:left">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:10px">mini-evaluación gratuita · una muestra de trabajo que te queda</div>
+        <p style="margin:0;font-size:14px;line-height:1.7;color:#A8A29E">Envíame tu función de IA. Ejecutaré una mini-evaluación gratuita sobre ella y te enviaré los hallazgos: aprobado/reprobado, ejemplos de fallos, y qué pondría como barrera antes de tu próximo lanzamiento. <span style="color:#F4F2EF">No se requiere llamada.</span></p>
+        <p style="margin:10px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">usa el formulario de abajo; coloca la URL de la función en el mensaje y elige cualquier etapa</p>
+      </div></div>
+      <form id="jt-contact-form" style="max-width:560px;margin:44px auto 0;text-align:left;display:flex;flex-direction:column;gap:14px" novalidate>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px">
+          <label class="fld">
+            <span>nombre</span>
+            <input type="text" name="name" required autocomplete="name" placeholder="Ada Lovelace">
+          </label>
+          <label class="fld">
+            <span>correo electrónico</span>
+            <input type="email" name="email" required autocomplete="email" placeholder="ada@company.com">
+          </label>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px">
+          <label class="fld">
+            <span>empresa / sitio</span>
+            <input type="text" name="company" autocomplete="organization" placeholder="acme.com">
+          </label>
+          <label class="fld">
+            <span>etapa</span>
+            <select name="stage" style="width:100%;background:#0C0C0E;border:1px solid #2A2826;border-radius:8px;padding:12px 14px;font-size:14px;color:#F4F2EF;font-family:'Plus Jakarta Sans',sans-serif">
+              <option value="exploring">explorando</option>
+              <option value="scoping">definiendo alcance</option>
+              <option value="ready">listo para empezar</option>
+            </select>
+          </label>
+        </div>
+        <label class="fld">
+          <span>¿qué estás lanzando?</span>
+          <textarea name="message" rows="4" required placeholder="La función, el stack, y qué debe significar 'funcionar'…"></textarea>
+        </label>
+        <!-- honeypot — humans never see or fill this -->
+        <label class="hp" aria-hidden="true"><span>sitio web de la empresa</span><input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <button type="submit" class="btn-solid green" style="border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Enviarlo →</button>
+          <span id="jt-form-status" role="status" aria-live="polite" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8E8882"></span>
+        </div>
+        <p style="margin:4px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">Yo mismo respondo dentro de un día hábil. No hay ninguna secuencia automatizada.</p>
+      </form>
+      <!-- what happens next -->
+      <div style="max-width:560px;margin:28px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:14px;text-align:left">
+        <div style="border-top:2px solid #10b981;padding-top:10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#10b981">1 — llamada introductoria</div>
+          <p style="margin:6px 0 0;font-size:12.5px;line-height:1.6;color:#8E8882">30 minutos, gratis. Trae la función que te da miedo.</p>
+        </div>
+        <div style="border-top:2px solid #22d3ee;padding-top:10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#22d3ee">2 — mapa de riesgo</div>
+          <p style="margin:6px 0 0;font-size:12.5px;line-height:1.6;color:#8E8882">Semana 1: acordamos qué significa "funcionar" y cómo se mide.</p>
+        </div>
+        <div style="border-top:2px solid #a78bfa;padding-top:10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a78bfa">3 — cotización fija</div>
+          <p style="margin:6px 0 0;font-size:12.5px;line-height:1.6;color:#8E8882">Precio ligado a entregables en lugar de horas abiertas. De cualquier forma, el plan es tuyo.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:24px;justify-content:center;margin-top:36px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
+        <a href="https://github.com/JasonTeixeira" class="dim-link">github/JasonTeixeira</a>
+        <a href="https://www.linkedin.com/in/jason-teixeira" class="dim-link">linkedin</a>
+        <a href="https://sageideas.dev" class="dim-link">sageideas.dev</a>
+      </div>
+    </div>
+    <div style="font-family:'Instrument Serif',Georgia,serif;font-size:clamp(64px,12.5vw,190px);line-height:0.82;text-align:center;color:transparent;-webkit-text-stroke:1px #1F1D1B;user-select:none;pointer-events:none;white-space:nowrap;margin-top:24px">TEIXEIRA</div>
+  </section>
+
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> · <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a> · <a href="/es/demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="/es/what-i-build.html" class="dim-link" style="color:inherit">lo que construyo</a></span>
+    <span>compuesto en Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>cada número etiquetado como verificado o estimado. sin verde falso.</span>
+  </footer>
+</div>
+<!-- mobile sticky CTA — hidden on desktop and while contact is in view -->
+<div id="jt-mobile-cta" hidden>
+  <span class="only-client" style="display:contents"><a href="/es/book.html" class="btn-solid green" data-evt="book-call" style="flex:1;justify-content:center;padding:12px 18px;font-size:13.5px">Reservar una llamada introductoria →</a></span>
+  <span class="only-hire" style="display:contents"><a href="/assets/Jason-Teixeira-Resume.pdf" class="btn-solid cyan" download style="flex:1;justify-content:center;padding:12px 18px;font-size:13.5px">Currículum (PDF) ↓</a></span>
+</div>
+<div id="jt-palette" role="dialog" aria-modal="true" aria-label="Paleta de comandos">
+  <div class="backdrop"></div>
+  <div class="panel">
+    <input type="text" placeholder="Ir a… (↑↓ navegar · ↵ seleccionar · esc cerrar)" aria-label="Buscar comandos">
+    <div class="items" role="listbox"></div>
+  </div>
+</div>
+<div id="jt-toast" role="status" aria-live="polite">copiado</div>
+<script defer src="/assets/transform.js"></script>
+<script defer src="/assets/nav.js"></script>
+<script src="/assets/site.js"></script>
+<script src="/assets/subscribe.js"></script>
+<script>/* analytics: Google Analytics 4 — loads only on production once GA_ID is set */
+window.va=function(){};var GA_ID='__GA_ID__';
+if(GA_ID.charAt(0)==='G'&&GA_ID.indexOf('X')<0&&location.hostname.endsWith('sageideas.dev')){
+var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(g);
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config',GA_ID);
+window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,(payload&&payload.data)||{});}catch(e){}};}</script>
+<script defer src="/assets/agent.js"></script>
+</body>
+</html>

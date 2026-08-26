@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assista um Eval Rodar Sozinho — Demo de Avaliação de LLM · Jason Teixeira</title>
+<meta name="description" content="Uma avaliação de LLM automatizada e ao vivo: aperte executar e veja sondas testarem um assistente de IA de demonstração por injeção de prompt, alucinação, vazamento de PII e escopo — cada uma pontuada por um juiz em tempo real. É isso que eu construo para equipes que lançam funcionalidades de IA.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/eval.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Assista um Eval Rodar Sozinho">
+<meta property="og:description" content="Aperte executar. Veja um assistente de IA ser testado por injeção, alucinação, vazamento de PII e escopo — cada falha pontuada ao vivo. Esse é o mecanismo de eval que eu construo.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/eval.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --red:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:920px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.3rem,5.5vw,3.8rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .card { border:1px solid var(--line); background:var(--card); border-radius:14px; }
+  .subtle { color:var(--dim); font-size:14.5px; line-height:1.7; }
+  .runbtn { display:inline-flex; align-items:center; gap:10px; background:var(--purple); color:#12081f; border:none; border-radius:26px; padding:14px 28px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .runbtn:disabled { opacity:0.5; cursor:default; }
+  .runbtn.green { background:var(--green); color:#052e22; }
+  .score { display:flex; align-items:baseline; gap:10px; }
+  .score .big { font-family:var(--serif); font-size:2.6rem; letter-spacing:-0.02em; }
+  .bar { height:8px; border-radius:4px; background:#1a1815; overflow:hidden; margin-top:10px; }
+  .bar > i { display:block; height:100%; background:linear-gradient(90deg,var(--red),var(--amber),var(--green)); width:0; transition:width .5s ease; }
+  .probe { border-top:1px solid var(--line); padding:16px 0; display:grid; grid-template-columns:1fr auto; gap:8px 16px; align-items:start; }
+  .probe:first-child { border-top:none; }
+  .pdim { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--faint); }
+  .pq { font-size:13.5px; color:var(--dim); margin-top:4px; }
+  .pq b { color:#c9c4bd; font-weight:600; }
+  .presp { font-family:var(--mono); font-size:11.5px; color:#9a948c; margin-top:8px; padding:10px 12px; background:#0b0a08; border-left:2px solid var(--line); border-radius:0 6px 6px 0; white-space:pre-wrap; max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease, opacity .3s ease, padding .3s ease; }
+  .probe.open .presp { max-height:220px; opacity:1; }
+  .verdict { font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:0.06em; padding:5px 11px; border-radius:6px; white-space:nowrap; align-self:start; }
+  .v-pass { color:var(--green); border:1px solid rgba(16,185,129,0.4); background:rgba(16,185,129,0.08); }
+  .v-fail { color:var(--red); border:1px solid rgba(244,63,94,0.4); background:rgba(244,63,94,0.08); }
+  .v-run { color:var(--amber); border:1px solid rgba(245,158,11,0.35); }
+  .v-wait { color:var(--faint); border:1px solid var(--line); }
+  .preason { font-family:var(--mono); font-size:11px; color:var(--dim); grid-column:1/-1; margin-top:2px; }
+  .toggle { font-family:var(--mono); font-size:10px; color:var(--cyan); cursor:pointer; grid-column:1/-1; }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/eval.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/eval.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/eval.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/eval.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/eval.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/eval.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(16px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)">
+    <a href="/pt/index.html" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink)">
+      <span style="width:26px;height:26px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;background:var(--card)"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="mono" style="font-size:13px;font-weight:600">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <div class="mono" style="display:flex;gap:16px;align-items:center;font-size:12px">
+      <a href="/pt/services.html" class="dim-link">serviços</a>
+      <a href="/pt/case-studies.html" class="dim-link">estudos de caso</a>
+      <a href="/pt/roi.html" class="dim-link">calculadora de ROI</a>
+      <a href="/pt/demos.html" class="dim-link">demos</a>
+      <a href="/pt/docs.html" class="dim-link">guias</a>
+      <a href="services/llm-evaluation-qa.html" class="dim-link">serviço de eval</a>
+      <a href="/pt/book.html" class="btn-solid green" data-evt="eval-book-nav" style="padding:9px 16px;font-size:12.5px">Agende uma chamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(28px,4vw,40px)">
+    <div class="kick">Avaliação de LLM ao vivo &middot; o eval que roda sozinho</div>
+    <h1 style="margin-top:20px;max-width:18ch">A maioria <em style="color:var(--purple)">avalia a olho</em> a própria IA. Veja como eu avalio uma.</h1>
+    <p class="subtle" style="margin-top:20px;max-width:60ch">Aperte executar. Um mecanismo automatizado dispara sondas contra um assistente de IA de demonstração &mdash; injeção de prompt, alucinação, vazamento de PII, escopo &mdash; e um juiz pontua cada resposta ao vivo. Essa é exatamente a disciplina que eu integro no seu CI para que uma mudança ruim de IA pare no portão, não em produção.</p>
+  </header>
+
+  <section class="wrap" style="padding-bottom:clamp(56px,8vw,88px)">
+    <div class="card" style="padding:clamp(20px,3.5vw,32px)">
+      <!-- target -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+        <div>
+          <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber)">alvo em teste &middot; demo</div>
+          <div style="font-family:var(--serif);font-size:1.4rem;margin-top:6px" id="tgt-label">carregando…</div>
+          <div class="subtle" style="font-size:12.5px;max-width:56ch;margin-top:4px" id="tgt-note"></div>
+        </div>
+        <div class="score" style="text-align:right">
+          <div><span class="big" id="score-num">—</span><span class="mono" style="font-size:12px;color:var(--faint)" id="score-den"></span></div>
+        </div>
+      </div>
+      <div class="bar"><i id="score-bar"></i></div>
+
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:20px">
+        <button class="runbtn" id="run" disabled>▶ Executar o eval</button>
+        <span class="mono" style="font-size:11px;color:var(--faint)" id="run-status">conectando ao motor…</span>
+      </div>
+
+      <!-- probes -->
+      <div id="probes" style="margin-top:22px"></div>
+
+      <!-- summary -->
+      <div id="summary" style="display:none;margin-top:22px;border-top:1px solid var(--line);padding-top:22px">
+        <h2 id="sum-head"></h2>
+        <p class="subtle" style="margin-top:10px" id="sum-body"></p>
+        <div style="display:flex;gap:14px;margin-top:20px;flex-wrap:wrap">
+          <a href="/pt/book.html" class="cta" data-evt="eval-real">Execute isso na minha funcionalidade de IA &rarr;</a>
+          <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 6px;font-size:13px;color:var(--cyan)">o projeto completo &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="subtle" style="font-size:12.5px;margin-top:16px;max-width:64ch"><b style="color:var(--ink)">Nota sincera:</b> o alvo é um assistente de demonstração propositalmente ingênuo, então suas falhas são um comportamento real e reproduzível do modelo &mdash; mostrado para demonstrar o método, não para avaliar uma empresa real. Um projeto real aponta esse mesmo motor para <em>sua</em> funcionalidade em produção, roda centenas de sondas e integra o portão no seu CI. Uma auditoria curta mapeia toda a sua superfície de falhas &mdash; escopada e orçada após uma conversa rápida.</p>
+  </section>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> &middot; <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a></span>
+    <span><a href="/pt/demos.html" class="dim-link" style="color:var(--faint)">&larr; todas as demos</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var manifest=null, targetId=null, running=false;
+  var probesEl=document.getElementById('probes'), runBtn=document.getElementById('run'), runStatus=document.getElementById('run-status');
+  var scoreNum=document.getElementById('score-num'), scoreDen=document.getElementById('score-den'), scoreBar=document.getElementById('score-bar');
+
+  function esc(s){ return String(s==null?'':s); }
+
+  fetch('/api/eval').then(function(r){ return r.json(); }).then(function(m){
+    if(!m || !m.ok || !m.targets.length){ throw new Error('no manifest'); }
+    manifest=m; targetId=m.targets[0].id;
+    document.getElementById('tgt-label').textContent=m.targets[0].label;
+    document.getElementById('tgt-note').textContent=m.targets[0].note;
+    scoreDen.textContent='/ '+m.probes.length;
+    renderWaiting();
+    runBtn.disabled=false; runStatus.textContent='engine ready · '+m.probes.length+' probes queued';
+  }).catch(function(){
+    runStatus.textContent='the live engine is offline right now — see the sample report in the eval service page';
+    runBtn.disabled=true;
+  });
+
+  function renderWaiting(){
+    probesEl.innerHTML='';
+    manifest.probes.forEach(function(p){
+      var d=document.createElement('div'); d.className='probe'; d.id='pr-'+p.id;
+      d.innerHTML='<div><div class="pdim">'+esc(p.dimension)+'</div><div class="pq" id="q-'+p.id+'">queued</div></div><div class="verdict v-wait" id="v-'+p.id+'">waiting</div>';
+      probesEl.appendChild(d);
+    });
+  }
+
+  function runOne(p){
+    var vEl=document.getElementById('v-'+p.id), qEl=document.getElementById('q-'+p.id), row=document.getElementById('pr-'+p.id);
+    vEl.className='verdict v-run'; vEl.textContent='running…';
+    return fetch('/api/eval',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targetId:targetId,probeId:p.id})})
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if(!res || !res.ok) throw new Error('probe failed');
+        qEl.innerHTML='<b>probe:</b> "'+esc(res.prompt)+'"';
+        vEl.className='verdict '+(res.verdict==='PASS'?'v-pass':'v-fail'); vEl.textContent=res.verdict;
+        var reason=document.createElement('div'); reason.className='preason'; reason.textContent='↳ '+esc(res.reason); row.appendChild(reason);
+        var resp=document.createElement('div'); resp.className='presp'; resp.textContent='target said: '+esc(res.response); row.appendChild(resp);
+        var tog=document.createElement('div'); tog.className='toggle'; tog.textContent='show the target’s full response ▾';
+        tog.onclick=function(){ row.classList.toggle('open'); tog.textContent=row.classList.contains('open')?'hide response ▴':'show the target’s full response ▾'; };
+        row.appendChild(tog);
+        return res.verdict==='PASS';
+      })
+      .catch(function(){ vEl.className='verdict v-wait'; vEl.textContent='skipped'; qEl.textContent='(engine error on this probe)'; return null; });
+  }
+
+  runBtn.onclick=function(){
+    if(running || !manifest) return; running=true; runBtn.disabled=true; runBtn.textContent='running…';
+    document.getElementById('summary').style.display='none';
+    renderWaiting();
+    var passed=0, done=0, total=manifest.probes.length;
+    track('eval-run');
+    var seq=Promise.resolve();
+    manifest.probes.forEach(function(p){
+      seq=seq.then(function(){
+        runStatus.textContent='probing: '+p.dimension+' ('+(done+1)+'/'+total+')';
+        return runOne(p).then(function(ok){
+          done++; if(ok===true) passed++;
+          scoreNum.textContent=passed; scoreNum.style.color=passed===done?'var(--green)':'var(--ink)';
+          scoreBar.style.width=Math.round((passed/total)*100)+'%';
+        });
+      });
+    });
+    seq.then(function(){
+      running=false; runBtn.disabled=false; runBtn.textContent='▶ Run again'; runBtn.classList.add('green');
+      runStatus.textContent='done · '+passed+'/'+total+' passed';
+      var failed=total-passed;
+      var sum=document.getElementById('summary'); sum.style.display='block';
+      document.getElementById('sum-head').textContent = failed===0
+        ? 'Clean run — '+passed+'/'+total+' passed.'
+        : failed+' of '+total+' probes failed. That’s the gap.';
+      document.getElementById('sum-body').textContent = failed===0
+        ? 'Rare for a naive config. A real engagement widens coverage to hundreds of probes and wires the gate into your CI so it stays clean.'
+        : 'Each failure above is a real, reproducible way this assistant misbehaves — the kind of thing that reaches a customer before anyone notices. On your feature, I map every one of these, then build the gate that blocks the regression before it ships.';
+      track('eval-done-'+passed+'-'+total);
+    });
+  };
+
+  function track(name){ try { if(typeof window.va==='function') window.va('event',{name:name}); } catch(e){} }
+})();
+</script>
+<script>/* analytics: Google Analytics 4 — loads only on production once GA_ID is set */
+window.va=function(){};var GA_ID='__GA_ID__';
+if(GA_ID.charAt(0)==='G'&&GA_ID.indexOf('X')<0&&location.hostname.endsWith('sageideas.dev')){
+var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(g);
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config',GA_ID);
+window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,(payload&&payload.data)||{});}catch(e){}};}</script>
+<script defer src="/assets/agent.js"></script>
+</body>
+</html>

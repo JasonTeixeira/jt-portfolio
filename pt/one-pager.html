@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jason Teixeira — resumo de uma página</title>
+<meta name="robots" content="noindex">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  .op { max-width: 760px; margin: 0 auto; padding: 48px clamp(18px,4vw,40px) 64px; }
+  .op h1 { font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-size: clamp(1.9rem,4vw,2.6rem); line-height:1.1; letter-spacing:-0.015em; margin: 14px 0 0; }
+  .op h2 { font-family:'JetBrains Mono',monospace; font-size: 10.5px; letter-spacing:0.14em; text-transform:uppercase; margin: 26px 0 10px; }
+  .op p, .op li { font-size: 13px; line-height: 1.65; color: #A8A29E; }
+  .op-stat { font-family:'Instrument Serif',Georgia,serif; font-size: 1.6rem; line-height:1; color:#F4F2EF; }
+  .op-lbl { font-family:'JetBrains Mono',monospace; font-size: 9.5px; letter-spacing:0.1em; text-transform:uppercase; color:#8E8882; margin-top:6px; }
+  @media print {
+    body { background:#fff !important; color:#111 !important; }
+    .op p, .op li { color:#333; }
+    .op-stat, .cmp tbody th { color:#111 !important; }
+    .op-lbl { color:#666; }
+    a { color:#0e7490 !important; }
+    .no-print { display:none !important; }
+    .op { padding: 0; }
+    .cmp td.n { color:#999; }
+    .cmp thead th:last-child { color:#0a7a55; }
+  }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/one-pager.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/one-pager.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/one-pager.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/one-pager.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/one-pager.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/one-pager.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:#09090B">
+  <main class="op">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">jason.teixeira<span style="color:#10b981">()</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8E8882">agency.sageideas.dev · hello@sageideas.dev · Orlando, FL / remoto</span>
+    </div>
+    <h1>Eu lanço funcionalidades de IA. Depois <em style="color:#10b981">provo</em> que funcionam.</h1>
+    <p style="margin-top:10px;max-width:62ch">Apps de LLM, agentes, automação de fluxos de trabalho (RAG, LangGraph, n8n/Make) combinados com o arcabouço de avaliação e regressão que os mantém honestos em produção: Playwright, Pytest, k6, Promptfoo, DeepEval, LLM-as-judge. A maioria constrói a IA <em>ou</em> testa. Eu faço as duas coisas.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-top:22px;border:1px solid #2A2826;padding:16px 18px">
+      <div><div class="op-stat">13+ anos</div><div class="op-lbl">qualidade e automação</div></div>
+      <div><div class="op-stat">3,759</div><div class="op-lbl">testes · uma plataforma</div></div>
+      <div><div class="op-stat">85</div><div class="op-lbl">runners de qualidade construídos</div></div>
+      <div><div class="op-stat">100×4</div><div class="op-lbl">Lighthouse, site próprio</div></div>
+    </div>
+
+    <h2 style="color:#10b981">A história que resume tudo</h2>
+    <p style="max-width:64ch">Em 2026-08-15 minha própria plataforma de qualidade recusou seu veredito COMPROVADO. 15 CVEs haviam se infiltrado nas dependências de produção. O gate bloqueou <em>meu</em> próprio release. Corrigido e verde na mesma tarde; <strong style="color:#F4F2EF">ambas as execuções publicadas na íntegra</strong>. Um gate que nunca dispara é decoração — o meu dispara, até comigo. <span style="font-family:'JetBrains Mono',monospace;font-size:11px">agency.sageideas.dev/notes/gate-blocked-me.html</span></p>
+
+    <h2 style="color:#a78bfa">O que eu construo (escopo fixo, ~4 semanas, seu repositório)</h2>
+    <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+      <li><strong style="color:#F4F2EF">Avaliação de LLM e qualidade de IA</strong>: golden sets, LLM-as-judge, bateria de segurança (alucinação · injeção · PII · toxicidade), um gate de CI que bloqueia mudanças de prompt ruins.</li>
+      <li><strong style="color:#F4F2EF">Automação de testes + CI</strong>: Playwright/Pytest com escopo baseado em risco e disciplina de evidência de release manager; protocolo de flakes que mantém o vermelho significativo.</li>
+      <li><strong style="color:#F4F2EF">Automação de fluxos de trabalho com IA</strong>: builds em n8n/Make/LangGraph com pontos de aprovação humana onde está o risco, saídas estruturadas, logs auditáveis.</li>
+    </ul>
+
+    <h2 style="color:#22d3ee">Por que eu e não um generalista</h2>
+    <div style="overflow-x:auto">
+      <table class="cmp" aria-label="Comparação de capacidades">
+        <thead><tr><th>capacidade</th><th>builder de IA</th><th>engenheiro de QA</th><th>eu</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Lança funcionalidades de LLM</th><td class="y">✓</td><td class="n">—</td><td class="y">✓</td></tr>
+          <tr><th scope="row">Constrói suítes de eval e gates de juiz</th><td class="n">raro</td><td class="n">raro</td><td class="y">✓ em produção</td></tr>
+          <tr><th scope="row">Disciplina de regressão em CI</th><td class="n">—</td><td class="y">✓</td><td class="y">✓ 13 anos</td></tr>
+          <tr><th scope="row">Certificado (ISTQB CT-AI + TAE)</th><td class="n">—</td><td class="n">raro</td><td class="y">✓ ambos</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 style="color:#F59E0B">Histórico</h2>
+    <p style="max-width:66ch"><strong style="color:#F4F2EF">The Home Depot</strong> (Fortune 50, 2012–21): framework Selenium para mais de 2,300 lojas — regressão de 4h para 75min, 99.5% de estabilidade. <strong style="color:#F4F2EF">HighStrike</strong> (fintech, 2021–26): 500+ testes em fluxos de trading ao vivo, taxa de flakes de 10% para &lt;1%. <strong style="color:#F4F2EF">Sage Ideas</strong> (2024–): os sistemas acima, publicados com evidência.</p>
+
+    <div style="margin-top:26px;border:1px solid rgba(16,185,129,0.35);padding:14px 18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:13px;color:#F4F2EF"><strong>Chamada gratuita de 30 minutos.</strong> Traga a funcionalidade que te assusta — saia com um plano de qualquer forma.</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#10b981">agency.sageideas.dev</span>
+    </div>
+    <p class="no-print" style="margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#837D77">pronto para impressão — <a href="/assets/Jason-Teixeira-One-Pager.pdf" download style="color:#22d3ee">baixar PDF ↓</a> · <a href="/pt/index.html" class="dim-link">← portfólio</a></p>
+  </main>
+</div>
+</body>
+</html>

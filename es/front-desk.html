@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recepción con IA — Nunca Pierdas Otro Lead · Jason Teixeira</title>
+<meta name="description" content="Implemento una recepción con IA que responde, califica y agenda tus leads las 24 horas, para que el trabajo sea tuyo, no de quien conteste primero en Google. Creado y probado por un ingeniero de QA.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/es/front-desk.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Recepción con IA — Nunca Pierdas Otro Lead">
+<meta property="og:description" content="Una IA que responde, califica y agenda tus leads las 24 horas, para que el trabajo sea tuyo, no de quien conteste primero en Google.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/front-desk.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Will it sound robotic?","acceptedAnswer":{"@type":"Answer","text":"No. It's built on the same voice models behind modern phone assistants, tuned to your business and how you actually talk to customers. Most callers don't realize it's not a person until you tell them."}},{"@type":"Question","name":"What if it can't answer something?","acceptedAnswer":{"@type":"Answer","text":"It hands off cleanly: takes a message, texts you the details, and tells the caller you'll follow up. It never guesses at something it doesn't know, and it never quotes a price it isn't sure of."}},{"@type":"Question","name":"Does it work with my calendar or booking tool?","acceptedAnswer":{"@type":"Answer","text":"Yes. It connects to Google Calendar, Calendly, Housecall Pro, Jobber, and most common scheduling tools. If you use something else, I'll check on the call."}},{"@type":"Question","name":"What does setup involve for me?","acceptedAnswer":{"@type":"Answer","text":"About 30 minutes of your time: what to ask, what counts as a good lead, how you want it to sound. I build it, test it against real conversations, and you approve it before it goes live."}},{"@type":"Question","name":"Can I turn it off?","acceptedAnswer":{"@type":"Answer","text":"Any time. It's your number and your calendar. If it's not working for you, we turn it off or fix it — no long lock-in."}}]}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:900px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5.6vw,3.8rem); line-height:1.06; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15.5px; line-height:1.75; }
+  section { padding:clamp(40px,6vw,68px) 0; border-top:1px solid var(--line); }
+  .lead { max-width:58ch; }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:15px 28px; font-size:15px; font-weight:700; font-family:inherit; }
+  .cta:hover { box-shadow:0 0 28px rgba(16,185,129,0.35); }
+  .cta:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+
+  /* problem */
+  .painrow { display:flex; gap:14px; align-items:flex-start; padding:16px 0; border-top:1px solid var(--line); }
+  .painrow:first-of-type { border-top:none; }
+  .painrow .mk { flex-shrink:0; width:26px; height:26px; border-radius:7px; background:rgba(244,63,94,0.1); color:var(--rose); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:12px; }
+  .painrow p { margin:0; font-size:14.5px; line-height:1.65; color:var(--dim); }
+  .painrow b { color:var(--ink); }
+
+  /* how it works */
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:30px; }
+  @media (max-width:760px){ .steps { grid-template-columns:1fr; } }
+  .step { border:1px solid var(--line); border-radius:14px; background:var(--card); padding:22px; }
+  .step .n { font-family:var(--serif); font-size:2.2rem; line-height:1; color:var(--green); }
+  .step h3 { font-family:var(--serif); font-weight:400; font-size:1.25rem; margin:10px 0 6px; }
+  .step p { margin:0; font-size:13.5px; line-height:1.6; color:var(--dim); }
+  .always-on { display:inline-flex; align-items:center; gap:8px; margin-top:24px; font-family:var(--mono); font-size:11.5px; color:var(--green); }
+  .always-on .dot { width:8px; height:8px; border-radius:50%; background:var(--green); animation:jt-blink 2.4s ease-in-out infinite; }
+  @keyframes jt-blink { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+  /* what you get */
+  .getgrid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:26px; }
+  @media (max-width:640px){ .getgrid { grid-template-columns:1fr; } }
+  .get { display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line); border-radius:12px; background:var(--card); padding:16px 18px; }
+  .get .b { color:var(--green); font-family:var(--mono); flex-shrink:0; }
+  .get p { margin:0; font-size:14px; line-height:1.55; color:var(--dim); }
+  .get b { color:var(--ink); }
+
+  /* reliability */
+  .reliability { border:1px solid rgba(167,139,250,0.3); background:rgba(167,139,250,0.04); border-radius:16px; padding:clamp(22px,4vw,32px); margin-top:26px; }
+  .reliability .badge { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--purple); }
+  .reliability blockquote { margin:16px 0 0; font-family:var(--serif); font-size:clamp(1.3rem,2.6vw,1.6rem); font-weight:400; line-height:1.3; color:var(--ink); }
+  .reliability .attr { margin-top:10px; font-size:13px; color:var(--faint); }
+  .reliability .proof-link { display:inline-flex; align-items:center; gap:8px; margin-top:18px; font-family:var(--mono); font-size:13px; color:var(--purple); }
+  .reliability .proof-link:hover { color:var(--ink); }
+
+  /* pricing */
+  .price-card { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:clamp(24px,4vw,32px); margin-top:26px; }
+  .price-row { display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; padding:14px 0; border-top:1px solid var(--line); }
+  .price-row:first-child { border-top:none; padding-top:0; }
+  .price-row .lbl { font-size:14px; color:var(--dim); }
+  .price-row .val { font-family:var(--serif); font-size:1.5rem; color:var(--ink); white-space:nowrap; }
+  .price-note { margin:18px 0 0; font-size:12.5px; line-height:1.6; color:var(--faint); }
+
+  /* faq */
+  .faq { margin-top:24px; display:flex; flex-direction:column; gap:10px; }
+  .faq details { border:1px solid var(--line); border-radius:12px; background:var(--card); padding:4px 20px; }
+  .faq summary { cursor:pointer; padding:16px 0; font-size:15px; font-weight:600; color:var(--ink); list-style:none; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary .ind { font-family:var(--mono); color:var(--cyan); flex-shrink:0; transition:transform 200ms ease; }
+  .faq details[open] summary .ind { transform:rotate(45deg); }
+  .faq summary:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; border-radius:6px; }
+  .faq p { margin:0 0 16px; font-size:14px; line-height:1.7; color:var(--dim); }
+
+  @media (prefers-reduced-motion:reduce){ .always-on .dot { animation:none; } }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/front-desk.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/front-desk.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/front-desk.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/front-desk.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/front-desk.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/front-desk.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/es/index.html" class="site-nav-brand" aria-label="Jason Teixeira — inicio">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menú" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/es/services.html" class="site-nav-link">Servicios</a>
+      <a href="/es/case-studies.html" class="site-nav-link">Trabajo</a>
+      <a href="/es/build.html" class="site-nav-link">Definir un proyecto</a>
+      <a href="/es/docs.html" class="site-nav-link">Guías</a>
+      <a href="/es/book.html" class="btn-solid green site-nav-cta">Reservar una llamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(20px,3vw,32px)">
+    <div class="kick">Recepción con IA &middot; para negocios de servicios locales</div>
+    <h1 style="margin-top:20px">Deja de perder leads cuando nadie contesta.</h1>
+    <p class="subtle lead" style="margin-top:20px">Implemento una recepción con IA que responde, califica y agenda tus leads las 24 horas &mdash; para que el trabajo sea tuyo, no de quien conteste primero en Google.</p>
+    <div style="display:flex;gap:14px;margin-top:26px;flex-wrap:wrap">
+      <a href="/es/book.html" class="cta" data-evt="fd-hero-book">Reserva una llamada de 15 min &rarr;</a>
+      <a href="#how-it-works" class="mono" style="display:inline-flex;align-items:center;padding:15px 8px;font-size:13px;color:var(--cyan)">Mira cómo funciona &darr;</a>
+    </div>
+    <p style="display:flex;gap:8px;align-items:baseline;margin:14px 0 0;font-size:12.5px;color:var(--faint);max-width:60ch"><span style="color:var(--green)">&check;</span> Tú lo apruebas antes de que hable con un cliente. Sin contrato de permanencia: apágalo cuando quieras.</p>
+    <span class="jt-capacity"><span class="dot"></span>un proyecto a la vez — <!-- TODO(jason): update capacity -->actualmente agendando para el Q4 2026</span>
+  </header>
+
+  <main id="content" style="display:block">
+
+  <!-- THE PROBLEM -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--rose)">el problema</div>
+    <h2 style="margin-top:12px">Cada llamada sin contestar es un trabajo para otra persona.</h2>
+    <div style="margin-top:26px">
+      <div class="painrow"><span class="mk">✕</span><p><b>Fuera de horario, nadie contesta.</b> Se rompe una tubería a las 9pm, se rompe un diente un sábado &mdash; el cliente llama al siguiente de la lista, no a ti.</p></div>
+      <div class="painrow"><span class="mk">✕</span><p><b>Estás en un trabajo y no puedes contestar.</b> Para cuando devuelves la llamada, ya contrataron a quien contestó primero.</p></div>
+      <div class="painrow"><span class="mk">✕</span><p><b>El formulario del sitio web se pierde en un agujero negro.</b> Nadie lo revisa por horas, así que un lead interesado se enfría antes de que lo veas.</p></div>
+      <div class="painrow"><span class="mk">✕</span><p><b>Pagas por anuncios que terminan en el buzón de voz.</b> Cada llamada perdida es dinero que ya gastaste en generarla, desperdiciado.</p></div>
+    </div>
+  </div></section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works"><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">cómo funciona</div>
+    <h2 style="margin-top:12px">Tres pasos. Sin app que tu cliente tenga que descargar.</h2>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h3>Un lead te contacta</h3><p>Llama, escribe o llena el formulario de tu sitio &mdash; a cualquier hora, cualquier día.</p></div>
+      <div class="step"><div class="n">02</div><h3>La IA responde al instante</h3><p>Contesta (o responde) de inmediato y hace las dos o tres preguntas que realmente importan para tu negocio.</p></div>
+      <div class="step"><div class="n">03</div><h3>Agenda &amp; te envía un mensaje</h3><p>Un lead calificado va directo a tu calendario, y recibes un mensaje con los detalles antes de que cuelguen.</p></div>
+    </div>
+    <div class="always-on"><span class="dot"></span>Funciona las 24 horas &mdash; noches, fines de semana, mientras estás trabajando</div>
+  </div></section>
+
+  <!-- TRY IT YOURSELF -->
+  <section id="try-it"><div class="wrap">
+    <div class="kick" style="color:var(--green)">pruébalo tú mismo</div>
+    <h2 style="margin-top:12px">Habla con la recepcionista. Ahora mismo.</h2>
+    <p class="subtle lead" style="margin-top:14px">Esta es la IA real, en vivo, respondiendo como recepción de un negocio de demostración llamado Sage Plumbing. Dile que tienes una fuga, o hazle una pregunta &mdash; en voz alta o por escrito.</p>
+
+    <div id="vr-demo" class="scope-chat" style="margin-top:26px">
+      <div class="vr-topbar">
+        <div id="vr-status" class="vr-status" data-state="idle" role="status" aria-live="polite">
+          <span class="vr-status-dot" aria-hidden="true"></span>
+          <span id="vr-status-text">Inactivo</span>
+        </div>
+        <button type="button" id="vr-mute" class="vr-mute-btn" aria-pressed="false">🔊 Sonido activado</button>
+      </div>
+
+      <div id="vr-offline" class="scope-chat-offline" role="status" hidden></div>
+
+      <div id="vr-messages" class="scope-chat-messages" role="log" aria-live="polite" aria-label="Conversación con la recepcionista de IA"></div>
+
+      <div class="vr-controls">
+        <button type="button" id="vr-mic" class="vr-mic-btn" data-listening="false" aria-pressed="false">
+          <span class="vr-mic-ico" aria-hidden="true">🎙</span>
+          <span id="vr-mic-label">Habla con ella</span>
+        </button>
+        <p id="vr-voice-note" class="vr-voice-note" hidden></p>
+      </div>
+
+      <form id="vr-form" class="scope-chat-form">
+        <label for="vr-input" class="sr-only">O escribe un mensaje a la recepcionista</label>
+        <input id="vr-input" type="text" placeholder="o escribe en su lugar&hellip;" autocomplete="off">
+        <button id="vr-send" type="submit" class="btn-solid green">Enviar</button>
+      </form>
+    </div>
+
+    <p class="vr-honesty">Esta es una recepcionista de demostración para un negocio de ejemplo. Tu versión en producción se conecta a tu línea telefónica, calendario y CRM reales.</p>
+  </div></section>
+
+  <!-- WHAT YOU GET -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--green)">lo que obtienes</div>
+    <h2 style="margin-top:12px">Simple y directo.</h2>
+    <div class="getgrid">
+      <div class="get"><span class="b">→</span><p><b>Respuesta instantánea.</b> Ningún lead espera más de unos segundos por una respuesta, de día o de noche.</p></div>
+      <div class="get"><span class="b">→</span><p><b>Calificación real.</b> Pregunta lo que tú preguntarías &mdash; tipo de trabajo, ubicación, urgencia &mdash; para que no llames de vuelta a curiosos.</p></div>
+      <div class="get"><span class="b">→</span><p><b>Agenda, no solo un mensaje.</b> Los buenos leads caen directo en tu calendario, según tu disponibilidad real.</p></div>
+      <div class="get"><span class="b">→</span><p><b>Cobertura fuera de horario.</b> Las horas exactas en que estás cerrado son las horas en que trabaja más duro para ti.</p></div>
+      <div class="get"><span class="b">→</span><p><b>Un mensaje en el momento en que sucede.</b> Siempre sabes quién llamó y qué necesita, en tiempo real.</p></div>
+      <div class="get"><span class="b">→</span><p><b>Un reporte mensual.</b> Cuántos leads entraron, cuántos agendaron, y dónde los sigues perdiendo.</p></div>
+    </div>
+  </div></section>
+
+  <!-- RELIABILITY ANGLE -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--purple)">por qué esto es diferente</div>
+    <h2 style="margin-top:12px">La mayoría de quienes te venden un chatbot nunca han probado uno.</h2>
+    <div class="reliability">
+      <span class="badge">la ventaja</span>
+      <blockquote>"Soy ingeniero de QA. Pruebo la IA para que no le diga algo incorrecto a tus clientes."</blockquote>
+      <p class="attr">Antes de que hable con uno de tus leads, la someto a las mismas pruebas adversarias que uso con clientes de ingeniería: si se mantiene en el guion, si evita prometer algo que no debería, si aguanta cuando alguien intenta hacerla fallar.</p>
+      <a href="/es/ai-under-test.html" class="proof-link" data-evt="fd-proof-link">Incluso le hago red-teaming a mi propia IA &mdash; míralo aquí &rarr;</a>
+    </div>
+  </div></section>
+
+  <!-- PRICING -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--amber)">precios</div>
+    <h2 style="margin-top:12px">Una tarifa fija de instalación, luego un monto mensual bajo.</h2>
+    <p class="subtle" style="margin-top:14px;max-width:58ch">Sin paquetes para adivinar. Cada instalación se define para tu negocio en una llamada rápida, así que el número refleja lo que realmente necesitas &mdash; no una lista de precios genérica.</p>
+    <div class="price-card">
+      <div class="price-row"><span class="lbl">Instalación (pago único)</span><span class="val">~$1,000 para empezar</span></div>
+      <div class="price-row"><span class="lbl">Operación y mejora (mensual)</span><span class="val">~$600&ndash;800/mes</span></div>
+    </div>
+    <p class="price-note">Estos son números indicativos, no una cotización final. Tu precio real depende de tu volumen de llamadas, tus herramientas de agenda, y cuánta lógica de calificación necesitas &mdash; lo definimos juntos en la llamada, y recibes un número real antes de que empiece cualquier cosa.</p>
+  </div></section>
+
+  <!-- FAQ -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">preguntas</div>
+    <h2 style="margin-top:12px">Lo que los dueños realmente me preguntan.</h2>
+    <div class="faq">
+      <details>
+        <summary>¿Sonará robótico?<span class="ind">+</span></summary>
+        <p>No. Está construida sobre los mismos modelos de voz y texto detrás de los asistentes telefónicos modernos, ajustados a tu negocio y a cómo realmente le hablas a tus clientes. La mayoría de quienes llaman no se dan cuenta de que no es una persona hasta que se lo dices.</p>
+      </details>
+      <details>
+        <summary>¿Qué pasa si no puede responder algo?<span class="ind">+</span></summary>
+        <p>Hace la transición sin problemas: toma un mensaje, te envía los detalles por texto, y le dice a quien llama que tú le darás seguimiento personalmente. Nunca adivina algo que no sabe, y está probada para nunca cotizar un precio del que no está segura.</p>
+      </details>
+      <details>
+        <summary>¿Funciona con mi calendario o herramienta de agenda?<span class="ind">+</span></summary>
+        <p>Sí, en la mayoría de los casos. Se conecta con Google Calendar, Calendly, Housecall Pro, Jobber, y la mayoría de los software de agenda comunes. Si usas algo distinto, lo reviso en la llamada antes de empezar.</p>
+      </details>
+      <details>
+        <summary>¿Qué implica la instalación de mi parte?<span class="ind">+</span></summary>
+        <p>Unos 30 minutos de tu tiempo al inicio: qué preguntarle a quienes llaman, qué cuenta como un buen lead para ti, cómo quieres que suene. Yo la construyo, la pruebo contra conversaciones reales, y tú la apruebas antes de que hable con un cliente.</p>
+      </details>
+      <details>
+        <summary>¿Puedo apagarla?<span class="ind">+</span></summary>
+        <p>Cuando quieras. Es tu número de teléfono y tu calendario &mdash; eso no cambia. Si no te está funcionando, la apagamos o la arreglamos. Sin contrato de permanencia largo.</p>
+      </details>
+    </div>
+  </div></section>
+
+  <!-- FINAL CTA -->
+  <section><div class="wrap" style="text-align:center;max-width:640px;margin:0 auto">
+    <h2>Quince minutos. Sin presión, sin presentación de ventas.</h2>
+    <p class="subtle" style="margin:14px auto 0;max-width:46ch">Cuéntame cómo te llegan los leads hoy y dónde se te están escapando. Te diré honestamente si esto encaja con tu negocio, y qué se necesitaría.</p>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+      <a href="/es/book.html" class="cta" data-evt="fd-final-book">Reserva una llamada de 15 min &rarr;</a>
+    </div>
+    <div class="jt-guarantee" style="margin-left:auto;margin-right:auto;text-align:left"><span class="g-mk">&check;</span><span>Tú lo apruebas antes de que hable con un cliente. Definido para tu negocio en la llamada, con un número real antes de que empiece cualquier cosa. Sin contrato de permanencia.</span></div>
+    <span class="jt-capacity"><span class="dot"></span>un proyecto a la vez — <!-- TODO(jason): update capacity -->actualmente agendando para el Q4 2026</span>
+  </div></section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> &middot; <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a></span>
+    <span><a href="/es/index.html" class="dim-link" style="color:var(--faint)">&larr; portafolio</a></span>
+  </footer>
+</div>
+
+<script defer src="/assets/agent.js"></script>
+<script defer src="/assets/nav.js"></script>
+<script type="module" src="/assets/voice-receptionist.mjs"></script>
+</body>
+</html>

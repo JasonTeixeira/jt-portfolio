@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serviços — Tudo o que eu construo · Jason Teixeira</title>
+<meta name="description" content="Um único operador, stack completo: engenharia de IA, avaliação de LLM, automação de testes e CI, e automação de fluxos de trabalho. Uma matriz de mais de 30 capacidades, escopada e orçada para o seu problema.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/services.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Serviços — Tudo o que eu construo">
+<meta property="og:description" content="Mais de 30 capacidades em engenharia de IA, avaliação, automação de testes e automação de processos, cada uma escopada e orçada para o seu problema exato.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/services.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1180px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4.2rem); line-height:1.04; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.7rem,3.4vw,2.4rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  section { padding:clamp(44px,6vw,72px) 0; border-top:1px solid var(--line); }
+  .lead { max-width:60ch; }
+
+  /* engagement path */
+  .path { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:30px; }
+  @media (max-width:820px){ .path { grid-template-columns:1fr 1fr; } }
+  @media (max-width:460px){ .path { grid-template-columns:1fr; } }
+  .step { position:relative; border:1px solid var(--line); border-radius:14px; background:var(--card); padding:22px; overflow:hidden; opacity:0; animation:rise .6s cubic-bezier(.16,1,.3,1) forwards; }
+  .step .n { font-family:var(--serif); font-size:2.4rem; line-height:1; letter-spacing:-0.03em; }
+  .step h3 { font-family:var(--serif); font-weight:400; font-size:1.3rem; margin:8px 0 2px; }
+  .step .price { font-family:var(--mono); font-size:12px; color:var(--faint); }
+  .step p { margin:12px 0 0; font-size:13px; line-height:1.6; color:var(--dim); }
+  .step .sweep { position:absolute; top:0; left:0; height:2px; width:100%; background:linear-gradient(90deg,transparent,currentColor,transparent); opacity:.5; }
+
+  /* flagship service cards */
+  .svcgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr)); gap:16px; margin-top:28px; }
+  .svc { border:1px solid var(--line); background:var(--card); border-radius:16px; overflow:hidden; opacity:0; animation:rise .6s cubic-bezier(.16,1,.3,1) forwards; transition:border-color .3s; }
+  .svc:hover { border-color:var(--ac); }
+  .svc .top { padding:24px; cursor:pointer; }
+  .svc .cat { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .svc h3 { font-family:var(--serif); font-weight:400; font-size:1.5rem; letter-spacing:-0.015em; margin:10px 0 8px; }
+  .svc .sub { font-size:13.5px; line-height:1.6; color:var(--dim); }
+  .svc .expand { max-height:0; overflow:hidden; transition:max-height .45s cubic-bezier(.16,1,.3,1); }
+  .svc.open .expand { max-height:900px; }
+  .svc .inner { padding:0 24px 24px; }
+  .svc .rule { height:1px; background:var(--line); margin:4px 0 18px; }
+  .deliv { display:flex; gap:11px; align-items:baseline; padding:7px 0; font-size:13px; color:var(--dim); }
+  .deliv .b { color:var(--ac); font-family:var(--mono); }
+  .phases { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:16px 0; }
+  @media (max-width:520px){ .phases { grid-template-columns:1fr; } }
+  .ph { border:1px solid var(--line); border-radius:9px; padding:12px; }
+  .ph .pn { font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); }
+  .ph .pp { font-family:var(--serif); font-size:1.1rem; margin-top:3px; }
+  .ph .pt { font-family:var(--mono); font-size:10px; color:var(--faint); }
+  .svc .foot { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .toggle { margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--ac); }
+  .proofline { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:6px; }
+  .proofline b { color:var(--ink); }
+
+  /* matrix */
+  .cat-filter { display:flex; gap:8px; flex-wrap:wrap; margin-top:24px; }
+  .chip { font-family:var(--mono); font-size:11px; padding:8px 15px; border-radius:16px; border:1px solid var(--line); color:var(--dim); cursor:pointer; background:transparent; transition:all .2s; }
+  .chip.on { color:var(--bg); border-color:transparent; font-weight:700; }
+
+  /* track groups — P3.1: real hierarchy instead of one flat 30+ card grid */
+  .trackgroup { margin-top:48px; }
+  .trackgroup:first-child { margin-top:26px; }
+  .trackhead { display:flex; align-items:baseline; gap:14px; padding-bottom:13px; border-bottom:1px solid var(--line); margin-bottom:20px; }
+  .trackhead .tn { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; flex-shrink:0; }
+  .trackhead h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.4rem,2.4vw,1.7rem); margin:0; letter-spacing:-0.015em; }
+  .trackhead .tc { margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--faint); white-space:nowrap; }
+
+  .capgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr)); gap:12px; align-items:start; }
+  .cap { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; opacity:0; animation:rise .4s ease-out forwards; transition:border-color .25s, box-shadow .25s, transform .2s; cursor:pointer; box-shadow:0 1px 0 rgba(255,255,255,0.02) inset; }
+  .cap:hover { transform:translateY(-2px); box-shadow:0 16px 36px -20px rgba(9,9,11,0.65), 0 0 0 1px color-mix(in srgb, var(--cc,var(--line)) 30%, transparent); }
+  .cap .cr { display:flex; align-items:center; gap:10px; }
+  .cap .ic { display:inline-flex; align-items:center; }
+  .cap .ic svg { display:block; }
+  .cap .track { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; margin-left:auto; }
+  .cap h3 { font-family:var(--serif); font-weight:400; font-size:1.2rem; margin:11px 0 5px; }
+  .cap .blurb { margin:0; font-size:12.5px; line-height:1.55; color:var(--dim); }
+  .cap .more { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.16,1,.3,1); }
+  .cap.open .more { max-height:360px; }
+  .cap .detail { margin:14px 0 0; font-size:12.5px; line-height:1.62; color:#C4BFB8; }
+  .cap .out { margin:12px 0 0; font-family:var(--mono); font-size:11px; }
+  .cap .q { display:inline-flex; align-items:center; gap:6px; margin-top:14px; font-family:var(--mono); font-size:11px; font-weight:600; }
+  .cap .hint { font-family:var(--mono); font-size:10px; color:var(--faint); margin-top:12px; }
+
+  /* flagship capability — scale contrast, not uniform padding (P3.1) */
+  .cap.flag { grid-column:span 2; padding:26px; background:linear-gradient(160deg, color-mix(in srgb, var(--cc) 7%, var(--card)), var(--card)); border-color:color-mix(in srgb, var(--cc) 32%, var(--line)); }
+  @media (max-width:680px){ .cap.flag { grid-column:span 1; } }
+  .cap.flag h3 { font-size:1.5rem; margin-top:13px; }
+  .cap.flag .blurb { font-size:13.5px; max-width:52ch; }
+  .cap .flagtag { display:inline-flex; align-items:center; gap:5px; font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cc); border:1px solid color-mix(in srgb, var(--cc) 45%, transparent); border-radius:999px; padding:3px 9px; margin-left:auto; }
+
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  @keyframes rise { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @media (prefers-reduced-motion:reduce){ .step,.svc,.cap { animation:none !important; opacity:1 !important; } .sweep { display:none; } }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/services.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/services.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/services.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/services.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/services.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/services.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/pt/index.html" class="site-nav-brand" aria-label="Jason Teixeira — início">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/pt/services.html" class="site-nav-link" aria-current="page">Serviços</a>
+      <a href="/pt/case-studies.html" class="site-nav-link">Trabalhos</a>
+      <a href="/pt/build.html" class="site-nav-link">Escopar um projeto</a>
+      <a href="/pt/docs.html" class="site-nav-link">Guias</a>
+      <a href="/pt/book.html" class="btn-solid green site-nav-cta">Agende uma chamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(20px,3vw,32px)">
+    <div class="kick">Serviços &middot; o stack completo, um único operador</div>
+    <h1 style="margin-top:20px;max-width:16ch">Tudo o que eu construo: <em style="color:var(--green)">escopado e orçado para você.</em></h1>
+    <p class="subtle lead" style="margin-top:20px">Sem agência, sem transferência de responsabilidade, sem uma lista de preços fixa inflada para cobrir despesas gerais que você não tem. Três projetos principais, uma matriz de mais de 30 capacidades, e um único caminho, de uma auditoria breve a um sistema entregue. Conte-me o problema e você sai com um plano e um número real. Você paga pelo seu problema, precificado sob medida.</p>
+    <div style="display:flex;gap:14px;margin-top:26px;flex-wrap:wrap">
+      <a href="/pt/book.html" class="cta" data-evt="svc-hero-book">Iniciar uma conversa &rarr;</a>
+      <a href="#matrix" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">ir para a matriz completa &darr;</a>
+    </div>
+    <p style="display:flex;gap:8px;align-items:baseline;margin:14px 0 0;font-size:12.5px;color:var(--faint);max-width:60ch"><span style="color:var(--green)">&check;</span> Orçamento por escrito antes de o trabalho começar. A taxa da auditoria é abatida no valor do projeto. Se não houver encaixe, não há cobrança.</p>
+    <span class="jt-capacity"><span class="dot"></span>um projeto por vez — <!-- TODO(jason): update capacity -->agenda aberta para o Q4 de 2026</span>
+  </header>
+
+  <main id="content" style="display:block">
+
+  <!-- ENGAGEMENT PATH -->
+  <section><div class="wrap">
+    <div class="kick" style="color:#8FA0FF">01: como funciona um projeto</div>
+    <h2 style="margin-top:12px">Um caminho fixo. Um orçamento real. Evidência em cada etapa.</h2>
+    <div class="path" id="path"></div>
+    <div class="jt-guarantee"><span class="g-mk">&check;</span><span>Todo projeto é orçado por escrito antes de o trabalho começar: escopo fixo, nunca horas em aberto. A <b>taxa da auditoria é abatida integralmente no valor do projeto</b> se você continuar. Seu repositório, seu CI, nada é retido após a entrega. Se o escopo mostrar que não posso ajudar, eu digo isso claramente e não custa nada.</span></div>
+    <span class="jt-capacity"><span class="dot"></span>um projeto por vez — <!-- TODO(jason): update capacity -->agenda aberta para o Q4 de 2026</span>
+  </div></section>
+
+  <!-- FLAGSHIP -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--purple)">02: projetos principais</div>
+    <h2 style="margin-top:12px">Os três pelos quais sou conhecido. Clique para abrir um.</h2>
+    <div class="svcgrid" id="svcgrid"></div>
+  </div></section>
+
+  <!-- MATRIX -->
+  <section id="matrix"><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">03: a matriz completa de capacidades</div>
+    <h2 style="margin-top:12px">Mais de 30 coisas que posso construir para você.</h2>
+    <p class="subtle" style="margin-top:12px;max-width:56ch">Filtre por trilha. Clique em qualquer cartão para ver a explicação: o que é, o que você recebe e o resultado. Todas terminam em um orçamento, definido em uma chamada.</p>
+    <div class="cat-filter" id="cats"></div>
+    <div id="capgrid"></div>
+  </div></section>
+
+  <!-- CTA -->
+  <section><div class="wrap" style="text-align:center;max-width:680px;margin:0 auto">
+    <h2>Não sabe qual escolher? É para isso que serve a chamada.</h2>
+    <p class="subtle" style="margin:14px auto 0;max-width:46ch">15 minutos. Você descreve o problema; eu digo com honestidade qual destes você precisa, o que envolve, quanto custa, ou se você nem precisa de mim.</p>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+      <a href="/pt/book.html" class="cta" data-evt="svc-book">Agende uma chamada de 15 minutos &rarr;</a>
+      <a href="/pt/demos.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">veja funcionando primeiro &rarr;</a>
+    </div>
+    <div class="jt-guarantee" style="margin-left:auto;margin-right:auto;text-align:left"><span class="g-mk">&check;</span><span>Orçamento por escrito antes de o trabalho começar. A <b>taxa da auditoria é abatida no valor do projeto</b>. Se não houver encaixe, não há cobrança.</span></div>
+    <span class="jt-capacity"><span class="dot"></span>um projeto por vez — <!-- TODO(jason): update capacity -->agenda aberta para o Q4 de 2026</span>
+  </div></section>
+
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> &middot; <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a></span>
+    <span><a href="/pt/index.html" class="dim-link" style="color:var(--faint)">&larr; portfólio</a></span>
+  </footer>
+</div>
+
+<script defer src="/assets/nav.js"></script>
+<script src="/assets/icons.js"></script>
+<script>
+(function(){
+  var GREEN='#10b981', CYAN='#22d3ee', PURPLE='#a78bfa', AMBER='#F59E0B', ROSE='#f43f5e', BLUE='#8FA0FF';
+  function esc(s){ return String(s==null?'':s); }
+
+  /* engagement path — no prices */
+  var PATH=[
+    {n:'01', t:'Audit', price:'~1 week · start here', c:BLUE, d:"I map your highest-leverage failure — the AI surface, the test gap, the automation ROI — and hand you a prioritized plan and a concrete quote you own."},
+    {n:'02', t:'Sprint', price:'~2 weeks · scoped', c:CYAN, d:'One visible, production-grade improvement: real code, deployed, measured. A minimum viable gate, or a shipped workflow.'},
+    {n:'03', t:'Build', price:'~4–8 weeks · scoped', c:PURPLE, d:'The full system: the eval battery, the CI gate, the automation, the runbook, owned by your team at handoff.'},
+    {n:'04', t:'Operate', price:'ongoing · optional', c:GREEN, d:'Measure, improve, publish. The system stays green and compounds instead of quietly decaying.'}
+  ];
+  var pathEl=document.getElementById('path');
+  PATH.forEach(function(s,i){
+    var d=document.createElement('div'); d.className='step'; d.style.animationDelay=(i*0.08)+'s'; d.style.color=s.c;
+    d.innerHTML='<div class="sweep"></div><div class="n" style="color:'+s.c+'">'+s.n+'</div><h3 style="color:var(--ink)">'+s.t+'</h3><div class="price">'+s.price+'</div><p>'+s.d+'</p>';
+    pathEl.appendChild(d);
+  });
+
+  /* flagship services — no prices */
+  var SERVICES=[
+    { cat:'AI quality & evaluation', ac:PURPLE, name:'LLM Evaluation & Eval Harness',
+      sub:"You shipped an AI feature. I build the evaluation and regression system that proves it works: scoring, safety gates, and a CI gate that blocks a bad change before customers see it.",
+      deliv:['Golden dataset + LLM-as-judge scoring for faithfulness, relevance, safety','Safety runner battery: injection, jailbreak, PII, toxicity, hallucination, consistency','CI quality gate: a score below the ratcheted floor blocks the merge','Runbook + handoff so your team owns the gate'],
+      phases:[['Eval Audit','~1 wk'],['MV Gate','~2 wks'],['Full Battery','~4–8 wks']],
+      proof:'llm-eval-gate (public, keyless) · nexural-qa-os — 85 runners, 10 AI-safety evals',
+      href:'services/llm-evaluation-qa.html' },
+    { cat:'Quality engineering', ac:GREEN, name:'Test Automation & CI',
+      sub:"A regression suite a release manager can trust: risk-scoped coverage with traces, reporters, artifacts, and a green gate that actually means something. In your repo, your CI.",
+      deliv:['Risk model → coverage matrix (coverage scoped to release risk)','Playwright/Pytest suite: POM, fixtures, trace-on-retry, four reporters','CI wiring on every push/PR with artifact retention','Flake protocol: quarantine lane, retry policy, weekly triage'],
+      phases:[['Suite Audit','~1 wk'],['Stabilize','~2 wks'],['Regression Build','~4–8 wks']],
+      proof:'playwright-sdet-regression-suite — 37/37 in CI · HighStrike flake 10% → <1%',
+      href:'services/test-automation-ci.html' },
+    { cat:'AI automation', ac:CYAN, name:'AI Workflow Automation',
+      sub:"Automation that ships finished work: intake, triage, routing, RAG-backed answers, with human approval points where the risk is, and logs you can audit.",
+      deliv:['One scoped workflow, end-to-end: intake → classify → route → act','Human approval points placed by risk, earned down with evidence','Structured outputs + schema validation + fallbacks; raw inputs logged','Cost model per run + runbook + handoff'],
+      phases:[['Automation Audit','~1 wk'],['One Workflow','~2 wks'],['System Build','~4–8 wks']],
+      proof:'BRIEF/01 — feedback triage that runs itself · sage-agents with a hard consent gate',
+      href:'services/ai-workflow-automation.html' },
+  ];
+  var grid=document.getElementById('svcgrid');
+  SERVICES.forEach(function(s,i){
+    var card=document.createElement('div'); card.className='svc'; card.style.setProperty('--ac',s.ac); card.style.animationDelay=(i*0.09)+'s';
+    var deliv=s.deliv.map(function(d){ return '<div class="deliv"><span class="b">→</span>'+esc(d)+'</div>'; }).join('');
+    var phases=s.phases.map(function(p){ return '<div class="ph"><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div><div class="pt">scoped &amp; quoted</div></div>'; }).join('');
+    card.innerHTML=
+      '<div class="top"><div class="cat">'+esc(s.cat)+'</div><h3>'+esc(s.name)+'</h3><div class="sub">'+esc(s.sub)+'</div>'+
+        '<div class="foot" style="margin-top:14px"><span class="proofline">proof: <b>'+esc(s.proof.split(' · ')[0])+'</b></span><span class="toggle">what you get ↓</span></div></div>'+
+      '<div class="expand"><div class="inner"><div class="rule"></div>'+deliv+
+        '<div class="phases">'+phases+'</div>'+
+        '<div class="proofline" style="margin-bottom:14px">proof: <b>'+esc(s.proof)+'</b></div>'+
+        '<div class="btnrow" style="display:flex;gap:14px;flex-wrap:wrap"><a href="'+s.href+'" class="btn-solid green" data-evt="svc-detail" style="padding:11px 18px">Full details &rarr;</a>'+
+        '<a href="/pt/book.html" data-evt="svc-book-card" style="display:inline-flex;align-items:center;color:'+s.ac+';font-family:var(--mono);font-size:12px">or get a quote →</a></div></div></div>';
+    var top=card.querySelector('.top'), tog=card.querySelector('.toggle');
+    top.addEventListener('click', function(){ card.classList.toggle('open'); tog.textContent=card.classList.contains('open')?'close ↑':'what you get ↓'; });
+    grid.appendChild(card);
+  });
+
+  /* the full matrix — tracks × offerings, each with an explainer */
+  var TRACKS=[
+    {key:'AI Build', n:'01', color:CYAN, blurb:'The AI feature itself. Assistants, agents, and the retrieval underneath it.'},
+    {key:'Eval & QA', n:'02', color:PURPLE, blurb:'Proof it works: golden sets, safety batteries, and the CI gate that blocks a bad change.'},
+    {key:'Test Automation', n:'03', color:GREEN, blurb:'The deterministic surface: E2E coverage, CI wiring, flake protocol, performance baselines.'},
+    {key:'Automation', n:'04', color:AMBER, blurb:'The repetitive work, automated end-to-end and owned by your team.'},
+    {key:'Product', n:'05', color:ROSE, blurb:'The application layer everything else runs inside: apps, tools, APIs, dashboards.'}
+  ];
+  var TC={}; TRACKS.forEach(function(t){ TC[t.key]=t.color; });
+
+  var CAPS=[
+    // ── AI Build ──
+    {track:'AI Build', ic:'chat', name:'Conversational assistant / chatbot', blurb:'A support or product chatbot grounded in your own docs.', detail:'A retrieval-augmented assistant that answers from your documentation, policies, and past tickets, never the open internet. Streaming UI, source citations, and a scope guard keep it on-topic.', out:'→ support deflection + instant internal Q&A'},
+    {track:'AI Build', ic:'phone', name:'AI voice agent', blurb:'Inbound + outbound voice that gets tasks done.', detail:'A phone agent that answers 24/7, qualifies the caller, books the job, and texts you a summary. Or makes outbound reminder and follow-up calls. Human-sounding, with a hard consent gate on outbound.', out:'→ zero missed calls, zero missed jobs'},
+    {track:'AI Build', ic:'doc', name:'Document intake & extraction', blurb:'Invoices, forms, PDFs → clean structured data.', detail:'An extraction pipeline that turns messy documents into validated structured records, schema-enforced, with confidence scoring and a human-review lane for the low-confidence cases.', out:'→ no more manual data entry'},
+    {track:'AI Build', ic:'copilot', name:'Internal copilot / knowledge assistant', blurb:'An AI that knows how your company works.', detail:'A private assistant wired into your wiki, code, and tickets so your team gets answers in seconds instead of pinging the one person who knows. Access-scoped and auditable.', out:'→ onboarding + tribal knowledge, solved'},
+    {track:'AI Build', ic:'search', name:'RAG pipeline engineering', flag:true, blurb:'Retrieval that actually retrieves the right thing.', detail:'The unglamorous core that makes AI features trustworthy: chunking strategy, embeddings, hybrid retrieval, reranking, and grounding, with retrieval-quality evals (context precision/recall, citation coverage) in front.', out:'→ answers that cite their sources'},
+    {track:'AI Build', ic:'nodes', name:'Multi-agent workflow / orchestration', blurb:'Agents that plan, call tools, and hand off safely.', detail:'When the logic is genuinely agentic, a LangGraph-style orchestration with explicit state, tool-use boundaries, retries, and approval checkpoints. It\'s instrumented so you can see every step it took.', out:'→ complex flows, kept auditable'},
+    {track:'AI Build', ic:'plug', name:'Structured-output & function-calling', blurb:'Make the LLM a reliable part of your backend.', detail:'Schema-validated LLM steps with function/tool calling, fallback labels on parse failure, and raw inputs logged beside every decision. The difference between a demo and production.', out:'→ AI you can call from code'},
+    // ── Eval & QA ──
+    {track:'Eval & QA', ic:'scale', name:'LLM evaluation harness', flag:true, blurb:'Golden set + LLM-as-judge scoring for your feature.', detail:'50–200 real inputs with agreed-good outputs, versioned next to the code, scored by an LLM judge for faithfulness, relevance, and safety. The regression signal you don\'t have yet.', out:'→ ship prompt changes with a regression signal'},
+    {track:'Eval & QA', ic:'shield', name:'AI red-team & safety battery', blurb:'Adversarial probes: injection, jailbreak, PII, toxicity.', detail:'A battery of adversarial runners that try to break your assistant the way a real user (or attacker) would: prompt injection, jailbreaks, PII leakage, toxicity, over-refusal, with verbatim transcripts of every failure.', out:'→ find the embarrassing failure first'},
+    {track:'Eval & QA', ic:'gauge', name:'CI quality gate for AI', blurb:'A bad AI change blocks the merge instead of showing up in the retro.', detail:'Your eval suite wired into CI so it runs on every PR. A score below the ratcheted floor fails the build, with a scorecard your PM can actually read.', out:'→ regressions caught before customers'},
+    {track:'Eval & QA', ic:'anchor', name:'Hallucination / grounding gate', blurb:'Stop it inventing facts and policies.', detail:'A grounding layer that binds answers to a source of truth and an eval that fails when the model states unverifiable specifics. The fix for "it made up a refund policy."', out:'→ facts, or a clean "I don\'t know"'},
+    {track:'Eval & QA', ic:'repeat', name:'Prompt & model regression testing', blurb:'Know exactly what the model bump broke.', detail:'A/B and before/after evaluation across prompt and model versions, so a provider update or a prompt tweak comes with a concrete diff of what improved and what regressed.', out:'→ safe upgrades, measured'},
+    {track:'Eval & QA', ic:'target', name:'Agent evaluation', blurb:'Did the agent use the right tool and finish the task?', detail:'Task-success and tool-use-correctness evals for agentic systems: did it call the right function, with the right args, and complete the job. Scored against a rubric, run repeatedly.', out:'→ agents you can trust to act'},
+    {track:'Eval & QA', ic:'activity', name:'LLM observability & cost monitoring', blurb:'See quality, drift, and spend in production.', detail:'Tracing, per-run cost tracking, and drift monitoring on your live AI feature so quality decay and runaway spend surface on a dashboard instead of in a customer complaint.', out:'→ production AI you can watch'},
+    // ── Test Automation ──
+    {track:'Test Automation', ic:'e2e', name:'E2E test automation (Playwright)', flag:true, blurb:'Your critical flows, covered and green in CI.', detail:'A risk-scoped Playwright (or Cypress) suite with Page Object Model, fixtures, trace-on-retry, and four reporters. Built in your repo, so releases stop breaking in ways users find first.', out:'→ releases that stop breaking'},
+    {track:'Test Automation', ic:'link', name:'API & contract testing', blurb:'Catch the broken endpoint before the frontend does.', detail:'Contract and integration tests for your APIs: schema validation, auth paths, error cases, and backwards-compatibility checks wired into CI.', out:'→ no more silent API breaks'},
+    {track:'Test Automation', ic:'mobile', name:'Mobile real-device certification', blurb:'Ship iOS/Android with proof it actually works.', detail:'End-to-end certification on real devices. The flows a simulator lies about. I\'ve run 256-screen device-cert passes with retry-clean flake handling.', out:'→ app-store confidence'},
+    {track:'Test Automation', ic:'cog', name:'CI/CD pipeline + test wiring', blurb:'A green badge that actually means something.', detail:'GitHub Actions (or your CI) set up from scratch or rescued: parallelized runs, artifact retention, required checks, and the gates that make merge-green trustworthy.', out:'→ a pipeline you believe'},
+    {track:'Test Automation', ic:'bandage', name:'Flaky-test stabilization', blurb:'Make red mean something again.', detail:'The flake protocol installed on your existing suite: quarantine lane, retry policy, isolation fixes, and a weekly triage ritual. At HighStrike this cut a live suite from 10% flake to under 1%.', out:'→ red = a real bug, every time'},
+    {track:'Test Automation', ic:'zap', name:'Performance & load baselines', blurb:'Know your critical path\'s breaking point.', detail:'k6 load baselines on the flows that matter, with budgets wired into CI so a performance regression trips the gate before it trips your users.', out:'→ performance you can defend'},
+    {track:'Test Automation', ic:'eye', name:'Visual regression testing', blurb:'Catch the layout break a unit test can\'t see.', detail:'Screenshot-based regression across breakpoints and themes, so an unintended visual change is flagged in the PR instead of in a customer screenshot.', out:'→ pixel-level release safety'},
+    {track:'Test Automation', ic:'a11y', name:'Accessibility (a11y) audits', blurb:'WCAG compliance, keyboard, contrast, reduced-motion.', detail:'Automated + manual accessibility review against WCAG 2.2: keyboard navigation, screen-reader semantics, contrast, and reduced-motion behavior, with a prioritized fix list.', out:'→ usable by everyone, and compliant'},
+    // ── Automation ──
+    {track:'Automation', ic:'workflow', name:'Workflow automation', flag:true, blurb:'n8n / Make / Zapier, or code when it earns it.', detail:'The repetitive back-office flow, automated end-to-end in tools your team can own after I leave. Make/Zapier for linear flows, n8n for branching, code when the logic is genuinely complex.', out:'→ hours of manual work, deleted'},
+    {track:'Automation', ic:'magnet', name:'Lead capture → qualify → route', blurb:'Every lead caught, scored, and followed up in minutes.', detail:'An intake pipeline that captures every lead from every source, scores and routes it, and triggers follow-up within minutes. Nothing slips into a spreadsheet nobody checks.', out:'→ nothing slips through'},
+    {track:'Automation', ic:'database', name:'Data pipelines / ETL', blurb:'Move and shape data reliably, on a schedule.', detail:'Extract-transform-load pipelines with validation, idempotency, and alerting, so the report your business runs on is built on data that\'s actually correct and fresh.', out:'→ trustworthy data, automatically'},
+    {track:'Automation', ic:'puzzle', name:'Integrations (CRM, tools, APIs)', blurb:'Make your tools finally talk to each other.', detail:'Connect the CRM, the billing system, the support desk, and the spreadsheet into one flow with proper error handling and an audit trail. No more copy-paste between tabs.', out:'→ one connected system'},
+    {track:'Automation', ic:'broadcast', name:'Monitoring / scraping / alerting', blurb:'Watch a source, act when something changes.', detail:'Scheduled monitoring of a website, feed, or metric with structured extraction and alerting, so you hear about the change that matters the moment it happens.', out:'→ eyes on it, so you don\'t have to be'},
+    {track:'Automation', ic:'clock', name:'Scheduled jobs & back-office automation', blurb:'The recurring task nobody wants to remember.', detail:'Cron-driven jobs for the invoicing, reporting, cleanup, and reconciliation work that eats your week: reliable, logged, alert-on-failure.', out:'→ the busywork runs itself'},
+    // ── Product ──
+    {track:'Product', ic:'monitor', name:'Web apps & customer portals', flag:true, blurb:'Auth, payments, dashboards, production-grade.', detail:'The real thing: authentication, payments, dashboards, and the boring-but-critical parts done right, on Next.js + Supabase or your stack.', out:'→ a product you can ship to customers'},
+    {track:'Product', ic:'tools', name:'Internal tools / admin panels', blurb:'Replace the spreadsheet your team runs by hand.', detail:'The admin panel, ops dashboard, or back-office tool your team currently operates in a fragile spreadsheet, built properly, with the right permissions and audit trail.', out:'→ automate the manual ops'},
+    {track:'Product', ic:'server', name:'APIs & backends', blurb:'The service layer everything else depends on.', detail:'REST or typed APIs with validation, auth, rate limiting, and tests. The dependable backend your app, your integrations, your automations all build on.', out:'→ a backend you can build on'},
+    {track:'Product', ic:'bars', name:'Dashboards & data visualization', blurb:'Turn your raw data into a decision you can act on.', detail:'Institutional-grade dashboards and visualizations treated as part of the design system. The metric your team argues about, made legible and live.', out:'→ decisions from data, at a glance'}
+  ];
+
+  var capgrid=document.getElementById('capgrid'), catWrap=document.getElementById('cats'), cur='All';
+  function makeCap(c, i, col){
+    var t=document.createElement('div'); t.className='cap'+(c.flag?' flag':''); t.style.setProperty('--cc',col); t.style.animationDelay=(Math.min(i,12)*0.025)+'s';
+    var flagtag=c.flag?'<span class="flagtag">★ flagship</span>':'<span class="track" style="color:'+col+'">'+esc(c.track)+'</span>';
+    t.innerHTML='<div class="cr"><span class="ic">'+icon(c.ic,col,18)+'</span>'+flagtag+'</div>'+
+      '<h3>'+esc(c.name)+'</h3><p class="blurb">'+esc(c.blurb)+'</p>'+
+      '<div class="more"><p class="detail">'+esc(c.detail)+'</p><div class="out" style="color:'+col+'">'+esc(c.out)+'</div>'+
+        '<a href="/pt/book.html" class="q" style="color:'+col+'" data-evt="cap-quote">Get a quote for this →</a></div>'+
+      '<div class="hint">click to expand ↓</div>';
+    t.addEventListener('click', function(e){
+      if(e.target.closest('a')) return; // let the quote link through
+      var open=t.classList.toggle('open');
+      t.style.borderColor=open?col:(c.flag?'color-mix(in srgb, '+col+' 32%, var(--line))':'var(--line)');
+      t.querySelector('.hint').textContent=open?'click to collapse ↑':'click to expand ↓';
+    });
+    return t;
+  }
+  /* P3.1: grouped by track with a header per group, instead of one flat 30+ card grid.
+     Flagship capabilities (one per track) get scale contrast — a wider card, not just a color. */
+  function renderCaps(){
+    capgrid.innerHTML='';
+    var tracks = cur==='All' ? TRACKS : TRACKS.filter(function(t){ return t.key===cur; });
+    tracks.forEach(function(trk){
+      var col=trk.color;
+      var caps=CAPS.filter(function(c){ return c.track===trk.key; });
+      var group=document.createElement('div'); group.className='trackgroup';
+      var head=document.createElement('div'); head.className='trackhead';
+      head.innerHTML='<span class="tn" style="color:'+col+'">'+trk.n+'</span><h3>'+esc(trk.key)+'</h3><span class="tc">'+caps.length+' capabilities</span>';
+      var sub=document.createElement('p'); sub.className='subtle'; sub.style.margin='0 0 18px'; sub.style.maxWidth='60ch'; sub.textContent=trk.blurb;
+      var grid=document.createElement('div'); grid.className='capgrid';
+      caps.forEach(function(c,i){ grid.appendChild(makeCap(c,i,col)); });
+      group.appendChild(head); group.appendChild(sub); group.appendChild(grid);
+      capgrid.appendChild(group);
+    });
+  }
+  // filter chips
+  var ALL=[{key:'All',color:'#F4F2EF'}].concat(TRACKS);
+  ALL.forEach(function(t){
+    var b=document.createElement('button'); b.className='chip'+(t.key===cur?' on':''); b.textContent=t.key;
+    if(t.key===cur){ b.style.background=t.color; }
+    b.onclick=function(){
+      cur=t.key;
+      [].forEach.call(catWrap.children,function(x){ x.classList.remove('on'); x.style.background='transparent'; });
+      b.classList.add('on'); b.style.background=t.color;
+      renderCaps();
+    };
+    catWrap.appendChild(b);
+  });
+  renderCaps();
+})();
+</script>
+<script defer src="/assets/agent.js"></script>
+</body>
+</html>

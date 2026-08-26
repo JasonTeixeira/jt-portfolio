@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notas de campo — Jason Teixeira</title>
+<meta name="description" content="Notas de trabajo desde las trincheras proof-first — cortas, específicas y basadas en sistemas realmente lanzados.">
+<link rel="canonical" href="https://agency.sageideas.dev/es/field-notes.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<meta property="og:title" content="Notas de campo — Jason Teixeira">
+<meta property="og:description" content="Notas de trabajo desde las trincheras proof-first — cortas, específicas y basadas en sistemas realmente lanzados.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/field-notes.html">
+<link rel="alternate" type="application/rss+xml" title="Notas de campo — Jason Teixeira" href="https://agency.sageideas.dev/feed.xml">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/field-notes.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/field-notes.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/field-notes.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/field-notes.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/field-notes.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/field-notes.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div style="min-height:100vh;background:#09090B;position:relative">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(18px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
+    <a href="/es/index.html" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
+      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.02em">jason.teixeira<span style="color:#10b981">()</span></span>
+    </a>
+    <div style="display:flex;gap:20px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:12px">
+      <a href="/es/field-notes.html" class="dim-link">todas las notas</a>
+      <a href="/es/index.html" class="dim-link">← portafolio</a>
+    </div>
+  </nav>
+  <header style="max-width:820px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 24px;animation:jt-fadeup 500ms ease-out">
+    <div style="display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882">
+      <span style="width:8px;height:8px;border-radius:50%;background:#10b981;animation:jt-blink 2.4s ease-in-out infinite"></span>
+      <span>notas de campo — ingeniería proof-first</span>
+    </div>
+    <h1 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.8rem,6vw,4.4rem);line-height:1.05;letter-spacing:-0.02em;margin:24px 0 0">Notas de trabajo, escritas entre commits.</h1>
+    <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:#A8A29E;max-width:56ch">Cortas, específicas y basadas en sistemas que realmente lancé. Los textos más extensos viven en <a href="https://sageafterdark.com">sageafterdark.com</a>.</p>
+  </header>
+  <section style="max-width:820px;margin:0 auto;padding:24px clamp(18px,4vw,40px) 88px">
+    <div style="border-top:1px solid #2A2826">
+
+  <a href="notes/eighteen-agent-audit-gauntlet.html" class="note-row" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826">
+    <time datetime="2026-08-16" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</time>
+    <span style="flex:1;min-width:min(300px,100%)">
+      <span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Dieciocho agentes auditaron un currículo en vivo. Una lección estaba enseñando un error falso.</span>
+      <span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Apunté una flota de auditoría a 34 lecciones de programación publicadas: seis auditores ejecutando cada afirmación de código, seis reescritores, seis verificadores independientes. 73 defectos, 17 críticos o altos — cada uno anclado a una cita textual. Trece minutos de tiempo real.</span>
+    </span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#F59E0B;white-space:nowrap">5 min · lectura →</span>
+  </a>
+
+  <a href="notes/five-pages-five-agents.html" class="note-row" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826">
+    <time datetime="2026-08-16" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</time>
+    <span style="flex:1;min-width:min(300px,100%)">
+      <span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Cinco páginas, cinco agentes, un archivo de diseño — cero conflictos de merge</span>
+      <span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Una flota de agentes en paralelo implementó cinco páginas de marketing en producción 1:1 a partir de archivos de diseño en unos cinco minutos de tiempo real. Lo interesante no es la velocidad — son las tres reglas que hicieron que el resultado fuera lanzable.</span>
+    </span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#22d3ee;white-space:nowrap">4 min · lectura →</span>
+  </a>
+
+  <a href="notes/gate-blocked-me.html" class="note-row" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826">
+    <time datetime="2026-08-15" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</time>
+    <span style="flex:1;min-width:min(300px,100%)">
+      <span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">El día en que mi propio gate de calidad me bloqueó</span>
+      <span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">A las 11:39 mi ciclo de pruebas rechazó el veredicto PROBADO — 15 CVEs críticos/altos se habían filtrado en las dependencias de producción. A las 14:35 estaba en verde. Ambas ejecuciones se publican textualmente.</span>
+    </span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#f43f5e;white-space:nowrap">4 min · lectura →</span>
+  </a>
+
+  <a href="notes/promptfoo-ci-minimum-gate.html" class="note-row" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826">
+    <time datetime="2026-08-15" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</time>
+    <span style="flex:1;min-width:min(300px,100%)">
+      <span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Pruebas de regresión de LLM con Promptfoo en CI: el gate mínimo viable</span>
+      <span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">30 trazas doradas, un juez, un código de salida de fallo. La configuración más pequeña que evita que un mal cambio de prompt llegue a producción — ejecutable esta misma tarde.</span>
+    </span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#a78bfa;white-space:nowrap">6 min · lectura →</span>
+  </a>
+
+  <a href="notes/no-fake-green.html" class="note-row" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826">
+    <time datetime="2026-08-04" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·08</time>
+    <span style="flex:1;min-width:min(300px,100%)">
+      <span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Sin verde falso: lo que un libro de pruebas me enseñó sobre los agentes de IA</span>
+      <span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Los agentes reportarán con gusto un éxito que nunca ganaron. La solución no es un mejor prompt — es un gate de evidencia que el agente físicamente no puede sortear hablando.</span>
+    </span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#10b981;white-space:nowrap">6 min · lectura →</span>
+  </a>
+
+  <a href="notes/llm-regression-suite.html" class="note-row" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826">
+    <time datetime="2026-07-18" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·07</time>
+    <span style="flex:1;min-width:min(300px,100%)">
+      <span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Tu función de LLM necesita una suite de regresión más que un mejor prompt</span>
+      <span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">Los ajustes de prompt se sienten como progreso porque nadie está midiendo. Las trazas doradas + LLM-as-judge en CI convierten el "parece mejor" en un diff sobre el que puedes poner un gate.</span>
+    </span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#a78bfa;white-space:nowrap">5 min · lectura →</span>
+  </a>
+
+  <a href="notes/automation-that-never-talks.html" class="note-row" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:clamp(14px,2vw,28px);padding:30px 0;border-bottom:1px solid #2A2826">
+    <time datetime="2026-06-22" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77;min-width:5.5em">2026·06</time>
+    <span style="flex:1;min-width:min(300px,100%)">
+      <span style="display:block;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(1.3rem,2vw,1.7rem);letter-spacing:-0.01em">Automatización que nunca le habla a tu cliente</span>
+      <span style="display:block;font-size:13px;line-height:1.6;color:#8E8882;margin-top:6px;max-width:64ch">El flujo de trabajo de IA con mejor conversión que he lanzado envía cero mensajes escritos por IA. Dónde colocar el punto de aprobación humana, y por qué supera a la autonomía total.</span>
+    </span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#22d3ee;white-space:nowrap">4 min · lectura →</span>
+  </a>
+    </div>
+    <p style="margin:20px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">artefacto gratuito: <a href="/es/checklist.html" style="color:#a78bfa">el checklist de evaluación pre-lanzamiento para funcionalidades de LLM →</a></p>
+    <div data-subscribe style="margin-top:32px"></div>
+  </section>
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</span>
+    <span><a href="/feed.xml" class="dim-link" style="color:#837D77">rss</a> · <a href="/es/index.html" class="dim-link" style="color:#837D77">← portafolio</a></span>
+  </footer>
+<script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
+<script src="/assets/subscribe.js"></script>
+</div>
+</body>
+</html>
