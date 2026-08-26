@@ -153,11 +153,11 @@ document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=Strin
   var main = document.querySelector('main');
   var groups = Array.prototype.slice.call(document.querySelectorAll('.ck-group'));
   var GAP_CTA = {
-    'Ground truth': { t: 'your gap: no ground truth — everything else is opinion until this exists', href: 'services/llm-evaluation-qa.html' },
-    'Measurement': { t: 'your gap: measurement — scores, baselines, budgets', href: 'services/llm-evaluation-qa.html' },
-    'Safety battery': { t: 'your gap: the safety battery — the screenshot-generating failure modes', href: 'services/llm-evaluation-qa.html' },
-    'The gate': { t: 'your gap: the CI gate — evals that block nothing are decoration', href: 'services/test-automation-ci.html' },
-    'Blast-radius control': { t: 'your gap: blast-radius control — approval points and kill switches', href: 'services/ai-workflow-automation.html' }
+    'Ground truth': { t: 'sua lacuna: não há ground truth — tudo o mais é só opinião até isso existir', href: 'services/llm-evaluation-qa.html' },
+    'Medição': { t: 'sua lacuna: medição — scores, baselines, orçamentos', href: 'services/llm-evaluation-qa.html' },
+    'Bateria de segurança': { t: 'sua lacuna: a bateria de segurança — os modos de falha que acabam em prints de tela', href: 'services/llm-evaluation-qa.html' },
+    'O gate': { t: 'sua lacuna: o gate de CI — um eval que não bloqueia nada é decoração', href: 'services/test-automation-ci.html' },
+    'Controle do raio de impacto': { t: 'sua lacuna: controle do raio de impacto — pontos de aprovação humana e kill switches', href: 'services/ai-workflow-automation.html' }
   };
 
   var bar = document.createElement('div');
@@ -165,8 +165,8 @@ document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=Strin
   bar.className = 'no-print';
   bar.setAttribute('role', 'status');
   bar.setAttribute('aria-live', 'polite');
-  bar.innerHTML = '<span class="num">0/18</span><span class="bar"><i></i></span><span class="gap">tick what you already have — scored locally, nothing leaves your browser</span>' +
-    '<a class="btn-solid green" style="padding:9px 18px;font-size:12.5px;display:none" href="services/llm-evaluation-qa.html" data-evt="diagnostic-cta">Close the gap →</a>';
+  bar.innerHTML = '<span class="num">0/18</span><span class="bar"><i></i></span><span class="gap">marque o que você já tem — pontuado localmente, nada sai do seu navegador</span>' +
+    '<a class="btn-solid green" style="padding:9px 18px;font-size:12.5px;display:none" href="services/llm-evaluation-qa.html" data-evt="diagnostic-cta">Fechar a lacuna →</a>';
   main.appendChild(bar);
   var numEl = bar.querySelector('.num');
   var fillEl = bar.querySelector('.bar i');
@@ -189,13 +189,13 @@ document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=Strin
     fillEl.style.width = (done / 18 * 100) + '%';
     fillEl.style.background = done === 18 ? '#10b981' : done >= 12 ? '#22d3ee' : '#F59E0B';
     if (done === 0) {
-      gapEl.textContent = 'tick what you already have — scored locally, nothing leaves your browser';
+      gapEl.textContent = 'marque o que você já tem — pontuado localmente, nada sai do seu navegador';
       ctaEl.style.display = 'none';
       return;
     }
     if (done === 18) {
-      gapEl.textContent = 'all 18 — ship it. (and I\'d genuinely like to hear about your setup)';
-      ctaEl.textContent = 'Say hi →';
+      gapEl.textContent = 'os 18 — lance. (e eu gostaria muito de saber como é o seu setup)';
+      ctaEl.textContent = 'Diga oi →';
       ctaEl.href = 'index.html#contact';
       ctaEl.style.display = 'inline-flex';
       return;
@@ -209,7 +209,7 @@ document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=Strin
     });
     var cta = GAP_CTA[worst];
     gapEl.textContent = cta ? cta.t : '';
-    ctaEl.textContent = 'Close the gap →';
+    ctaEl.textContent = 'Fechar a lacuna →';
     ctaEl.href = cta ? cta.href : 'services/llm-evaluation-qa.html';
     ctaEl.style.display = 'inline-flex';
   }

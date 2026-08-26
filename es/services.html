@@ -204,10 +204,10 @@
 
   /* engagement path — no prices */
   var PATH=[
-    {n:'01', t:'Audit', price:'~1 week · start here', c:BLUE, d:"I map your highest-leverage failure — the AI surface, the test gap, the automation ROI — and hand you a prioritized plan and a concrete quote you own."},
-    {n:'02', t:'Sprint', price:'~2 weeks · scoped', c:CYAN, d:'One visible, production-grade improvement: real code, deployed, measured. A minimum viable gate, or a shipped workflow.'},
-    {n:'03', t:'Build', price:'~4–8 weeks · scoped', c:PURPLE, d:'The full system: the eval battery, the CI gate, the automation, the runbook, owned by your team at handoff.'},
-    {n:'04', t:'Operate', price:'ongoing · optional', c:GREEN, d:'Measure, improve, publish. The system stays green and compounds instead of quietly decaying.'}
+    {n:'01', t:'Auditoría', price:'~1 semana · empieza aquí', c:BLUE, d:"Identifico tu falla de mayor impacto — la superficie de IA, la brecha de pruebas, el ROI de automatización — y te entrego un plan priorizado y una cotización concreta que es tuya."},
+    {n:'02', t:'Sprint', price:'~2 semanas · delimitado', c:CYAN, d:'Una mejora visible y de nivel producción: código real, desplegado, medido. Una puerta mínima viable, o un flujo de trabajo entregado.'},
+    {n:'03', t:'Construcción', price:'~4–8 semanas · delimitado', c:PURPLE, d:'El sistema completo: la batería de evals, la puerta de CI, la automatización, el runbook, en manos de tu equipo al momento de la entrega.'},
+    {n:'04', t:'Operación', price:'continuo · opcional', c:GREEN, d:'Medir, mejorar, publicar. El sistema se mantiene en verde y se fortalece en el tiempo en lugar de degradarse silenciosamente.'}
   ];
   var pathEl=document.getElementById('path');
   PATH.forEach(function(s,i){
@@ -218,107 +218,107 @@
 
   /* flagship services — no prices */
   var SERVICES=[
-    { cat:'AI quality & evaluation', ac:PURPLE, name:'LLM Evaluation & Eval Harness',
-      sub:"You shipped an AI feature. I build the evaluation and regression system that proves it works: scoring, safety gates, and a CI gate that blocks a bad change before customers see it.",
-      deliv:['Golden dataset + LLM-as-judge scoring for faithfulness, relevance, safety','Safety runner battery: injection, jailbreak, PII, toxicity, hallucination, consistency','CI quality gate: a score below the ratcheted floor blocks the merge','Runbook + handoff so your team owns the gate'],
-      phases:[['Eval Audit','~1 wk'],['MV Gate','~2 wks'],['Full Battery','~4–8 wks']],
-      proof:'llm-eval-gate (public, keyless) · nexural-qa-os — 85 runners, 10 AI-safety evals',
+    { cat:'Calidad y evaluación de IA', ac:PURPLE, name:'Evaluación de LLM y Harness de Evals',
+      sub:"Lanzaste una función de IA. Construyo el sistema de evaluación y regresión que demuestra que funciona: puntuación, puertas de seguridad y una puerta de CI que bloquea un cambio defectuoso antes de que los clientes lo vean.",
+      deliv:['Dataset dorado + puntuación LLM-as-judge para fidelidad, relevancia y seguridad','Batería de runners de seguridad: inyección, jailbreak, PII, toxicidad, alucinación, consistencia','Puerta de calidad de CI: una puntuación por debajo del umbral progresivo bloquea el merge','Runbook + entrega para que tu equipo sea dueño de la puerta'],
+      phases:[['Auditoría de Evaluación','~1 sem'],['Puerta Mínima Viable','~2 sem'],['Batería Completa','~4–8 sem']],
+      proof:'llm-eval-gate (público, sin clave) · nexural-qa-os — 85 runners, 10 evals de seguridad de IA',
       href:'services/llm-evaluation-qa.html' },
-    { cat:'Quality engineering', ac:GREEN, name:'Test Automation & CI',
-      sub:"A regression suite a release manager can trust: risk-scoped coverage with traces, reporters, artifacts, and a green gate that actually means something. In your repo, your CI.",
-      deliv:['Risk model → coverage matrix (coverage scoped to release risk)','Playwright/Pytest suite: POM, fixtures, trace-on-retry, four reporters','CI wiring on every push/PR with artifact retention','Flake protocol: quarantine lane, retry policy, weekly triage'],
-      phases:[['Suite Audit','~1 wk'],['Stabilize','~2 wks'],['Regression Build','~4–8 wks']],
-      proof:'playwright-sdet-regression-suite — 37/37 in CI · HighStrike flake 10% → <1%',
+    { cat:'Ingeniería de calidad', ac:GREEN, name:'Automatización de Pruebas y CI',
+      sub:"Una suite de regresión en la que un release manager puede confiar: cobertura delimitada por riesgo con trazas, reporters, artefactos y una puerta en verde que realmente significa algo. En tu repositorio, tu CI.",
+      deliv:['Modelo de riesgo → matriz de cobertura (cobertura delimitada según el riesgo de la versión)','Suite de Playwright/Pytest: POM, fixtures, trace-on-retry, cuatro reporters','Integración de CI en cada push/PR con retención de artefactos','Protocolo de inestabilidad: carril de cuarentena, política de reintentos, triaje semanal'],
+      phases:[['Auditoría de la Suite','~1 sem'],['Estabilización','~2 sem'],['Construcción de Regresión','~4–8 sem']],
+      proof:'playwright-sdet-regression-suite — 37/37 en CI · HighStrike: inestabilidad 10% → <1%',
       href:'services/test-automation-ci.html' },
-    { cat:'AI automation', ac:CYAN, name:'AI Workflow Automation',
-      sub:"Automation that ships finished work: intake, triage, routing, RAG-backed answers, with human approval points where the risk is, and logs you can audit.",
-      deliv:['One scoped workflow, end-to-end: intake → classify → route → act','Human approval points placed by risk, earned down with evidence','Structured outputs + schema validation + fallbacks; raw inputs logged','Cost model per run + runbook + handoff'],
-      phases:[['Automation Audit','~1 wk'],['One Workflow','~2 wks'],['System Build','~4–8 wks']],
-      proof:'BRIEF/01 — feedback triage that runs itself · sage-agents with a hard consent gate',
+    { cat:'Automatización de IA', ac:CYAN, name:'Automatización de Flujos de Trabajo con IA',
+      sub:"Automatización que entrega trabajo terminado: recepción, triaje, enrutamiento, respuestas respaldadas por RAG, con puntos de aprobación humana donde está el riesgo, y registros que puedes auditar.",
+      deliv:['Un flujo de trabajo delimitado, de extremo a extremo: recepción → clasificación → enrutamiento → acción','Puntos de aprobación humana ubicados según el riesgo, reducidos progresivamente con evidencia','Salidas estructuradas + validación de esquema + fallbacks; entradas sin procesar registradas','Modelo de costos por ejecución + runbook + entrega'],
+      phases:[['Auditoría de Automatización','~1 sem'],['Un Flujo de Trabajo','~2 sem'],['Construcción del Sistema','~4–8 sem']],
+      proof:'BRIEF/01 — triaje de feedback que se ejecuta solo · sage-agents con una puerta de consentimiento estricta',
       href:'services/ai-workflow-automation.html' },
   ];
   var grid=document.getElementById('svcgrid');
   SERVICES.forEach(function(s,i){
     var card=document.createElement('div'); card.className='svc'; card.style.setProperty('--ac',s.ac); card.style.animationDelay=(i*0.09)+'s';
     var deliv=s.deliv.map(function(d){ return '<div class="deliv"><span class="b">→</span>'+esc(d)+'</div>'; }).join('');
-    var phases=s.phases.map(function(p){ return '<div class="ph"><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div><div class="pt">scoped &amp; quoted</div></div>'; }).join('');
+    var phases=s.phases.map(function(p){ return '<div class="ph"><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div><div class="pt">delimitado &amp; cotizado</div></div>'; }).join('');
     card.innerHTML=
       '<div class="top"><div class="cat">'+esc(s.cat)+'</div><h3>'+esc(s.name)+'</h3><div class="sub">'+esc(s.sub)+'</div>'+
-        '<div class="foot" style="margin-top:14px"><span class="proofline">proof: <b>'+esc(s.proof.split(' · ')[0])+'</b></span><span class="toggle">what you get ↓</span></div></div>'+
+        '<div class="foot" style="margin-top:14px"><span class="proofline">prueba: <b>'+esc(s.proof.split(' · ')[0])+'</b></span><span class="toggle">qué obtienes ↓</span></div></div>'+
       '<div class="expand"><div class="inner"><div class="rule"></div>'+deliv+
         '<div class="phases">'+phases+'</div>'+
-        '<div class="proofline" style="margin-bottom:14px">proof: <b>'+esc(s.proof)+'</b></div>'+
-        '<div class="btnrow" style="display:flex;gap:14px;flex-wrap:wrap"><a href="'+s.href+'" class="btn-solid green" data-evt="svc-detail" style="padding:11px 18px">Full details &rarr;</a>'+
-        '<a href="/es/book.html" data-evt="svc-book-card" style="display:inline-flex;align-items:center;color:'+s.ac+';font-family:var(--mono);font-size:12px">or get a quote →</a></div></div></div>';
+        '<div class="proofline" style="margin-bottom:14px">prueba: <b>'+esc(s.proof)+'</b></div>'+
+        '<div class="btnrow" style="display:flex;gap:14px;flex-wrap:wrap"><a href="'+s.href+'" class="btn-solid green" data-evt="svc-detail" style="padding:11px 18px">Ver detalles completos &rarr;</a>'+
+        '<a href="/es/book.html" data-evt="svc-book-card" style="display:inline-flex;align-items:center;color:'+s.ac+';font-family:var(--mono);font-size:12px">o solicita una cotización →</a></div></div></div>';
     var top=card.querySelector('.top'), tog=card.querySelector('.toggle');
-    top.addEventListener('click', function(){ card.classList.toggle('open'); tog.textContent=card.classList.contains('open')?'close ↑':'what you get ↓'; });
+    top.addEventListener('click', function(){ card.classList.toggle('open'); tog.textContent=card.classList.contains('open')?'cerrar ↑':'qué obtienes ↓'; });
     grid.appendChild(card);
   });
 
   /* the full matrix — tracks × offerings, each with an explainer */
   var TRACKS=[
-    {key:'AI Build', n:'01', color:CYAN, blurb:'The AI feature itself. Assistants, agents, and the retrieval underneath it.'},
-    {key:'Eval & QA', n:'02', color:PURPLE, blurb:'Proof it works: golden sets, safety batteries, and the CI gate that blocks a bad change.'},
-    {key:'Test Automation', n:'03', color:GREEN, blurb:'The deterministic surface: E2E coverage, CI wiring, flake protocol, performance baselines.'},
-    {key:'Automation', n:'04', color:AMBER, blurb:'The repetitive work, automated end-to-end and owned by your team.'},
-    {key:'Product', n:'05', color:ROSE, blurb:'The application layer everything else runs inside: apps, tools, APIs, dashboards.'}
+    {key:'Construcción de IA', n:'01', color:CYAN, blurb:'La función de IA en sí misma. Asistentes, agentes y la recuperación que hay detrás.'},
+    {key:'Evaluación y QA', n:'02', color:PURPLE, blurb:'La prueba de que funciona: golden sets, baterías de seguridad y la puerta de CI que bloquea un cambio defectuoso.'},
+    {key:'Automatización de Pruebas', n:'03', color:GREEN, blurb:'La superficie determinista: cobertura E2E, integración de CI, protocolo de inestabilidad, líneas base de rendimiento.'},
+    {key:'Automatización', n:'04', color:AMBER, blurb:'El trabajo repetitivo, automatizado de extremo a extremo y en manos de tu equipo.'},
+    {key:'Producto', n:'05', color:ROSE, blurb:'La capa de aplicación dentro de la cual corre todo lo demás: apps, herramientas, APIs, dashboards.'}
   ];
   var TC={}; TRACKS.forEach(function(t){ TC[t.key]=t.color; });
 
   var CAPS=[
     // ── AI Build ──
-    {track:'AI Build', ic:'chat', name:'Conversational assistant / chatbot', blurb:'A support or product chatbot grounded in your own docs.', detail:'A retrieval-augmented assistant that answers from your documentation, policies, and past tickets, never the open internet. Streaming UI, source citations, and a scope guard keep it on-topic.', out:'→ support deflection + instant internal Q&A'},
-    {track:'AI Build', ic:'phone', name:'AI voice agent', blurb:'Inbound + outbound voice that gets tasks done.', detail:'A phone agent that answers 24/7, qualifies the caller, books the job, and texts you a summary. Or makes outbound reminder and follow-up calls. Human-sounding, with a hard consent gate on outbound.', out:'→ zero missed calls, zero missed jobs'},
-    {track:'AI Build', ic:'doc', name:'Document intake & extraction', blurb:'Invoices, forms, PDFs → clean structured data.', detail:'An extraction pipeline that turns messy documents into validated structured records, schema-enforced, with confidence scoring and a human-review lane for the low-confidence cases.', out:'→ no more manual data entry'},
-    {track:'AI Build', ic:'copilot', name:'Internal copilot / knowledge assistant', blurb:'An AI that knows how your company works.', detail:'A private assistant wired into your wiki, code, and tickets so your team gets answers in seconds instead of pinging the one person who knows. Access-scoped and auditable.', out:'→ onboarding + tribal knowledge, solved'},
-    {track:'AI Build', ic:'search', name:'RAG pipeline engineering', flag:true, blurb:'Retrieval that actually retrieves the right thing.', detail:'The unglamorous core that makes AI features trustworthy: chunking strategy, embeddings, hybrid retrieval, reranking, and grounding, with retrieval-quality evals (context precision/recall, citation coverage) in front.', out:'→ answers that cite their sources'},
-    {track:'AI Build', ic:'nodes', name:'Multi-agent workflow / orchestration', blurb:'Agents that plan, call tools, and hand off safely.', detail:'When the logic is genuinely agentic, a LangGraph-style orchestration with explicit state, tool-use boundaries, retries, and approval checkpoints. It\'s instrumented so you can see every step it took.', out:'→ complex flows, kept auditable'},
-    {track:'AI Build', ic:'plug', name:'Structured-output & function-calling', blurb:'Make the LLM a reliable part of your backend.', detail:'Schema-validated LLM steps with function/tool calling, fallback labels on parse failure, and raw inputs logged beside every decision. The difference between a demo and production.', out:'→ AI you can call from code'},
+    {track:'Construcción de IA', ic:'chat', name:'Asistente conversacional / chatbot', blurb:'Un chatbot de soporte o producto basado en tu propia documentación.', detail:'Un asistente con recuperación aumentada que responde a partir de tu documentación, políticas y tickets anteriores, nunca desde internet abierto. Interfaz en streaming, citas de fuentes y un guardia de alcance lo mantienen enfocado en el tema.', out:'→ desviación de soporte + preguntas y respuestas internas al instante'},
+    {track:'Construcción de IA', ic:'phone', name:'Agente de voz con IA', blurb:'Voz entrante y saliente que resuelve tareas.', detail:'Un agente telefónico que responde 24/7, califica a quien llama, agenda el trabajo y te envía un resumen por mensaje de texto. O realiza llamadas salientes de recordatorio y seguimiento. Con sonido humano, y una puerta de consentimiento estricta para las llamadas salientes.', out:'→ cero llamadas perdidas, cero trabajos perdidos'},
+    {track:'Construcción de IA', ic:'doc', name:'Recepción y extracción de documentos', blurb:'Facturas, formularios, PDFs → datos estructurados y limpios.', detail:'Un pipeline de extracción que convierte documentos desordenados en registros estructurados y validados, con esquema forzado, puntuación de confianza y un carril de revisión humana para los casos de baja confianza.', out:'→ se acabó la captura manual de datos'},
+    {track:'Construcción de IA', ic:'copilot', name:'Copiloto interno / asistente de conocimiento', blurb:'Una IA que conoce cómo funciona tu empresa.', detail:'Un asistente privado conectado a tu wiki, tu código y tus tickets, para que tu equipo obtenga respuestas en segundos en lugar de escribirle a la única persona que sabe. Con acceso delimitado y auditable.', out:'→ onboarding + conocimiento tribal, resuelto'},
+    {track:'Construcción de IA', ic:'search', name:'Ingeniería de pipelines RAG', flag:true, blurb:'Recuperación que realmente recupera lo correcto.', detail:'El núcleo poco glamoroso que hace confiables a las funciones de IA: estrategia de chunking, embeddings, recuperación híbrida, reranking y grounding, con evals de calidad de recuperación (precisión/recall de contexto, cobertura de citas) al frente.', out:'→ respuestas que citan sus fuentes'},
+    {track:'Construcción de IA', ic:'nodes', name:'Flujo de trabajo multiagente / orquestación', blurb:'Agentes que planifican, llaman herramientas y entregan el trabajo de forma segura.', detail:'Cuando la lógica es genuinamente agéntica, una orquestación al estilo LangGraph con estado explícito, límites de uso de herramientas, reintentos y puntos de control de aprobación. Está instrumentada para que puedas ver cada paso que dio.', out:'→ flujos complejos, siempre auditables'},
+    {track:'Construcción de IA', ic:'plug', name:'Salida estructurada y function-calling', blurb:'Convierte al LLM en una parte confiable de tu backend.', detail:'Pasos de LLM validados por esquema con function/tool calling, etiquetas de respaldo ante fallos de parseo, y entradas sin procesar registradas junto a cada decisión. La diferencia entre una demo y producción.', out:'→ IA que puedes llamar desde tu código'},
     // ── Eval & QA ──
-    {track:'Eval & QA', ic:'scale', name:'LLM evaluation harness', flag:true, blurb:'Golden set + LLM-as-judge scoring for your feature.', detail:'50–200 real inputs with agreed-good outputs, versioned next to the code, scored by an LLM judge for faithfulness, relevance, and safety. The regression signal you don\'t have yet.', out:'→ ship prompt changes with a regression signal'},
-    {track:'Eval & QA', ic:'shield', name:'AI red-team & safety battery', blurb:'Adversarial probes: injection, jailbreak, PII, toxicity.', detail:'A battery of adversarial runners that try to break your assistant the way a real user (or attacker) would: prompt injection, jailbreaks, PII leakage, toxicity, over-refusal, with verbatim transcripts of every failure.', out:'→ find the embarrassing failure first'},
-    {track:'Eval & QA', ic:'gauge', name:'CI quality gate for AI', blurb:'A bad AI change blocks the merge instead of showing up in the retro.', detail:'Your eval suite wired into CI so it runs on every PR. A score below the ratcheted floor fails the build, with a scorecard your PM can actually read.', out:'→ regressions caught before customers'},
-    {track:'Eval & QA', ic:'anchor', name:'Hallucination / grounding gate', blurb:'Stop it inventing facts and policies.', detail:'A grounding layer that binds answers to a source of truth and an eval that fails when the model states unverifiable specifics. The fix for "it made up a refund policy."', out:'→ facts, or a clean "I don\'t know"'},
-    {track:'Eval & QA', ic:'repeat', name:'Prompt & model regression testing', blurb:'Know exactly what the model bump broke.', detail:'A/B and before/after evaluation across prompt and model versions, so a provider update or a prompt tweak comes with a concrete diff of what improved and what regressed.', out:'→ safe upgrades, measured'},
-    {track:'Eval & QA', ic:'target', name:'Agent evaluation', blurb:'Did the agent use the right tool and finish the task?', detail:'Task-success and tool-use-correctness evals for agentic systems: did it call the right function, with the right args, and complete the job. Scored against a rubric, run repeatedly.', out:'→ agents you can trust to act'},
-    {track:'Eval & QA', ic:'activity', name:'LLM observability & cost monitoring', blurb:'See quality, drift, and spend in production.', detail:'Tracing, per-run cost tracking, and drift monitoring on your live AI feature so quality decay and runaway spend surface on a dashboard instead of in a customer complaint.', out:'→ production AI you can watch'},
+    {track:'Evaluación y QA', ic:'scale', name:'Harness de evaluación de LLM', flag:true, blurb:'Golden set + puntuación LLM-as-judge para tu función.', detail:'De 50 a 200 entradas reales con salidas acordadas como correctas, versionadas junto al código, puntuadas por un juez LLM en fidelidad, relevancia y seguridad. La señal de regresión que todavía no tienes.', out:'→ lanza cambios de prompt con una señal de regresión'},
+    {track:'Evaluación y QA', ic:'shield', name:'Red-team de IA y batería de seguridad', blurb:'Pruebas adversarias: inyección, jailbreak, PII, toxicidad.', detail:'Una batería de runners adversarios que intentan romper tu asistente como lo haría un usuario real (o un atacante): inyección de prompts, jailbreaks, fuga de PII, toxicidad, negativa excesiva, con transcripciones textuales de cada falla.', out:'→ encuentra primero la falla vergonzosa'},
+    {track:'Evaluación y QA', ic:'gauge', name:'Puerta de calidad de CI para IA', blurb:'Un cambio defectuoso de IA bloquea el merge en lugar de aparecer en la retro.', detail:'Tu suite de evals conectada al CI para que se ejecute en cada PR. Una puntuación por debajo del umbral progresivo hace fallar el build, con un scorecard que tu PM realmente puede leer.', out:'→ regresiones detectadas antes que los clientes'},
+    {track:'Evaluación y QA', ic:'anchor', name:'Puerta de alucinación / grounding', blurb:'Evita que invente hechos y políticas.', detail:'Una capa de grounding que ata las respuestas a una fuente de verdad, y un eval que falla cuando el modelo afirma datos específicos no verificables. La solución para "inventó una política de reembolso."', out:'→ hechos, o un limpio "no lo sé"'},
+    {track:'Evaluación y QA', ic:'repeat', name:'Pruebas de regresión de prompts y modelos', blurb:'Sabe exactamente qué rompió la actualización del modelo.', detail:'Evaluación A/B y antes/después entre versiones de prompts y modelos, para que una actualización de proveedor o un ajuste de prompt venga con un diff concreto de qué mejoró y qué retrocedió.', out:'→ actualizaciones seguras, medidas'},
+    {track:'Evaluación y QA', ic:'target', name:'Evaluación de agentes', blurb:'¿El agente usó la herramienta correcta y terminó la tarea?', detail:'Evals de éxito de tarea y corrección de uso de herramientas para sistemas agénticos: si llamó a la función correcta, con los argumentos correctos, y completó el trabajo. Puntuado contra una rúbrica, ejecutado repetidamente.', out:'→ agentes en los que puedes confiar para actuar'},
+    {track:'Evaluación y QA', ic:'activity', name:'Observabilidad de LLM y monitoreo de costos', blurb:'Ve la calidad, el drift y el gasto en producción.', detail:'Tracing, seguimiento de costos por ejecución y monitoreo de drift en tu función de IA en producción, para que el deterioro de calidad y el gasto descontrolado aparezcan en un dashboard en lugar de en una queja de cliente.', out:'→ IA en producción que puedes vigilar'},
     // ── Test Automation ──
-    {track:'Test Automation', ic:'e2e', name:'E2E test automation (Playwright)', flag:true, blurb:'Your critical flows, covered and green in CI.', detail:'A risk-scoped Playwright (or Cypress) suite with Page Object Model, fixtures, trace-on-retry, and four reporters. Built in your repo, so releases stop breaking in ways users find first.', out:'→ releases that stop breaking'},
-    {track:'Test Automation', ic:'link', name:'API & contract testing', blurb:'Catch the broken endpoint before the frontend does.', detail:'Contract and integration tests for your APIs: schema validation, auth paths, error cases, and backwards-compatibility checks wired into CI.', out:'→ no more silent API breaks'},
-    {track:'Test Automation', ic:'mobile', name:'Mobile real-device certification', blurb:'Ship iOS/Android with proof it actually works.', detail:'End-to-end certification on real devices. The flows a simulator lies about. I\'ve run 256-screen device-cert passes with retry-clean flake handling.', out:'→ app-store confidence'},
-    {track:'Test Automation', ic:'cog', name:'CI/CD pipeline + test wiring', blurb:'A green badge that actually means something.', detail:'GitHub Actions (or your CI) set up from scratch or rescued: parallelized runs, artifact retention, required checks, and the gates that make merge-green trustworthy.', out:'→ a pipeline you believe'},
-    {track:'Test Automation', ic:'bandage', name:'Flaky-test stabilization', blurb:'Make red mean something again.', detail:'The flake protocol installed on your existing suite: quarantine lane, retry policy, isolation fixes, and a weekly triage ritual. At HighStrike this cut a live suite from 10% flake to under 1%.', out:'→ red = a real bug, every time'},
-    {track:'Test Automation', ic:'zap', name:'Performance & load baselines', blurb:'Know your critical path\'s breaking point.', detail:'k6 load baselines on the flows that matter, with budgets wired into CI so a performance regression trips the gate before it trips your users.', out:'→ performance you can defend'},
-    {track:'Test Automation', ic:'eye', name:'Visual regression testing', blurb:'Catch the layout break a unit test can\'t see.', detail:'Screenshot-based regression across breakpoints and themes, so an unintended visual change is flagged in the PR instead of in a customer screenshot.', out:'→ pixel-level release safety'},
-    {track:'Test Automation', ic:'a11y', name:'Accessibility (a11y) audits', blurb:'WCAG compliance, keyboard, contrast, reduced-motion.', detail:'Automated + manual accessibility review against WCAG 2.2: keyboard navigation, screen-reader semantics, contrast, and reduced-motion behavior, with a prioritized fix list.', out:'→ usable by everyone, and compliant'},
+    {track:'Automatización de Pruebas', ic:'e2e', name:'Automatización de pruebas E2E (Playwright)', flag:true, blurb:'Tus flujos críticos, cubiertos y en verde en CI.', detail:'Una suite de Playwright (o Cypress) delimitada por riesgo con Page Object Model, fixtures, trace-on-retry y cuatro reporters. Construida en tu repositorio, para que las versiones dejen de romperse de formas que los usuarios descubren primero.', out:'→ versiones que dejan de romperse'},
+    {track:'Automatización de Pruebas', ic:'link', name:'Pruebas de API y contratos', blurb:'Detecta el endpoint roto antes de que lo haga el frontend.', detail:'Pruebas de contrato e integración para tus APIs: validación de esquema, rutas de autenticación, casos de error, y verificaciones de retrocompatibilidad conectadas al CI.', out:'→ se acabaron las fallas silenciosas de API'},
+    {track:'Automatización de Pruebas', ic:'mobile', name:'Certificación móvil en dispositivos reales', blurb:'Lanza iOS/Android con la prueba de que realmente funciona.', detail:'Certificación de extremo a extremo en dispositivos reales. Los flujos sobre los que un simulador miente. He ejecutado pasadas de certificación de dispositivo de 256 pantallas con manejo de inestabilidad limpio en reintentos.', out:'→ confianza para el app store'},
+    {track:'Automatización de Pruebas', ic:'cog', name:'Pipeline de CI/CD + integración de pruebas', blurb:'Un badge verde que realmente significa algo.', detail:'GitHub Actions (o tu CI) configurado desde cero o rescatado: ejecuciones paralelizadas, retención de artefactos, checks obligatorios, y las puertas que hacen confiable un merge en verde.', out:'→ un pipeline en el que confías'},
+    {track:'Automatización de Pruebas', ic:'bandage', name:'Estabilización de pruebas inestables', blurb:'Haz que el rojo vuelva a significar algo.', detail:'El protocolo de inestabilidad instalado en tu suite existente: carril de cuarentena, política de reintentos, correcciones de aislamiento, y un ritual de triaje semanal. En HighStrike esto redujo una suite en producción de 10% de inestabilidad a menos de 1%.', out:'→ rojo = un bug real, siempre'},
+    {track:'Automatización de Pruebas', ic:'zap', name:'Líneas base de rendimiento y carga', blurb:'Conoce el punto de quiebre de tu ruta crítica.', detail:'Líneas base de carga con k6 en los flujos que importan, con presupuestos conectados al CI para que una regresión de rendimiento active la puerta antes de afectar a tus usuarios.', out:'→ rendimiento que puedes defender'},
+    {track:'Automatización de Pruebas', ic:'eye', name:'Pruebas de regresión visual', blurb:'Detecta la rotura de layout que una prueba unitaria no puede ver.', detail:'Regresión basada en capturas de pantalla entre breakpoints y temas, para que un cambio visual no intencionado se marque en el PR en lugar de en la captura de pantalla de un cliente.', out:'→ seguridad de lanzamiento a nivel de píxel'},
+    {track:'Automatización de Pruebas', ic:'a11y', name:'Auditorías de accesibilidad (a11y)', blurb:'Cumplimiento de WCAG, teclado, contraste, movimiento reducido.', detail:'Revisión de accesibilidad automatizada y manual contra WCAG 2.2: navegación por teclado, semántica para lectores de pantalla, contraste, y comportamiento de movimiento reducido, con una lista priorizada de correcciones.', out:'→ usable por todos, y en cumplimiento'},
     // ── Automation ──
-    {track:'Automation', ic:'workflow', name:'Workflow automation', flag:true, blurb:'n8n / Make / Zapier, or code when it earns it.', detail:'The repetitive back-office flow, automated end-to-end in tools your team can own after I leave. Make/Zapier for linear flows, n8n for branching, code when the logic is genuinely complex.', out:'→ hours of manual work, deleted'},
-    {track:'Automation', ic:'magnet', name:'Lead capture → qualify → route', blurb:'Every lead caught, scored, and followed up in minutes.', detail:'An intake pipeline that captures every lead from every source, scores and routes it, and triggers follow-up within minutes. Nothing slips into a spreadsheet nobody checks.', out:'→ nothing slips through'},
-    {track:'Automation', ic:'database', name:'Data pipelines / ETL', blurb:'Move and shape data reliably, on a schedule.', detail:'Extract-transform-load pipelines with validation, idempotency, and alerting, so the report your business runs on is built on data that\'s actually correct and fresh.', out:'→ trustworthy data, automatically'},
-    {track:'Automation', ic:'puzzle', name:'Integrations (CRM, tools, APIs)', blurb:'Make your tools finally talk to each other.', detail:'Connect the CRM, the billing system, the support desk, and the spreadsheet into one flow with proper error handling and an audit trail. No more copy-paste between tabs.', out:'→ one connected system'},
-    {track:'Automation', ic:'broadcast', name:'Monitoring / scraping / alerting', blurb:'Watch a source, act when something changes.', detail:'Scheduled monitoring of a website, feed, or metric with structured extraction and alerting, so you hear about the change that matters the moment it happens.', out:'→ eyes on it, so you don\'t have to be'},
-    {track:'Automation', ic:'clock', name:'Scheduled jobs & back-office automation', blurb:'The recurring task nobody wants to remember.', detail:'Cron-driven jobs for the invoicing, reporting, cleanup, and reconciliation work that eats your week: reliable, logged, alert-on-failure.', out:'→ the busywork runs itself'},
+    {track:'Automatización', ic:'workflow', name:'Automatización de flujos de trabajo', flag:true, blurb:'n8n / Make / Zapier, o código cuando se lo gana.', detail:'El flujo repetitivo de back-office, automatizado de extremo a extremo en herramientas que tu equipo puede seguir usando después de que me vaya. Make/Zapier para flujos lineales, n8n para ramificaciones, código cuando la lógica es genuinamente compleja.', out:'→ horas de trabajo manual, eliminadas'},
+    {track:'Automatización', ic:'magnet', name:'Captura de leads → calificación → enrutamiento', blurb:'Cada lead capturado, calificado y con seguimiento en minutos.', detail:'Un pipeline de recepción que captura cada lead de cada fuente, lo califica y lo enruta, y activa el seguimiento en minutos. Nada se pierde en una hoja de cálculo que nadie revisa.', out:'→ nada se escapa'},
+    {track:'Automatización', ic:'database', name:'Pipelines de datos / ETL', blurb:'Mueve y transforma datos de forma confiable, según un horario.', detail:'Pipelines de extracción-transformación-carga con validación, idempotencia y alertas, para que el reporte del que depende tu negocio se construya sobre datos realmente correctos y actualizados.', out:'→ datos confiables, automáticamente'},
+    {track:'Automatización', ic:'puzzle', name:'Integraciones (CRM, herramientas, APIs)', blurb:'Haz que tus herramientas por fin se comuniquen entre sí.', detail:'Conecta el CRM, el sistema de facturación, la mesa de soporte y la hoja de cálculo en un solo flujo con manejo de errores adecuado y un registro de auditoría. Se acabó el copiar y pegar entre pestañas.', out:'→ un solo sistema conectado'},
+    {track:'Automatización', ic:'broadcast', name:'Monitoreo / scraping / alertas', blurb:'Vigila una fuente, actúa cuando algo cambia.', detail:'Monitoreo programado de un sitio web, feed o métrica con extracción estructurada y alertas, para que te enteres del cambio que importa en el momento en que ocurre.', out:'→ vigilancia constante, para que tú no tengas que estarlo'},
+    {track:'Automatización', ic:'clock', name:'Trabajos programados y automatización de back-office', blurb:'La tarea recurrente que nadie quiere recordar.', detail:'Trabajos impulsados por cron para la facturación, los reportes, la limpieza y la conciliación que consumen tu semana: confiables, registrados, con alertas ante fallos.', out:'→ el trabajo tedioso se ejecuta solo'},
     // ── Product ──
-    {track:'Product', ic:'monitor', name:'Web apps & customer portals', flag:true, blurb:'Auth, payments, dashboards, production-grade.', detail:'The real thing: authentication, payments, dashboards, and the boring-but-critical parts done right, on Next.js + Supabase or your stack.', out:'→ a product you can ship to customers'},
-    {track:'Product', ic:'tools', name:'Internal tools / admin panels', blurb:'Replace the spreadsheet your team runs by hand.', detail:'The admin panel, ops dashboard, or back-office tool your team currently operates in a fragile spreadsheet, built properly, with the right permissions and audit trail.', out:'→ automate the manual ops'},
-    {track:'Product', ic:'server', name:'APIs & backends', blurb:'The service layer everything else depends on.', detail:'REST or typed APIs with validation, auth, rate limiting, and tests. The dependable backend your app, your integrations, your automations all build on.', out:'→ a backend you can build on'},
-    {track:'Product', ic:'bars', name:'Dashboards & data visualization', blurb:'Turn your raw data into a decision you can act on.', detail:'Institutional-grade dashboards and visualizations treated as part of the design system. The metric your team argues about, made legible and live.', out:'→ decisions from data, at a glance'}
+    {track:'Producto', ic:'monitor', name:'Aplicaciones web y portales de clientes', flag:true, blurb:'Autenticación, pagos, dashboards, de nivel producción.', detail:'Lo real: autenticación, pagos, dashboards, y las partes aburridas pero críticas hechas correctamente, sobre Next.js + Supabase o tu propio stack.', out:'→ un producto que puedes lanzar a tus clientes'},
+    {track:'Producto', ic:'tools', name:'Herramientas internas / paneles de administración', blurb:'Reemplaza la hoja de cálculo que tu equipo opera a mano.', detail:'El panel de administración, dashboard de operaciones o herramienta de back-office que tu equipo hoy opera en una hoja de cálculo frágil, construido correctamente, con los permisos adecuados y un registro de auditoría.', out:'→ automatiza las operaciones manuales'},
+    {track:'Producto', ic:'server', name:'APIs y backends', blurb:'La capa de servicio de la que depende todo lo demás.', detail:'APIs REST o tipadas con validación, autenticación, rate limiting y pruebas. El backend confiable sobre el que se construyen tu app, tus integraciones y tus automatizaciones.', out:'→ un backend sobre el cual construir'},
+    {track:'Producto', ic:'bars', name:'Dashboards y visualización de datos', blurb:'Convierte tus datos crudos en una decisión sobre la que puedes actuar.', detail:'Dashboards y visualizaciones de nivel institucional tratados como parte del sistema de diseño. La métrica sobre la que discute tu equipo, hecha legible y en vivo.', out:'→ decisiones a partir de datos, de un vistazo'}
   ];
 
-  var capgrid=document.getElementById('capgrid'), catWrap=document.getElementById('cats'), cur='All';
+  var capgrid=document.getElementById('capgrid'), catWrap=document.getElementById('cats'), cur='Todas';
   function makeCap(c, i, col){
     var t=document.createElement('div'); t.className='cap'+(c.flag?' flag':''); t.style.setProperty('--cc',col); t.style.animationDelay=(Math.min(i,12)*0.025)+'s';
-    var flagtag=c.flag?'<span class="flagtag">★ flagship</span>':'<span class="track" style="color:'+col+'">'+esc(c.track)+'</span>';
+    var flagtag=c.flag?'<span class="flagtag">★ insignia</span>':'<span class="track" style="color:'+col+'">'+esc(c.track)+'</span>';
     t.innerHTML='<div class="cr"><span class="ic">'+icon(c.ic,col,18)+'</span>'+flagtag+'</div>'+
       '<h3>'+esc(c.name)+'</h3><p class="blurb">'+esc(c.blurb)+'</p>'+
       '<div class="more"><p class="detail">'+esc(c.detail)+'</p><div class="out" style="color:'+col+'">'+esc(c.out)+'</div>'+
-        '<a href="/es/book.html" class="q" style="color:'+col+'" data-evt="cap-quote">Get a quote for this →</a></div>'+
-      '<div class="hint">click to expand ↓</div>';
+        '<a href="/es/book.html" class="q" style="color:'+col+'" data-evt="cap-quote">Pedir cotización para esto →</a></div>'+
+      '<div class="hint">clic para expandir ↓</div>';
     t.addEventListener('click', function(e){
       if(e.target.closest('a')) return; // let the quote link through
       var open=t.classList.toggle('open');
       t.style.borderColor=open?col:(c.flag?'color-mix(in srgb, '+col+' 32%, var(--line))':'var(--line)');
-      t.querySelector('.hint').textContent=open?'click to collapse ↑':'click to expand ↓';
+      t.querySelector('.hint').textContent=open?'clic para contraer ↑':'clic para expandir ↓';
     });
     return t;
   }
@@ -326,13 +326,13 @@
      Flagship capabilities (one per track) get scale contrast — a wider card, not just a color. */
   function renderCaps(){
     capgrid.innerHTML='';
-    var tracks = cur==='All' ? TRACKS : TRACKS.filter(function(t){ return t.key===cur; });
+    var tracks = cur==='Todas' ? TRACKS : TRACKS.filter(function(t){ return t.key===cur; });
     tracks.forEach(function(trk){
       var col=trk.color;
       var caps=CAPS.filter(function(c){ return c.track===trk.key; });
       var group=document.createElement('div'); group.className='trackgroup';
       var head=document.createElement('div'); head.className='trackhead';
-      head.innerHTML='<span class="tn" style="color:'+col+'">'+trk.n+'</span><h3>'+esc(trk.key)+'</h3><span class="tc">'+caps.length+' capabilities</span>';
+      head.innerHTML='<span class="tn" style="color:'+col+'">'+trk.n+'</span><h3>'+esc(trk.key)+'</h3><span class="tc">'+caps.length+' capacidades</span>';
       var sub=document.createElement('p'); sub.className='subtle'; sub.style.margin='0 0 18px'; sub.style.maxWidth='60ch'; sub.textContent=trk.blurb;
       var grid=document.createElement('div'); grid.className='capgrid';
       caps.forEach(function(c,i){ grid.appendChild(makeCap(c,i,col)); });
@@ -341,7 +341,7 @@
     });
   }
   // filter chips
-  var ALL=[{key:'All',color:'#F4F2EF'}].concat(TRACKS);
+  var ALL=[{key:'Todas',color:'#F4F2EF'}].concat(TRACKS);
   ALL.forEach(function(t){
     var b=document.createElement('button'); b.className='chip'+(t.key===cur?' on':''); b.textContent=t.key;
     if(t.key===cur){ b.style.background=t.color; }
