@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Never lose another job to a missed call — Sage Automations</title>
+<meta name="description" content="The AI system that answers, texts back, and books your leads 24/7 — so every call becomes a job, not a voicemail. Built and tested so it never says the wrong thing to your customers.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Never lose another job to a missed call">
+<meta property="og:description" content="Missed calls become booked jobs — automatically. See it work on your business.">
+<link rel="stylesheet" href="automations.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23064e3b'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='system-ui' font-size='34' font-weight='800' fill='%2334d399'%3ES%3C/text%3E%3C/svg%3E">
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<a href="#demo" class="skip">Skip to the demo</a>
+
+<!-- ── top bar ── -->
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="brand"><span class="brand-mark">S</span> Sage <span class="brand-dim">Automations</span></div>
+    <a href="#pricing" class="bar-cta" data-book>Get this for my business →</a>
+  </div>
+</header>
+
+<!-- ── hero ── -->
+<section class="hero">
+  <div class="wrap hero-in">
+    <div class="eyebrow"><span class="live-dot"></span> <span data-biz-line>For local service businesses</span></div>
+    <h1 class="h1">Every missed call is a <span class="strike">job</span> <span class="hl">someone else booked.</span></h1>
+    <p class="lede">You're on a job, it's after hours, both lines are busy — the call goes to voicemail, and that customer calls the next name on the list. <b data-biz>Your business</b> loses the job and never even knows it happened.</p>
+    <p class="lede lede-2">We put an AI system on your phone and web leads that <b>answers, texts back, and books — 24/7.</b> Missed calls become booked jobs, automatically. And we <b>test it</b> so it never says the wrong thing to your customers.</p>
+    <div class="hero-cta">
+      <a href="#demo" class="btn btn-primary">See it work ↓</a>
+      <a href="#pricing" class="btn btn-ghost" data-book>Get a live demo on my number →</a>
+    </div>
+    <div class="hero-proof">
+      <div class="hp"><b>62%</b><span>of callers who hit voicemail never call back</span></div>
+      <div class="hp"><b>78%</b><span>of jobs go to the business that responds first</span></div>
+      <div class="hp"><b>&lt;10s</b><span>response time, every time, day or night</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HERO DEMO: missed-call text-back ── -->
+<section class="demo" id="demo">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Demo 1 · The one that pays for itself</span>
+      <h2 class="h2">Watch a missed call turn into a booked job</h2>
+      <p class="sub">This is exactly what happens the moment a call to <b data-biz>your business</b> goes unanswered. Press play.</p>
+    </div>
+    <div class="stage" id="mc-stage">
+      <div class="phones">
+        <div class="phone" id="phone-customer">
+          <div class="phone-top"><span class="phone-label">Your customer's phone</span></div>
+          <div class="screen" id="cust-screen"></div>
+        </div>
+        <div class="phone" id="phone-owner">
+          <div class="phone-top"><span class="phone-label">Your phone</span></div>
+          <div class="screen" id="owner-screen"></div>
+        </div>
+      </div>
+      <div class="stage-controls">
+        <button class="btn btn-primary" id="mc-play">▶ Play the demo</button>
+        <button class="btn btn-ghost" id="mc-replay" hidden>↻ Replay</button>
+        <p class="stage-note" id="mc-note">A real customer never sees a voicemail — they get an instant text and book themselves in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEMO 2: speed-to-lead ── -->
+<section class="demo alt" id="speed">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Demo 2 · Web leads</span>
+      <h2 class="h2">A form fill answered in seconds, not hours</h2>
+      <p class="sub">Someone fills out your website form at 9pm. Watch what happens next.</p>
+    </div>
+    <div class="stage stl-stage" id="stl-stage">
+      <div class="stl-form">
+        <div class="stl-card">
+          <div class="stl-card-h"><b data-biz>Your business</b> · Request service</div>
+          <div class="stl-field"><span>Name</span><i>Jordan M.</i></div>
+          <div class="stl-field"><span>Phone</span><i>(555) 018-4420</i></div>
+          <div class="stl-field"><span>Problem</span><i>AC stopped working, no cold air</i></div>
+          <button class="btn btn-primary btn-sm" id="stl-submit">Submit request</button>
+        </div>
+      </div>
+      <div class="stl-race" id="stl-race" hidden>
+        <div class="race-row you">
+          <div class="race-h">With Sage <span class="tag ok">you</span></div>
+          <div class="race-timer" id="stl-you">—</div>
+          <div class="race-msg" id="stl-you-msg"></div>
+        </div>
+        <div class="race-row them">
+          <div class="race-h">Industry average <span class="tag bad">typical</span></div>
+          <div class="race-timer">47 hours</div>
+          <div class="race-msg">…they already hired someone else.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEMO 3: review engine ── -->
+<section class="demo" id="reviews">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Demo 3 · Reputation</span>
+      <h2 class="h2">Turn finished jobs into 5-star reviews on autopilot</h2>
+      <p class="sub">More reviews = higher on Google = more calls. It asks at the perfect moment, every time.</p>
+    </div>
+    <div class="stage rev-stage" id="rev-stage">
+      <div class="rev-flow">
+        <button class="btn btn-primary" id="rev-play">▶ Complete a job</button>
+        <div class="rev-steps" id="rev-steps"></div>
+      </div>
+      <div class="rev-score">
+        <div class="rev-stars" id="rev-stars">★★★★☆</div>
+        <div class="rev-num"><span id="rev-rating">4.2</span> <small>Google rating</small></div>
+        <div class="rev-count"><span id="rev-count">38</span> reviews</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEMO 4: ROI dashboard ── -->
+<section class="demo alt" id="roi">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Demo 4 · Your monthly report</span>
+      <h2 class="h2">See exactly what it puts back in your pocket</h2>
+      <p class="sub">Every month you get a plain-English report. Drag the slider to <b data-biz>your</b> average job value.</p>
+    </div>
+    <div class="stage roi-stage">
+      <div class="roi-slider">
+        <label>Your average job is worth <b>$<span id="roi-val">400</span></b></label>
+        <input type="range" id="roi-range" min="150" max="4000" step="50" value="400" aria-label="Average job value">
+        <div class="roi-slider-ends"><span>$150</span><span>$4,000</span></div>
+      </div>
+      <div class="roi-grid">
+        <div class="roi-card"><div class="roi-n" id="roi-answered">0</div><div class="roi-l">calls answered 24/7</div></div>
+        <div class="roi-card"><div class="roi-n" id="roi-recovered">0</div><div class="roi-l">missed calls recovered</div></div>
+        <div class="roi-card"><div class="roi-n" id="roi-jobs">0</div><div class="roi-l">became booked jobs</div></div>
+        <div class="roi-card hero-card"><div class="roi-n roi-money" id="roi-rev">$0</div><div class="roi-l">revenue recovered this month</div></div>
+      </div>
+      <p class="roi-foot">Conservative math on a business your size. Most owners tell us the real number is higher once nights and weekends are covered.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── trust / why us ── -->
+<section class="trust">
+  <div class="wrap trust-in">
+    <h2 class="h2">The difference: we <span class="hl">prove</span> it works before it talks to your customers</h2>
+    <div class="trust-grid">
+      <div class="tcard"><div class="ti">✓</div><h3>It won't say the wrong thing</h3><p>Every AI we deploy is tested against hundreds of tricky calls — wrong prices, off-topic questions, angry customers — before it ever picks up. Most "AI receptionist" tools skip this. It's the whole reason we exist.</p></div>
+      <div class="tcard"><div class="ti">⚡</div><h3>Live in about a week</h3><p>We set it up on your existing number and tools. You keep your number. No new hardware, no long contract, cancel anytime.</p></div>
+      <div class="tcard"><div class="ti">📊</div><h3>You see the money</h3><p>A monthly report shows calls answered, jobs recovered, and dollars back in your pocket. If it's not paying for itself, you'll know — and you can walk.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── pricing / ladder ── -->
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="kicker">Simple, month-to-month</span>
+      <h2 class="h2">Start where it hurts most. Add more when it pays off.</h2>
+      <p class="sub">No lock-in. Cancel anytime. Most owners start with Recover and grow from there.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tier-name">Recover</div>
+        <div class="tier-price">$<span>499</span><small>/mo</small></div>
+        <div class="tier-setup">+ one-time setup</div>
+        <ul class="tier-list">
+          <li>Missed-call text-back</li>
+          <li>Instant web-lead response</li>
+          <li>Owner text alerts + lead log</li>
+          <li>Monthly recovery report</li>
+        </ul>
+        <a class="btn btn-ghost tier-cta" data-book>Start here →</a>
+      </div>
+      <div class="tier featured">
+        <div class="tier-badge">Most popular</div>
+        <div class="tier-name">Grow</div>
+        <div class="tier-price">$<span>999</span><small>/mo</small></div>
+        <div class="tier-setup">+ one-time setup</div>
+        <ul class="tier-list">
+          <li>Everything in Recover</li>
+          <li>Lead follow-up + nurture</li>
+          <li>Old-customer reactivation</li>
+          <li>5-star review engine</li>
+          <li>Appointment reminders</li>
+        </ul>
+        <a class="btn btn-primary tier-cta" data-book>Get Grow →</a>
+      </div>
+      <div class="tier">
+        <div class="tier-name">Front Desk</div>
+        <div class="tier-price">$<span>2,000</span><small>+/mo</small></div>
+        <div class="tier-setup">tailored to you</div>
+        <ul class="tier-list">
+          <li>Everything in Grow</li>
+          <li>24/7 AI phone receptionist</li>
+          <li>Books straight into your calendar</li>
+          <li>Content + local SEO add-ons</li>
+          <li>Priority support</li>
+        </ul>
+        <a class="btn btn-ghost tier-cta" data-book>Talk to us →</a>
+      </div>
+    </div>
+    <p class="pricing-note">One recovered job usually covers the whole month. The rest is profit you were leaving on the table.</p>
+  </div>
+</section>
+
+<!-- ── final CTA ── -->
+<section class="final">
+  <div class="wrap final-in">
+    <h2 class="h2">Want to see it running on <b data-biz>your</b> actual number?</h2>
+    <p class="sub">Book a 15-minute call. We'll show you your live missed-call gap, set up a demo on your number, and give you a straight answer on whether this is worth it for you — no pressure, no jargon.</p>
+    <a href="#" class="btn btn-primary btn-lg" data-book>Book my 15-minute demo →</a>
+    <p class="final-fine">Real person, not a call center. If it's not a fit, we'll tell you.</p>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>Sage Automations · Sage Ideas LLC</span>
+    <span class="foot-dim">Built &amp; tested by an AI + QA engineer. We prove it works.</span>
+  </div>
+</footer>
+
+<!-- book modal -->
+<div class="modal" id="book-modal" hidden>
+  <div class="modal-card">
+    <button class="modal-x" id="modal-x" aria-label="Close">×</button>
+    <h3>Book your 15-minute demo</h3>
+    <p>Drop your details and we'll reach out within one business day to set up a live demo on your number.</p>
+    <form id="book-form">
+      <input name="name" placeholder="Your name" required>
+      <input name="business" placeholder="Business name" required>
+      <input name="phone" placeholder="Best phone number" required>
+      <input name="email" type="email" placeholder="Email">
+      <button type="submit" class="btn btn-primary">Request my demo →</button>
+    </form>
+    <p class="modal-status" id="book-status" aria-live="polite"></p>
+    <p class="modal-alt">Prefer to book directly? <a href="/book.html">Grab a time →</a></p>
+  </div>
+</div>
+
+<script src="demo.js" defer></script>
+</body>
+</html>
