@@ -30,9 +30,23 @@ test('system prompt embeds tenant facts and the hard rules', () => {
   assert.match(p, /single JSON object/);
 });
 
-test('tenant resolves (env number map + demo default)', () => {
-  assert.equal(resolveTenant('+19998887777').key, DEMO_TENANT); // unknown → demo
-  assert.ok(resolveTenant('anything').tenant.name);
+test('tenant resolves to demo when no number map is configured', () => {
+  const prev = process.env.FRONTDESK_NUMBERS;
+  delete process.env.FRONTDESK_NUMBERS;
+  const r = resolveTenant('+19998887777');
+  assert.equal(r.key, DEMO_TENANT);
+  assert.equal(r.matched, true);
+  if (prev !== undefined) process.env.FRONTDESK_NUMBERS = prev;
+});
+
+test('tenant FAILS CLOSED for an unmapped number once a map exists (no demo fallback)', () => {
+  const prev = process.env.FRONTDESK_NUMBERS;
+  process.env.FRONTDESK_NUMBERS = '+15550001111:demo';
+  assert.equal(resolveTenant('+15550001111').matched, true);   // mapped
+  const un = resolveTenant('+19995554444');                     // NOT mapped
+  assert.equal(un.matched, false);
+  assert.equal(un.tenant, null); // never silently becomes the demo tenant
+  if (prev === undefined) delete process.env.FRONTDESK_NUMBERS; else process.env.FRONTDESK_NUMBERS = prev;
 });
 
 test('tidyPhone keeps only digits and +', () => {

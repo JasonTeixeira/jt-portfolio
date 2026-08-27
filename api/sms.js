@@ -20,6 +20,7 @@ import { frontDeskReply } from '../lib/frontdesk-brain.mjs';
 function xmlEscape(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
 }
+function mask(p) { const s = String(p || ''); return s.length > 4 ? '***' + s.slice(-4) : '***'; }
 function twiml(res, message) {
   res.setHeader('Content-Type', 'text/xml; charset=utf-8');
   const msg = message ? `<Message>${xmlEscape(message)}</Message>` : '';
@@ -34,20 +35,28 @@ async function handler(req, res) {
   const to = tidyPhone(b.To);
   const text = String(b.Body || '').slice(0, 800).trim();
 
-  // Verify this really came from Twilio (unless explicitly allowed for testing).
-  const url = `https://${req.headers['x-forwarded-host'] || req.headers.host || ''}${req.url}`;
-  if (!verifyTwilioSignature(req.headers['x-twilio-signature'], url, b)) {
+  // Verify this really came from Twilio. Pin the base URL to SITE_URL when set
+  // (reliable behind proxies/CDNs) rather than trusting request headers.
+  const base = (process.env.SITE_URL || `https://${req.headers['x-forwarded-host'] || req.headers.host || ''}`).replace(/\/$/, '');
+  if (!verifyTwilioSignature(req.headers['x-twilio-signature'], base + req.url, b)) {
     return res.status(403).json({ ok: false, error: 'bad_signature' });
   }
   if (!from || !text) return twiml(res, '');
 
-  // per-number throttle (a customer texting fast is fine; this blunts abuse)
-  if (await rateLimited(from || clientIp(req), 12, 'sms')) {
+  // rolling burst throttle + absolute daily cap per number (metered-API abuse guard)
+  const idKey = from || clientIp(req);
+  if (await rateLimited(idKey, 12, 'sms') || await rateLimited(idKey, 80, 'sms-day', 86_400_000)) {
     return twiml(res, 'One sec — got a lot coming in. Give me a moment and text again.');
   }
 
-  const { tenant } = resolveTenant(to);
-  const key = `sms:${from}`;
+  // Fail closed: never answer as / route a real client's customer to the demo owner.
+  const { tenant, matched } = resolveTenant(to);
+  if (!matched || !tenant) {
+    console.log('[frontdesk] unmapped number', JSON.stringify({ to: mask(to), from: mask(from) }));
+    return twiml(res, '');
+  }
+  // Session scoped by BOTH numbers so conversations never bleed across tenants.
+  const key = `sms:${to}:${from}`;
   const history = getHistory(key);
 
   const out = await frontDeskReply(tenant, history, text);
@@ -63,7 +72,8 @@ async function handler(req, res) {
       `Job: ${L.issue || text.slice(0, 80)}\n` +
       `When: ${L.when || 'asap'}${L.urgent ? '  ⚠ URGENT' : ''}`;
     if (tenant.ownerPhone) sendSms({ to: tenant.ownerPhone, body: summary }).catch(() => {});
-    console.log('[frontdesk] lead', JSON.stringify({ tenant: tenant.name, from, lead: L }));
+    // redact PII in logs — the owner gets the full lead by SMS; stdout gets a masked marker
+    console.log('[frontdesk] lead booked', JSON.stringify({ tenant: tenant.name, from: mask(from) }));
     clear(key);
   }
 
