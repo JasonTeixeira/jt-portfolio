@@ -28,6 +28,22 @@ import { getNiche } from '../assets/niches.mjs';
     _default: { issue: 'my water heater\'s leaking bad, need someone today if possible', ai1: 'Got it — a leaking water heater, same-day. We can do a 2–4pm window today. What\'s the service address?', addr: '123 Oak St. 2–4 works great', ok: 'Perfect — you\'re booked for 2–4pm today at 123 Oak St. You\'ll get a confirmation text shortly. 👍', owner: 'Water heater leak · 123 Oak St · today 2–4pm' },
   };
   var scen = SCEN[niche.cat] || SCEN._default;
+  // surface the niche's real time-sinks ("what we'd automate for you")
+  var sinksEl = $('[data-sinks]');
+  if (sinksEl && niche.sinks && niche.sinks.length) {
+    sinksEl.textContent = "What we'd automate for you: " + niche.sinks.slice(0, 4).join(' · ');
+    sinksEl.hidden = false;
+  }
+  // per-niche title + meta (a business name, if present, still wins)
+  if (params.get('niche') && !rawBiz) {
+    document.title = 'Automation for ' + niche.label + ' — Sage Automations';
+    var md = document.querySelector('meta[name="description"]');
+    if (md) md.setAttribute('content', niche.hook + " Done-for-you automation that gives " + niche.label.toLowerCase() + ' their time back.');
+  }
+  // adapt the speed-to-lead example to the niche
+  var stlProblem = $('[data-stl-problem]');
+  var STL_PROB = { professional: 'Need a consultation — are you taking new clients?', health: 'New patient — any openings this week?' };
+  if (stlProblem && STL_PROB[niche.cat]) stlProblem.textContent = STL_PROB[niche.cat];
 
   // ── helpers to render phone messages ─────────────────────────────
   function bubble(screen, cls, text) {
