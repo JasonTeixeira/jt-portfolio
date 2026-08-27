@@ -48,7 +48,8 @@ function main(argv) {
     if (!biz) continue;
     n++;
     const city = iCity >= 0 ? (r[iCity] || '').trim() : '';
-    const link = `${site}/automations/?biz=${encodeURIComponent(biz)}`;
+    const nicheQ = flags.niche ? `&niche=${encodeURIComponent(flags.niche)}` : '';
+    const link = `${site}/automations/?biz=${encodeURIComponent(biz)}${nicheQ}`;
     const first = biz.split(/\s+/)[0];
     out.push(`## ${n}. ${biz}${city ? ' · ' + city : ''}`);
     if (iNotes >= 0 && r[iNotes]) out.push(`Contact: ${r[iNotes].trim()}`);

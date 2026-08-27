@@ -29,23 +29,15 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
+import { NICHES } from '../assets/niches.mjs';
+
+export { NICHES };
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUTREACH = resolve(HERE, '..', 'outreach');
 
-// ── ICP config (edit these to retarget) ────────────────────────────────────
-export const NICHES = {
-  restoration: {
-    label: 'Restoration',
-    keywords: ['restoration', 'water damage', 'fire damage', 'flood', 'mold',
-      'mitigation', 'remediation', 'disaster', 'water removal', 'damage repair'],
-  },
-  hvac: {
-    label: 'HVAC',
-    keywords: ['hvac', 'heating', 'cooling', 'air conditioning', 'air condition',
-      'furnace', 'ac repair', 'heat pump', 'climate control', 'heating & cooling'],
-  },
-};
+// NICHES now comes from the shared catalog (assets/niches.mjs) — all niches are
+// sourceable: node scripts/score-leads.mjs leads.csv --niche=law (or restoration, hvac, ...).
 
 // Review-count sweet spot: established enough to have money, small enough to be
 // owner-run and feel the pain. Outside this band still scores, just lower.

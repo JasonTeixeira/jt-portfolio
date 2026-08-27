@@ -1,6 +1,7 @@
 /* Sage Automations demo microsite — interactive demos + personalization.
-   Vanilla JS, no deps. Personalize a prospect's link with ?biz=Their+Business */
-(function () {
+   ES module. Personalize a prospect's link: ?biz=Their+Business&niche=law */
+import { getNiche } from '../assets/niches.mjs';
+{
   'use strict';
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -16,6 +17,17 @@
   var line = $('[data-biz-line]');
   if (line && rawBiz) line.textContent = 'Prepared for ' + biz;
   if (rawBiz) document.title = biz + ' — never lose another job to a missed call';
+
+  // ── niche personalization (?niche=law, dental, hvac …) from the shared catalog ──
+  var niche = getNiche(params.get('niche'));
+  if (params.get('niche') && line && !rawBiz) line.textContent = 'Automation for ' + niche.label;
+  // demo scenario adapts to the niche's category so it fits every trade
+  var SCEN = {
+    professional: { issue: 'I need a consultation about a contract issue — are you taking new clients?', ai1: 'We are. I can get you a consult this week. Is this business or personal, and what\'s the best callback number?', addr: 'Business — (555) 018-2, afternoons are best', ok: 'Perfect — you\'re down for a consult. Someone will call this afternoon to lock the time. 👍', owner: 'New client · contract matter · callback afternoons' },
+    health: { issue: 'do you have any openings this week? I\'m a new patient', ai1: 'We do! What are you coming in for, and which days work best?', addr: 'just a checkup — Thursday or Friday', ok: 'Perfect — you\'re booked as a new patient for Thu/Fri. We\'ll confirm the exact time by text. 👍', owner: 'New patient · checkup · Thu/Fri' },
+    _default: { issue: 'my water heater\'s leaking bad, need someone today if possible', ai1: 'Got it — a leaking water heater, same-day. We can do a 2–4pm window today. What\'s the service address?', addr: '123 Oak St. 2–4 works great', ok: 'Perfect — you\'re booked for 2–4pm today at 123 Oak St. You\'ll get a confirmation text shortly. 👍', owner: 'Water heater leak · 123 Oak St · today 2–4pm' },
+  };
+  var scen = SCEN[niche.cat] || SCEN._default;
 
   // ── helpers to render phone messages ─────────────────────────────
   function bubble(screen, cls, text) {
@@ -69,17 +81,17 @@
     bubble(owner, 'alert', '🔔 Recovered a missed call — replying to the customer now. Sit tight, I\'ll text you when it\'s booked.');
     await wait(1600);
 
-    bubble(cust, 'you', 'my water heater\'s leaking bad, need someone today if possible');
+    bubble(cust, 'you', scen.issue);
     await wait(700);
     var t2 = typing(cust); await wait(1100); t2.remove();
-    bubble(cust, 'them', 'Got it — a leaking water heater, same-day. We can do a 2–4pm window today. What\'s the service address?');
+    bubble(cust, 'them', scen.ai1);
     await wait(1500);
-    bubble(cust, 'you', '123 Oak St. 2–4 works great');
+    bubble(cust, 'you', scen.addr);
     await wait(700);
     var t3 = typing(cust); await wait(1000); t3.remove();
-    bubble(cust, 'them', 'Perfect — you\'re booked for 2–4pm today at 123 Oak St. You\'ll get a confirmation text shortly. 👍');
+    bubble(cust, 'them', scen.ok);
     // owner booked alert
-    bubble(owner, 'alert', '✅ Booked: Water heater leak · 123 Oak St · today 2–4pm. Added to your calendar. That\'s a job you almost lost.');
+    bubble(owner, 'alert', '✅ Booked: ' + scen.owner + '. Added to your calendar. That\'s a job you almost lost.');
     await wait(600);
     mcNote.textContent = 'A job you would have lost — recovered and booked automatically, while you were on another call.';
     mcReplay.hidden = false; mcRunning = false;
@@ -165,6 +177,7 @@
     animateTo(rev, revenue, money);
   }
   if (range) {
+    if (niche.avgJob) range.value = String(Math.min(4000, Math.max(150, niche.avgJob)));
     range.addEventListener('input', recalcRoi);
     recalcRoi();
   }
@@ -217,4 +230,4 @@
     }, { threshold: 0.4 });
     io.observe($('#mc-stage'));
   }
-})();
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automation for your industry — Sage Automations</title>
+<meta name="description" content="Done-for-you automation that gives owners their time back. Pick your industry to see it built for you.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="automations.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23064e3b'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='system-ui' font-size='34' font-weight='800' fill='%2334d399'%3ES%3C/text%3E%3C/svg%3E">
+<style>
+  .nx-hero { padding: clamp(48px,7vw,90px) 0 20px; }
+  .nx-cat { margin-top: 44px; }
+  .nx-cat h2 { font-family: var(--display); font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amber); margin: 0 0 16px; }
+  .nx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .nx-card { display: block; text-decoration: none; color: inherit; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; transition: transform .16s var(--ease), border-color .16s, box-shadow .16s; }
+  .nx-card:hover { transform: translateY(-3px); border-color: var(--green); box-shadow: var(--shadow-sm); }
+  .nx-card b { display: block; font-size: 17px; letter-spacing: -0.01em; }
+  .nx-card span { display: block; font-size: 13.5px; color: var(--dim); margin-top: 6px; line-height: 1.45; }
+  .nx-card .go { color: var(--green); font-weight: 650; font-size: 13px; margin-top: 12px; display: inline-block; }
+</style>
+</head>
+<body>
+<header class="bar"><div class="wrap bar-in">
+  <div class="brand"><span class="brand-mark">S</span> Sage <span class="brand-dim">Automations</span></div>
+  <a href="/automations/" class="bar-cta">See a demo →</a>
+</div></header>
+
+<section class="hero nx-hero"><div class="wrap">
+  <div class="eyebrow"><span class="live-dot"></span> Done-for-you automation</div>
+  <h1 class="h1">We give <span class="hl">your industry</span> its time back.</h1>
+  <p class="lede">Pick your line of work and see exactly what we'd automate for you — the calls, the follow-ups, the admin that eats your week. Same engine, tuned to your business.</p>
+</div></section>
+
+<section class="demo" style="padding-top:20px"><div class="wrap">
+  <div id="nx-root"></div>
+</div></section>
+
+<footer class="foot"><div class="wrap foot-in">
+  <span>Sage Automations · Sage Ideas LLC</span>
+  <span class="foot-dim">Built &amp; tested by an AI + QA engineer. We prove it works.</span>
+</div></footer>
+
+<script type="module">
+  import { nichesByCategory } from '../assets/niches.mjs';
+  var CAT_LABEL = { trades: 'Home & trade services', professional: 'Professional services', health: 'Health & wellness', property: 'Property & construction', other: 'More' };
+  var byCat = nichesByCategory();
+  var root = document.getElementById('nx-root');
+  var order = ['trades', 'professional', 'health', 'property', 'other'];
+  var html = '';
+  order.forEach(function (cat) {
+    var items = byCat[cat]; if (!items) return;
+    html += '<div class="nx-cat"><h2>' + (CAT_LABEL[cat] || cat) + '</h2><div class="nx-grid">';
+    items.forEach(function (n) {
+      html += '<a class="nx-card" href="/automations/?niche=' + n.key + '">' +
+        '<b>' + esc(n.label) + '</b><span>' + esc(n.hook) + '</span>' +
+        '<span class="go">See it for ' + esc(n.label.toLowerCase()) + ' →</span></a>';
+    });
+    html += '</div></div>';
+  });
+  root.innerHTML = html;
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+</script>
+</body>
+</html>
