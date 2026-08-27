@@ -16,6 +16,7 @@
 import { isEnabled as scopeDbEnabled } from '../lib/scope-db.mjs';
 import { isEnabled as stripeEnabled } from '../lib/stripe.mjs';
 import { isEnabled as resendEnabled } from '../lib/notify.mjs';
+import { smsEnabled } from '../lib/sms.mjs';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -35,6 +36,8 @@ export default async function handler(req, res) {
     admin: Boolean(process.env.SCOPE_ADMIN_TOKEN),
     nurture: process.env.NURTURE_ENABLED === 'true' && Boolean(process.env.CRON_SECRET),
     site_url: Boolean(process.env.SITE_URL),
+    frontdesk_sms: smsEnabled(),
+    frontdesk_owner_alert: Boolean(process.env.FRONTDESK_DEMO_OWNER_PHONE),
   };
 
   return res.status(200).json({ ok: true, ts: new Date().toISOString(), subsystems });
