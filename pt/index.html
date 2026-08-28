@@ -39,6 +39,8 @@
     { "@type": "Question", "name": "Do you work in our stack or yours?", "acceptedAnswer": { "@type": "Answer", "text": "Yours. Your repo, your CI, your conventions. Every engagement ends with a runbook and a walkthrough so your team runs the system without me." } },
     { "@type": "Question", "name": "What does an engagement cost?", "acceptedAnswer": { "@type": "Answer", "text": "There is no fixed price list, because scope varies too much for one to be honest. Every engagement is quoted in writing after a short scoping call: fixed scope, never open-ended hours. The 30-minute intro call is free and ends with a concrete plan and a real number either way." } }, { "@type": "Question", "name": "What is the typical timeline?", "acceptedAnswer": { "@type": "Answer", "text": "The audit is one week. Pilot-sized sprints run 2-3 weeks; full builds 4-8 weeks depending on scope." } }, { "@type": "Question", "name": "How do you handle our data and code?", "acceptedAnswer": { "@type": "Answer", "text": "NDA-friendly. Access scoped to the engagement, credentials stay in your systems, code stays in your repos, nothing retained after handoff." } },
     { "@type": "Question", "name": "How fast can you start?", "acceptedAnswer": { "@type": "Answer", "text": "One engagement at a time. Week 1 is scoping, so you know exactly what you're getting before the build starts." } },
+    { "@type": "Question", "name": "Couldn't we just build this in-house?", "acceptedAnswer": { "@type": "Answer", "text": "Often you should, and at handoff you will be. An in-house hire maintains the system day to day; I design it once, with the eval battery, failure modes, and CI gate already patterned from many of these builds. The build hours are the cheap part — the real cost of DIY is ongoing: keeping evals honest, chasing model and API drift, and the regression nobody catches until a customer does." } },
+    { "@type": "Question", "name": "After handoff, what if it breaks or you're not around?", "acceptedAnswer": { "@type": "Answer", "text": "Everything lands in your repo and CI with a runbook and walkthrough — no dependency on me, nothing locked to my platform. The gate catches drift before it ships, and access, credentials, and a written handoff plan exist from day one so the work outlives me being unavailable." } },
     { "@type": "Question", "name": "What if evals show our AI feature is already fine?", "acceptedAnswer": { "@type": "Answer", "text": "Then you ship with evidence instead of hope, and the suite stays in CI to catch the regression that would have landed later." } },
     { "@type": "Question", "name": "Are you open to full-time roles?", "acceptedAnswer": { "@type": "Answer", "text": "Open to the right one — the site has a dedicated hiring view and a downloadable résumé." } }
   ]
@@ -273,6 +275,59 @@
 </div>
   </section>
 
+  <!-- VET — how to tell a real AI build from a resold one (the buyer's red-flag checklist, turned on myself) -->
+  <style>@media (max-width:640px){#vet .vet-head,#vet .vet-row{grid-template-columns:1fr}#vet .vet-head>div,#vet .vet-row>div{border-right:none !important}#vet .vet-head>div:first-child,#vet .vet-row>div:first-child{border-bottom:1px solid #1A1917}}</style>
+  <section id="vet" class="rise" style="border-top:1px solid #2A2826;background:#0C0C0E;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;right:clamp(18px,4vw,40px);transform:translateY(-46%);font-family:'Instrument Serif',Georgia,serif;font-size:clamp(80px,13vw,170px);line-height:0.8;color:transparent;-webkit-text-stroke:1px #1F1D1B;user-select:none;pointer-events:none;z-index:1">✓</div>
+    <div style="max-width:1240px;margin:0 auto;padding:88px clamp(18px,4vw,40px);position:relative">
+      <div class="sec-rule">
+        <span class="sec-label" style="color:#F59E0B">guia de campo · antes de contratar alguém</span>
+        <span class="line"></span>
+      </div>
+      <h2 class="sec-title" style="max-width:24ch;margin-top:8px">Como diferenciar uma construção de IA real de uma revendida.</h2>
+      <p style="margin:16px 0 0;font-size:1.02rem;line-height:1.7;color:#A8A29E;max-width:60ch">O mercado se encheu rápido de agências que embrulham um fluxo de Zapier alugado numa margem de lucro. Então não fique só na minha palavra — aqui está a checklist que eu te daria para avaliar <em style="color:#F4F2EF;font-style:normal">qualquer um</em>, eu incluído. Aplique cada linha em mim.</p>
+
+      <div style="margin-top:44px;border:1px solid #2A2826;border-radius:12px;overflow:hidden;background:#08090c">
+        <div class="vet-head" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #2A2826">
+          <div style="padding:16px 22px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#f43f5e;border-right:1px solid #2A2826">✗ &nbsp;o que a maioria das agências de "automação com IA" faz</div>
+          <div style="padding:16px 22px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#10b981">✓ &nbsp;o que você recebe aqui</div>
+        </div>
+        <div id="jt-vet-rows">
+          <div class="vet-row" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #1A1917">
+            <div style="padding:20px 22px;border-right:1px solid #1A1917;font-size:13.5px;line-height:1.7;color:#8E8882">«Agende uma chamada» e uma promessa vaga — nada para inspecionar antes de você se comprometer.</div>
+            <div style="padding:20px 22px;font-size:13.5px;line-height:1.7;color:#D6D3D0">Uma demo ao vivo, clicável, e recibos públicos <em style="color:#F4F2EF;font-style:normal">antes</em> de você sequer falar comigo. Cada número nesta página tem link para a execução literal.</div>
+          </div>
+          <div class="vet-row" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #1A1917">
+            <div style="padding:20px 22px;border-right:1px solid #1A1917;font-size:13.5px;line-height:1.7;color:#8E8882">Um fluxo de Zapier/Make revendido que parece idêntico para cada cliente.</div>
+            <div style="padding:20px 22px;font-size:13.5px;line-height:1.7;color:#D6D3D0">Código real no <em style="color:#F4F2EF;font-style:normal">seu</em> repositório, adaptado ao seu stack. É seu no handoff — nada preso à minha plataforma.</div>
+          </div>
+          <div class="vet-row" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #1A1917">
+            <div style="padding:20px 22px;border-right:1px solid #1A1917;font-size:13.5px;line-height:1.7;color:#8E8882">ROI garantido, orçado antes mesmo de terem visto o seu sistema.</div>
+            <div style="padding:20px 22px;font-size:13.5px;line-height:1.7;color:#D6D3D0">Uma auditoria de preço fixo, de uma semana, que primeiro te diz a verdade — e é abatida integralmente no valor da construção se você seguir em frente.</div>
+          </div>
+          <div class="vet-row" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #1A1917">
+            <div style="padding:20px 22px;border-right:1px solid #1A1917;font-size:13.5px;line-height:1.7;color:#8E8882">«Estudos de caso» sob NDA e números redondos que você não consegue verificar.</div>
+            <div style="padding:20px 22px;font-size:13.5px;line-height:1.7;color:#D6D3D0">Recibos que você pode abrir: <span style="color:#10b981">37/37</span> specs verdes no CI, <span style="color:#F59E0B">10%→&lt;1%</span> de flakiness, <span style="color:#f43f5e">15→0</span> CVEs — cada um com link para a execução.</div>
+          </div>
+          <div class="vet-row" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #1A1917">
+            <div style="padding:20px 22px;border-right:1px solid #1A1917;font-size:13.5px;line-height:1.7;color:#8E8882">Lança a funcionalidade de IA e espera que ela se comporte bem na frente dos seus clientes.</div>
+            <div style="padding:20px 22px;font-size:13.5px;line-height:1.7;color:#D6D3D0">Uma bateria de avaliação + gate de CI — fidelidade, injeção, toxicidade, regressão — para que fique <em style="color:#F4F2EF;font-style:normal">testada antes de tocar um cliente</em>, não depois.</div>
+          </div>
+          <div class="vet-row" style="display:grid;grid-template-columns:1fr 1fr">
+            <div style="padding:20px 22px;border-right:1px solid #1A1917;font-size:13.5px;line-height:1.7;color:#8E8882">Você fica preso; eles se tornam o único ponto de falha.</div>
+            <div style="padding:20px 22px;font-size:13.5px;line-height:1.7;color:#D6D3D0">Runbook, demonstração guiada, handoff documentado. Seu time opera sem mim — e o trabalho sobrevive à minha indisponibilidade.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:26px">
+        <a href="/pt/docs-proof-index.html" class="btn-ghost" data-evt="vet-proof" style="border-color:#10b981;color:#10b981">Abrir o índice de provas →</a>
+        <span class="only-client" style="display:contents"><a href="/pt/book.html" class="btn-solid green" data-evt="vet-book">Agende a auditoria →</a></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8E8882;max-width:40ch">Aplique esta lista em mim. Cada afirmação acima está a um clique da sua evidência.</span>
+      </div>
+    </div>
+  </section>
+
   <!-- SERVICES — LIGHT BAND -->
   <!-- SERVICES — dark band, elevated (P3.2: converted from a stray light band to the site's disciplined dark surface) -->
   <section id="services" style="border-top:1px solid #2A2826;background:#0C0C0E;margin-top:120px;position:relative;overflow:hidden">
@@ -358,6 +413,14 @@
           <details class="faq">
             <summary>Como você lida com nossos dados e código?</summary>
             <p>Aberto a NDA. O acesso é escopado ao projeto, as credenciais permanecem nos seus sistemas, o código permanece nos seus repositórios, e nada é retido após o handoff. O one-pager sobre tratamento de dados está disponível antes de começarmos.</p>
+          </details>
+          <details class="faq">
+            <summary>Não poderíamos simplesmente construir isso internamente?</summary>
+            <p>Muitas vezes você deveria — e, no handoff, você vai poder. A diferença está no papel: uma contratação interna <em>mantém</em> o sistema no dia a dia; eu sou trazido para <em>desenhá-lo uma vez</em>, já com o padrão de muitas dessas construções incorporado — a bateria de avaliação, os modos de falha, o gate. As horas de construção são a parte barata. O custo real de fazer isso internamente é o contínuo: manter as avaliações honestas, correr atrás da deriva de modelos e APIs, e a regressão que ninguém percebe até um cliente perceber. Eu deixo isso funcionando de forma sólida e depois entrego as chaves para o seu time.</p>
+          </details>
+          <details class="faq">
+            <summary>Depois do handoff — e se quebrar, e se você não estiver disponível?</summary>
+            <p>Tudo fica no <em>seu</em> repositório e no seu CI, com um runbook e uma demonstração guiada — sem nenhuma dependência de mim, nada preso à minha plataforma. Se algo desviar, o gate foi construído para detectar isso antes de ir para produção, e o runbook diz exatamente o que fazer. Acesso, credenciais e um plano de handoff por escrito existem desde o primeiro dia, então o trabalho sobrevive à minha indisponibilidade. A janela opcional de operação existe caso você queira uma mão, não porque você vai precisar dela.</p>
           </details>
           <details class="faq">
             <summary>E se as avaliações mostrarem que nossa funcionalidade de IA já está boa?</summary>
@@ -580,6 +643,23 @@
         <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.6rem,6vw,4.6rem);letter-spacing:-0.02em;margin:0;line-height:1.05">Uma contratação, <em style="color:#22d3ee">duas</em> disciplinas.</h2>
         <p style="margin:22px auto 0;font-size:15px;color:#A8A29E;max-width:48ch">O engenheiro que entrega a funcionalidade de LLM e o arcabouço que a protege. Vamos falar sobre o seu time.</p>
       </span>
+      <!-- INLINE BOOKING — appears only once CAL_HANDLE is set below; until then the buttons below are the path (no regression) -->
+      <div class="only-client" style="display:contents"><div id="jt-cal-wrap" hidden style="max-width:820px;margin:36px auto 0;text-align:left">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8E8882;margin-bottom:12px">
+          <span style="display:inline-flex;align-items:center;gap:8px;color:#10b981;font-weight:600"><span class="pulse" style="position:static"></span>escolha um horário — 30 min, grátis</span>
+          <span style="color:#3D3A37">·</span>
+          <span>Eu mesmo respondo e conduzo a chamada. Sem equipe de vendas, sem spam, sem sequência automatizada.</span>
+        </div>
+        <div id="jt-cal-inline" style="min-height:560px;width:100%;border:1px solid #2A2826;border-radius:12px;overflow:hidden;background:#0C0C0E"></div>
+      </div></div>
+      <script>/* Inline booking. To go live: set CAL_HANDLE to your Cal.com link (e.g. 'jason-teixeira/intro-call'). CSP already allows app.cal.com. Empty = hidden, buttons below remain the path. */
+      (function(){var CAL_HANDLE='';/* TODO(jason): your Cal.com event link, e.g. 'jason-teixeira/30min' */
+        if(!CAL_HANDLE)return;var wrap=document.getElementById('jt-cal-wrap');if(!wrap)return;wrap.hidden=false;
+        (function(C,A,L){var p=function(a,ar){a.q.push(ar);};var d=C.document;C.Cal=C.Cal||function(){var cal=C.Cal;var ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true;}if(ar[0]===L){var api=function(){p(api,arguments);};var namespace=ar[1];api.q=api.q||[];if(typeof namespace==="string"){cal.ns[namespace]=cal.ns[namespace]||api;p(cal.ns[namespace],ar);p(cal,["initNamespace",namespace]);}else{p(cal,ar);}return;}p(cal,ar);};})(window,"https://app.cal.com/embed/embed.js","init");
+        Cal("init",{origin:"https://app.cal.com"});
+        Cal("inline",{elementOrSelector:"#jt-cal-inline",calLink:CAL_HANDLE,layout:"month_view"});
+        Cal("ui",{theme:"dark",hideEventTypeDetails:false,cssVarsPerTheme:{dark:{"cal-brand":"#10b981"}}});
+      })();</script>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:36px;flex-wrap:wrap">
         <a href="/pt/book.html" class="btn-solid green" style="padding:14px 30px" data-evt="book-call">Agende uma chamada introdutória →</a>
         <a href="mailto:hello@sageideas.dev?subject=Intro%20call%20—%20via%20portfolio" class="btn-ghost" data-evt="email-intro">ou apenas me envie um email</a>

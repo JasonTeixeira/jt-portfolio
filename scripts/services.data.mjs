@@ -12,6 +12,7 @@ export const BOOK_URL = '../book.html';
 export const SERVICES = [
   {
     slug: 'llm-evaluation-qa',
+    video: 'svc-llm-eval',
     color: '#a78bfa',
     keyword: 'LLM evaluation & AI quality',
     title: 'LLM Evaluation Consultant — Eval Suites, Hallucination Testing & CI Quality Gates',
@@ -48,6 +49,7 @@ export const SERVICES = [
   },
   {
     slug: 'test-automation-ci',
+    video: 'svc-test-ci',
     color: '#10b981',
     keyword: 'Test automation + CI',
     title: 'Playwright Test Automation Consultant — Regression Suites, CI Pipelines & Release Evidence',
@@ -83,6 +85,7 @@ export const SERVICES = [
   },
   {
     slug: 'ai-workflow-automation',
+    video: 'svc-workflow',
     color: '#0e7490',
     keyword: 'AI workflow automation',
     title: 'AI Workflow Automation Consultant — n8n, Make & LangGraph Builds With Human Approval Gates',

@@ -122,6 +122,17 @@ ${jsonLd.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</sc
       <a href="../index.html#briefs" class="btn-ghost">Read the engineering briefs</a>
     </div>
   </header>
+${s.video ? `
+  <section style="max-width:920px;margin:0 auto;padding:8px clamp(18px,4vw,40px) 24px">
+    <div class="sec-rule"><span class="sec-label" style="color:${s.color}">watch · 45 seconds</span><span class="line"></span></div>
+    <div style="margin-top:22px;position:relative;border:1px solid #2A2826;border-radius:14px;overflow:hidden;background:#0C0C0E;box-shadow:0 18px 50px rgba(0,0,0,0.4)">
+      <video controls preload="none" playsinline poster="../assets/video/${s.video}-poster.jpg" data-evt="watch-${s.slug}" style="display:block;width:100%;aspect-ratio:16/9;background:#09090B">
+        <source src="../assets/video/${s.video}.mp4" type="video/mp4">
+        <a href="../assets/video/${s.video}.mp4" style="color:#10b981">Download the clip (MP4)</a>.
+      </video>
+    </div>
+    <p style="margin:12px 0 0;${MONO}font-size:11px;color:#837D77">▸ the 45-second version — in my own voice</p>
+  </section>` : ''}
 
   <section style="max-width:920px;margin:0 auto;padding:24px clamp(18px,4vw,40px)">
     <div class="sec-rule"><span class="sec-label" style="color:${s.color}">sound familiar?</span><span class="line"></span></div>
