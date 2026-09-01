@@ -57,11 +57,13 @@
     card = d.createElement('div'); card.id = 'jt-welcome'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', 'Atlas'); card.setAttribute('lang', loc);
     card.innerHTML =
       '<button class="jt-w-x" aria-label="' + T.close + '">&times;</button>' +
+      '<div class="jt-w-inner">' +
       '<div class="jt-w-head"><span class="jt-w-mk">&#9670;</span><span class="jt-w-name">Atlas</span><span class="jt-w-on"><i></i>' + T.online + '</span></div>' +
       '<p class="jt-w-hi">' + T.hi + '</p>' +
       '<p class="jt-w-q">' + T.q + '</p>' +
-      '<div class="jt-w-chips">' + CHIPS.map(function (c, i) { return '<button class="jt-w-chip" data-k="' + c.k + '" style="--i:' + i + '">' + c.label + '</button>'; }).join('') + '</div>' +
-      '<button class="jt-w-watch"><span aria-hidden="true">&#9654;</span> ' + T.watch + '</button>';
+      '<div class="jt-w-chips">' + CHIPS.map(function (c, i) { return '<button class="jt-w-chip" data-k="' + c.k + '" style="--i:' + i + '"><span>' + c.label + '</span><i class="jt-w-arw" aria-hidden="true">&rarr;</i></button>'; }).join('') + '</div>' +
+      '<div class="jt-w-foot"><button class="jt-w-watch"><span aria-hidden="true">&#9654;</span> ' + T.watch + '</button></div>' +
+      '</div>';
     d.body.appendChild(card);
     card.querySelector('.jt-w-x').addEventListener('click', function () { close(false); });
     card.querySelectorAll('.jt-w-chip').forEach(function (b) { b.addEventListener('click', function () { var c = CHIPS.filter(function (x) { return x.k === b.dataset.k; })[0]; if (c) c.act(); }); });
