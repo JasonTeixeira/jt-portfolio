@@ -145,9 +145,12 @@ p a, .prose a {
 .site-nav-nm { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
 .site-nav-index-extra { display: flex; align-items: center; gap: 14px; margin-left: auto; }
 .site-nav-links {
-  display: flex; align-items: center; gap: 22px;
+  display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;
+  gap: 18px; row-gap: 12px;
   font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
 }
+.site-nav-link { white-space: nowrap; }
+.site-nav .nav-social { flex-shrink: 0; }
 .site-nav-link {
   color: #A8A29E; padding-bottom: 3px;
   background-image: linear-gradient(#22d3ee, #22d3ee);
@@ -174,7 +177,7 @@ p a, .prose a {
 .site-nav-burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 body.site-nav-open { overflow: hidden; }
 
-@media (max-width: 760px) {
+@media (max-width: 1000px) {
   .site-nav-index-extra { display: none; }
   .site-nav-burger { display: inline-flex; }
   .site-nav-links {
