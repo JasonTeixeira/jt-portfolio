@@ -823,3 +823,16 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 .portal-agreement-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8E8882; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
 
 .portal-empty { text-align: center; padding: 60px 20px; }
+
+/* --- nav social cluster (added 2026-09-01) --- */
+.nav-social{display:inline-flex;align-items:center;gap:2px;padding-left:10px;margin-left:2px;border-left:1px solid #2A2826}
+.nav-social a{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;color:#8E8882;transition:color .18s ease,background .18s ease}
+.nav-social a:hover{color:#F4F2EF;background:rgba(244,242,239,0.06)}
+.nav-social svg{width:17px;height:17px;display:block}
+@media (max-width:900px){.nav-social{padding-left:0;margin-left:0;border-left:0;margin-top:8px}}
+
+/* --- footer social row (added 2026-09-01) --- */
+.foot-social{display:inline-flex;align-items:center;gap:4px}
+.foot-social a{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;color:#837D77;transition:color .18s ease,background .18s ease}
+.foot-social a:hover{color:#F4F2EF;background:rgba(244,242,239,0.06)}
+.foot-social svg{width:16px;height:16px;display:block}
