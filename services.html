@@ -104,6 +104,8 @@
   .cap .flagtag { display:inline-flex; align-items:center; gap:5px; font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cc); border:1px solid color-mix(in srgb, var(--cc) 45%, transparent); border-radius:999px; padding:3px 9px; margin-left:auto; }
 
   .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .card { border:1px solid var(--line); background:var(--card); border-radius:14px; }
+  a.card { transition:border-color .2s, transform .2s; } a.card:hover { border-color:var(--cyan); transform:translateY(-2px); }
   @keyframes rise { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
   @media (prefers-reduced-motion:reduce){ .step,.svc,.cap { animation:none !important; opacity:1 !important; } .sweep { display:none; } }
 </style>
@@ -132,7 +134,7 @@
       <a href="services.html" class="site-nav-link" aria-current="page">Services</a>
       <a href="case-studies.html" class="site-nav-link">Work</a>
       <a href="build.html" class="site-nav-link">Scope a project</a>
-      <a href="docs.html" class="site-nav-link">Guides</a>
+      <a href="docs.html" class="site-nav-link">Docs</a>
       <a href="field-notes.html" class="site-nav-link">Field Notes</a>
       <span class="nav-social" aria-label="Social links" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Email" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
       <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
@@ -176,6 +178,45 @@
     <p class="subtle" style="margin-top:12px;max-width:56ch">Filter by track. Click any card for the explainer: what it is, what you get, and the outcome. Every one ends in a quote, worked out on a call.</p>
     <div class="cat-filter" id="cats"></div>
     <div id="capgrid"></div>
+  </div></section>
+
+  <!-- ANSWERS / SEO landing pages -->
+  <section id="answers"><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">Answers &middot; the questions people actually search</div>
+    <h2 style="margin-top:12px;max-width:24ch">Deeper on the work &mdash; with the receipts.</h2>
+    <p class="subtle" style="margin-top:12px;max-width:58ch">Plain-English guides to the exact problems I get hired for. Each one links to the real proof, not claims.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;margin-top:26px">
+      <a href="hire-ai-qa-engineer.html" class="card" style="display:block;padding:20px;transition:border-color .2s">
+        <div class="mono" style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--green)">Buyer intent</div>
+        <div style="font-family:var(--serif);font-size:1.2rem;margin:8px 0 0;color:var(--ink)">Hire an AI QA engineer</div>
+        <p class="subtle" style="margin-top:8px;font-size:13px">Who to bring in before an AI feature embarrasses you &mdash; and how to spot a resold shop.</p>
+        <span class="mono" style="display:inline-block;margin-top:12px;font-size:12px;color:var(--cyan)">Read &rarr;</span>
+      </a>
+      <a href="llm-evaluation-consultant.html" class="card" style="display:block;padding:20px;transition:border-color .2s">
+        <div class="mono" style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple)">Method</div>
+        <div style="font-family:var(--serif);font-size:1.2rem;margin:8px 0 0;color:var(--ink)">LLM evaluation, explained</div>
+        <p class="subtle" style="margin-top:8px;font-size:13px">Golden sets, LLM-as-judge, and the CI gate that blocks bad AI changes.</p>
+        <span class="mono" style="display:inline-block;margin-top:12px;font-size:12px;color:var(--cyan)">Read &rarr;</span>
+      </a>
+      <a href="rag-evaluation-guide.html" class="card" style="display:block;padding:20px;transition:border-color .2s">
+        <div class="mono" style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cyan)">Checklist</div>
+        <div style="font-family:var(--serif);font-size:1.2rem;margin:8px 0 0;color:var(--ink)">RAG evaluation</div>
+        <p class="subtle" style="margin-top:8px;font-size:13px">Citation coverage, groundedness, and abstain-on-no-evidence &mdash; from a 100%-cited build.</p>
+        <span class="mono" style="display:inline-block;margin-top:12px;font-size:12px;color:var(--cyan)">Read &rarr;</span>
+      </a>
+      <a href="ai-agent-testing.html" class="card" style="display:block;padding:20px;transition:border-color .2s">
+        <div class="mono" style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber)">Failure modes</div>
+        <div style="font-family:var(--serif);font-size:1.2rem;margin:8px 0 0;color:var(--ink)">AI agent testing</div>
+        <p class="subtle" style="margin-top:8px;font-size:13px">What breaks in production that unit tests miss &mdash; and the probes that catch it.</p>
+        <span class="mono" style="display:inline-block;margin-top:12px;font-size:12px;color:var(--cyan)">Read &rarr;</span>
+      </a>
+      <a href="reduce-test-flakiness.html" class="card" style="display:block;padding:20px;transition:border-color .2s">
+        <div class="mono" style="font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose)">CI rescue</div>
+        <div style="font-family:var(--serif);font-size:1.2rem;margin:8px 0 0;color:var(--ink)">Cut test flakiness</div>
+        <p class="subtle" style="margin-top:8px;font-size:13px">The flake protocol that took a live suite from 10% to under 1%.</p>
+        <span class="mono" style="display:inline-block;margin-top:12px;font-size:12px;color:var(--cyan)">Read &rarr;</span>
+      </a>
+    </div>
   </div></section>
 
   <!-- CTA -->

@@ -213,7 +213,7 @@ ${items}
 
 /* ── sitemap + robots ── */
 const pages = [
-  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/services.html', '/build.html', '/case-studies.html', '/work-nexural.html', '/work-academy.html', '/roi.html', '/demos.html', '/front-desk.html', '/ai-under-test.html', '/eval.html', '/book.html', '/sample.html', '/sample-report.html', '/docs.html', '/guide-eval-gate.html', '/guide-probes.html', '/guide-golden-set.html', '/guide-human-approval.html', '/privacy.html', '/terms.html',
+  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/services.html', '/build.html', '/case-studies.html', '/work-nexural.html', '/work-academy.html', '/roi.html', '/demos.html', '/front-desk.html', '/ai-under-test.html', '/eval.html', '/book.html', '/sample.html', '/sample-report.html', '/docs.html', '/guide-eval-gate.html', '/guide-probes.html', '/guide-golden-set.html', '/guide-human-approval.html', '/hire-ai-qa-engineer.html', '/llm-evaluation-consultant.html', '/rag-evaluation-guide.html', '/ai-agent-testing.html', '/reduce-test-flakiness.html', '/privacy.html', '/terms.html',
   ...SERVICES.map((s) => `/services/${s.slug}.html`),
   ...DOC_SLUGS.map((s) => `/docs-${s}.html`),
   ...NOTES.map((n) => `/notes/${n.slug}.html`)
