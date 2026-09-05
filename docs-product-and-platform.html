@@ -15,7 +15,7 @@
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Product & platform","description":"The surrounding app: production-grade web apps and portals, internal tools and admin panels, APIs and backends, and dashboards.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/docs-product-and-platform.html"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"What I build"},{"@type":"ListItem","position":4,"name":"Product & platform","item":"https://agency.sageideas.dev/docs-product-and-platform.html"}]}</script>
@@ -63,6 +63,19 @@
   .d-ul li, .d-ol li { font-size:14.5px; line-height:1.72; color:var(--dim); margin-bottom:9px; }
   .d-note { display:flex; gap:12px; border:1px solid var(--line); border-left:2px solid var(--green); background:rgba(16,185,129,0.04); border-radius:0 10px 10px 0; padding:16px 18px; margin:22px 0; font-size:14px; line-height:1.65; color:var(--dim); }
   .d-note-i { color:var(--green); font-family:var(--mono); }
+  .d-note-warn { border-left-color:var(--amber); background:rgba(245,158,11,0.05); } .d-note-warn .d-note-i { color:var(--amber); }
+  .d-note-security { border-left-color:var(--cyan); background:rgba(34,211,238,0.05); } .d-note-security .d-note-i { color:var(--cyan); }
+  .d-tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin:22px 0; }
+  .d-table { width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px; }
+  .d-table th, .d-table td { text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; color:var(--dim); }
+  .d-table thead th { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan); font-weight:500; background:#0A0A0C; }
+  .d-table td.d-th { font-weight:600; color:var(--ink); }
+  .d-table td b, .d-table td a { color:var(--ink); } .d-table td a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .d-table tbody tr:last-child td { border-bottom:none; }
+  .d-deflist { margin:22px 0; }
+  .d-dt { font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); margin-top:20px; scroll-margin-top:90px; }
+  .d-dd { margin:6px 0 0; font-size:14px; line-height:1.7; color:var(--dim); }
+  .d-dd a, .d-dd .d-see { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
   .d-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); gap:14px; margin:20px 0; }
   .d-card { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; }
   .d-card h3 { font-family:var(--serif); font-weight:400; font-size:1.15rem; margin:0 0 7px; }
@@ -134,18 +147,8 @@
   }
   @media (prefers-reduced-motion:reduce){ .d-sidebar { transition:none; } }
 </style>
-  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
-  <script defer src="/_vercel/insights/script.js"></script>
-
-<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/docs-product-and-platform.html">
-<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/docs-product-and-platform.html">
-<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/docs-product-and-platform.html">
-<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/docs-product-and-platform.html">
-<meta property="og:locale" content="en_US">
 </head>
 <body>
-<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
-<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><span aria-current="true" style="color:#10b981;font-weight:600">EN</span><span style="color:#3D3A37">·</span><a href="/es/docs-product-and-platform.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><a href="/pt/docs-product-and-platform.html" style="color:#8E8882;text-decoration:none">PT</a></div>
   <div class="d-top">
     <button class="d-menu-btn" id="d-menu" aria-label="Toggle documentation menu" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <a href="index.html" class="d-brand"><span class="mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span><span class="nm">jason.teixeira<span style="color:var(--green)">()</span></span></a>
@@ -183,11 +186,12 @@ Data       Supabase / Postgres · row-level security
 Payments   Stripe
 Quality    Playwright + axe in CI · self-hosted fonts · strict CSP
 Automation n8n / Make / LangGraph where a workflow fits</code></pre></figure>
-<div class="d-note"><span class="d-note-i">▸</span><div>This site itself is an example: static + serverless, self-hosted fonts, a strict CSP, and its own Playwright + axe suite (100+ checks) gating every deploy — see the <a href="case-studies.html">case studies</a>.</div></div>
+<div class="d-note d-note-note"><span class="d-note-i">▸</span><div>This site itself is an example: static + serverless, self-hosted fonts, a strict CSP, and its own Playwright + axe suite (100+ checks) gating every deploy — see the <a href="case-studies.html">case studies</a>.</div></div>
+<div class="d-proof"><a href="case-studies.html" class="d-plink">Two live products I built &amp; operate solo <span>→</span></a><a href="index.html#proof" class="d-plink">This site’s own QA scorecard <span>→</span></a></div>
 <div class="d-cta"><div><div class="d-cta-h">Need the app, not just the AI?</div><div class="d-cta-s">Book a call and we’ll scope it.</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-cta">Book a call →</a></div></div>
     <div class="d-help"><span>Was this helpful?</span><a href="book.html" data-evt="docs-help-yes">Book a call →</a><a href="sample.html" data-evt="docs-help-eval">Get a free mini-eval →</a></div>
     <div class="d-prevnext"><a class="d-pn prev" href="docs-workflow-automation.html"><div class="l">← Previous</div><div class="t">AI workflow automation</div></a><a class="d-pn next" href="docs-eval-method.html"><div class="l">Next →</div><div class="t">The eval method</div></a></div>
-    <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academy &#8599;</a> · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a></div>
+    <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
     </main>
     <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#how-i-approach-a-build" class="d-toc-link" data-target="how-i-approach-a-build">How I approach a build</a><a href="#the-stack-where-it-matters" class="d-toc-link" data-target="the-stack-where-it-matters">The stack, where it matters</a></nav></div>
@@ -217,6 +221,5 @@ Automation n8n / Make / LangGraph where a workflow fits</code></pre></figure>
   </script>
   <script defer src="assets/docs-search.js"></script>
   <script defer src="assets/agent.js"></script>
-<script defer src="assets/transitions.js"></script>
 </body>
 </html>
