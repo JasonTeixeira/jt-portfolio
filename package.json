@@ -37,6 +37,6 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
-    "stripe": "^22.5.0"
+    "stripe": "^22.6.0"
   }
 }
