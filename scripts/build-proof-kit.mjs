@@ -54,3 +54,9 @@ for (const d of DOCS) {
 }
 await browser.close();
 console.log(`\n${ok}/${DOCS.length} documents rendered.`);
+// Fail loudly if any document didn't render, so a broken build can't ship
+// missing/partial sales collateral while reporting success.
+if (ok !== DOCS.length) {
+  console.error(`✗ ${DOCS.length - ok} document(s) failed to render.`);
+  process.exit(1);
+}

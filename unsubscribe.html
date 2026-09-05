@@ -52,9 +52,17 @@
     <div class="unsub-wrap">
       <div id="unsub-root">
         <div class="unsub-card">
-          <h1 class="sec-title">You&rsquo;re unsubscribed.</h1>
-          <p class="subtle">You won&rsquo;t get follow-ups from me. If that was a mistake, email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> and I&rsquo;ll fix it.</p>
+          <h1 class="sec-title" id="unsub-title">You&rsquo;re unsubscribed.</h1>
+          <p class="subtle" id="unsub-msg">You won&rsquo;t get follow-ups from me. If that was a mistake, email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> and I&rsquo;ll fix it.</p>
         </div>
+        <script>
+          /* If the unsubscribe write failed, don't claim success — show an honest error. */
+          if (new URLSearchParams(location.search).get('error') === '1') {
+            var t = document.getElementById('unsub-title'), m = document.getElementById('unsub-msg');
+            if (t) t.textContent = 'We couldn’t complete that.';
+            if (m) m.innerHTML = 'Something went wrong unsubscribing you. Please email <a href="mailto:hello@sageideas.dev" style="color:var(--cyan)">hello@sageideas.dev</a> and I’ll remove you right away.';
+          }
+        </script>
       </div>
     </div>
   </main>

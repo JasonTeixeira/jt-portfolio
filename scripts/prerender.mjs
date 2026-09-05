@@ -75,6 +75,16 @@ function bake(html, id, inner) {
   return html.slice(0, openEnd) + '\n' + inner + '\n' + html.slice(closeStart);
 }
 
+// Guard: never bake an empty mount over real content. A silent render failure
+// on any single mount would otherwise replace that section with nothing and
+// still report success — permanently, in the committed HTML.
+for (const id of MOUNTS) {
+  const len = (rendered[id] || '').trim().length;
+  if (len < 20) {
+    throw new Error(`prerender: mount #${id} rendered empty (${len} chars) — refusing to bake over real content`);
+  }
+}
+
 for (const id of MOUNTS) source = bake(source, id, rendered[id].trim());
 writeFileSync(FILE, source);
 

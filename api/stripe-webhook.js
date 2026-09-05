@@ -3,6 +3,7 @@ import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs'
 import { appendEvent } from '../lib/scope-db.mjs';
 import { sendOperator, sendClient } from '../lib/notify.mjs';
 import { constructEvent } from '../lib/stripe.mjs';
+import { captureError } from '../lib/observe.mjs';
 import { money } from '../assets/proposal-core.mjs';
 
 export const config = { api: { bodyParser: false } };
@@ -57,14 +58,14 @@ export default async function handler(req, res) {
             try {
               await sendOperator({ subject: `Deposit paid — ${row ? money(row.deposit_cents) : ''}`,
                 text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` });
-            } catch {}
+            } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
             if (row && row.client_email) {
               const portalLine = await portalLinkLine(proposalId);
               try {
                 await sendClient({ to: row.client_email,
                   subject: 'Deposit received. We\'re starting.',
                   text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n${portalLine}` });
-              } catch {}
+              } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
             }
           }
         }
@@ -75,10 +76,15 @@ export default async function handler(req, res) {
       appendEvent({ prospect_id: null, type: 'dispute_opened', meta: { proposalId: proposalId || null } }).catch(() => {});
       try {
         await sendOperator({ subject: 'Payment dispute opened', text: `A dispute was opened. Charge: ${obj.id}. Handle it in the Stripe dashboard.\n` });
-      } catch {}
+      } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
     }
     return res.status(200).json({ ok: true, received: true });
   } catch (e) {
-    return res.status(200).json({ ok: true, received: true }); // ack; never make Stripe retry-storm on our bug
+    // Still ack 200 so Stripe doesn't retry-storm on OUR bug — but LOG + report,
+    // so a real payment-reconciliation gap (deposit paid, project not created,
+    // no email) is visible in logs/Sentry instead of silently lost.
+    console.error('[stripe-webhook] handler error', event && event.type, e instanceof Error ? e.message : e);
+    captureError(e, { route: '/api/stripe-webhook', kind: 'webhook_handler_failed', eventType: event && event.type });
+    return res.status(200).json({ ok: true, received: true });
   }
 }
