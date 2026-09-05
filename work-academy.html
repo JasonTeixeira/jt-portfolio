@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sage Ideas Academy — A Live Learning Platform, Built Solo · Jason Teixeira</title>
+<meta name="description" content="Sage Ideas Academy is a live learning platform I built alone: course player, an OpenAI-powered AI tutor, interactive labs, Stripe billing, and cryptographically verifiable certificates with a public verify page. 26 courses, 347 lessons, ~180 automated quality gates.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/work-academy.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sage Ideas Academy — A Live Learning Platform, Built Solo">
+<meta property="og:description" content="AI tutor, interactive labs, Stripe billing, and verifiable certificates with a public verify page. 26 courses, 347 lessons, ~180 automated quality gates. One operator.">
+<meta property="og:url" content="https://agency.sageideas.dev/work-academy.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:1px; margin-top:34px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--line); }
+  .stat { background:var(--card); padding:22px clamp(14px,2.4vw,24px); }
+  .stat .n { font-family:var(--serif); font-size:clamp(1.9rem,4.4vw,2.6rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); margin-top:9px; line-height:1.5; text-transform:uppercase; }
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip { font-family:var(--mono); font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .chip b { color:var(--ac); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link" aria-current="page">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Guides</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--purple)">Built &amp; operated · flagship 2 of 2</div>
+    <h1 style="margin-top:20px;max-width:20ch">Sage Ideas Academy: a real product, <em style="color:var(--purple)">not a course folder.</em></h1>
+    <p class="lede" style="margin-top:22px">A live learning platform I designed, built and operate — with a lesson player, an AI tutor wired to a real model, hands-on interactive labs, Stripe billing, and certificates you can verify from a public page. It runs on the same engineering system as <a href="work-nexural.html" style="color:var(--cyan)">Nexural</a>. Every figure below was counted from the codebase.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--purple)" href="https://www.sageideas.dev/academy" target="_blank" rel="noopener"><span class="dot" style="background:var(--purple)"></span>Live: <b>sageideas.dev/academy</b> &nearr;</a>
+      <span class="pill"><span class="dot" style="background:var(--green)"></span>Verifiable certificates &middot; <b>public verify page</b></span>
+      <span class="pill"><span class="dot" style="background:var(--cyan)"></span>AI tutor &middot; <b>real model, not a mock</b></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section style="padding-bottom:0">
+      <div class="stats" style="--ac:var(--purple)">
+        <div class="stat"><div class="n">26</div><div class="l">courses authored</div></div>
+        <div class="stat"><div class="n">347</div><div class="l">lessons</div></div>
+        <div class="stat"><div class="n">~180</div><div class="l">automated quality gates</div></div>
+        <div class="stat"><div class="n">5+</div><div class="l">interactive lab types</div></div>
+      </div>
+      <p class="note">Counts taken from the repository: <span class="mono">content/academy/courses/</span> directories and lesson files, and the <span class="mono">academy:*</span> build/quality scripts. Live enrollment figures are private and intentionally not shown here.</p>
+    </section>
+
+    <!-- THE BUILD -->
+    <section>
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">The build · a full learning SaaS</div>
+        <h3>Everything a paid platform needs, shipped.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">Platform</div>
+            <p>Course catalog, lesson player, member dashboard and admin — on Next.js with Supabase Postgres and custom JWT sessions.</p>
+            <div class="stack"><span class="chip">Next.js</span><span class="chip">React</span><span class="chip">Tailwind</span><span class="chip">Radix UI</span><span class="chip"><b>Supabase</b> PG 17</span></div>
+          </div>
+          <div class="blk">
+            <div class="h">The AI tutor</div>
+            <p>A tutor endpoint wired to OpenAI through the Vercel AI SDK — a shipped AI feature students actually use, not a screenshot of one.</p>
+            <div class="stack"><span class="chip">Vercel AI SDK</span><span class="chip"><b>OpenAI</b></span><span class="chip">streaming</span></div>
+          </div>
+          <div class="blk">
+            <div class="h">Billing</div>
+            <p>Real Stripe subscriptions with signature-verified webhooks — the boring, load-bearing plumbing that separates a product from a demo.</p>
+            <div class="stack"><span class="chip"><b>Stripe</b></span><span class="chip">svix webhooks</span><span class="chip">Resend</span></div>
+          </div>
+          <div class="blk">
+            <div class="h">Reliability</div>
+            <p>Sentry error tracking, Vercel analytics and speed insights — because a paid product that breaks silently loses subscribers.</p>
+            <div class="stack"><span class="chip">Sentry</span><span class="chip">Vercel Analytics</span><span class="chip">Speed Insights</span></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE DIFFERENTIATORS -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">What makes it rare · the parts most platforms fake</div>
+        <h3>Verifiable certificates and hands-on labs.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">Certificates you can verify</div>
+            <p>Completion certificates carry a cryptographically generated number and a <b>public verify page</b> — anyone can confirm a certificate is genuine at <span class="mono">/academy/verify/&lt;id&gt;</span>. Most platforms hand out a PDF; this one hands out proof.</p>
+          </div>
+          <div class="blk">
+            <div class="h">Interactive labs, not just video</div>
+            <p>Learners practice in real tools: a risk simulator, an order-flow drill, a decision-gate exercise, a voice tutor and a sim-lab — each a built, wired route, not a slide.</p>
+            <div class="stack"><span class="chip">risk simulator</span><span class="chip">order-flow</span><span class="chip">decision-gate</span><span class="chip">voice tutor</span></div>
+          </div>
+          <div class="blk">
+            <div class="h">A content-quality factory</div>
+            <p>Roughly <b>180 automated scripts</b> author, seed, machine-prove, semantically review and quality-gate the content — the same engineering rigor I bring to code, applied to curriculum.</p>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="https://www.sageideas.dev/academy" target="_blank" rel="noopener">▸ visit the live Academy</a>
+          <span class="verified">live at sageideas.dev/academy · certificate verification public</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- BRIDGE -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">The bigger picture</div>
+        <h3>One operator, two live products, one system.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">The Academy and <a href="work-nexural.html" style="color:var(--cyan)">Nexural</a> share a codebase and a standard of proof. When you hire me you're not getting someone who <em>read</em> about shipping AI products — you're getting someone who runs two of them, alone, and can show you the receipts.</p>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--cyan)" href="work-nexural.html">▸ the first flagship: Nexural</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Want a product built to this standard?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:46ch">Book a call and we'll scope it, or start a free mini-eval on the AI feature you're worried about.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="book.html" class="cta" data-evt="ac-book">Book a call &rarr;</a>
+        <a href="case-studies.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">&larr; back to all work</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+</body>
+</html>

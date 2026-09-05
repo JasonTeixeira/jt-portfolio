@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nexural — A Production Trading Platform, Built and Operated Solo · Jason Teixeira</title>
+<meta name="description" content="Nexural is a live trading-media platform I built and run alone: ~800 API routes, 86 scheduled jobs, 244 RLS-protected tables, real market data, plus a companion Discord AI engine. This is what 'I ship, then I prove it' looks like at production scale.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/work-nexural.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nexural — A Production Trading Platform, Built and Operated Solo">
+<meta property="og:description" content="~800 API routes, 86 crons, 244 RLS-protected tables, live market data, a public track-record page, and a 41-channel Discord AI engine. One operator.">
+<meta property="og:url" content="https://agency.sageideas.dev/work-nexural.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* metric strip */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:1px; margin-top:34px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--line); }
+  .stat { background:var(--card); padding:22px clamp(14px,2.4vw,24px); }
+  .stat .n { font-family:var(--serif); font-size:clamp(1.9rem,4.4vw,2.6rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); margin-top:9px; line-height:1.5; text-transform:uppercase; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip { font-family:var(--mono); font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .chip b { color:var(--ac); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link" aria-current="page">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Guides</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Built &amp; operated · flagship 1 of 2</div>
+    <h1 style="margin-top:20px;max-width:20ch">Nexural: a production platform I built <em style="color:var(--cyan)">and run by myself.</em></h1>
+    <p class="lede" style="margin-top:22px">Most consultants show you slides. This is a live system you can log the front door of right now — a trading-media platform with a member cockpit, admin operations, Stripe billing, real market-data engines, and a companion AI engine on Discord. Every number below was counted from the codebase, not rounded up for a pitch.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--cyan)" href="https://www.nexural.io" target="_blank" rel="noopener"><span class="dot" style="background:var(--cyan)"></span>Live: <b>nexural.io</b> &nearr;</a>
+      <a class="pill link" style="--ac:var(--green)" href="https://www.nexural.io/proof" target="_blank" rel="noopener"><span class="dot" style="background:var(--green)"></span>Public track record: <b>/proof</b> &nearr;</a>
+      <a class="pill link" style="--ac:var(--purple)" href="https://discord.com/invite/7A4AU7HMJp" target="_blank" rel="noopener"><span class="dot" style="background:var(--purple)"></span>The Discord AI engine &nearr;</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section style="padding-bottom:0">
+      <div class="stats" style="--ac:var(--cyan)">
+        <div class="stat"><div class="n">~800</div><div class="l">API routes</div></div>
+        <div class="stat"><div class="n">86</div><div class="l">scheduled jobs (crons)</div></div>
+        <div class="stat"><div class="n">244</div><div class="l">tables, all RLS-protected</div></div>
+        <div class="stat"><div class="n">69&nbsp;/&nbsp;62</div><div class="l">member / admin screens</div></div>
+      </div>
+      <p class="note">Counts taken from the repository: <span class="mono">app/api/**/route.ts</span>, <span class="mono">vercel.json</span> crons, and the row-level-security policy set. Not marketing math.</p>
+    </section>
+
+    <!-- THE BUILD -->
+    <section>
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">The build · one engineering system</div>
+        <h3>A full SaaS platform, end to end.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">Application &amp; data</div>
+            <p>Next.js + React + Tailwind, custom JWT sessions, and Supabase Postgres 17. State-of-the-repo, not a template.</p>
+            <div class="stack">
+              <span class="chip">Next.js</span><span class="chip">React</span><span class="chip">Tailwind</span><span class="chip">Radix UI</span><span class="chip"><b>Supabase</b> PG 17</span><span class="chip">JWT (jose)</span>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Money &amp; comms</div>
+            <p>Real Stripe billing with signature-verified webhooks, transactional email, and web push — the parts most demos skip because they're hard to get right.</p>
+            <div class="stack">
+              <span class="chip"><b>Stripe</b></span><span class="chip">svix webhooks</span><span class="chip">Resend</span><span class="chip">web-push</span><span class="chip">Redis</span>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Live market data</div>
+            <p>Refresh, ingest, scanner and nightly calibration engines pull from a commercial market-data API — with repo-level gates that fail the build if fake data sneaks in.</p>
+            <div class="stack">
+              <span class="chip">Massive API</span><span class="chip">ws + centrifuge</span><span class="chip">echarts</span><span class="chip">lightweight-charts</span><span class="chip"><b>check:no-fake-data</b></span>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">AI, in production</div>
+            <p>In-app AI features on the Vercel AI SDK, plus a separate always-on Discord engine running GPT-4o across dozens of automated market-cycle jobs.</p>
+            <div class="stack">
+              <span class="chip">Vercel AI SDK</span><span class="chip">OpenAI</span><span class="chip"><b>GPT-4o</b></span><span class="chip">Alpaca</span><span class="chip">node-cron</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE DISCIPLINE -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">The discipline · why a buyer should care</div>
+        <h3>Production-grade, not proof-of-concept.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">Security architecture</div>
+            <ul>
+              <li>Row-level security on <b>every one of 244</b> public tables</li>
+              <li>Append-only <b>admin audit log</b> enforced by database triggers</li>
+              <li>Zod-validated writes on the highest-risk admin paths</li>
+              <li>Locked function <span class="mono">search_path</span>, env-gated admin 2FA</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">Honesty as a feature</div>
+            <ul>
+              <li>A <b>public</b> track-record page that renders real engine output</li>
+              <li>Build gates that block <b>fake or stale data</b> from shipping</li>
+              <li>Revalidated every 5 minutes — not a screenshot from a good day</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">Operated, not just launched</div>
+            <ul>
+              <li><b>86 scheduled jobs</b> keep the data and content fresh nightly</li>
+              <li>Sentry error tracking + Vercel analytics wired in</li>
+              <li>One person owns build, deploy, data, billing and support</li>
+            </ul>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="https://www.nexural.io/proof" target="_blank" rel="noopener">▸ see the public track record</a>
+          <span class="verified">live · revalidates every 5 min · real engine output</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE DISCORD ENGINE -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">Companion system · the Discord AI engine</div>
+        <h3>An AI engine that runs a community on autopilot.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk"><div class="h">What it is</div><p>A separate Node service — <span class="mono">discord.js</span> + GPT-4o + Supabase + Alpaca — deployed on Railway, posting market-cycle content and answering members across the server around the clock.</p></div>
+          <div class="blk"><div class="h">The scale</div><ul><li><b>41 channels</b> orchestrated</li><li><b>83 scheduled jobs</b> on a market-hours cadence</li><li><b>76</b> database migrations, <b>299</b> test files</li></ul></div>
+          <div class="blk"><div class="h">Why it matters</div><p>It's proof I can take an AI system past the demo — into something that runs unattended, on a schedule, wired to real brokerage and market data, and doesn't fall over.</p></div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="https://discord.com/invite/7A4AU7HMJp" target="_blank" rel="noopener">▸ the live server</a>
+          <span class="verified">counts from the engine's own audit docs &amp; migration set</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- BRIDGE -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--amber)">
+        <div class="tag">The bigger picture</div>
+        <h3>Two products. One engineering system. One operator.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Nexural and <a href="work-academy.html" style="color:var(--purple)">Sage Ideas Academy</a> run on the same codebase and the same discipline. That's the whole pitch: when you hire me, you're hiring someone who ships production software <em>and</em> keeps it running — solo — and can prove it, because I do it for my own businesses every day.</p>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="work-academy.html">▸ the second flagship: Sage Ideas Academy</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Want this level of build for your product?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:46ch">Book a call and we'll scope it, or start a free mini-eval on the AI feature you're worried about.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="book.html" class="cta" data-evt="nx-book">Book a call &rarr;</a>
+        <a href="case-studies.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">&larr; back to all work</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+</body>
+</html>

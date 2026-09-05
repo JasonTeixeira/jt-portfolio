@@ -10,7 +10,7 @@
       <link>https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html</guid>
       <pubDate>Sun, 16 Aug 2026 12:00:00 GMT</pubDate>
-      <description>I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.</description>
+      <description>I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.</description>
     </item>
     <item>
       <title>Five pages, five agents, one design file — zero merge conflicts</title>

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Eighteen agents audited a live curriculum. One lesson was teaching a false error. — Field Notes</title>
-<meta name="description" content="I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.">
+<meta name="description" content="I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.">
 <link rel="canonical" href="https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html">
 <meta property="og:type" content="article">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og-note-eighteen-agent-audit-gauntlet.png">
 <meta property="og:title" content="Eighteen agents audited a live curriculum. One lesson was teaching a false error. — Field Notes">
-<meta property="og:description" content="I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.">
+<meta property="og:description" content="I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.">
 <meta property="og:url" content="https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html">
 <link rel="alternate" type="application/rss+xml" title="Field Notes — Jason Teixeira" href="https://agency.sageideas.dev/feed.xml">
 <link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
@@ -17,7 +17,7 @@
 <link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Eighteen agents audited a live curriculum. One lesson was teaching a false error.","description":"I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.","datePublished":"2026-08-16","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Eighteen agents audited a live curriculum. One lesson was teaching a false error.","description":"I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.","datePublished":"2026-08-16","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html"}</script>
 </head>
 <body>
 <div style="min-height:100vh;background:#09090B;position:relative">
@@ -38,7 +38,7 @@
       <span style="color:#8E8882">5 min</span>
     </div>
     <h1 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.2rem,4.5vw,3.2rem);line-height:1.12;letter-spacing:-0.015em;margin:18px 0 0;text-wrap:balance">Eighteen agents audited a live curriculum. One lesson was teaching a false error.</h1>
-    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#A8A29E;max-width:58ch">I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high — every one anchored to a verbatim quote. Thirteen minutes of wall clock.</p>
+    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#A8A29E;max-width:58ch">I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.</p>
     <div class="prose" style="margin-top:32px;font-size:15px;line-height:1.85;color:#C9C4BF;display:flex;flex-direction:column;gap:18px">
       <p style="margin:0"><span style="font-family:'Instrument Serif',Georgia,serif;font-size:2.4rem;float:left;line-height:0.8;padding:6px 8px 0 0;color:#F59E0B">T</span>he headline defect makes the case by itself. Lesson one of a programming course taught that <span style="font-family:'JetBrains Mono',monospace;font-size:0.9em">print(Hello, world!)</span> fails because Python looks up "Hello" as a command and can't find it. Plausible. Confident. Wrong — the <span style="font-family:'JetBrains Mono',monospace;font-size:0.9em">!</span> makes the line unparseable, so Python dies with a <em>SyntaxError</em> before any lookup happens. A beginner following the lesson's own advice ("read the error message") would watch their screen contradict their teacher. No human reviewer had caught it, because it reads fine. The auditor caught it because it doesn't <em>run</em> fine — and my auditors are required to run everything.</p>
       <figure style="margin:8px 0 0">

@@ -52,6 +52,18 @@
   .plink:hover { border-color:var(--ac); }
   .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
 
+  /* flagship "built & operated" cards */
+  .opcard { display:block; border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(22px,3vw,32px); transition:border-color .2s, transform .2s; }
+  .opcard:hover { border-color:var(--ac); transform:translateY(-2px); }
+  .opcard .ol { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .opcard h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.45rem,3vw,1.9rem); letter-spacing:-0.015em; margin:10px 0 0; color:var(--ink); }
+  .opcard .od { font-size:13.5px; line-height:1.66; color:var(--dim); margin-top:12px; }
+  .opcard .os { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:18px; }
+  .opcard .os div { line-height:1.1; }
+  .opcard .os .n { font-family:var(--serif); font-size:1.45rem; color:var(--ac); }
+  .opcard .os .u { font-family:var(--mono); font-size:9.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-top:4px; }
+  .opcard .more { font-family:var(--mono); font-size:12px; color:var(--ac); margin-top:20px; display:inline-flex; gap:6px; }
+
   .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
   section { padding:clamp(40px,6vw,64px) 0; }
   .rule { border-top:1px solid var(--line); }
@@ -101,6 +113,41 @@
   </header>
 
   <main class="wrap">
+    <!-- FLAGSHIP: BUILT & OPERATED (own products, not client work) -->
+    <section style="padding-bottom:6px">
+      <div class="kick" style="color:var(--cyan)">Built &amp; operated &middot; my own products, not client logos</div>
+      <h2 style="margin-top:12px;max-width:26ch">Before the client outcomes: two live products I built and run <em style="color:var(--cyan)">by myself.</em></h2>
+      <p class="subtle" style="margin-top:14px;max-width:60ch">The strongest proof isn't a testimonial — it's software I ship and operate solo, every day. Two products on one engineering system. Open the front door of either.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:18px;margin-top:26px">
+        <a class="opcard" href="work-nexural.html" style="--ac:var(--cyan)" aria-label="Nexural case study">
+          <div class="ol">Flagship 1 &middot; trading-media platform</div>
+          <h3>Nexural</h3>
+          <p class="od">A live SaaS platform — member cockpit, admin ops, Stripe billing, real market-data engines, and a companion Discord AI engine. Production scale, one operator.</p>
+          <div class="os">
+            <div><span class="n">~800</span><span class="u">API routes</span></div>
+            <div><span class="n">86</span><span class="u">scheduled jobs</span></div>
+            <div><span class="n">244</span><span class="u">RLS tables</span></div>
+          </div>
+          <span class="more">▸ full case study</span>
+        </a>
+        <a class="opcard" href="work-academy.html" style="--ac:var(--purple)" aria-label="Sage Ideas Academy case study">
+          <div class="ol">Flagship 2 &middot; learning platform</div>
+          <h3>Sage Ideas Academy</h3>
+          <p class="od">A live learning product — AI tutor on a real model, interactive labs, Stripe billing, and cryptographically verifiable certificates with a public verify page.</p>
+          <div class="os">
+            <div><span class="n">26</span><span class="u">courses</span></div>
+            <div><span class="n">347</span><span class="u">lessons</span></div>
+            <div><span class="n">~180</span><span class="u">quality gates</span></div>
+          </div>
+          <span class="more">▸ full case study</span>
+        </a>
+      </div>
+    </section>
+
+    <section style="padding-top:clamp(24px,4vw,40px);padding-bottom:0">
+      <div class="kick" style="color:var(--faint)">Client outcomes &middot; each links to a receipt</div>
+    </section>
+
     <!-- CASE 1 -->
     <section>
     <article class="case" style="--ac:var(--rose)">
