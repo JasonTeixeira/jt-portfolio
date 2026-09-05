@@ -60,6 +60,9 @@ async function handler(req, res) {
   const history = getHistory(key);
 
   const out = await frontDeskReply(tenant, history, text);
+  // A real LLM outage (not just "unconfigured") means the AI Front Desk is down —
+  // surface it instead of silently serving the generic fallback to every caller.
+  if (out && !out.ok && out.reason !== 'llm_not_configured') console.error('[frontdesk:sms] llm failure', out.reason);
   append(key, 'user', text);
   append(key, 'assistant', out.reply);
 

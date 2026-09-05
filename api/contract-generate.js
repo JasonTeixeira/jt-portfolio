@@ -1,9 +1,12 @@
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { withObserve } from '../lib/observe.mjs';
 import { checkToken } from '../lib/admin-auth.mjs';
 import { isEnabled, createContract } from '../lib/portal-db.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { buildSow, buildMsa, publicId, CONTRACT_TERMS_VERSION } from '../assets/contract-core.mjs';
 
-export default async function handler(req, res) {
+async function handler(req, res) {
+  if (await rateLimited(clientIp(req), 30, 'admin')) return res.status(429).json({ ok: false, error: 'slow_down' });
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   // Fail-closed admin gate BEFORE any DB work.
   if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
@@ -33,3 +36,5 @@ export default async function handler(req, res) {
   // Return both the client-facing publicId and the row id — contract-send takes the row id.
   return res.status(200).json({ ok: true, publicId: pid, id: created.data && created.data.id });
 }
+
+export default withObserve('/api/contract-generate', handler);

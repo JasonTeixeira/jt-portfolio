@@ -1,3 +1,4 @@
+import { withObserve } from '../lib/observe.mjs';
 /**
  * /api/health — public subsystem wiring probe.
  *
@@ -18,7 +19,7 @@ import { isEnabled as stripeEnabled } from '../lib/stripe.mjs';
 import { isEnabled as resendEnabled } from '../lib/notify.mjs';
 import { smsEnabled } from '../lib/sms.mjs';
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({ ok: false, error: 'method not allowed' });
@@ -42,3 +43,5 @@ export default async function handler(req, res) {
 
   return res.status(200).json({ ok: true, ts: new Date().toISOString(), subsystems });
 }
+
+export default withObserve('/api/health', handler);

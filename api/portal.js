@@ -1,3 +1,4 @@
+import { withObserve } from '../lib/observe.mjs';
 import {
   isEnabled, getProjectByPortalToken, listMilestones, approveMilestone, getContractsForProposal,
 } from '../lib/portal-db.mjs';
@@ -51,7 +52,7 @@ async function loadContractSummary(proposalId) {
   return r.data.find((c) => VISIBLE_CONTRACT_STATUSES.has(c.status)) || null;
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method === 'GET') {
     // GET always answers 200 — an invalid/expired portal link is a normal visitor state,
     // not an HTTP error. Matches api/proposal.js / api/contract.js.
@@ -86,6 +87,14 @@ export default async function handler(req, res) {
   // Membership check BEFORE approving — a client only approves their own project's milestone.
   if (!milestoneBelongsToProject(milestones, milestoneId)) return res.status(404).json({ ok: false, error: 'not_found' });
   const approved = await approveMilestone(milestoneId, body.name.trim(), project.id);
-  if (!approved.ok) return res.status(200).json({ ok: false, skipped: true });
+  if (!approved.ok) {
+    // Past the isEnabled() gate, so this is a REAL write failure — not "not configured".
+    // Don't send skipped:true (the client shows "approvals aren't switched on yet" for that);
+    // log it and let the client show the honest "something went wrong" path.
+    console.error('[portal] approveMilestone failed', approved.error || '');
+    return res.status(200).json({ ok: false, reason: 'write_failed' });
+  }
   return res.status(200).json({ ok: true, approved: Boolean(approved.approved) });
 }
+
+export default withObserve('/api/portal', handler);
