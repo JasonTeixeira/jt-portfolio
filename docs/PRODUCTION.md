@@ -72,46 +72,20 @@ Set `SENTRY_DSN` in Vercel (Production only, or Production + Preview) once you h
 
 **Nurture cron digest.** Already implemented — see `docs/NURTURE.md` §3 rule D: the daily cron only emails you when there's something to report (pending drafts, sends, or errors), which doubles as a partial heartbeat. For true uptime monitoring of the cron process itself, rely on Vercel's cron execution logs, not the digest email.
 
-## Rate limiting — TODO
+## Rate limiting — DONE (durable; activate with Upstash env)
 
-The in-memory `Map` throttles (`api/chat.js`, `api/lead.js`, `api/proposal.js`, `api/proposal-checkout.js`, `api/scope.js`) are **no-ops on Vercel serverless** — every cold start gets a fresh `Map`, and concurrent invocations don't share one at all. They only slow down a single warm instance hammered in a tight loop; they do not protect against real abuse.
+`lib/ratelimit.mjs` already ships a **durable Upstash Redis fixed-window limiter** with a degrade-safe in-memory fallback — no code change needed to make it production-grade, only two env vars.
 
-Swap to a shared store. `@vercel/kv` (Upstash Redis under the hood) is the natural fit since this already deploys to Vercel:
+- **With `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` set:** a shared Redis fixed-window counter (`INCR`/`EXPIRE` via REST, 800 ms timeout) enforces limits across every serverless instance and cold start. Fails OPEN if Redis is unreachable — availability over strictness for a lead-gen site.
+- **Without those env vars:** falls back to the per-instance in-memory sliding window (`lib/ratelimit.mjs:23`). This is best-effort only — a fresh `Map` per cold start, not shared across concurrent invocations — but it is a real fallback, **not** a no-op, and every public POST endpoint already calls through it.
 
-```bash
-npm install @vercel/kv
-```
+Activation (recommended before heavy traffic, optional for first payment):
 
-```js
-// lib/ratelimit.mjs
-import { kv } from '@vercel/kv';
+1. Create an Upstash Redis database (free tier is fine) at [console.upstash.com](https://console.upstash.com).
+2. Copy its **REST URL** and **REST token** (Upstash → your DB → REST API).
+3. Set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in Vercel; redeploy. The limiter switches to the shared backend automatically — no code change.
 
-export function isEnabled() { return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN); }
-
-// Fixed-window counter. Fails OPEN (never blocks a request) if KV is
-// unreachable — availability over strictness for a marketing/lead-gen site.
-export async function limited(key, { max, windowSeconds }) {
-  if (!isEnabled()) return false;
-  try {
-    const count = await kv.incr(key);
-    if (count === 1) await kv.expire(key, windowSeconds);
-    return count > max;
-  } catch {
-    return false;
-  }
-}
-```
-
-```js
-// in api/proposal-checkout.js, replacing the in-memory throttled(req) check
-import { limited } from '../lib/ratelimit.mjs';
-const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || 'unknown';
-if (await limited(`rl:proposal-checkout:${ip}`, { max: 20, windowSeconds: 60 })) {
-  return res.status(429).json({ ok: false, error: 'slow_down' });
-}
-```
-
-Apply the same pattern to the other public POST endpoints: `/api/scope`, `/api/lead`, `/api/proposal`, `/api/proposal-checkout`, `/api/chat`, `/api/contract`, `/api/portal`. Keep the existing in-memory `Map` checks in place as a free first-pass filter (cheap, catches the worst single-instance loops) and layer KV on top rather than ripping them out — belt and suspenders, and `limited()` fails open so KV being down never turns into an outage.
+> Note: the shipped implementation uses the Upstash REST API directly (`UPSTASH_REDIS_REST_*`), **not** the `@vercel/kv` wrapper. Do not set `KV_REST_API_*` — those names are not read by the code.
 
 ## Deliverability — TODO (hard gate before enabling nurture)
 
@@ -161,6 +135,6 @@ Enable Point-in-Time Recovery (PITR) on the Supabase project and **test a restor
 | Error tracking (Sentry) | TODO — needs `SENTRY_DSN` |
 | Uptime monitoring | TODO — needs UptimeRobot/BetterStack account |
 | Stripe webhook failure alerts | TODO — flip on in Stripe Dashboard |
-| Durable rate limiting | TODO — needs `@vercel/kv` (Upstash) |
+| Durable rate limiting | DONE (code) — activate with `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`; in-memory fallback otherwise |
 | Resend domain auth (SPF/DKIM/DMARC) | TODO — hard gate before `NURTURE_ENABLED=true` |
 | Backups / DR | TODO — needs Supabase Pro PITR + a tested restore |
