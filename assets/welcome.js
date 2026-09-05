@@ -12,6 +12,11 @@
   var SEEN = 'jt-welcome-v1';
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   try { if (!force && localStorage.getItem(SEEN)) return; } catch (e) {}
+  // Don't auto-fire under automation — E2E runs aren't real first-time visitors,
+  // and the non-blocking greeter's overlay was intercepting unrelated clicks/dialog
+  // assertions. ?welcome=1 still forces it, so the greeter stays testable and real
+  // users are unaffected.
+  try { if (!force && navigator.webdriver) return; } catch (e) {}
 
   var T = {
     en: { hi: "Hey — I'm Atlas, Jason's associate.", q: "What brings you here? I'll point you straight to it.",
