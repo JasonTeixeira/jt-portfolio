@@ -157,6 +157,7 @@ ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script
   .d-ul li, .d-ol li { font-size:14.5px; line-height:1.72; color:var(--dim); margin-bottom:9px; }
   .d-note { display:flex; gap:12px; border:1px solid var(--line); border-left:2px solid var(--green); background:rgba(16,185,129,0.04); border-radius:0 10px 10px 0; padding:16px 18px; margin:22px 0; font-size:14px; line-height:1.65; color:var(--dim); }
   .d-note-i { color:var(--green); font-family:var(--mono); }
+  .d-p code, .d-ul code, .d-ol code, .d-note code, .d-dd code { font-family:var(--mono); font-size:0.88em; color:var(--cyan); background:rgba(34,211,238,0.08); padding:1px 5px; border-radius:4px; }
   .d-note-warn { border-left-color:var(--amber); background:rgba(245,158,11,0.05); } .d-note-warn .d-note-i { color:var(--amber); }
   .d-note-security { border-left-color:var(--cyan); background:rgba(34,211,238,0.05); } .d-note-security .d-note-i { color:var(--cyan); }
   .d-tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin:22px 0; }

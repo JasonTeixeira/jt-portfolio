@@ -159,11 +159,11 @@ export const DIAGRAM_FUNNEL = diagramFunnel();
 // (the animated deep-dive guides) link out with their own chrome.
 export const NAV = [
   { cat: 'Getting started', items: [
-    { slug: 'overview' }, { slug: 'start-here' }, { slug: 'how-engagements-work' }, { slug: 'how-this-site-works' },
+    { slug: 'overview' }, { slug: 'start-here' }, { slug: 'choose-your-path' }, { slug: 'how-engagements-work' }, { slug: 'how-this-site-works' },
   ]},
   { cat: 'What I build', items: [
     { slug: 'ai-engineering' }, { slug: 'evaluation-and-quality' }, { slug: 'test-automation' },
-    { slug: 'workflow-automation' }, { slug: 'product-and-platform' },
+    { slug: 'workflow-automation' }, { slug: 'product-and-platform' }, { slug: 'stack-integrations' },
   ]},
   { cat: 'The eval method', items: [
     { slug: 'eval-method' },
@@ -593,12 +593,14 @@ export const PAGES = {
     lead: 'Everything on this site is backed by something you can open. Here it all is, in one place.',
     blocks: [
       ['h', 'Public code'],
+      ['p', 'Clone it and run it yourself — these prove the method is real, not a slide. <b>llm-eval-gate</b> is a working CI eval-gate you can drop into a repo; <b>playwright-sdet-regression-suite</b> ships its evidence folder (traces, screenshots) alongside a 37/37 zero-flake run.'],
       ['proof', [
         ['llm-eval-gate — keyless eval-gate template (MIT)', 'https://github.com/JasonTeixeira/llm-eval-gate'],
         ['playwright-sdet-regression-suite — 37/37 in CI', 'https://github.com/JasonTeixeira/playwright-sdet-regression-suite'],
         ['GitHub profile', 'https://github.com/JasonTeixeira'],
       ]],
       ['h', 'Verbatim runs & case studies'],
+      ['p', 'These prove the work survives contact with reality. The <b>nexural-qa-os</b> pair is the honest one to open first: the gate went red on a real CVE finding, blocked the release, and shows the green rerun after the fix — no quiet override.'],
       ['proof', [
         ['Case studies — four measured outcomes', 'case-studies.html'],
         ['nexural-qa-os — the red run', 'captures/nexural-qa-os.html'],
@@ -606,6 +608,7 @@ export const PAGES = {
         ['playwright suite — the run', 'captures/playwright-suite.html'],
       ]],
       ['h', 'Live & interactive'],
+      ['p', 'Proof you can operate yourself, right now. The <b>live eval</b> grades an AI in your browser — and its “bring your own AI” mode scores a real answer of <em>yours</em> against the same rubric I build for clients.'],
       ['proof', [
         ['The live eval (grades an AI in real time)', 'eval.html'],
         ['I red-team my own AI (10/10 probes, static results)', 'ai-under-test.html'],
@@ -617,8 +620,91 @@ export const PAGES = {
       ['cta', 'Want your system on the case-studies page?', 'Start with a free mini-eval.'],
     ],
   },
+  'choose-your-path': {
+    title: 'Choose your path',
+    cat: 'Getting started',
+    desc: 'A triage page: match the symptom you actually have to the right capability and the right first step — from an eval layer to a regression gate to workflow automation.',
+    lead: 'Not sure which of these you need? Start from the symptom. Find the row that sounds like your week, and it points you at what’s actually going on and where to start.',
+    blocks: [
+      ['h', 'Match the symptom to the fix'],
+      ['p', 'Most people arrive describing a symptom, not a solution — “the chatbot said something wrong,” “every release breaks something,” “we’re buried in intake.” Each of those maps to a different capability. Find your row; the last column is a real page you can open right now.'],
+      ['table',
+        ['The symptom you have', 'What’s actually going on', 'Where to start'],
+        [
+          ['<b>Our AI chatbot / assistant sometimes says wrong or unsafe things</b>', 'You shipped an LLM feature but have no way to prove it behaves — no golden set, no judge, no gate. Prompt changes ship on vibes.', 'You need an <b>eval layer</b> → <a href="docs-evaluation-and-quality.html">AI evaluation &amp; quality</a>, then run the <a href="eval.html">live eval</a> on your own AI'],
+          ['<b>Every release we ship breaks something else</b>', 'No regression suite a release manager trusts, or a flaky one everyone ignores. Red stopped meaning anything.', 'You need a <b>regression suite + CI gate</b> → <a href="docs-test-automation.html">Test automation &amp; CI</a>'],
+          ['<b>We’re buried in manual intake, triage, or routing</b>', 'Repeatable work a well-built automation could run — but it has to be safe, logged, and not invent things.', 'You need <b>workflow automation</b> → <a href="docs-workflow-automation.html">AI workflow automation</a>'],
+          ['<b>We need the AI feature built, not just tested</b>', 'The chatbot, RAG assistant, voice agent, or copilot doesn’t exist yet — you need it built reliably, with the eval seams already in place.', 'You need <b>AI product engineering</b> → <a href="docs-ai-engineering.html">AI product engineering</a>'],
+          ['<b>We need the app around the AI — auth, payments, dashboards</b>', 'The model is the easy part; the production surface around it (accounts, billing, admin, data viz) is the real work.', 'You need <b>product &amp; platform</b> → <a href="docs-product-and-platform.html">Product &amp; platform</a>'],
+          ['<b>Not sure — it feels like several of these</b>', 'That’s normal; a shaky AI feature usually needs both building and proving. The cheapest way to find the real bottleneck is to measure it.', 'Start with the <a href="sample.html">free mini-eval</a> or a <a href="book.html">15-minute call</a>'],
+        ],
+      ],
+      ['note', 'The two most common paths are the first two rows: you either have an AI feature you can’t prove, or a release process you can’t trust. Both start by measuring the failure surface before anyone writes code.'],
+      ['h', 'The lowest-friction ways to start'],
+      ['p', 'Whichever row you landed on, there are three doors in, ordered by commitment. Most people start with the first — it costs nothing and does real work.'],
+      ['cards', [
+        ['1 · Free mini-eval', 'Point me at your live AI feature and I run a batch of real adversarial probes — injection, hallucination, scope, PII, tone — and send verbatim pass/fail findings. No call, no cost. See the <a href="sample.html">sample report</a> first.'],
+        ['2 · The audit', 'A short, focused engagement (about a week) that maps your highest-leverage failure surface and hands you a prioritized plan you own plus a concrete quote. If I can’t help, I say so and it costs nothing.'],
+        ['3 · A 15-minute call', 'Describe the problem and I tell you honestly which of these it needs, what it takes, and roughly what it costs — or that it doesn’t need me at all. You leave with a plan either way.'],
+      ]],
+      ['note', 'See the format before you commit: the <a href="sample.html">sample report</a> shows exactly what a mini-eval hands back, and the <a href="eval.html">live eval</a> grades an AI in your browser in real time — try <a href="eval.html#byo">“bring your own AI”</a> on a real answer of yours.'],
+      ['h', 'If none of the rows fit'],
+      ['note', 'warn', 'If nothing above sounds like your problem, don’t force a fit — book a <a href="book.html">15-minute call</a> and describe it in plain terms. If it’s not something I can genuinely help with, I’ll tell you that directly rather than sell you a package. A clear “this isn’t for me” is a better outcome than a wrong engagement.'],
+      ['p', 'Once you know the capability you need, each page above goes deep on what it is, what you get, and how it works — and every one ends with real proof you can open. When you’re ready to see the whole path from a short audit to a shipped, owned system, read <a href="docs-how-engagements-work.html">How engagements work</a>.'],
+      ['proof', [['The sample eval report', 'sample.html'], ['The live eval', 'eval.html'], ['How engagements work', 'docs-how-engagements-work.html'], ['Book a call', 'book.html']]],
+      ['cta', 'Found your row?', 'Start with the free mini-eval, or book a call and I’ll tell you honestly which path you need.'],
+    ],
+  },
+  'stack-integrations': {
+    title: 'Stack & integrations',
+    cat: 'What I build',
+    desc: 'Does this work with our stack? The CI systems, LLM providers, and automation platforms I work in — flexible by default, your conventions win.',
+    lead: 'The whole promise of this work is that it lands in your repo, your CI, and your conventions — so the honest answer to “does it work with our stack?” is almost always yes. Here’s the concrete version.',
+    blocks: [
+      ['p', 'Everywhere on this site I say <b>your repo, your CI, your conventions</b>. This page makes that specific: what I demonstrably work in, and — just as important — why the parts that matter aren’t locked to any one vendor. The rule underneath all of it: the deliverables are plain, portable artifacts, so they drop into what you already run rather than forcing a migration.'],
+      ['h', 'Version control & CI/CD'],
+      ['p', 'The eval gate and the regression suites are the two things that have to live in <i>your</i> pipeline. Both ship as ordinary commands — <code>npm run eval</code>, <code>npx playwright test</code> — so they wire into any runner that can execute a shell step. GitHub Actions is the default (it’s what the sample <a href="docs-evaluation-and-quality.html">eval-gate workflow</a> is written for), but nothing about the gate assumes it.'],
+      ['table',
+        ['System', 'Notes'],
+        [
+          ['<b>GitHub Actions</b>', 'The default. The eval gate and Playwright suites ship as ready-to-run workflows, with the scorecard uploaded as a build artifact — see <a href="docs-evaluation-and-quality.html">AI evaluation &amp; quality</a>.'],
+          ['<b>GitLab CI · CircleCI · Jenkins · Buildkite</b>', 'The gate is a single command that exits non-zero below the floor, so it’s a few lines in any of these. I port the workflow to yours rather than asking you to adopt mine.'],
+          ['<b>Self-hosted / air-gapped runners</b>', 'Runs on your own runners with no dependency on a hosted service — the suite and its fixtures live in your repo and execute wherever your CI does.'],
+        ],
+      ],
+      ['note', 'warn', 'Honest scope: GitHub Actions is where I’ve shipped the most, so it’s the fastest path. Anything else, I adapt to — but the portability claim rests on the gate being a plain command, not on me having a badge for every CI product. If you run something exotic, ask and I’ll tell you straight.'],
+      ['h', 'LLM providers'],
+      ['p', 'The application and eval layers talk to a model behind a typed boundary, so the provider is a configuration choice, not an architecture decision. I pick it per engagement on capability, cost, latency — and data policy — rather than defaulting to one vendor.'],
+      ['table',
+        ['Provider', 'Notes'],
+        [
+          ['<b>OpenAI</b>', 'GPT models — function-calling and schema-constrained structured outputs, the same typed-boundary pattern shown in <a href="docs-ai-engineering.html">AI product engineering</a>.'],
+          ['<b>Anthropic (Claude)</b>', 'Long-context reasoning and tool use; a common choice where grounded, careful answers matter more than raw throughput.'],
+          ['<b>DeepSeek</b>', 'Strong capability-per-dollar — a sensible default when a workload is cost-sensitive and the quality bar is met under eval.'],
+          ['<b>Google Gemini</b>', 'Used where its multimodal or long-context strengths fit the workload.'],
+        ],
+      ],
+      ['note', 'security', 'The provider is selected so your prompt and completion data is <b>not used to train anyone’s model</b>, and the exact vendor plus data-processing terms are named in the engagement’s SOW — never left vague. Full detail in <a href="docs-data-and-security.html">Data &amp; security</a>.'],
+      ['h', 'Automation platforms'],
+      ['p', 'For intake, triage, and routing workflows the platform is a means, not a religion — I reach for the lightest tool that fits the complexity and who has to maintain it. The short version:'],
+      ['table',
+        ['Reach for', 'When', 'Trade-off'],
+        [
+          ['<b>Make / Zapier</b>', 'Simple, linear glue between SaaS apps you already pay for', 'Fast to build; brittle past a few branches'],
+          ['<b>n8n (self-host)</b>', 'Branching logic, your own data, or you want to own the runtime', 'More control; you host and maintain it'],
+          ['<b>Code (LangGraph / typed)</b>', 'AI in the loop, real state, retries, approval gates, tests', 'Most robust and testable; needs an engineer to change'],
+        ],
+      ],
+      ['note', 'The full trade-off — and why I’ll recommend code when the risk is real even though it’s the harder sell — is in <a href="docs-workflow-automation.html">AI workflow automation</a>.'],
+      ['h', 'The default stack, where there’s no constraint'],
+      ['p', 'When a build starts greenfield with no existing stack to honor, this is what I reach for — chosen for speed to production and low maintenance, not novelty. It’s the same default documented in <a href="docs-product-and-platform.html">Product &amp; platform</a>, and every piece is swappable for your equivalent:'],
+      ['code', 'stack', 'Frontend   Next.js (App Router) · React · TypeScript\nBackend    Serverless functions · typed APIs · Zod validation\nData       Supabase / Postgres · row-level security\nPayments   Stripe\nQuality    Playwright + axe in CI · self-hosted fonts · strict CSP\nAutomation n8n / Make / LangGraph where a workflow fits'],
+      ['note', 'warn', '“Works in your stack” means exactly that: your conventions win. If your team is on Vue, Django, Rails, or a Postgres you already run, I build to it — I adapt to your codebase rather than importing mine into it. The defaults above are where I start only when there’s nothing to adapt to.'],
+      ['proof', [['llm-eval-gate — portable, keyless gate (MIT)', 'https://github.com/JasonTeixeira/llm-eval-gate'], ['playwright-sdet-regression-suite', 'https://github.com/JasonTeixeira/playwright-sdet-regression-suite'], ['This site’s own stack &amp; QA', 'docs-product-and-platform.html']]],
+      ['cta', 'Not sure it fits your stack?', 'Book a call — tell me what you run and I’ll tell you straight whether it drops in.'],
+    ],
+  },
 };
 
-// Slugs of generated pages, in sidebar order — consumed by build-notes.mjs for the sitemap.
 export const DOC_SLUGS = NAV.flatMap((g) => g.items.filter((i) => i.slug).map((i) => i.slug));
 export { BOOK };
