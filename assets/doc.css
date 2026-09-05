@@ -1,0 +1,92 @@
+/* doc.css — shared print-document system for the Sage Ideas proof kit.
+   Screen: a white "paper" sheet floated on the site's dark canvas (premium preview).
+   Print:  a clean, professional Letter document (white, ink text, one restrained accent).
+   Rendered to PDF via scripts/build-proof-kit.mjs (Chromium print + page numbers). */
+
+:root {
+  --paper:#ffffff; --ink:#17140F; --body:#3A3630; --muted:#6B655D; --faint:#938C83;
+  --rule:#E7E3DC; --rule-soft:#F1EEE9; --accent:#0F6B4F; --accent-soft:#E8F2ED;
+  --serif:'Instrument Serif',Georgia,serif; --sans:'Plus Jakarta Sans',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+
+/* screen preview canvas */
+body { margin:0; background:#09090B; font-family:var(--sans); }
+.paper {
+  background:var(--paper); color:var(--body);
+  width:8.5in; max-width:calc(100% - 24px); min-height:11in;
+  margin:32px auto; padding:0.85in 0.9in 1in;
+  box-shadow:0 30px 80px rgba(0,0,0,0.55); border-radius:2px;
+}
+
+/* letterhead */
+.doc-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; padding-bottom:14px; border-bottom:2px solid var(--ink); }
+.brand { font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); letter-spacing:-0.01em; }
+.brand .g { color:var(--accent); }
+.brand .sub { display:block; margin-top:4px; font-weight:400; font-size:9.5px; letter-spacing:0.06em; color:var(--faint); text-transform:uppercase; }
+.doc-meta { text-align:right; font-family:var(--mono); font-size:9.5px; line-height:1.7; color:var(--muted); }
+.doc-meta b { color:var(--ink); font-weight:600; }
+
+/* document title block */
+.doc-kicker { font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); margin-top:30px; }
+.doc-title { font-family:var(--serif); font-weight:400; font-size:34px; line-height:1.05; letter-spacing:-0.01em; color:var(--ink); margin:10px 0 0; }
+.doc-lede { font-size:12.5px; line-height:1.7; color:var(--muted); margin:14px 0 0; max-width:66ch; }
+
+/* sample / caveat banner */
+.doc-banner { margin-top:22px; border:1px solid var(--rule); border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:4px; padding:11px 15px; font-size:11px; line-height:1.6; color:#2C4A3E; }
+.doc-banner b { color:var(--accent); }
+
+/* sections */
+.sec { margin-top:26px; break-inside:avoid; }
+.sec-h { display:flex; align-items:baseline; gap:10px; border-bottom:1px solid var(--rule); padding-bottom:7px; margin-bottom:12px; }
+.sec-h .num { font-family:var(--mono); font-size:11px; font-weight:600; color:var(--accent); min-width:20px; }
+.sec-h h2 { font-family:var(--sans); font-weight:700; font-size:13.5px; letter-spacing:0.01em; color:var(--ink); margin:0; text-transform:none; }
+.sec p { font-size:12px; line-height:1.72; color:var(--body); margin:0 0 9px; }
+.sec p:last-child { margin-bottom:0; }
+.sec ul, .sec ol { margin:6px 0 0; padding-left:20px; }
+.sec li { font-size:12px; line-height:1.7; color:var(--body); margin-bottom:5px; }
+.sec li b, .sec p b { color:var(--ink); font-weight:600; }
+.lead-in { font-weight:600; color:var(--ink); }
+
+/* phase cards */
+.phase { border:1px solid var(--rule); border-radius:6px; padding:14px 16px; margin-top:12px; break-inside:avoid; }
+.phase .ph-top { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.phase .ph-name { font-family:var(--sans); font-weight:700; font-size:12.5px; color:var(--ink); }
+.phase .ph-name .n { font-family:var(--mono); color:var(--accent); margin-right:8px; }
+.phase .ph-when { font-family:var(--mono); font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:0.06em; }
+.phase .ph-body { font-size:11.5px; line-height:1.65; color:var(--muted); margin-top:8px; }
+.phase .ph-deliv { margin-top:9px; font-size:11px; }
+.phase .ph-deliv b { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); display:block; margin-bottom:3px; }
+
+/* tables */
+table.doc { width:100%; border-collapse:collapse; margin-top:10px; font-size:11.5px; }
+table.doc th, table.doc td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--rule); vertical-align:top; line-height:1.55; }
+table.doc thead th { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); border-bottom:1.5px solid var(--rule); }
+table.doc tbody th { font-weight:600; color:var(--ink); }
+table.doc td { color:var(--body); }
+table.doc .r { text-align:right; white-space:nowrap; }
+table.doc tr:last-child td, table.doc tr:last-child th { border-bottom:none; }
+
+/* commercial band chips */
+.band { display:inline-block; font-family:var(--mono); font-size:11px; color:var(--ink); background:var(--rule-soft); border:1px solid var(--rule); border-radius:4px; padding:3px 9px; }
+
+/* signature block */
+.sign { display:grid; grid-template-columns:1fr 1fr; gap:34px; margin-top:20px; break-inside:avoid; }
+.sign .line { border-top:1px solid var(--ink); margin-top:44px; padding-top:6px; font-family:var(--mono); font-size:10px; color:var(--muted); }
+.sign .who { font-size:11.5px; color:var(--ink); font-weight:600; }
+.sign .role { font-size:10px; color:var(--faint); font-family:var(--mono); margin-top:2px; }
+
+/* small print */
+.fine { font-size:10px; line-height:1.6; color:var(--faint); margin-top:8px; }
+.callout { margin-top:22px; border:1px solid var(--accent); border-radius:6px; padding:13px 16px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; break-inside:avoid; }
+.callout .msg { font-size:12px; color:var(--ink); } .callout .msg b { color:var(--accent); }
+.callout .link { font-family:var(--mono); font-size:11px; color:var(--accent); }
+
+.page-break { break-before:page; }
+
+@media print {
+  body { background:#fff; }
+  .paper { width:auto; max-width:none; min-height:0; margin:0; padding:0; box-shadow:none; border-radius:0; }
+  .no-print { display:none !important; }
+  a { color:var(--accent); text-decoration:none; }
+  .sec, .phase, .callout, .sign, .doc-banner { break-inside:avoid; }
+}

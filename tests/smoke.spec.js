@@ -448,6 +448,21 @@ test.describe('portfolio — service pages', () => {
     await expect(page.locator('article.case')).toHaveCount(4);
   });
 
+  test('proof-kit documents render, download as PDF, and are offered on the booking page', async ({ page, request }) => {
+    for (const slug of ['sow-sample.html', 'msa-sample.html', 'work-onepager.html']) {
+      await page.goto('/' + slug);
+      await expect(page.locator('h1.doc-title')).toBeVisible();
+    }
+    for (const pdf of ['Sage-Ideas-Sample-SOW', 'Sage-Ideas-Sample-MSA', 'Sage-Ideas-Selected-Work']) {
+      const res = await request.get(`/assets/${pdf}.pdf`);
+      expect(res.status(), pdf).toBe(200);
+      expect(res.headers()['content-type']).toContain('pdf');
+    }
+    await page.goto('/book.html');
+    await expect(page.locator('#paperwork')).toBeVisible();
+    await expect(page.locator('#paperwork a[href="assets/Sage-Ideas-Sample-SOW.pdf"]')).toBeVisible();
+  });
+
   test('ROI calculator recomputes exposure live from the sliders', async ({ page }) => {
     await page.goto('/roi.html');
     await expect(page.locator('h1')).toBeVisible();

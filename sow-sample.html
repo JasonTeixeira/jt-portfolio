@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Statement of Work — Sage Ideas LLC</title>
+<meta name="description" content="A sample Statement of Work / build plan for an AI feature engagement: scope, phased plan, deliverables, timeline, acceptance criteria, and indicative commercials.">
+<meta name="robots" content="noindex">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<main class="paper">
+  <div class="doc-head">
+    <div class="brand">Sage&nbsp;Ideas<span class="g">.</span>
+      <span class="sub">Jason Teixeira · AI engineering &amp; quality</span>
+    </div>
+    <div class="doc-meta">
+      <div><b>Statement of Work</b></div>
+      <div>Ref: SOW-SAMPLE-01</div>
+      <div>Version 1.0 · Illustrative</div>
+      <div>agency.sageideas.dev</div>
+    </div>
+  </div>
+
+  <div class="doc-kicker">Statement of Work &middot; build plan</div>
+  <h1 class="doc-title">LLM Feature Evaluation &amp; Quality Gate</h1>
+  <p class="doc-lede">A representative engagement: take one AI feature you're not yet confident shipping, build the evaluation and CI gate that keeps it honest, and hand you a repeatable quality system your team can run without me. This document shows exactly how I scope, build, and prove the work.</p>
+
+  <div class="doc-banner">
+    <b>Sample document.</b> This is an illustrative build plan, not a binding quote. Real scope, timeline, and price are confirmed after a short call and written into a project-specific SOW. Figures below are indicative ranges, not fixed prices.
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">1</span><h2>Parties &amp; engagement</h2></div>
+    <table class="doc">
+      <tbody>
+        <tr><th scope="row">Provider</th><td>Sage Ideas LLC — Jason Teixeira (hello@sageideas.dev)</td></tr>
+        <tr><th scope="row">Client</th><td>[Client legal name]</td></tr>
+        <tr><th scope="row">Engagement type</th><td>Fixed-scope project · one AI feature · your repository</td></tr>
+        <tr><th scope="row">Estimated duration</th><td>~4 weeks from kickoff (see §5)</td></tr>
+        <tr><th scope="row">Working model</th><td>Remote · async-first with a weekly checkpoint call · your stack, your git</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">2</span><h2>Objective &amp; success criteria</h2></div>
+    <p><span class="lead-in">The problem this solves.</span> Most teams ship an AI feature and then hope it behaves. "It seems to work" is not a release criterion — and it fails quietly, in front of customers, the first time a prompt, a model version, or a retrieval index drifts.</p>
+    <p><span class="lead-in">What "done" means here.</span> The engagement is successful when every one of these is true and demonstrable:</p>
+    <ul>
+      <li>A <b>golden evaluation set</b> exists for the feature, with pass/fail scoring anyone on your team can read.</li>
+      <li>A <b>CI gate</b> blocks a merge when quality, safety, or cost regresses past a threshold you set.</li>
+      <li>The feature ships with a <b>safety battery</b> covering hallucination, prompt injection, PII leakage, and toxicity.</li>
+      <li>Your team can <b>run and extend the whole system</b> from a documented runbook — no dependency on me.</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">3</span><h2>Scope of work</h2></div>
+    <p>Delivered in four phases, each ending in something you can see and verify — not a status update.</p>
+
+    <div class="phase">
+      <div class="ph-top"><span class="ph-name"><span class="n">01</span>Discovery &amp; risk map</span><span class="ph-when">~week 1</span></div>
+      <div class="ph-body">Review the feature, its prompts, data flow, and failure modes. Agree the quality dimensions that matter (accuracy, grounding, safety, latency, cost) and the thresholds that define "shippable." Produce a one-page risk model so coverage tracks real risk, not guesswork.</div>
+      <div class="ph-deliv"><b>Deliverable</b>Risk model + evaluation plan (agreed thresholds)</div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-top"><span class="ph-name"><span class="n">02</span>Build the evaluation harness</span><span class="ph-when">~weeks 1–2</span></div>
+      <div class="ph-body">Author the golden set from real and adversarial inputs. Implement scoring (deterministic checks + LLM-as-judge where judgment is needed), the safety battery, and per-run quality/latency/cost measurement. Every check is version-controlled in your repo.</div>
+      <div class="ph-deliv"><b>Deliverable</b>Golden set + scoring harness + safety battery, in your repo</div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-top"><span class="ph-name"><span class="n">03</span>Wire the CI gate</span><span class="ph-when">~week 3</span></div>
+      <div class="ph-body">Connect the harness to your CI so a pull request that regresses quality, safety, or cost is blocked with a readable report. Add a ratchet so the bar only moves up. Prove it works by making it fail on purpose, then pass.</div>
+      <div class="ph-deliv"><b>Deliverable</b>Passing CI gate + a captured red→green run proving it fires</div>
+    </div>
+
+    <div class="phase">
+      <div class="ph-top"><span class="ph-name"><span class="n">04</span>Handoff &amp; enablement</span><span class="ph-when">~week 4</span></div>
+      <div class="ph-body">Write the runbook: how to add a case, read a failure, tune a threshold, and interpret the gate. Walk your team through it live. The goal is that the system outlives the engagement and needs no consultant to operate.</div>
+      <div class="ph-deliv"><b>Deliverable</b>Runbook + recorded walkthrough + handoff session</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">4</span><h2>Deliverables summary</h2></div>
+    <table class="doc">
+      <thead><tr><th>Deliverable</th><th>Form</th><th>Acceptance</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Risk model &amp; evaluation plan</th><td>Document, agreed thresholds</td><td>Signed off in the week-1 checkpoint</td></tr>
+        <tr><th scope="row">Golden evaluation set</th><td>Versioned data in your repo</td><td>Covers the agreed dimensions</td></tr>
+        <tr><th scope="row">Scoring harness + safety battery</th><td>Code in your repo</td><td>Runs locally &amp; in CI, green</td></tr>
+        <tr><th scope="row">CI quality gate</th><td>CI workflow</td><td>Blocks a seeded regression; passes clean</td></tr>
+        <tr><th scope="row">Runbook + walkthrough</th><td>Docs + recording</td><td>Your team runs it unaided</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">5</span><h2>Timeline</h2></div>
+    <table class="doc">
+      <thead><tr><th>Week</th><th>Focus</th><th>Checkpoint</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1</th><td>Discovery, risk map, evaluation plan; start the golden set</td><td>Plan sign-off</td></tr>
+        <tr><th scope="row">2</th><td>Harness, scoring, safety battery</td><td>Harness demo</td></tr>
+        <tr><th scope="row">3</th><td>CI gate + ratchet; prove it fires</td><td>Red→green captured</td></tr>
+        <tr><th scope="row">4</th><td>Runbook, enablement, handoff</td><td>Final acceptance</td></tr>
+      </tbody>
+    </table>
+    <p class="fine">Timeline assumes timely access (repo, CI, a representative environment) and one client point of contact for decisions. Slippage in access shifts the schedule, not the scope.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">6</span><h2>Out of scope</h2></div>
+    <p>To keep the engagement fixed and honest, the following are explicitly excluded unless added in writing: building the underlying feature itself; model training or fine-tuning; production infrastructure changes; ongoing on-call or monitoring (available separately as a retainer); and evaluation of features beyond the one named in §1.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">7</span><h2>Assumptions &amp; client responsibilities</h2></div>
+    <ul>
+      <li>Timely access to the repository, CI system, and a representative test environment.</li>
+      <li>One empowered point of contact for scope and threshold decisions.</li>
+      <li>Existing feature is functional enough to evaluate (this engagement measures and gates it, it does not build it).</li>
+      <li>Any third-party API costs incurred during evaluation are the client's (typically minimal).</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">8</span><h2>Commercials</h2></div>
+    <p>This engagement is quoted as a fixed price after a scoping call — you approve the number before any work starts, in writing. Indicative range for a single-feature evaluation &amp; gate:</p>
+    <table class="doc">
+      <thead><tr><th>Component</th><th>Model</th><th class="r">Indicative</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Eval Audit (entry point)</th><td>Fixed · credits into the build</td><td class="r"><span class="band">from $2,500</span></td></tr>
+        <tr><th scope="row">Full evaluation &amp; CI gate build</th><td>Fixed-scope project</td><td class="r"><span class="band">$8k–$18k</span></td></tr>
+        <tr><th scope="row">Ongoing quality retainer</th><td>Monthly · optional</td><td class="r"><span class="band">$2.5k–$4k / mo</span></td></tr>
+      </tbody>
+    </table>
+    <p class="fine">Indicative ranges for illustration only; not an offer. Deposit of 30% books the engagement; balance on final acceptance. Exact figures are set in the project SOW after a call.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">9</span><h2>Next step</h2></div>
+    <div class="callout">
+      <span class="msg"><b>One 30-minute call</b> turns this sample into a real, fixed quote for your feature — with a plan you keep either way.</span>
+      <span class="link">agency.sageideas.dev/book.html</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sign">
+      <div>
+        <div class="who">Jason Teixeira</div>
+        <div class="role">Sage Ideas LLC · Provider</div>
+        <div class="line">Signature &amp; date</div>
+      </div>
+      <div>
+        <div class="who">[Client signatory]</div>
+        <div class="role">[Client legal name] · Client</div>
+        <div class="line">Signature &amp; date</div>
+      </div>
+    </div>
+    <p class="fine">This sample is provided for illustration and does not itself create a binding agreement. A project-specific Statement of Work, executed under a Master Services Agreement, governs any engagement.</p>
+  </div>
+
+  <p class="no-print" style="margin-top:22px;font-family:var(--mono);font-size:10.5px;color:#837D77">Sample SOW — <a href="assets/Sage-Ideas-Sample-SOW.pdf" download style="color:#0F6B4F">download PDF ↓</a> · <a href="index.html" style="color:#0F6B4F">← portfolio</a></p>
+</main>
+</body>
+</html>

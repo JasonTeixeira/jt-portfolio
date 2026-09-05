@@ -25,7 +25,8 @@
     "eval:chatbot": "node scripts/eval-chatbot.mjs",
     "eval:scope": "node scripts/eval-scope.mjs",
     "eval:target": "node scripts/eval-target.mjs",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build:proofkit": "node scripts/build-proof-kit.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
