@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hire an AI QA Engineer to Test Your AI</title>
+<meta name="description" content="Bring in an AI QA engineer before your LLM feature fails in front of customers. Eval suites, judge gates, and CI regression discipline — proof, not claims.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/hire-ai-qa-engineer.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hire an AI QA Engineer to Test Your AI">
+<meta property="og:description" content="The engineer you bring in before an untested LLM feature embarrasses your company. Eval suites, judge gates, CI regression discipline — and a live demo you can grade yourself.">
+<meta property="og:url" content="https://agency.sageideas.dev/hire-ai-qa-engineer.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .cta.ghost { background:transparent; color:var(--cyan); border:1px solid var(--line); }
+  .cta.ghost:hover { border-color:var(--cyan); }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* capability matrix */
+  .matrix-wrap { overflow-x:auto; margin-top:22px; border:1px solid var(--line); border-radius:14px; }
+  table.matrix { width:100%; border-collapse:collapse; font-size:13px; min-width:560px; }
+  table.matrix th, table.matrix td { padding:14px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.matrix thead th { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); background:#0A0A0C; }
+  table.matrix thead th.me { color:var(--green); }
+  table.matrix tbody th { font-weight:600; color:var(--ink); font-size:13px; }
+  table.matrix td { color:var(--dim); text-align:center; font-family:var(--mono); font-size:12px; }
+  table.matrix td.me { background:rgba(16,185,129,0.06); }
+  table.matrix tr:last-child th, table.matrix tr:last-child td { border-bottom:none; }
+  .yes { color:var(--green); font-weight:600; }
+  .no { color:var(--rose); }
+  .partial { color:var(--amber); }
+  .mcap { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-top:10px; }
+
+  /* flag list */
+  .flags { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); gap:14px; margin-top:22px; }
+  .flag { border:1px solid var(--line); border-radius:12px; padding:16px 18px; background:#0A0A0C; }
+  .flag .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
+  .flag.red .lbl { color:var(--rose); }
+  .flag.green .lbl { color:var(--green); }
+  .flag p { margin:0; font-size:13.5px; line-height:1.65; color:var(--dim); }
+  .flag p b { color:var(--ink); font-weight:600; }
+
+  /* svg diagram */
+  .diagram { margin-top:22px; border:1px solid var(--line); border-radius:14px; background:#0A0A0C; padding:clamp(16px,3vw,28px); }
+  .diagram svg { width:100%; display:block; }
+  .dgcap { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-top:12px; text-align:center; line-height:1.6; }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","name":"Hire an AI QA Engineer to Test Your AI","about":"Why and when to hire a dedicated AI QA engineer to build eval suites, judge gates, and CI regression discipline for LLM features before they fail in production.","creator":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"url":"https://agency.sageideas.dev/hire-ai-qa-engineer.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Hire an AI QA Engineer","item":"https://agency.sageideas.dev/hire-ai-qa-engineer.html"}]}</script>
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Docs</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Hire · AI quality engineering</div>
+    <h1 style="margin-top:20px;max-width:22ch">Hire an AI QA engineer <em style="color:var(--cyan)">before your LLM ships un-tested.</em></h1>
+    <p class="lede" style="margin-top:22px">An AI feature that ships without tests doesn't crash — it fails <em>quietly</em>. It hallucinates a policy, cites a source that doesn't exist, leaks a prompt, or confidently gives one customer the wrong number. Nobody gets a stack trace. You find out from a screenshot on social media. I'm the engineer you bring in <em>before</em> that happens: I build the eval suites, judge gates, and CI regression discipline that catch a bad answer while it's still in your pipeline — not in front of your customers.</p>
+    <div class="cred">
+      <span class="pill" style="--ac:var(--green)"><span class="dot" style="background:var(--green)"></span>ISTQB <b>CT-AI</b></span>
+      <span class="pill" style="--ac:var(--cyan)"><span class="dot" style="background:var(--cyan)"></span>ISTQB <b>Test Automation Engineer</b></span>
+      <a class="pill link" style="--ac:var(--purple)" href="eval.html#byo"><span class="dot" style="background:var(--purple)"></span>Live eval demo: <b>grade your own AI</b> &nearr;</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- THE RISK -->
+    <section style="padding-bottom:0">
+      <article class="case" style="--ac:var(--rose)">
+        <div class="tag">The risk · why this role exists</div>
+        <h3>The people who build the feature are the wrong people to prove it works.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:66ch">Whoever wrote the prompt already believes it works — that's the exact bias QA exists to break. An LLM feature has failure modes ordinary software doesn't: it's non-deterministic, it degrades silently when a model or prompt changes upstream, and "looks right" is not the same as "is right." Testing it takes a discipline that sits <em>between</em> building AI and traditional QA. That's the gap I fill.</p>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">What ships un-tested</div>
+            <ul>
+              <li>Hallucinated facts, policies, and prices stated with total confidence</li>
+              <li>Citations to sources that <b>do not exist</b></li>
+              <li>Prompt-injection and jailbreak paths nobody probed</li>
+              <li>Silent regressions when the model or prompt changes</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">What it costs you</div>
+            <ul>
+              <li>A wrong answer to a real customer, in public</li>
+              <li>No way to tell if last week's fix broke this week's answer</li>
+              <li>"It worked in the demo" — and nowhere else</li>
+              <li>Trust you don't get a second chance to earn</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">What good looks like</div>
+            <ul>
+              <li>A <b>golden set</b> of graded expected answers</li>
+              <li>Automated <b>judge gates</b> for safety and quality</li>
+              <li>A <b>CI gate</b> that blocks the release when a check fails</li>
+              <li>Every claim traceable to a source, by construction</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE MATRIX -->
+    <section>
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">The capability gap · who does what</div>
+        <h3>An AI builder, a QA engineer, and me are not the same hire.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Most teams already have someone who can build an LLM feature, and maybe someone who can write UI tests. Neither one, on their own, closes the loop on AI quality. Here's the honest split.</p>
+        <div class="matrix-wrap" tabindex="0" role="region" aria-label="Comparison table — scroll horizontally" role="region" aria-label="Capability comparison: AI builder vs generalist QA vs AI QA engineer">
+          <table class="matrix">
+            <caption class="mono" style="text-align:left;padding:12px 16px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)">Capability comparison</caption>
+            <thead>
+              <tr>
+                <th scope="col">Capability</th>
+                <th scope="col">AI builder</th>
+                <th scope="col">Generalist QA</th>
+                <th scope="col" class="me">Me (AI-QA)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Ships production LLM features</th>
+                <td><span class="yes">Yes</span></td>
+                <td><span class="no">No</span></td>
+                <td class="me"><span class="yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Builds eval suites &amp; judge gates</th>
+                <td><span class="no">Rarely</span></td>
+                <td><span class="partial">Partial</span></td>
+                <td class="me"><span class="yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">CI regression discipline</th>
+                <td><span class="partial">Some</span></td>
+                <td><span class="yes">Yes</span></td>
+                <td class="me"><span class="yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Safety / injection probing</th>
+                <td><span class="no">Rarely</span></td>
+                <td><span class="no">Rarely</span></td>
+                <td class="me"><span class="yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Certified in AI testing (ISTQB CT-AI)</th>
+                <td><span class="no">No</span></td>
+                <td><span class="partial">Varies</span></td>
+                <td class="me"><span class="yes">Yes</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mcap"><span class="yes">Yes</span> = core strength &middot; <span class="partial">Partial / Varies</span> = depends on the person &middot; <span class="no">No / Rarely</span> = not the role. Rated honestly — an AI builder who also builds eval gates exists, but it isn't the default.</p>
+      </article>
+    </section>
+
+    <!-- THE DIAGRAM -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">The mechanism · the eval gate</div>
+        <h3>Every AI answer runs a gauntlet before a customer sees it.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">This is the shape of the system I build. Your AI's output isn't shipped on faith — it's scored against safety and quality checks, and a CI gate makes a binary call: ship it, or block the release and tell you exactly which check failed.</p>
+        <div class="diagram">
+          <svg viewBox="0 0 900 300" role="img" aria-labelledby="dg-title dg-desc" preserveAspectRatio="xMidYMid meet">
+            <title id="dg-title">The AI eval gate flow</title>
+            <desc id="dg-desc">AI output flows into safety and quality checks, then into a CI gate that either ships the release or blocks it.</desc>
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#8E8882"></path>
+              </marker>
+            </defs>
+            <!-- 1. AI output -->
+            <rect x="20" y="112" width="150" height="76" rx="12" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5"></rect>
+            <text x="95" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#F4F2EF">AI output</text>
+            <text x="95" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">the raw answer</text>
+            <line x1="170" y1="150" x2="212" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <!-- 2. Checks -->
+            <rect x="220" y="60" width="200" height="180" rx="12" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5"></rect>
+            <text x="320" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" letter-spacing="0.08em" fill="#a78bfa">SAFETY + QUALITY</text>
+            <text x="240" y="118" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; citation coverage</text>
+            <text x="240" y="142" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; factual grounding</text>
+            <text x="240" y="166" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; injection / jailbreak</text>
+            <text x="240" y="190" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; format &amp; schema</text>
+            <text x="240" y="214" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; golden-set match</text>
+            <line x1="420" y1="150" x2="462" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <!-- 3. CI gate (diamond) -->
+            <polygon points="540,96 604,150 540,204 476,150" fill="#0C0C0E" stroke="#10b981" stroke-width="1.5"></polygon>
+            <text x="540" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#F4F2EF">CI gate</text>
+            <text x="540" y="164" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">pass?</text>
+            <!-- pass -> ship -->
+            <line x1="604" y1="150" x2="700" y2="88" stroke="#10b981" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <text x="648" y="98" font-family="'JetBrains Mono',monospace" font-size="10" fill="#10b981">pass</text>
+            <rect x="708" y="52" width="160" height="66" rx="12" fill="#0C0C0E" stroke="#10b981" stroke-width="1.5"></rect>
+            <text x="788" y="82" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#10b981">SHIP &#10003;</text>
+            <text x="788" y="101" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">release proceeds</text>
+            <!-- fail -> blocked -->
+            <line x1="604" y1="150" x2="700" y2="212" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <text x="646" y="205" font-family="'JetBrains Mono',monospace" font-size="10" fill="#f43f5e">fail</text>
+            <rect x="708" y="182" width="160" height="66" rx="12" fill="#0C0C0E" stroke="#f43f5e" stroke-width="1.5"></rect>
+            <text x="788" y="212" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#f43f5e">BLOCKED &#10007;</text>
+            <text x="788" y="231" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">release held</text>
+          </svg>
+        </div>
+        <p class="dgcap">The same gate discipline runs this very site. Want to see a check score a real answer? Paste your AI's output into the live demo and watch it get graded.</p>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="eval.html#byo">&#9656; grade your own AI, live</a>
+          <span class="verified">real eval &middot; runs in your browser &middot; no signup</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- RED FLAG / GREEN FLAG -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--amber)">
+        <div class="tag">Buyer's guide · how to tell a real hire from a resold-Zapier shop</div>
+        <h3>Not everyone selling "AI QA" is testing AI.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">A lot of "AI QA" offers are a Zapier flow with a chatbot bolted on. Here's how to tell the difference before you sign anything.</p>
+        <div class="flags">
+          <div class="flag red"><div class="lbl">&#9873; Red flag</div><p>Demos a chatbot answering questions and calls that "tested."</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Green flag</div><p>Shows you a <b>failing</b> eval and the exact check that caught it.</p></div>
+
+          <div class="flag red"><div class="lbl">&#9873; Red flag</div><p>Quotes an accuracy number with no golden set behind it.</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Green flag</div><p>Hands you a <b>versioned golden set</b> you own and can re-run.</p></div>
+
+          <div class="flag red"><div class="lbl">&#9873; Red flag</div><p>"It works" — but nothing runs in CI and nothing blocks a bad release.</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Green flag</div><p>Wires a <b>gate into your pipeline</b> that fails the build on regressions.</p></div>
+
+          <div class="flag red"><div class="lbl">&#9873; Red flag</div><p>Can't explain non-determinism, drift, or prompt-injection risk.</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Green flag</div><p>Probes safety and injection paths, and can <b>prove</b> the results.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- PROOF -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">The proof · claims I can back</div>
+        <h3>The whole thesis of this site: proof over claims.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Every number here is linked to its evidence. If I can't show it, I don't say it.</p>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">My own QA OS blocked its own release</div>
+            <p>A QA system I built caught <b>15 high/critical CVEs</b>, refused to ship itself, and was patched the same day to <b>3,759 tests</b> passing across <b>13 of 13</b> gates. The before and after are both captured.</p>
+            <div class="proofrow" style="margin-top:14px;padding-top:14px">
+              <a class="plink" style="--ac:var(--rose)" href="captures/nexural-qa-os.html">&#9656; blocked (before)</a>
+              <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">&#9656; green (after)</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Regression discipline, measured</div>
+            <p>An SDET regression suite running <b>37 of 37</b> specs, <b>0 flakes</b>, in <b>15.3s</b>. The full source is public.</p>
+            <div class="proofrow" style="margin-top:14px;padding-top:14px">
+              <a class="plink" style="--ac:var(--cyan)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">&#9656; the suite on GitHub &nearr;</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Grounded generation, by construction</div>
+            <p>A RAG research dashboard with <b>100% citation coverage by construction</b> — there is no code path that can generate an uncited claim.</p>
+            <div class="proofrow" style="margin-top:14px;padding-top:14px">
+              <a class="plink" style="--ac:var(--purple)" href="case-studies.html">&#9656; the case study</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Track record on real systems</div>
+            <ul>
+              <li><b>HighStrike</b> (fintech): flake rate <b>10% &rarr; under 1%</b>, 500+ tests on live trading workflows</li>
+              <li><b>The Home Depot</b> (Fortune 50): Selenium framework for <b>2,300+ stores</b>, regression <b>4h &rarr; 75min</b></li>
+              <li>This site runs its own QA — <b>100+ checks</b>, axe-clean</li>
+            </ul>
+          </div>
+        </div>
+        <div class="proofrow">
+          <span class="verified">every figure above links to its evidence &middot; nothing rounded up for a pitch</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Worried about an AI feature you're about to ship?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Book a call and we'll scope the eval gate your feature needs — or grade one of your AI's answers live, right now, and see the discipline for yourself.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="book.html" class="cta" data-evt="hire-aiqa-book">Book a call &rarr;</a>
+        <a href="eval.html#byo" class="cta ghost">Grade your own AI live</a>
+      </div>
+      <p class="note" style="text-align:center">Prefer to read first? See <a href="services/llm-evaluation-qa.html" style="color:var(--cyan)">LLM evaluation &amp; QA</a> or the <a href="guide-eval-gate.html" style="color:var(--cyan)">eval-gate guide</a>.</p>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+</body>
+</html>

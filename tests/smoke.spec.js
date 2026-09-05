@@ -390,7 +390,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(50);
+    expect((xml.match(/<loc>/g) || []).length).toBe(55);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -478,6 +478,21 @@ test.describe('portfolio — service pages', () => {
     await expect(page.locator('#paperwork a[href="assets/Sage-Ideas-Sample-SOW.pdf"]')).toBeVisible();
   });
 
+  test('SEO landing pages load with h1 + diagram + book CTA, are in the sitemap, and linked from services', async ({ page, request }) => {
+    const slugs = ['hire-ai-qa-engineer', 'llm-evaluation-consultant', 'rag-evaluation-guide', 'ai-agent-testing', 'reduce-test-flakiness'];
+    for (const s of slugs) {
+      await page.goto('/' + s + '.html');
+      await expect(page.locator('h1')).toBeVisible();
+      await expect(page.locator('svg').first()).toBeVisible();
+      // in-content book CTA (the nav CTA is behind the hamburger on mobile)
+      await expect(page.locator('main a[href="book.html"]').first()).toBeVisible();
+    }
+    const xml = await (await request.get('/sitemap.xml')).text();
+    for (const s of slugs) expect(xml).toContain('/' + s + '.html');
+    await page.goto('/services.html');
+    await expect(page.locator('#answers a[href="hire-ai-qa-engineer.html"]')).toBeAttached();
+  });
+
   test('eval BYO: paste-your-own-AI form submits and degrades gracefully when the judge is offline', async ({ page }) => {
     await page.goto('/eval.html');
     await expect(page.locator('#byo')).toBeVisible();
@@ -555,7 +570,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(50);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(55);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');

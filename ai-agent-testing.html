@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Agent Testing: What Breaks in Production</title>
+<meta name="description" content="The failure modes unit tests miss on AI agents: multi-turn drift, tool-call errors, prompt injection, non-determinism — and the probes that catch them.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/ai-agent-testing.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI Agent Testing: What Breaks in Production">
+<meta property="og:description" content="Single-turn evals miss multi-turn bugs. The failure surface of agentic systems — and the golden probes, red-team battery, and robustness checks that catch each one.">
+<meta property="og:url" content="https://agency.sageideas.dev/ai-agent-testing.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* comparison matrix */
+  table.doc { width:100%; border-collapse:collapse; margin-top:22px; font-size:13px; }
+  table.doc caption { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); padding-bottom:12px; }
+  table.doc th, table.doc td { text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; }
+  table.doc thead th { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); font-weight:500; border-bottom:1px solid var(--line); }
+  table.doc tbody th { font-family:var(--mono); font-size:12px; font-weight:600; color:var(--ink); white-space:nowrap; }
+  table.doc td.miss { color:var(--dim); }
+  table.doc td.catch { color:var(--ink); }
+  table.doc td.catch b { color:var(--green); font-weight:600; }
+  .tscroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  /* svg diagram frame */
+  .diagram { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(20px,3.5vw,34px); margin-top:20px; }
+  .diagram figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:16px; line-height:1.6; }
+  .agent-svg { width:100%; height:auto; display:block; }
+  .agent-svg text { font-family:'JetBrains Mono',monospace; }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","name":"AI Agent Testing: What Breaks in Production","about":"Failure modes of agentic AI systems that unit tests miss — multi-turn drift, tool-call errors, prompt injection across turns, non-determinism — and the multi-turn golden probes, red-team battery, and robustness checks that catch them.","creator":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"url":"https://agency.sageideas.dev/ai-agent-testing.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"AI Agent Testing","item":"https://agency.sageideas.dev/ai-agent-testing.html"}]}</script>
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Docs</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">AI agent testing · how to test LangGraph &amp; agentic systems</div>
+    <h1 style="margin-top:20px;max-width:22ch">AI agent testing: what breaks <em style="color:var(--cyan)">in production.</em></h1>
+    <p class="lede" style="margin-top:22px">Agents don't fail the way functions fail. A unit test asserts one input against one output; an agent plans, calls tools, remembers, and loops — so the bugs live <em>between</em> turns, in the tool boundary, and in the parts that aren't deterministic. This page maps the failure surface that unit tests can't see, and the probes that catch each one before your users do.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--green)" href="eval.html"><span class="dot" style="background:var(--green)"></span>Live eval demo: <b>grade an answer</b> &rarr;</a>
+      <a class="pill link" style="--ac:var(--purple)" href="services/llm-evaluation-qa.html"><span class="dot" style="background:var(--purple)"></span>Service: <b>LLM evaluation &amp; QA</b> &rarr;</a>
+      <span class="pill"><span class="dot" style="background:var(--cyan)"></span>ISTQB <b>CT-AI</b> + Test Automation Engineer</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- THE REAL LESSON -->
+    <section style="padding-bottom:0">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">The lesson · why single-turn evals aren't enough</div>
+        <h3>A green single-turn suite hid a 502 on every follow-up.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:66ch">On one build, a scoping chatbot passed its single-turn checks cleanly: ask a question, get a good answer, assertion green. But the moment a user sent a <em>second</em> message in the same conversation, the endpoint returned a <span class="mono" style="color:var(--rose)">502</span> — every time. Single-turn testing can't see that, because it never sends turn two. A <b>multi-turn golden probe</b> — a scripted conversation that replays several turns and asserts on the whole trajectory — caught it immediately. That's the core of agent testing: you test the <em>conversation</em> and the <em>loop</em>, not one call.</p>
+        <div class="proofrow">
+          <span class="verified">Real lesson from a shipped build · no metric claimed beyond the failure itself</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE FAILURE SURFACE MATRIX -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <div class="kick" style="color:var(--purple)">The failure surface</div>
+      <h2 style="margin-top:12px">What unit tests miss — and what catches it.</h2>
+      <p class="subtle" style="margin-top:12px;max-width:64ch">Each row is a failure mode that a single-turn unit test structurally cannot observe, paired with the probe that does.</p>
+      <div class="tscroll" tabindex="0" role="region" aria-label="Comparison table — scroll horizontally">
+        <table class="doc">
+          <caption>Agent failure surface → how a unit test misses it → the probe that catches it</caption>
+          <thead>
+            <tr>
+              <th scope="col">Failure mode</th>
+              <th scope="col">How a unit test misses it</th>
+              <th scope="col">The probe that catches it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Multi-turn drift</th>
+              <td class="miss">Asserts one input/output pair; the conversation never reaches turn two, so state that only corrupts across turns is invisible.</td>
+              <td class="catch"><b>Multi-turn golden probe</b> — a scripted N-turn conversation asserting on the full trajectory, not one reply.</td>
+            </tr>
+            <tr>
+              <th scope="row">Tool-call errors</th>
+              <td class="miss">Mocks the tool and checks the happy path; never exercises malformed args, wrong tool selection, or a tool that returns an error.</td>
+              <td class="catch"><b>Tool-boundary assertions</b> — verify the agent picks the right tool, with valid args, and recovers when the tool fails.</td>
+            </tr>
+            <tr>
+              <th scope="row">Prompt injection across turns</th>
+              <td class="miss">Tests trusted inputs only; hostile content planted in turn one that hijacks turn three is out of scope.</td>
+              <td class="catch"><b>Red-team battery</b> — injected payloads in tool output and history, asserting the agent refuses and stays in policy.</td>
+            </tr>
+            <tr>
+              <th scope="row">Non-determinism &amp; flakiness</th>
+              <td class="miss">A single pass looks green; the same input silently produces a different, wrong path on the next run.</td>
+              <td class="catch"><b>Repeat / robustness runs</b> — the same probe run K times, scored on pass rate, with paraphrase and retry checks.</td>
+            </tr>
+            <tr>
+              <th scope="row">Loop &amp; termination faults</th>
+              <td class="miss">No loop is executed, so runaway tool loops, early exits, and stuck plans never surface.</td>
+              <td class="catch"><b>Trajectory bounds</b> — assert step count, termination, and that the agent reaches a valid stop state.</td>
+            </tr>
+            <tr>
+              <th scope="row">Ungrounded / uncited output</th>
+              <td class="miss">Checks the text reads well, not whether every claim traces to a retrieved source.</td>
+              <td class="catch"><b>Citation-coverage gate</b> — every generated claim must map to a source, enforced by construction.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Method, not vendor lock-in. The same three families — multi-turn golden probes, a red-team battery, and repeat/robustness runs — apply to LangGraph, a custom loop, or an off-the-shelf agent framework.</p>
+    </section>
+
+    <!-- THE DIAGRAM -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <div class="kick" style="color:var(--green)">The loop, instrumented</div>
+      <h2 style="margin-top:12px">Where the probes attach.</h2>
+      <p class="subtle" style="margin-top:12px;max-width:60ch">An agent is a loop: take input, plan, call a tool, respond — and often repeat. Every edge of that loop is a place a probe attaches. The gate at the end decides ship or block.</p>
+      <figure class="diagram" style="margin:0;margin-top:20px">
+        <svg class="agent-svg" viewBox="0 0 860 400" role="img" aria-labelledby="loop-title loop-desc">
+          <title id="loop-title">Agent loop with probe attachment points</title>
+          <desc id="loop-desc">Input flows into Plan, then Tool call, then Respond, looping back to Plan for the next turn. Multi-turn golden probes attach across turns, tool-boundary assertions attach at the tool call, and a red-team battery injects at input and tool output. The trajectory is scored against an eval gate that either ships or blocks the release.</desc>
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#8E8882"></path>
+            </marker>
+            <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#10b981"></path>
+            </marker>
+          </defs>
+
+          <!-- loop nodes -->
+          <g>
+            <rect x="24" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#2A2826"></rect>
+            <text x="89" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Input</text>
+            <text x="89" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">user turn</text>
+          </g>
+          <g>
+            <rect x="234" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#22d3ee"></rect>
+            <text x="299" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Plan</text>
+            <text x="299" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">choose next step</text>
+          </g>
+          <g>
+            <rect x="444" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#a78bfa"></rect>
+            <text x="509" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Tool call</text>
+            <text x="509" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">act on the world</text>
+          </g>
+          <g>
+            <rect x="654" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#2A2826"></rect>
+            <text x="719" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Respond</text>
+            <text x="719" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">reply / continue</text>
+          </g>
+
+          <!-- forward edges -->
+          <line x1="154" y1="182" x2="228" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
+          <line x1="364" y1="182" x2="438" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
+          <line x1="574" y1="182" x2="648" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
+
+          <!-- loop-back edge: Respond -> Plan (next turn) -->
+          <path d="M719 214 L719 268 L299 268 L299 218" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah)"></path>
+          <text x="509" y="286" text-anchor="middle" font-size="11" fill="#22d3ee">next turn — where multi-turn drift hides</text>
+
+          <!-- probe labels above -->
+          <text x="509" y="112" text-anchor="middle" font-size="11" fill="#a78bfa">tool-boundary assertions</text>
+          <line x1="509" y1="120" x2="509" y2="146" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#ah)"></line>
+
+          <text x="89" y="112" text-anchor="middle" font-size="11" fill="#f43f5e">red-team inject</text>
+          <line x1="89" y1="120" x2="89" y2="146" stroke="#f43f5e" stroke-width="1.2" marker-end="url(#ah)"></line>
+
+          <!-- trajectory -> gate -->
+          <path d="M719 214 L719 330 L300 330" fill="none" stroke="#8E8882" stroke-width="1.2"></path>
+          <text x="470" y="322" text-anchor="middle" font-size="10.5" fill="#8E8882">scored trajectory</text>
+
+          <!-- eval gate -->
+          <g>
+            <rect x="150" y="308" width="150" height="66" rx="12" fill="#0C0C0E" stroke="#10b981"></rect>
+            <text x="225" y="336" text-anchor="middle" font-size="13" fill="#10b981">Eval gate</text>
+            <text x="225" y="355" text-anchor="middle" font-size="10.5" fill="#8E8882">pass rate + red-team</text>
+          </g>
+          <line x1="300" y1="330" x2="304" y2="330" stroke="#8E8882" stroke-width="1.2"></line>
+
+          <!-- ship / block -->
+          <line x1="150" y1="330" x2="96" y2="330" stroke="#10b981" stroke-width="1.5" marker-end="url(#ahg)"></line>
+          <text x="60" y="326" text-anchor="middle" font-size="11" fill="#10b981">ship</text>
+          <text x="60" y="342" text-anchor="middle" font-size="9.5" fill="#8E8882">gates pass</text>
+
+          <line x1="225" y1="308" x2="225" y2="238" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah)"></line>
+          <text x="225" y="230" text-anchor="middle" font-size="11" fill="#f43f5e">block — fails → back to fix</text>
+        </svg>
+        <figcaption>The loop is the unit under test. Probes attach at every edge; the eval gate turns a scored trajectory into a ship-or-block decision — the same discipline that let my QA OS block its own release when it found 15 high/critical CVEs.</figcaption>
+      </figure>
+    </section>
+
+    <!-- THE METHOD -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">The method · three families of probe</div>
+        <h3>Multi-turn golden probes + a red-team battery + robustness.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">1 · Multi-turn golden probes</div>
+            <p>Scripted conversations that replay several turns and assert on the whole trajectory — tool choice, state, and the final answer. This is the layer that would have caught the second-turn 502 on day one.</p>
+          </div>
+          <div class="blk">
+            <div class="h">2 · Red-team battery</div>
+            <ul>
+              <li>Injection planted in <b>tool output</b> and <b>history</b>, not just the prompt</li>
+              <li>Assert the agent <b>refuses</b> and stays in policy</li>
+              <li>Jailbreak, exfiltration, and scope-escape cases run every build</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">3 · Retry / robustness</div>
+            <ul>
+              <li>Run each probe <b>K times</b>, score on pass rate — flaky ≠ passing</li>
+              <li>Paraphrase the same intent; the agent must hold</li>
+              <li>Bound loop steps and assert clean termination</li>
+            </ul>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="services/llm-evaluation-qa.html">▸ how I run this as a service</a>
+          <a class="plink" style="--ac:var(--green)" href="eval.html">▸ try the live eval demo</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE PROOF -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">The proof · not claims, receipts</div>
+        <h3>This isn't theory — it's how I already work.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">A gate that blocked its own release</div>
+            <p>My QA OS caught <b>15 high/critical CVEs</b>, blocked the release, and was patched to <b>3,759 tests / 13-of-13 gates</b> the same day. A gate that can't say "no" isn't a gate.</p>
+            <div class="proofrow" style="margin-top:16px;padding-top:14px">
+              <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os.html">▸ blocked capture</a>
+              <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">▸ fixed capture</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Grounded by construction</div>
+            <p>A RAG research dashboard with <b>100% citation coverage</b> — no path exists to generate an uncited claim. The citation gate is structural, not a hope.</p>
+            <div class="proofrow" style="margin-top:16px;padding-top:14px">
+              <a class="plink" style="--ac:var(--green)" href="case-studies.html">▸ case study</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Deterministic suites that hold</div>
+            <p>A public SDET regression suite: <b>37/37 specs, 0 flakes, 15.3s</b>. On live fintech workflows I took flake rate from <b>10% to under 1%</b> across 500+ tests.</p>
+            <div class="proofrow" style="margin-top:16px;padding-top:14px">
+              <a class="plink" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">▸ the suite on GitHub &nearr;</a>
+            </div>
+          </div>
+        </div>
+        <div class="proofrow">
+          <span class="verified">Every figure here links to its receipt · this site runs its own QA (100+ checks, axe-clean)</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Worried about a specific agent shipping broken?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Book a call and we'll scope a probe suite for your agent — or paste your AI's answer into the live eval demo and watch it get graded right now.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="book.html" class="cta" data-evt="agent-book">Book a call &rarr;</a>
+        <a href="eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">▸ try the live eval demo</a>
+        <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">LLM evaluation &amp; QA &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+</body>
+</html>

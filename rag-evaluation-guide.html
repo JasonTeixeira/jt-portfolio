@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG Evaluation: Citation Coverage &amp; Groundedness</title>
+<meta name="description" content="How to test a RAG system: citation coverage, retrieval precision, groundedness, and abstain-on-no-evidence — a concrete checklist from a 100%-cited build.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/rag-evaluation-guide.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG Evaluation: Citation Coverage &amp; Groundedness">
+<meta property="og:description" content="A concrete checklist for testing RAG: citation coverage, retrieval precision, groundedness, abstain-when-no-evidence, latency and cost per query.">
+<meta property="og:url" content="https://agency.sageideas.dev/rag-evaluation-guide.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* metric strip */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:1px; margin-top:34px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--line); }
+  .stat { background:var(--card); padding:22px clamp(14px,2.4vw,24px); }
+  .stat .n { font-family:var(--serif); font-size:clamp(1.9rem,4.4vw,2.6rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); margin-top:9px; line-height:1.5; text-transform:uppercase; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip { font-family:var(--mono); font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .chip b { color:var(--ac); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* doc table (matrix) */
+  table.doc { width:100%; border-collapse:collapse; margin-top:22px; font-size:13.5px; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  table.doc caption { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); padding-bottom:10px; }
+  table.doc th, table.doc td { text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; }
+  table.doc thead th { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan); background:#0A0A0C; }
+  table.doc tbody tr:last-child td { border-bottom:none; }
+  table.doc td b { color:var(--ink); font-weight:600; }
+  table.doc td.chk { font-family:var(--mono); color:var(--green); white-space:nowrap; }
+  .tscroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  /* svg diagram */
+  .diagram { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(20px,3vw,32px); margin-top:20px; }
+  .diagram svg { width:100%; height:auto; display:block; }
+  .diagram .cap { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* checklist */
+  .check { list-style:none; margin:18px 0 0; padding:0; display:grid; gap:12px; }
+  .check li { display:flex; gap:12px; align-items:flex-start; font-size:14px; line-height:1.65; color:var(--dim); }
+  .check li .b { font-family:var(--mono); font-size:12px; color:var(--green); flex:0 0 auto; margin-top:1px; }
+  .check li b { color:var(--ink); font-weight:600; }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","name":"RAG Evaluation: Citation Coverage & Groundedness","about":"A concrete methodology for testing retrieval-augmented generation systems: citation coverage, retrieval precision, groundedness, abstention, and latency.","creator":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"url":"https://agency.sageideas.dev/rag-evaluation-guide.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"RAG Evaluation Guide","item":"https://agency.sageideas.dev/rag-evaluation-guide.html"}]}</script>
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Docs</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Field guide · RAG evaluation</div>
+    <h1 style="margin-top:20px;max-width:18ch">How to actually <em style="color:var(--cyan)">test</em> a RAG system.</h1>
+    <p class="lede" style="margin-top:22px">Most retrieval-augmented generation demos are graded by vibe: someone reads three answers, they look plausible, ship it. That's not evaluation — that's optimism. A RAG system fails in specific, testable ways: it cites the wrong chunk, it invents a fact the retrieved context never said, or it answers confidently when it should have said "I don't have that." Each of those failure modes has a check that catches it. This is the checklist, and it's grounded in a dashboard I built where <b style="color:var(--green)">citation coverage is 100% by construction</b> — there is no code path that can generate an uncited sentence.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--green)" href="case-studies.html"><span class="dot" style="background:var(--green)"></span>Proof: <b>the 100%-cited build</b> &rarr;</a>
+      <a class="pill link" style="--ac:var(--cyan)" href="eval.html"><span class="dot" style="background:var(--cyan)"></span>Try the <b>live eval demo</b> &rarr;</a>
+      <span class="pill"><span class="dot" style="background:var(--purple)"></span>Certified: <b>ISTQB CT-AI</b></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- THE FIVE DIMENSIONS -->
+    <section style="padding-bottom:0">
+      <div class="stats" style="--ac:var(--cyan)">
+        <div class="stat"><div class="n">5</div><div class="l">dimensions every RAG eval must cover</div></div>
+        <div class="stat"><div class="n">100%</div><div class="l">citation coverage on the reference build</div></div>
+        <div class="stat"><div class="n">0</div><div class="l">uncited generation paths (by construction)</div></div>
+        <div class="stat"><div class="n">1</div><div class="l">live demo you can grade yourself</div></div>
+      </div>
+      <p class="note">The 100% figure is structural, not a benchmark score: the pipeline cannot emit an answer sentence that isn't tied to a retrieved source. Verify it on the <span class="mono">case-studies.html</span> build.</p>
+    </section>
+
+    <!-- THE CHECKLIST -->
+    <section>
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">The checklist · what a real RAG eval measures</div>
+        <h3>Five things, or you're guessing.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">A pass/fail RAG evaluation harness has to score all five of these on a fixed question set — ideally a golden set with known-correct sources — and gate the release on the results. Skip one and you've left a whole class of failure untested.</p>
+        <ul class="check">
+          <li><span class="b">01</span><span><b>Citation coverage.</b> What fraction of answer claims carry a citation that actually supports them? Not "has a footnote" — the cited chunk must contain the claim. Target: every load-bearing sentence is traceable to a retrieved source.</span></li>
+          <li><span class="b">02</span><span><b>Retrieval precision &amp; recall.</b> Did the retriever surface the chunks that contain the answer (recall), and how much noise came with them (precision)? A perfect generator can't save a retriever that never fetched the right passage.</span></li>
+          <li><span class="b">03</span><span><b>Groundedness / faithfulness.</b> Is every statement entailed by the retrieved context, or did the model add "knowledge" from pre-training that isn't in the sources? This is where hallucination hides even when citations are present.</span></li>
+          <li><span class="b">04</span><span><b>Abstain-when-no-evidence.</b> When the corpus genuinely doesn't contain the answer, does the system say so — or does it confabulate? Test with out-of-corpus questions and require an explicit "insufficient evidence" response.</span></li>
+          <li><span class="b">05</span><span><b>Latency &amp; cost per query.</b> Retrieval + rerank + generation each add milliseconds and tokens. Measure p50/p95 latency and cost per query, because an accurate system nobody can afford to run is still a failed system.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- THE DIAGRAM -->
+    <section style="padding-top:0">
+      <div class="diagram">
+        <svg viewBox="0 0 900 300" role="img" aria-labelledby="ragflow-title ragflow-desc" preserveAspectRatio="xMidYMid meet">
+          <title id="ragflow-title">RAG evaluation flow</title>
+          <desc id="ragflow-desc">A user query flows into retrieval, which returns ranked chunks. A groundedness gate then either produces a grounded, cited answer when evidence is sufficient, or abstains when it is not.</desc>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#8E8882"></path>
+            </marker>
+          </defs>
+          <!-- Query -->
+          <rect x="16" y="118" width="150" height="64" rx="12" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5"></rect>
+          <text x="91" y="146" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600">Query</text>
+          <text x="91" y="166" text-anchor="middle" fill="#A8A29E" font-family="'JetBrains Mono',monospace" font-size="10">user question</text>
+          <!-- Retrieval -->
+          <rect x="216" y="118" width="160" height="64" rx="12" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5"></rect>
+          <text x="296" y="146" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600">Retrieval</text>
+          <text x="296" y="166" text-anchor="middle" fill="#A8A29E" font-family="'JetBrains Mono',monospace" font-size="10">embed + search</text>
+          <!-- Ranked chunks -->
+          <rect x="426" y="118" width="160" height="64" rx="12" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5"></rect>
+          <text x="506" y="146" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600">Ranked chunks</text>
+          <text x="506" y="166" text-anchor="middle" fill="#A8A29E" font-family="'JetBrains Mono',monospace" font-size="10">rerank top-k</text>
+          <!-- Gate (diamond) -->
+          <polygon points="686,150 726,110 766,150 726,190" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5"></polygon>
+          <text x="726" y="146" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600">Evidence</text>
+          <text x="726" y="160" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600">gate</text>
+          <!-- Grounded answer -->
+          <rect x="806" y="34" width="86" height="60" rx="12" fill="#0C0C0E" stroke="#10b981" stroke-width="1.5"></rect>
+          <text x="849" y="58" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Grounded</text>
+          <text x="849" y="76" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="11">+ cited</text>
+          <!-- Abstain -->
+          <rect x="806" y="206" width="86" height="60" rx="12" fill="#0C0C0E" stroke="#f43f5e" stroke-width="1.5"></rect>
+          <text x="849" y="230" text-anchor="middle" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Abstain</text>
+          <text x="849" y="248" text-anchor="middle" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="10">no evidence</text>
+          <!-- arrows -->
+          <line x1="166" y1="150" x2="212" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#arrow)"></line>
+          <line x1="376" y1="150" x2="422" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#arrow)"></line>
+          <line x1="586" y1="150" x2="682" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#arrow)"></line>
+          <path d="M760,132 Q800,100 806,72" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow)"></path>
+          <path d="M760,168 Q800,200 806,228" fill="none" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrow)"></path>
+          <text x="782" y="96" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="10">sufficient</text>
+          <text x="778" y="210" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="10">insufficient</text>
+        </svg>
+        <p class="cap">The gate is the whole game. Answers only ship when retrieved evidence supports every claim; otherwise the system abstains instead of confabulating. Removing the abstain branch is the single most common cause of "confidently wrong" RAG.</p>
+      </div>
+    </section>
+
+    <!-- THE MATRIX -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">The matrix · failure mode &rarr; the check that catches it</div>
+        <h3>Every way RAG breaks, and its test.</h3>
+        <div class="tscroll" tabindex="0" role="region" aria-label="Comparison table — scroll horizontally">
+          <table class="doc">
+            <caption>RAG failure modes mapped to the evaluation check that catches each</caption>
+            <thead>
+              <tr><th scope="col">Failure mode</th><th scope="col">What the user sees</th><th scope="col">The check that catches it</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Uncited claim</b></td><td>A confident sentence with no source you can verify.</td><td class="chk">Citation coverage</td></tr>
+              <tr><td><b>Wrong-chunk citation</b></td><td>A footnote that points to a passage which doesn't support the claim.</td><td class="chk">Citation → claim entailment</td></tr>
+              <tr><td><b>Missed retrieval</b></td><td>"I don't know" when the answer was in the corpus all along.</td><td class="chk">Retrieval recall</td></tr>
+              <tr><td><b>Noisy retrieval</b></td><td>Answer drifts because irrelevant chunks crowded the context window.</td><td class="chk">Retrieval precision</td></tr>
+              <tr><td><b>Hallucinated fact</b></td><td>A plausible detail the sources never actually contained.</td><td class="chk">Groundedness / faithfulness</td></tr>
+              <tr><td><b>Confident confabulation</b></td><td>A full answer to a question the corpus can't support.</td><td class="chk">Abstain-when-no-evidence</td></tr>
+              <tr><td><b>Stale index</b></td><td>Yesterday's answer to today's document.</td><td class="chk">Freshness / re-index check</td></tr>
+              <tr><td><b>Unaffordable accuracy</b></td><td>Correct answers that take 8 seconds and cost real money each.</td><td class="chk">Latency &amp; cost per query</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">A serious harness runs this whole matrix on a fixed golden set on every change, and fails the build when any row regresses — the same gate-on-regression discipline behind my QA work.</p>
+      </article>
+    </section>
+
+    <!-- THE PROOF -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">The proof · citation coverage by construction</div>
+        <h3>100% cited, because there's no other path.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">The design move</div>
+            <p>Instead of generating prose and hoping citations attach, the pipeline binds every emitted answer segment to the retrieved chunk it came from. If a claim has no supporting chunk, it doesn't get written — the system abstains on that point rather than inventing one.</p>
+          </div>
+          <div class="blk">
+            <div class="h">Why it's structural</div>
+            <p>Citation coverage isn't a score I tuned toward — it's a property of the code path. There is no uncited generation route to regress. That's the difference between "we usually cite" and "we cannot not cite."</p>
+          </div>
+          <div class="blk">
+            <div class="h">See it running</div>
+            <p>The research dashboard case study walks through the build. And the site's own <a href="eval.html" style="color:var(--cyan)">live eval demo</a> lets you paste an AI answer and watch it get graded against the same kind of checks in real time.</p>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="case-studies.html">▸ see the 100%-cited build</a>
+          <a class="plink" style="--ac:var(--cyan)" href="eval.html">▸ try the live eval demo</a>
+          <span class="verified">coverage is structural · verify it yourself</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- CREDIBILITY -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">Why take this checklist from me</div>
+        <h3>I gate my own releases on evidence.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">The abstain-and-cite discipline above isn't theory. My QA OS caught <b>15 high/critical CVEs</b> in its own dependency set, <b>blocked its own release</b>, and was patched the same day to <b>3,759 tests passing across 13 of 13 gates</b>. My SDET regression suite runs <b>37 of 37 specs, zero flakes, in 15.3 seconds</b>. This whole site runs its own QA — <b>100+ checks, axe-clean</b> — and carries a live eval demo you can break yourself.</p>
+        <div class="stack" style="margin-top:18px">
+          <span class="chip"><b>15</b> CVEs caught, release blocked</span>
+          <span class="chip"><b>3,759</b> tests · 13/13 gates</span>
+          <span class="chip"><b>37/37</b> specs · 0 flakes · 15.3s</span>
+          <span class="chip">ISTQB <b>CT-AI</b></span>
+          <span class="chip">ISTQB <b>Test Automation Engineer</b></span>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os.html">▸ the caught CVEs</a>
+          <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">▸ the same-day fix</a>
+          <a class="plink" style="--ac:var(--purple)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">▸ the 37/37 suite &nearr;</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Worried your RAG system is guessing?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Book a call and I'll build you an evaluation harness that scores all five dimensions and gates your releases — or grade your AI's answer live, right now.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="book.html" class="cta" data-evt="rag-book">Book a call &rarr;</a>
+        <a href="eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">try the live eval demo &rarr;</a>
+        <a href="case-studies.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">see the 100%-cited build &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+</body>
+</html>

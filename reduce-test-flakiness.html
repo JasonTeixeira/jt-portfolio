@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cut Test Flakiness: 10% to Under 1%</title>
+<meta name="description" content="Reduce test flakiness so red means a real regression. The flake protocol: diagnose sources, quarantine + retry policy, fix isolation. Proof, not promises.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/reduce-test-flakiness.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cut Test Flakiness: 10% to Under 1%">
+<meta property="og:description" content="A flaky suite is worse than none — when red is noise, real regressions ship. The flake protocol that took HighStrike from 10% to under 1%, keeping the suite intact.">
+<meta property="og:url" content="https://agency.sageideas.dev/reduce-test-flakiness.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* metric strip */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:1px; margin-top:34px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--line); }
+  .stat { background:var(--card); padding:22px clamp(14px,2.4vw,24px); }
+  .stat .n { font-family:var(--serif); font-size:clamp(1.9rem,4.4vw,2.6rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); margin-top:9px; line-height:1.5; text-transform:uppercase; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip { font-family:var(--mono); font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .chip b { color:var(--ac); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* flake-source matrix */
+  .matrix-scroll { margin-top:22px; overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+  table.matrix { width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px; }
+  table.matrix caption { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); padding:16px 18px 0; }
+  table.matrix th, table.matrix td { text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.62; }
+  table.matrix thead th { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  table.matrix tbody th { font-family:var(--mono); font-weight:600; color:var(--cyan); font-size:12.5px; white-space:nowrap; }
+  table.matrix td { color:var(--dim); }
+  table.matrix td b { color:var(--ink); font-weight:600; }
+  table.matrix .tell { color:var(--amber); }
+  table.matrix tr:last-child td, table.matrix tr:last-child th { border-bottom:none; }
+
+  /* diagram */
+  .diagram { margin-top:22px; border:1px solid var(--line); border-radius:16px; background:#0B0B0D; padding:clamp(18px,3vw,30px); }
+  .diagram svg { width:100%; height:auto; display:block; }
+  .diagram figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:16px; line-height:1.6; text-align:center; }
+  .legend { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-top:12px; font-family:var(--mono); font-size:10.5px; color:var(--dim); }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","name":"Cut Test Flakiness: 10% to Under 1%","about":"A protocol for reducing test flakiness in CI so a red run signals a real regression: diagnose flake sources, quarantine and set a retry policy, fix isolation, and keep the existing suite.","creator":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"url":"https://agency.sageideas.dev/reduce-test-flakiness.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Reduce Test Flakiness","item":"https://agency.sageideas.dev/reduce-test-flakiness.html"}]}</script>
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Docs</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Test automation · flake protocol</div>
+    <h1 style="margin-top:20px;max-width:22ch">A flaky suite is worse than <em style="color:var(--rose)">no suite at all.</em></h1>
+    <p class="lede" style="margin-top:22px">When a red run is just noise, engineers stop reading it — and the one time red meant a real regression, it sails straight through to production. Flakiness isn't a nuisance; it's the failure of the whole gate. This is the protocol I use to take a suite from red-as-noise to red-as-signal: diagnose the sources, quarantine and set a retry policy, fix the isolation — and keep the tests you already wrote.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener"><span class="dot" style="background:var(--green)"></span>Proof: <b>37/37, 0 flakes, 15.3s</b> &nearr;</a>
+      <a class="pill link" style="--ac:var(--cyan)" href="eval.html"><span class="dot" style="background:var(--cyan)"></span>This site runs its <b>own QA</b> &nearr;</a>
+      <a class="pill link" style="--ac:var(--purple)" href="services/test-automation-ci.html"><span class="dot" style="background:var(--purple)"></span>Service: <b>Test automation &amp; CI</b> &nearr;</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- METRIC STRIP -->
+    <section style="padding-bottom:0">
+      <div class="stats" style="--ac:var(--green)">
+        <div class="stat"><div class="n">10% &rarr; &lt;1%</div><div class="l">HighStrike flake rate, live trading workflows</div></div>
+        <div class="stat"><div class="n">500+</div><div class="l">tests stabilized on real market flows</div></div>
+        <div class="stat"><div class="n">37&nbsp;/&nbsp;37</div><div class="l">specs green · 0 flakes · 15.3s (public suite)</div></div>
+        <div class="stat"><div class="n">4h &rarr; 75m</div><div class="l">Home Depot regression, 2,300+ stores</div></div>
+      </div>
+      <p class="note">Every figure here is a real engagement, each linked to its proof — the public Playwright suite is on <span class="mono">GitHub</span>, this site's own QA runs live at <a href="eval.html" style="color:var(--cyan)">eval.html</a>. No rounded-up demo numbers.</p>
+    </section>
+
+    <!-- WHY FLAKINESS IS THE FAILURE -->
+    <section>
+      <article class="case" style="--ac:var(--rose)">
+        <div class="tag">The real cost · why a buyer should care</div>
+        <h3>Noise doesn't just waste time. It hides the one failure that mattered.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">The trust collapse</div>
+            <p>A 10% flake rate on a 500-test suite means dozens of false reds per run. Engineers learn to click "re-run" on reflex — and the habit that clears noise also clears the one real regression hiding in it.</p>
+          </div>
+          <div class="blk">
+            <div class="h">The velocity tax</div>
+            <p>Every flaky red is a context switch: investigate, dismiss, retry, wait. Multiply that across a team and a day, and the suite you built to move faster is the thing slowing every merge down.</p>
+          </div>
+          <div class="blk">
+            <div class="h">The gate that isn't</div>
+            <p>A CI gate only protects you if red is believed. Once it's noise, the gate is decorative — you're shipping on hope, with a green-ish dashboard that gives false confidence.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- DIAGRAM -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">The shift · what the protocol changes</div>
+        <h3>From red-as-noise to red-as-signal.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:62ch">The goal isn't a suite that's always green. It's a suite where a red run <em>means something</em> — so the team reads it, trusts it, and stops when it fires.</p>
+        <figure class="diagram">
+          <svg viewBox="0 0 720 260" role="img" aria-labelledby="flow-title flow-desc">
+            <title id="flow-title">Flaky pipeline versus stable pipeline</title>
+            <desc id="flow-desc">A flaky pipeline emits random red runs that are treated as noise and re-run. The flake protocol — diagnose, quarantine, set retry policy, fix isolation — turns it into a stable pipeline where a red run is a trusted signal that blocks the release.</desc>
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#8E8882"></path>
+              </marker>
+            </defs>
+            <!-- BEFORE label -->
+            <text x="12" y="24" font-family="'JetBrains Mono',monospace" font-size="11" letter-spacing="1.5" fill="#f43f5e">BEFORE — RED IS NOISE</text>
+            <!-- before runs: mixed random reds -->
+            <g>
+              <rect x="12" y="40" width="30" height="30" rx="6" fill="#10298108" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="50" y="40" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="1.5"></rect>
+              <rect x="88" y="40" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="126" y="40" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="1.5"></rect>
+              <rect x="164" y="40" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="202" y="40" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="1.5"></rect>
+            </g>
+            <text x="12" y="92" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#A8A29E">Random reds &rarr; "just re-run it" &rarr; real regression slips through</text>
+
+            <!-- protocol funnel -->
+            <g transform="translate(300,28)">
+              <rect x="0" y="6" width="150" height="86" rx="12" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <text x="75" y="26" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#10b981">FLAKE PROTOCOL</text>
+              <text x="14" y="45" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">1 · Diagnose sources</text>
+              <text x="14" y="61" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">2 · Quarantine + retry</text>
+              <text x="14" y="77" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">3 · Fix isolation</text>
+            </g>
+            <line x1="240" y1="55" x2="298" y2="70" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+
+            <!-- AFTER label -->
+            <text x="12" y="150" font-family="'JetBrains Mono',monospace" font-size="11" letter-spacing="1.5" fill="#10b981">AFTER — RED IS SIGNAL</text>
+            <!-- after runs: all green, one meaningful red -->
+            <g>
+              <rect x="12" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="50" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="88" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="126" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="164" y="166" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="2.5"></rect>
+              <text x="179" y="216" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#f43f5e">real bug</text>
+              <rect x="202" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+            </g>
+            <!-- gate -->
+            <g transform="translate(300,150)">
+              <rect x="0" y="16" width="150" height="60" rx="12" fill="#1a1207" stroke="#F59E0B" stroke-width="1.5"></rect>
+              <text x="75" y="40" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#F59E0B">CI GATE</text>
+              <text x="75" y="58" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">red = blocked, believed</text>
+            </g>
+            <line x1="240" y1="181" x2="298" y2="181" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+
+            <!-- outcomes -->
+            <g transform="translate(490,40)">
+              <rect x="0" y="0" width="210" height="86" rx="12" fill="#0d2a22" stroke="#2A2826" stroke-width="1"></rect>
+              <text x="16" y="26" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#10b981">SHIP</text>
+              <text x="16" y="48" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#F4F2EF">Green is trusted.</text>
+              <text x="16" y="66" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#A8A29E">The suite you kept still runs.</text>
+            </g>
+            <line x1="452" y1="55" x2="488" y2="55" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <g transform="translate(490,166)">
+              <rect x="0" y="0" width="210" height="60" rx="12" fill="#3a1620" stroke="#2A2826" stroke-width="1"></rect>
+              <text x="16" y="26" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#f43f5e">BLOCKED</text>
+              <text x="16" y="46" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#F4F2EF">The real regression is caught.</text>
+            </g>
+            <line x1="452" y1="196" x2="488" y2="196" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+          </svg>
+          <div class="legend">
+            <span><i style="background:#10b981"></i> passing run</span>
+            <span><i style="background:#f43f5e"></i> failing run</span>
+            <span><i style="background:#F59E0B"></i> the gate</span>
+          </div>
+          <figcaption>The protocol doesn't delete your tests — it makes their verdict trustworthy again.</figcaption>
+        </figure>
+      </article>
+    </section>
+
+    <!-- THE MATRIX -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">The diagnosis · flake source &rarr; fix</div>
+        <h3>Most flakiness comes from four places.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:62ch">Flakiness is rarely random — it's a symptom with a source. The protocol starts by naming which one you have, because the fix is different for each. This is the map I work from.</p>
+        <div class="matrix-scroll" tabindex="0" role="region" aria-label="Comparison table — scroll horizontally">
+          <table class="matrix">
+            <caption>Flake source → tell → fix</caption>
+            <thead>
+              <tr><th scope="col">Source</th><th scope="col">How it shows up</th><th scope="col">The fix</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Timing &amp; races</th>
+                <td>Passes locally, fails in CI; fails under load; fixed by adding a <span class="tell mono">sleep()</span>.</td>
+                <td>Replace fixed waits with <b>state-based waits</b> (web-first assertions, poll-until-condition). Never wait on the clock — wait on the app.</td>
+              </tr>
+              <tr>
+                <th scope="row">Shared state</th>
+                <td>Fails only when run <span class="tell">with</span> other tests; a "poisoned" record from a prior test leaks in.</td>
+                <td><b>Isolate every test</b>: fresh fixtures, unique data per run, teardown that actually cleans up. No test should depend on another having run.</td>
+              </tr>
+              <tr>
+                <th scope="row">Order dependence</th>
+                <td>Green in one order, red when the runner shuffles or parallelizes.</td>
+                <td>Make tests <b>order-independent</b> and parallel-safe: no reliance on execution sequence, no global singletons mutated across specs.</td>
+              </tr>
+              <tr>
+                <th scope="row">Environment &amp; data</th>
+                <td>Depends on a live third party, a seeded row, a time-of-day, or network weather.</td>
+                <td><b>Control the boundary</b>: deterministic seeds, mocked or contract-tested externals, frozen clocks where behavior is time-sensitive.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">This is the same diagnosis that took the HighStrike suite from a 10% flake rate to under 1% — on 500+ tests running against live trading workflows, where a false red is expensive and a missed real one is worse.</p>
+      </article>
+    </section>
+
+    <!-- THE PROTOCOL -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">The protocol · how the work runs</div>
+        <h3>Quarantine first. Fix second. Never delete the suite.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">1 · Quarantine lane</div>
+            <ul>
+              <li>Known-flaky specs move to a <b>separate, non-blocking lane</b> — CI goes green-trustworthy immediately</li>
+              <li>Nothing is deleted; every quarantined test is a tracked debt with an owner</li>
+              <li>The blocking suite only contains tests you can believe today</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">2 · Retry policy</div>
+            <ul>
+              <li>A <b>bounded, measured</b> retry — not a blanket retry that hides real failures</li>
+              <li>Retries are <b>counted</b>: a spec that only passes on retry is flagged, not celebrated</li>
+              <li>Flake rate becomes a metric on the dashboard, so it can't silently creep back</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">3 · Isolation fixes</div>
+            <ul>
+              <li>Work the quarantine lane down source-by-source using the matrix above</li>
+              <li>Each fixed spec <b>graduates back</b> into the blocking suite, proven stable</li>
+              <li>You end with the <b>same coverage</b> you started with — now trustworthy</li>
+            </ul>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="services/test-automation-ci.html">▸ how I build test automation &amp; CI</a>
+          <span class="verified">ISTQB CT-AI + Test Automation Engineer certified</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- PROOF -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">The proof · not a claim, a link</div>
+        <h3>A public suite that runs green, fast, and flake-free.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">The public regression suite</div>
+            <p>An open Playwright SDET suite you can read and run: <b>37 of 37 specs passing, 0 flakes, 15.3-second</b> full run. Web-first assertions, isolated fixtures, parallel-safe — the protocol on this page, in code you can inspect.</p>
+            <div class="stack">
+              <span class="chip"><b>37/37</b> specs</span><span class="chip"><b>0</b> flakes</span><span class="chip"><b>15.3s</b></span><span class="chip">Playwright</span>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">This site QAs itself</div>
+            <p>The site you're reading runs its own QA — 100+ checks, axe-clean accessibility — and hosts a <b>live eval demo</b>. Proof over claims is the whole thesis, so the proof is one click away, not a case-study PDF.</p>
+            <div class="stack">
+              <span class="chip">100+ checks</span><span class="chip">axe-clean</span><span class="chip"><b>live demo</b></span>
+            </div>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">▸ the public Playwright suite on GitHub</a>
+          <a class="plink" style="--ac:var(--cyan)" href="eval.html">▸ try the live eval demo</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Have a suite the team stopped trusting?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Book a call and we'll diagnose the flake sources on your actual suite — then quarantine, fix, and hand it back as a gate red means something again.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="book.html" class="cta" data-evt="flake-book">Book a call &rarr;</a>
+        <a href="services/test-automation-ci.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">Test automation &amp; CI service &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
+    <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
+    <span><a href="index.html" class="dim-link" style="color:var(--faint)">&larr; portfolio</a></span>
+  </footer>
+</div>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+</body>
+</html>
