@@ -1,3 +1,4 @@
+import { withObserve } from '../lib/observe.mjs';
 import { isEnabled, getProposalById, updateProposal } from '../lib/proposal-db.mjs';
 import { appendEvent } from '../lib/scope-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
@@ -5,7 +6,7 @@ import { checkToken } from '../lib/admin-auth.mjs';
 import { clampFirmCents, depositCents, balanceCents, money, DEPOSIT_PCT_DEFAULT, PROPOSAL_STATUS } from '../assets/proposal-core.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true });
@@ -36,3 +37,5 @@ export default async function handler(req, res) {
   }
   return res.status(200).json({ ok: true, publicId: row.public_id });
 }
+
+export default withObserve('/api/proposal-approve', handler);

@@ -1,3 +1,4 @@
+import { withObserve } from '../../lib/observe.mjs';
 import { timingSafeEqual } from 'node:crypto';
 import * as db from '../../lib/nurture-db.mjs';
 import { sendClient, sendOperator } from '../../lib/notify.mjs';
@@ -17,7 +18,7 @@ export function authorized(req) {
 }
 function unsubUrl(token) { return `${SITE}/api/unsubscribe?token=${encodeURIComponent(token)}`; }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   if (!authorized(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
   if (process.env.NURTURE_ENABLED !== 'true') return res.status(200).json({ ok: true, skipped: true, reason: 'disabled' });
@@ -86,3 +87,5 @@ export default async function handler(req, res) {
 
   return res.status(200).json({ ok: true, sent, due, errors, capped: cap() });
 }
+
+export default withObserve('/api/cron/nurture', handler);

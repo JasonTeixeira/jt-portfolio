@@ -1,6 +1,7 @@
+import { withObserve } from '../lib/observe.mjs';
 import { isEnabled, setUnsubscribedByToken } from '../lib/nurture-db.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   const token = String((req.query && req.query.token) || '');
   let failed = false;
@@ -16,3 +17,5 @@ export default async function handler(req, res) {
   res.setHeader('Location', `${SITE}/unsubscribe.html?${failed ? 'error=1' : 'done=1'}`);
   return res.status(302).end ? res.status(302).end() : res.status(302).json({ ok: true });
 }
+
+export default withObserve('/api/unsubscribe', handler);

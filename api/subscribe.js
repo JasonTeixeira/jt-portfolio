@@ -1,3 +1,4 @@
+import { withObserve } from '../lib/observe.mjs';
 /**
  * /api/subscribe — field-notes email capture.
  * Notifies AUTHOR of each subscriber via Resend when RESEND_API_KEY is set;
@@ -8,7 +9,7 @@ import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 const TO = 'hello@sageideas.dev';
 const FROM = 'portfolio@agency.sageideas.dev';
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'method not allowed' });
@@ -39,3 +40,5 @@ export default async function handler(req, res) {
   }
   return res.status(200).json({ ok: true });
 }
+
+export default withObserve('/api/subscribe', handler);

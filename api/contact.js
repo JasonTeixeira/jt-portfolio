@@ -1,3 +1,4 @@
+import { withObserve } from '../lib/observe.mjs';
 /**
  * /api/contact — Vercel serverless function.
  * Forwards contact-form submissions to AUTHOR's inbox via Resend when
@@ -14,7 +15,7 @@ const TO = process.env.RESEND_TO || 'hello@sageideas.dev';
 const FROM = process.env.RESEND_FROM || 'portfolio@agency.sageideas.dev';
 const MAX = { name: 200, email: 320, message: 5000, company: 300, stage: 40 };
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'method not allowed' });
@@ -60,3 +61,5 @@ export default async function handler(req, res) {
   }
   return res.status(200).json({ ok: true });
 }
+
+export default withObserve('/api/contact', handler);

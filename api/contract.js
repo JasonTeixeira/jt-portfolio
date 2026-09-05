@@ -1,3 +1,4 @@
+import { withObserve } from '../lib/observe.mjs';
 import { isEnabled, getContractByPublicId, acceptContract } from '../lib/portal-db.mjs';
 import { CONTRACT_CAVEAT } from '../assets/contract-core.mjs';
 
@@ -14,7 +15,7 @@ export function validate(body) {
   return { ok: true };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method === 'GET') {
     // GET always answers 200 with a body the client branches on — a stale/invalid/draft
     // link is a normal state for a visitor, not an HTTP error. Matches api/proposal.js.
@@ -45,3 +46,5 @@ export default async function handler(req, res) {
   if (!acc.ok) return res.status(200).json({ ok: false, skipped: true });
   return res.status(200).json({ ok: true, accepted: Boolean(acc.accepted) });
 }
+
+export default withObserve('/api/contract', handler);
