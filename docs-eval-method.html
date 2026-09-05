@@ -15,9 +15,9 @@
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"The eval method","description":"The philosophy behind proving AI features: computed scores over opinions, adversarial probes, golden sets, ratcheting CI gates, and human approval earned down with evidence.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/docs-eval-method.html"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"The eval method","description":"The philosophy behind proving AI features: computed scores over opinions, adversarial probes, golden sets, ratcheting CI gates, and human approval earned down with evidence.","step":[{"@type":"HowToStep","position":1,"name":"The four moving parts"},{"@type":"HowToStep","position":2,"name":"The principles"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"The eval method"},{"@type":"ListItem","position":4,"name":"The eval method","item":"https://agency.sageideas.dev/docs-eval-method.html"}]}</script>
 <style>
   :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
@@ -63,6 +63,19 @@
   .d-ul li, .d-ol li { font-size:14.5px; line-height:1.72; color:var(--dim); margin-bottom:9px; }
   .d-note { display:flex; gap:12px; border:1px solid var(--line); border-left:2px solid var(--green); background:rgba(16,185,129,0.04); border-radius:0 10px 10px 0; padding:16px 18px; margin:22px 0; font-size:14px; line-height:1.65; color:var(--dim); }
   .d-note-i { color:var(--green); font-family:var(--mono); }
+  .d-note-warn { border-left-color:var(--amber); background:rgba(245,158,11,0.05); } .d-note-warn .d-note-i { color:var(--amber); }
+  .d-note-security { border-left-color:var(--cyan); background:rgba(34,211,238,0.05); } .d-note-security .d-note-i { color:var(--cyan); }
+  .d-tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin:22px 0; }
+  .d-table { width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px; }
+  .d-table th, .d-table td { text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; color:var(--dim); }
+  .d-table thead th { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan); font-weight:500; background:#0A0A0C; }
+  .d-table td.d-th { font-weight:600; color:var(--ink); }
+  .d-table td b, .d-table td a { color:var(--ink); } .d-table td a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .d-table tbody tr:last-child td { border-bottom:none; }
+  .d-deflist { margin:22px 0; }
+  .d-dt { font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); margin-top:20px; scroll-margin-top:90px; }
+  .d-dd { margin:6px 0 0; font-size:14px; line-height:1.7; color:var(--dim); }
+  .d-dd a, .d-dd .d-see { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
   .d-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); gap:14px; margin:20px 0; }
   .d-card { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; }
   .d-card h3 { font-family:var(--serif); font-weight:400; font-size:1.15rem; margin:0 0 7px; }
@@ -134,18 +147,8 @@
   }
   @media (prefers-reduced-motion:reduce){ .d-sidebar { transition:none; } }
 </style>
-  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
-  <script defer src="/_vercel/insights/script.js"></script>
-
-<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/docs-eval-method.html">
-<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/docs-eval-method.html">
-<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/docs-eval-method.html">
-<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/docs-eval-method.html">
-<meta property="og:locale" content="en_US">
 </head>
 <body>
-<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
-<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><span aria-current="true" style="color:#10b981;font-weight:600">EN</span><span style="color:#3D3A37">·</span><a href="/es/docs-eval-method.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><a href="/pt/docs-eval-method.html" style="color:#8E8882;text-decoration:none">PT</a></div>
   <div class="d-top">
     <button class="d-menu-btn" id="d-menu" aria-label="Toggle documentation menu" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <a href="index.html" class="d-brand"><span class="mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span><span class="nm">jason.teixeira<span style="color:var(--green)">()</span></span></a>
@@ -172,15 +175,64 @@
     <div class="d-kicker">The eval method</div>
     <h1>The eval method</h1>
     <p class="d-lead">A short philosophy, then four deep-dive guides. The whole method reduces to one idea: replace opinions about AI quality with computed scores from real commands.</p>
-    <div class="d-body"><h2 id="the-four-moving-parts" class="d-h2"><a href="#the-four-moving-parts" class="d-anchor" aria-label="Link to this section">#</a>The four moving parts</h2>
+    <div class="d-body"><figure class="d-diagram" role="group" aria-label="the eval gate">
+    <figcaption class="d-diagram-cap"><span>Diagram — the eval gate</span><span>SVG · code-native</span></figcaption>
+    <div class="d-diagram-body" tabindex="0" role="region" aria-label="the eval gate — diagram, scroll horizontally"><svg viewBox="0 0 980 258" style="width:100%;height:auto;min-width:640px;display:block" role="img" aria-labelledby="dg-gate-t dg-gate-d">
+  <title id="dg-gate-t">The eval gate</title>
+  <desc id="dg-gate-d">AI output runs through an eval battery — correctness, safety, hallucination, and regression checks — into a CI quality gate. Green ships. Red is blocked and sent back to fix and re-run. Nothing ships on a hunch.</desc>
+  <defs>
+    <marker id="dg-arr-ship" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"/></marker>
+    <marker id="dg-arr-block" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f43f5e"/></marker>
+  </defs>
+  <line x1="40" y1="130" x2="672" y2="130" stroke="#2A2826" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="40" cy="130" r="6" fill="#F4F2EF"/>
+  <text x="40" y="100" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#F4F2EF">AI OUTPUT</text>
+  <text x="40" y="152" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">raw, unproven</text>
+  <circle cx="300" cy="130" r="13" fill="none" stroke="#8E8882" stroke-opacity="0.3"/>
+  <circle cx="300" cy="130" r="6" fill="#F4F2EF"/>
+  <text x="300" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#F4F2EF">EVAL BATTERY</text>
+  
+    <line x1="300" y1="130" x2="352" y2="72" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="352" cy="72" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="352" cy="72" r="4" fill="#8E8882"/>
+    <text x="364" y="76" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Correctness</text>
+    <line x1="300" y1="130" x2="352" y2="188" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="352" cy="188" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="352" cy="188" r="4" fill="#8E8882"/>
+    <text x="364" y="192" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Safety</text>
+    <line x1="300" y1="130" x2="404" y2="38" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="404" cy="38" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="404" cy="38" r="4" fill="#8E8882"/>
+    <text x="416" y="42" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Hallucination</text>
+    <line x1="300" y1="130" x2="404" y2="222" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="404" cy="222" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="404" cy="222" r="4" fill="#8E8882"/>
+    <text x="416" y="226" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Regression</text>
+  <text x="620" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="0.08em" fill="#a78bfa">CI QUALITY GATE</text>
+  <polygon points="620,78 672,130 620,182 568,130" fill="#09090B" stroke="#a78bfa" stroke-width="1.8"/>
+  <text x="620" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#a78bfa">GATE</text>
+  <path d="M672,130 L884,74" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#dg-arr-ship)"/>
+  <path d="M672,130 L884,186" stroke="#f43f5e" stroke-width="1.8" fill="none" marker-end="url(#dg-arr-block)"/>
+  <circle cx="900" cy="70" r="12" fill="none" stroke="#10b981" stroke-opacity="0.35"/>
+  <circle cx="900" cy="70" r="6" fill="#10b981"/>
+  <text x="900" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#10b981">SHIP</text>
+  <text x="900" y="90" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">green → deploy</text>
+  <circle cx="900" cy="190" r="12" fill="none" stroke="#f43f5e" stroke-opacity="0.35"/>
+  <circle cx="900" cy="190" r="6" fill="#f43f5e"/>
+  <text x="900" y="168" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#f43f5e">BLOCKED</text>
+  <text x="900" y="212" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">red → fix &amp; re-run</text>
+</svg></div>
+    <figcaption class="d-diagram-note"><b>This is the differentiator.</b> Anyone can ship an AI feature. The gate is what proves it still works after the next prompt change — and it ships only when every check is green.</figcaption>
+  </figure>
+<h2 id="the-four-moving-parts" class="d-h2"><a href="#the-four-moving-parts" class="d-anchor" aria-label="Link to this section">#</a>The four moving parts</h2>
 <ol class="d-ol"><li><b>A golden set</b> — real inputs paired with agreed-good outputs, versioned next to the code. This is the source of truth.</li><li><b>A judge</b> — an evaluation model (or deterministic check) that scores each output for faithfulness, relevance, and safety.</li><li><b>Safety probes</b> — adversarial inputs that try to break the feature the way a real user or attacker would.</li><li><b>A CI gate</b> — the suite runs on every change; a score below the ratcheted floor blocks the merge.</li></ol>
 <h2 id="the-principles" class="d-h2"><a href="#the-principles" class="d-anchor" aria-label="Link to this section">#</a>The principles</h2>
 <ul class="d-ul"><li><b>Computed, not claimed.</b> A score comes from a command anyone can re-run — never from an opinion.</li><li><b>Ratchet, don’t just pass.</b> The floor only goes up, so quality can’t silently erode over time.</li><li><b>Earn down human review.</b> Start with a human in the loop; remove approval points only when evals prove it’s safe.</li><li><b>No fake green.</b> If the gate should be red, it goes red — publicly. (This site’s own scorecard works the same way.)</li></ul>
-<div class="d-note"><span class="d-note-i">▸</span><div>Deep dives, each with an animated diagram: <a href="guide-eval-gate.html">The CI eval gate</a> · <a href="guide-probes.html">Safety probes</a> · <a href="guide-golden-set.html">Golden sets &amp; judges</a> · <a href="guide-human-approval.html">Human approval</a>.</div></div>
+<div class="d-note d-note-note"><span class="d-note-i">▸</span><div>Deep dives, each with an animated diagram: <a href="guide-eval-gate.html">The CI eval gate</a> · <a href="guide-probes.html">Safety probes</a> · <a href="guide-golden-set.html">Golden sets &amp; judges</a> · <a href="guide-human-approval.html">Human approval</a>.</div></div>
 <div class="d-cta"><div><div class="d-cta-h">See it run</div><div class="d-cta-s">The live eval grades an AI in real time — press run and watch it fail probes.</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-cta">Book a call →</a></div></div>
     <div class="d-help"><span>Was this helpful?</span><a href="book.html" data-evt="docs-help-yes">Book a call →</a><a href="sample.html" data-evt="docs-help-eval">Get a free mini-eval →</a></div>
     <div class="d-prevnext"><a class="d-pn prev" href="docs-product-and-platform.html"><div class="l">← Previous</div><div class="t">Product &amp; platform</div></a><a class="d-pn next" href="docs-process-and-handoff.html"><div class="l">Next →</div><div class="t">Process &amp; handoff</div></a></div>
-    <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academy &#8599;</a> · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a></div>
+    <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
     </main>
     <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#the-four-moving-parts" class="d-toc-link" data-target="the-four-moving-parts">The four moving parts</a><a href="#the-principles" class="d-toc-link" data-target="the-principles">The principles</a></nav></div>
@@ -210,6 +262,5 @@
   </script>
   <script defer src="assets/docs-search.js"></script>
   <script defer src="assets/agent.js"></script>
-<script defer src="assets/transitions.js"></script>
 </body>
 </html>

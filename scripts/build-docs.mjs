@@ -26,7 +26,31 @@ function renderBlock(b) {
   if (t === 'h') { const id = slugify(b[1]); return `<h2 id="${id}" class="d-h2"><a href="#${id}" class="d-anchor" aria-label="Link to this section">#</a>${esc(b[1])}</h2>`; }
   if (t === 'ul') return `<ul class="d-ul">${b[1].map((i) => `<li>${i}</li>`).join('')}</ul>`;
   if (t === 'ol') return `<ol class="d-ol">${b[1].map((i) => `<li>${i}</li>`).join('')}</ol>`;
-  if (t === 'note') return `<div class="d-note"><span class="d-note-i">▸</span><div>${b[1]}</div></div>`;
+  if (t === 'note') {
+    // ['note', html] (default) OR ['note', kind, html] where kind = 'warn' | 'security'
+    const kind = b.length >= 3 ? b[1] : 'note';
+    const html = b.length >= 3 ? b[2] : b[1];
+    const mark = kind === 'warn' ? '!' : kind === 'security' ? '⚿' : '▸';
+    return `<div class="d-note d-note-${kind}"><span class="d-note-i">${mark}</span><div>${html}</div></div>`;
+  }
+  if (t === 'table') {
+    // ['table', [headers…], [[row cells…]…]] — cells are trusted authored HTML
+    const headers = b[1] || [];
+    const rows = b[2] || [];
+    return `<div class="d-tablewrap" tabindex="0" role="region" aria-label="Table — scroll horizontally"><table class="d-table"><thead><tr>${
+      headers.map((h) => `<th>${h}</th>`).join('')
+    }</tr></thead><tbody>${
+      rows.map((r) => `<tr>${r.map((c, i) => `<td${i === 0 ? ' class="d-th"' : ''}>${c}</td>`).join('')}</tr>`).join('')
+    }</tbody></table></div>`;
+  }
+  if (t === 'deflist') {
+    // ['deflist', [[term, def, seeAlsoHref?]…]] — anchored terms (deep-linkable, powers DefinedTerm schema)
+    return `<dl class="d-deflist">${b[1].map(([term, def, see]) => {
+      const id = slugify(term);
+      const seeLink = see ? ` <a href="${see}" class="d-see">see also →</a>` : '';
+      return `<dt id="${id}" class="d-dt"><a href="#${id}" class="d-anchor" aria-label="Link to ${esc(term)}">#</a>${esc(term)}</dt><dd class="d-dd">${def}${seeLink}</dd>`;
+    }).join('')}</dl>`;
+  }
   if (t === 'cards') return `<div class="d-cards">${b[1].map(([tt, dd]) => `<div class="d-card"><h3>${esc(tt)}</h3><p>${esc(dd)}</p></div>`).join('')}</div>`;
   if (t === 'proof') return `<div class="d-proof">${b[1].map(([lbl, h]) => `<a href="${h}" class="d-plink"${h.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${esc(lbl)} <span>→</span></a>`).join('')}</div>`;
   if (t === 'code') return `<figure class="d-codewrap"><figcaption class="d-codecap"><span>${esc(b[1] || 'code')}</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="${esc(b[1] || 'code')} code sample"><code>${escCode(b[2])}</code></pre></figure>`;
@@ -133,6 +157,19 @@ ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script
   .d-ul li, .d-ol li { font-size:14.5px; line-height:1.72; color:var(--dim); margin-bottom:9px; }
   .d-note { display:flex; gap:12px; border:1px solid var(--line); border-left:2px solid var(--green); background:rgba(16,185,129,0.04); border-radius:0 10px 10px 0; padding:16px 18px; margin:22px 0; font-size:14px; line-height:1.65; color:var(--dim); }
   .d-note-i { color:var(--green); font-family:var(--mono); }
+  .d-note-warn { border-left-color:var(--amber); background:rgba(245,158,11,0.05); } .d-note-warn .d-note-i { color:var(--amber); }
+  .d-note-security { border-left-color:var(--cyan); background:rgba(34,211,238,0.05); } .d-note-security .d-note-i { color:var(--cyan); }
+  .d-tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin:22px 0; }
+  .d-table { width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px; }
+  .d-table th, .d-table td { text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; color:var(--dim); }
+  .d-table thead th { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan); font-weight:500; background:#0A0A0C; }
+  .d-table td.d-th { font-weight:600; color:var(--ink); }
+  .d-table td b, .d-table td a { color:var(--ink); } .d-table td a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .d-table tbody tr:last-child td { border-bottom:none; }
+  .d-deflist { margin:22px 0; }
+  .d-dt { font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); margin-top:20px; scroll-margin-top:90px; }
+  .d-dd { margin:6px 0 0; font-size:14px; line-height:1.7; color:var(--dim); }
+  .d-dd a, .d-dd .d-see { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
   .d-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); gap:14px; margin:20px 0; }
   .d-card { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; }
   .d-card h3 { font-family:var(--serif); font-weight:400; font-size:1.15rem; margin:0 0 7px; }
@@ -253,6 +290,33 @@ ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script
 </html>`;
 }
 
+/* Per-page-type structured data. A page opts in via p.schema ('faq'|'glossary'|'howto'); default TechArticle. */
+function contentSchema(slug, p) {
+  const base = `${SITE_URL}/${href(slug)}`;
+  if (p.schema === 'faq') {
+    const qa = [];
+    for (let i = 0; i < p.blocks.length; i++) {
+      if (p.blocks[i][0] !== 'h') continue;
+      const ans = [];
+      for (let j = i + 1; j < p.blocks.length && p.blocks[j][0] !== 'h'; j++) {
+        if (p.blocks[j][0] === 'p') ans.push(stripHtml(p.blocks[j][1]));
+      }
+      if (ans.length) qa.push({ '@type': 'Question', name: stripHtml(p.blocks[i][1]), acceptedAnswer: { '@type': 'Answer', text: ans.join(' ') } });
+    }
+    return { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: qa };
+  }
+  if (p.schema === 'glossary') {
+    const dl = p.blocks.find((b) => b[0] === 'deflist');
+    const terms = dl ? dl[1].map(([term, def]) => ({ '@type': 'DefinedTerm', name: stripHtml(term), description: stripHtml(def) })) : [];
+    return { '@context': 'https://schema.org', '@type': 'DefinedTermSet', name: p.title, description: p.desc, hasDefinedTerm: terms };
+  }
+  if (p.schema === 'howto') {
+    const steps = p.blocks.filter((b) => b[0] === 'h').map((b, i) => ({ '@type': 'HowToStep', position: i + 1, name: stripHtml(b[1]) }));
+    return { '@context': 'https://schema.org', '@type': 'HowTo', name: p.title, description: p.desc, step: steps };
+  }
+  return { '@context': 'https://schema.org', '@type': 'TechArticle', headline: p.title, description: p.desc, author: { '@type': 'Person', name: AUTHOR, url: SITE_URL }, mainEntityOfPage: base };
+}
+
 /* ── content page ── */
 function contentPage(slug) {
   const p = PAGES[slug];
@@ -275,7 +339,7 @@ function contentPage(slug) {
     <div class="d-foot">© <span data-year>2026</span> ${esc(AUTHOR)} · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>`;
 
-  const jsonLd = { '@context': 'https://schema.org', '@type': 'TechArticle', headline: p.title, description: p.desc, author: { '@type': 'Person', name: AUTHOR, url: SITE_URL }, mainEntityOfPage: `${SITE_URL}/${href(slug)}` };
+  const jsonLd = contentSchema(slug, p);
   const breadcrumbLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
     { '@type': 'ListItem', position: 2, name: 'Docs', item: `${SITE_URL}/docs.html` },
