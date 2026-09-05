@@ -115,14 +115,24 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(32px,4vw,48px)">
     <div class="kick">Live demos &middot; see it work &middot; then imagine it in your business</div>
     <h1 style="margin-top:20px;max-width:16ch">Don&rsquo;t take my word for it. <em style="color:var(--green)">Press the button.</em></h1>
-    <p class="subtle" style="margin-top:20px;max-width:62ch">Chat with an AI receptionist. Talk to it out loud. Watch a lead flow through an automated pipeline. These are working demos of exactly what I build &mdash; scoped to your business, wired to your tools.</p>
+    <p class="subtle" style="margin-top:20px;max-width:62ch">Paste your own AI&rsquo;s answer and watch a judge grade it live. Chat with an AI receptionist, or talk to it out loud. Watch a lead flow through an automated pipeline. Working demos of exactly what I build &mdash; scoped to your business, wired to your tools.</p>
     <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
-      <a href="#receptionist" class="cta" data-evt="demos-try-chat">Try the AI receptionist &darr;</a>
-      <a href="#matrix" class="mono" style="display:inline-flex;align-items:center;padding:14px 6px;font-size:13px;color:var(--cyan)">see everything I build &rarr;</a>
+      <a href="eval.html#byo" class="cta" data-evt="demos-try-eval">Evaluate your own AI &rarr;</a>
+      <a href="#receptionist" class="mono" style="display:inline-flex;align-items:center;padding:14px 6px;font-size:13px;color:var(--cyan)">or try the AI receptionist &darr;</a>
     </div>
   </header>
 
   <main id="content" style="display:block">
+
+  <!-- FEATURED: real eval on real input -->
+  <section id="featured-eval"><div class="wrap">
+    <a href="eval.html#byo" data-evt="demos-featured-eval" style="display:block;border:1px solid rgba(34,211,238,0.4);background:linear-gradient(180deg,rgba(34,211,238,0.06),rgba(12,12,14,0.4));border-radius:16px;padding:clamp(22px,4vw,34px);transition:border-color .2s">
+      <span class="demoTag" style="color:var(--cyan)">◆ real work &middot; not a simulation</span>
+      <h2 style="margin-top:14px;max-width:22ch">Bring your own AI. I&rsquo;ll grade it in front of you.</h2>
+      <p class="subtle" style="margin-top:12px;max-width:60ch">Every other demo here shows a flow. This one does real work on <em style="color:var(--cyan)">your</em> input: paste a real question your AI answered and its reply, and a strict LLM-as-judge scores it live for grounding, hallucination, safety, and quality &mdash; the exact method I wire into your CI.</p>
+      <span class="mono" style="display:inline-block;margin-top:16px;font-size:12.5px;color:var(--cyan)">Evaluate your own AI &rarr;</span>
+    </a>
+  </div></section>
 
   <!-- AI RECEPTIONIST: chat + voice -->
   <section id="receptionist"><div class="wrap">
