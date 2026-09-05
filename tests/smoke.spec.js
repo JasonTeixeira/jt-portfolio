@@ -377,7 +377,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(48);
+    expect((xml.match(/<loc>/g) || []).length).toBe(50);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -433,6 +433,19 @@ test.describe('portfolio — service pages', () => {
     // reachable from the homepage nav
     await page.goto('/');
     await expect(page.locator('nav a[href="case-studies.html"]').first()).toBeVisible();
+  });
+
+  test('flagship case studies (Nexural, Academy) load with proof links + are linked from Work', async ({ page }) => {
+    for (const slug of ['work-nexural.html', 'work-academy.html']) {
+      await page.goto('/' + slug);
+      await expect(page.locator('h1')).toBeVisible();
+      await expect(page.locator('a.pill.link, a.plink').first()).toBeVisible();
+    }
+    // reachable from the Work page flagship cards, and the four client cases remain exactly four
+    await page.goto('/case-studies.html');
+    await expect(page.locator('a.opcard[href="work-nexural.html"]')).toBeVisible();
+    await expect(page.locator('a.opcard[href="work-academy.html"]')).toBeVisible();
+    await expect(page.locator('article.case')).toHaveCount(4);
   });
 
   test('ROI calculator recomputes exposure live from the sliders', async ({ page }) => {
@@ -496,7 +509,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(48);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(50);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
