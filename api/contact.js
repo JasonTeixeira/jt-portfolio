@@ -8,6 +8,8 @@
 // set RESEND_FROM='onboarding@resend.dev' to send immediately (delivers only to
 // the account owner's verified email — fine, since TO is your own inbox), then
 // switch to a verified-domain sender like portfolio@agency.sageideas.dev later.
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+
 const TO = process.env.RESEND_TO || 'hello@sageideas.dev';
 const FROM = process.env.RESEND_FROM || 'portfolio@agency.sageideas.dev';
 const MAX = { name: 200, email: 320, message: 5000, company: 300, stage: 40 };
@@ -22,6 +24,9 @@ export default async function handler(req, res) {
 
   // honeypot: bots fill every field — humans never see this one
   if (website) return res.status(200).json({ ok: true });
+
+  // throttle: this hits the paid Resend API on every POST
+  if (await rateLimited(clientIp(req), 10, 'contact')) return res.status(429).json({ ok: false, error: 'slow_down' });
 
   if (
     typeof name !== 'string' || !name.trim() || name.length > MAX.name ||
