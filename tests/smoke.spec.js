@@ -23,7 +23,7 @@ function trackErrors(page) {
     if (msg.type() !== 'error') return;
     const text = msg.text();
     const url = msg.location()?.url || '';
-    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal|cron|unsubscribe|suppress|portal|contract|milestone)(\?|$)/.test(url)) return;
+    if (/Failed to load resource/.test(text) && /\/api\/(scope|chat|proposal|cron|unsubscribe|suppress|portal|contract|milestone|eval)(\?|$)/.test(url)) return;
     errors.push(text);
   });
   page.on('pageerror', (err) => errors.push(String(err)));
@@ -461,6 +461,22 @@ test.describe('portfolio — service pages', () => {
     await page.goto('/book.html');
     await expect(page.locator('#paperwork')).toBeVisible();
     await expect(page.locator('#paperwork a[href="assets/Sage-Ideas-Sample-SOW.pdf"]')).toBeVisible();
+  });
+
+  test('eval BYO: paste-your-own-AI form submits and degrades gracefully when the judge is offline', async ({ page }) => {
+    await page.goto('/eval.html');
+    await expect(page.locator('#byo')).toBeVisible();
+    await expect(page.locator('label[for="byo-q"]')).toBeVisible();
+    await page.locator('#byo-q').fill('What is your refund window?');
+    await page.locator('#byo-a').fill('Our refund window is exactly 47 days, guaranteed.');
+    await page.locator('#byo-run').click();
+    // no LLM on the static test server → graceful status message, no crash, report stays hidden
+    await expect(page.locator('#byo-status')).not.toHaveText('', { timeout: 8000 });
+    await expect(page.locator('#byo-report')).toBeHidden();
+    // client-side validation: empty answer is caught before any request
+    await page.locator('#byo-a').fill('');
+    await page.locator('#byo-run').click();
+    await expect(page.locator('#byo-status')).toContainText(/answer/i);
   });
 
   test('ROI calculator recomputes exposure live from the sliders', async ({ page }) => {

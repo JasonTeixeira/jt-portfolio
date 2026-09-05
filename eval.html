@@ -124,6 +124,48 @@
     <p class="subtle" style="font-size:12.5px;margin-top:16px;max-width:64ch"><b style="color:var(--ink)">Honest note:</b> the target is a deliberately naive demo assistant, so its failures are real, reproducible model behavior &mdash; shown to demonstrate the method, not to test a real company. A real engagement points this same engine at <em>your</em> live feature, runs hundreds of probes, and wires the gate into your CI. A short audit maps your full failure surface &mdash; scoped and quoted after a quick conversation.</p>
   </section>
 
+  <section class="wrap" id="byo" style="padding-bottom:clamp(64px,9vw,96px)">
+    <div class="kick" style="color:var(--cyan)">Your turn &middot; real work on real input</div>
+    <h2 style="margin-top:14px;max-width:24ch">Now paste <em style="color:var(--cyan)">your</em> AI&rsquo;s answer. I&rsquo;ll grade it live.</h2>
+    <p class="subtle" style="margin-top:16px;max-width:62ch">No fixture, no simulation. Give me a real question your AI answered and its reply &mdash; and, optionally, the source it should have relied on &mdash; and the same judge scores it against a grounding, hallucination, safety, and answer-quality rubric, right now.</p>
+
+    <div class="card" style="padding:clamp(20px,3.5vw,32px);margin-top:24px">
+      <form id="byo-form" novalidate>
+        <label for="byo-q" class="mono" style="display:block;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--faint)">The question your AI was answering</label>
+        <input id="byo-q" name="q" type="text" maxlength="600" autocomplete="off" placeholder="e.g. What is your refund window?" style="width:100%;margin-top:8px;background:#0b0a08;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:inherit;font-size:14px;padding:11px 13px" />
+
+        <label for="byo-a" class="mono" style="display:block;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--faint);margin-top:16px">Your AI&rsquo;s answer</label>
+        <textarea id="byo-a" name="a" rows="4" maxlength="4000" placeholder="Paste exactly what your AI replied&hellip;" style="width:100%;margin-top:8px;background:#0b0a08;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:inherit;font-size:14px;padding:11px 13px;resize:vertical"></textarea>
+
+        <label for="byo-s" class="mono" style="display:block;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--faint);margin-top:16px">Source it should rely on <span style="text-transform:none;letter-spacing:0">&mdash; optional, sharpens grounding checks</span></label>
+        <textarea id="byo-s" name="s" rows="3" maxlength="4000" placeholder="Optional: the doc, policy, or context the answer should be grounded in&hellip;" style="width:100%;margin-top:8px;background:#0b0a08;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:inherit;font-size:14px;padding:11px 13px;resize:vertical"></textarea>
+
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:20px">
+          <button class="runbtn green" id="byo-run" type="submit">&#9654; Evaluate my AI</button>
+          <span class="mono" id="byo-status" role="status" aria-live="polite" style="font-size:11px;color:var(--faint)"></span>
+        </div>
+      </form>
+
+      <div id="byo-report" style="display:none;margin-top:24px;border-top:1px solid var(--line);padding-top:22px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+          <div>
+            <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint)">verdict</div>
+            <div style="font-family:var(--serif);font-size:1.6rem;margin-top:4px" id="byo-verdict">&mdash;</div>
+          </div>
+          <div class="score" style="text-align:right"><div><span class="big" id="byo-score">&mdash;</span><span class="mono" style="font-size:12px;color:var(--faint)" id="byo-score-den"></span></div></div>
+        </div>
+        <div class="bar"><i id="byo-bar"></i></div>
+        <div id="byo-dims" style="margin-top:18px"></div>
+        <div style="display:flex;gap:14px;margin-top:22px;flex-wrap:wrap;align-items:center">
+          <a href="book.html" class="cta" data-evt="byo-book">Get this on my whole feature &rarr;</a>
+          <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 6px;font-size:13px;color:var(--cyan)">the full engagement &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="subtle" style="font-size:12.5px;margin-top:16px;max-width:64ch"><b style="color:var(--ink)">How this works &amp; what it isn&rsquo;t:</b> one strict LLM-as-judge pass scores your answer against a fixed four-part rubric &mdash; a real mini-eval, not a simulation. It&rsquo;s a taste of the method, not a full audit: a real engagement runs hundreds of cases, adds deterministic checks, and wires the gate into your CI. Your input isn&rsquo;t stored.</p>
+  </section>
+
   <footer style="border-top:1px solid var(--line);padding:22px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)">
     <span>&copy; 2026 Jason Teixeira &middot; Sage Ideas LLC &middot; <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> &middot; <a href="terms.html" class="dim-link" style="color:inherit">terms</a></span>
     <span><a href="demos.html" class="dim-link" style="color:var(--faint)">&larr; all demos</a></span>
@@ -212,6 +254,65 @@
   };
 
   function track(name){ try { if(typeof window.va==='function') window.va('event',{name:name}); } catch(e){} }
+})();
+</script>
+<script>
+/* Bring-your-own live eval — posts to /api/eval {byo:true} and renders a scored report. */
+(function(){
+  var form=document.getElementById('byo-form'); if(!form) return;
+  var q=document.getElementById('byo-q'), a=document.getElementById('byo-a'), s=document.getElementById('byo-s');
+  var btn=document.getElementById('byo-run'), statusEl=document.getElementById('byo-status');
+  var report=document.getElementById('byo-report'), dims=document.getElementById('byo-dims');
+  var vEl=document.getElementById('byo-verdict'), scoreEl=document.getElementById('byo-score'), denEl=document.getElementById('byo-score-den'), barEl=document.getElementById('byo-bar');
+  function esc(x){ return String(x==null?'':x); }
+  function setStatus(t){ statusEl.textContent=t; }
+  function reset(){ btn.disabled=false; btn.textContent='▶ Evaluate my AI'; }
+  function track(name){ try{ if(typeof window.va==='function') window.va('event',{name:name}); }catch(e){} }
+
+  function renderReport(res){
+    dims.innerHTML='';
+    (res.dimensions||[]).forEach(function(d){
+      var row=document.createElement('div'); row.className='probe';
+      var left=document.createElement('div');
+      var dim=document.createElement('div'); dim.className='pdim'; dim.textContent=esc(d.dimension);
+      var rz=document.createElement('div'); rz.className='pq'; rz.textContent='↳ '+esc(d.reason);
+      left.appendChild(dim); left.appendChild(rz);
+      var v=document.createElement('div'); v.className='verdict '+(d.verdict==='PASS'?'v-pass':'v-fail'); v.textContent=d.verdict;
+      row.appendChild(left); row.appendChild(v);
+      dims.appendChild(row);
+    });
+    var sc=res.score||{pass:0,total:(res.dimensions||[]).length,verdict:''};
+    var total=sc.total||1;
+    scoreEl.textContent=sc.pass; scoreEl.style.color=(sc.pass===sc.total?'var(--green)':(sc.pass===0?'var(--red)':'var(--ink)'));
+    denEl.textContent=' / '+sc.total;
+    barEl.style.width=Math.round((sc.pass/total)*100)+'%';
+    vEl.textContent=(sc.verdict==='PASS'?'Clean pass':(sc.verdict==='FAIL'?'Fails the rubric':'Partial — gaps found'));
+    vEl.style.color=(sc.verdict==='PASS'?'var(--green)':(sc.verdict==='FAIL'?'var(--red)':'var(--amber)'));
+    report.style.display='block';
+    setStatus('scored · nothing stored');
+    track('byo-done-'+sc.pass+'-'+sc.total);
+    try{ report.scrollIntoView({block:'nearest'}); }catch(e){}
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if(btn.disabled) return;
+    var qq=(q.value||'').trim(), aa=(a.value||'').trim();
+    if(!qq){ setStatus('add the question your AI was answering'); q.focus(); return; }
+    if(!aa){ setStatus('paste your AI’s answer'); a.focus(); return; }
+    btn.disabled=true; btn.textContent='grading…'; setStatus('one strict judge pass — a few seconds…'); report.style.display='none';
+    track('byo-run');
+    fetch('/api/eval',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({byo:true,question:qq,answer:aa,source:(s.value||'').trim()})})
+      .then(function(r){ return r.json().then(function(j){ return {code:r.status,j:j}; }, function(){ return {code:r.status,j:null}; }); })
+      .then(function(o){
+        if(o.code===501){ setStatus('the live judge is offline right now — try again shortly'); return; }
+        if(o.code===429){ setStatus('a lot of evals running — give it a moment and retry'); return; }
+        if(!o.j || !o.j.ok || !o.j.dimensions){ setStatus(o.j && o.j.message ? o.j.message : 'couldn’t score that cleanly — tweak the input and retry'); return; }
+        renderReport(o.j);
+      })
+      .catch(function(){ setStatus('network hiccup — try again'); })
+      .then(reset, reset);
+  });
 })();
 </script>
 <script>/* analytics: Google Analytics 4 — loads only on production once GA_ID is set */
