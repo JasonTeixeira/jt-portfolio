@@ -14,6 +14,7 @@
     "prerender": "node scripts/prerender.mjs",
     "build:notes": "node scripts/build-notes.mjs",
     "build:services": "node scripts/build-services.mjs",
+    "build:lab": "node scripts/add-lab-nav.mjs && node scripts/build-lab.mjs",
     "build:og": "node scripts/build-og.mjs",
     "build:captures": "node scripts/build-captures.mjs",
     "build:onepager": "node scripts/build-onepager-pdf.mjs",

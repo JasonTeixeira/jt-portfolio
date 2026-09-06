@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Lab — Systems I&#8217;ve Built &amp; Shipped · Jason Teixeira</title>
+<meta name="description" content="A working portfolio of what I build: live platforms, apps in build, prototypes, and anonymized client work — each labeled with its true status.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/lab.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Lab — Systems I&#8217;ve Built &amp; Shipped">
+<meta property="og:description" content="Live platforms, apps in build, prototypes, and anonymized client work — each labeled with its true status.">
+<meta property="og:url" content="https://agency.sageideas.dev/lab.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+
+  /* credibility strip */
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* case study */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; max-width:22ch; }
+  .metric { display:flex; align-items:baseline; gap:12px; margin:20px 0; flex-wrap:wrap; }
+  .metric .big { font-family:var(--serif); font-size:clamp(2.2rem,5vw,3rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .metric .lbl { font-family:var(--mono); font-size:11.5px; color:var(--faint); max-width:26ch; line-height:1.5; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:8px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:4px; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+
+  /* flagship "built & operated" cards */
+  .opcard { display:block; border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(22px,3vw,32px); transition:border-color .2s, transform .2s; }
+  .opcard:hover { border-color:var(--ac); transform:translateY(-2px); }
+  .opcard .ol { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .opcard h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.45rem,3vw,1.9rem); letter-spacing:-0.015em; margin:10px 0 0; color:var(--ink); }
+  .opcard .od { font-size:13.5px; line-height:1.66; color:var(--dim); margin-top:12px; }
+  .opcard .os { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:18px; }
+  .opcard .os div { line-height:1.1; }
+  .opcard .os .n { font-family:var(--serif); font-size:1.45rem; color:var(--ac); }
+  .opcard .os .u { font-family:var(--mono); font-size:9.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-top:4px; }
+  .opcard .more { font-family:var(--mono); font-size:12px; color:var(--ac); margin-top:20px; display:inline-flex; gap:6px; }
+
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(40px,6vw,64px) 0; }
+  .rule { border-top:1px solid var(--line); }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/case-studies.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/case-studies.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/case-studies.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/case-studies.html">
+<meta property="og:locale" content="en_US">
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="lab.html" class="site-nav-link" aria-current="page">Lab</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Docs</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <span class="nav-social" aria-label="Social links" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Email" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick">The Lab &middot; what I actually build</div>
+    <h1 style="margin-top:20px;max-width:20ch">I don&#8217;t just test software. <em style="color:var(--green)">I build and ship it.</em></h1>
+    <p class="subtle" style="margin-top:20px;max-width:64ch">Every system below is real, and every one is labeled with its true status &mdash; live in production, in active build, a working prototype, or anonymized client work. No mockups dressed up as launches. This is the range you get when you hire the person who also runs the QA.</p>
+    <div class="lab-legend" aria-label="Status legend"><span class="lab-legend-item"><span class="lab-dot" style="background:#10b981"></span>Live <b>5</b></span><span class="lab-legend-item"><span class="lab-dot" style="background:#22d3ee"></span>In build <b>3</b></span><span class="lab-legend-item"><span class="lab-dot" style="background:#a78bfa"></span>Prototype <b>2</b></span><span class="lab-legend-item"><span class="lab-dot" style="background:#F59E0B"></span>Client build <b>2</b></span></div>
+  </header>
+
+  <main class="wrap" style="padding-bottom:clamp(48px,8vw,96px)">
+  <style>
+    .lab-legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:22px}
+    .lab-legend-item{font-family:var(--mono);font-size:12px;color:var(--faint);display:inline-flex;align-items:center;gap:7px}
+    .lab-legend-item b{color:var(--ink)}
+    .lab-dot{width:8px;height:8px;border-radius:50%;background:var(--accent,var(--green));display:inline-block;flex:none}
+    .lab-tier{margin-top:clamp(40px,6vw,72px)}
+    .lab-tier-note{font-family:var(--mono);font-size:12px;color:var(--faint);margin:10px 0 22px}
+    .lab-count{font-size:11px;color:var(--faint);font-weight:400}
+    .lab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:18px}
+    .lab-card{position:relative;border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--card);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;transition:transform .2s var(--ease,ease),border-color .2s ease,box-shadow .2s ease}
+    .lab-card:hover{transform:translateY(-3px);border-color:color-mix(in oklab, var(--accent) 55%, var(--line));box-shadow:0 12px 40px -24px var(--accent)}
+    .lab-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .lab-chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:6px}
+    .lab-chip .lab-dot{background:var(--accent)}
+    .lab-cat{font-family:var(--mono);font-size:11px;color:var(--faint)}
+    .lab-name{font-family:var(--serif,'Instrument Serif',Georgia,serif);font-size:clamp(1.5rem,1.1rem+1.4vw,2rem);line-height:1.05;margin:2px 0 0;color:var(--ink)}
+    .lab-blurb{font-size:14px;line-height:1.72;color:var(--soft,#A8A29E);margin:0}
+    .lab-stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+    .lab-tag{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+    .lab-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+    .lab-metric{font-family:var(--mono);font-size:11.5px;color:var(--ink)}
+    .lab-link{font-family:var(--mono);font-size:12px;color:var(--accent);text-decoration:none;border:1px solid color-mix(in oklab, var(--accent) 40%, transparent);border-radius:8px;padding:6px 12px;transition:background .18s ease}
+    .lab-link:hover{background:color-mix(in oklab, var(--accent) 14%, transparent)}
+    @media (prefers-reduced-motion:reduce){.lab-card{transition:none}.lab-card:hover{transform:none}}
+  </style>
+      <section class="lab-tier" aria-labelledby="tier-live">
+        <div class="sec-rule"><h2 class="sec-label" id="tier-live" style="color:#10b981;margin:0">Live <span class="lab-count">5</span></h2><span class="line"></span></div>
+        <p class="lab-tier-note">Shipped and running in production.</p>
+        <div class="lab-grid">
+        <article class="lab-card" style="--accent:#10b981">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Live</span>
+            <span class="lab-cat">Platform · Fintech media</span>
+          </div>
+          <h3 class="lab-name">Nexural Federation</h3>
+          <p class="lab-blurb">A transparent trading-media platform: real-time market data, a signal engine, a research desk, and a public track record — the &quot;printing press with the lights on&quot;.</p>
+          <div class="lab-stack"><span class="lab-tag">Next.js</span><span class="lab-tag">Supabase</span><span class="lab-tag">DuckDB</span><span class="lab-tag">Market-data APIs</span></div>
+          <div class="lab-foot"><span class="lab-metric">39-repo single-operator system</span><a class="lab-link" href="https://nexural.io" target="_blank" rel="noopener">Visit <span aria-hidden="true">&#8599;</span></a></div>
+        </article>
+        <article class="lab-card" style="--accent:#10b981">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Live</span>
+            <span class="lab-cat">EdTech · Markets &amp; AI</span>
+          </div>
+          <h3 class="lab-name">Sage Ideas Academy</h3>
+          <p class="lab-blurb">A markets and AI-engineering academy: structured courses with in-browser code labs, mastery quizzes, certificates, and a retrieval-grounded AI tutor.</p>
+          <div class="lab-stack"><span class="lab-tag">Next.js</span><span class="lab-tag">Supabase</span><span class="lab-tag">Pyodide</span><span class="lab-tag">RAG</span></div>
+          <div class="lab-foot"><span class="lab-metric">26 courses · 347 lessons</span><a class="lab-link" href="https://sageideas.dev/academy" target="_blank" rel="noopener">Visit <span aria-hidden="true">&#8599;</span></a></div>
+        </article>
+        <article class="lab-card" style="--accent:#10b981">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Live</span>
+            <span class="lab-cat">Meta · Proof of process</span>
+          </div>
+          <h3 class="lab-name">This site</h3>
+          <p class="lab-blurb">The agency site you are on right now runs its own QA: a proposal→deposit→client-portal money path, an operator CRM, and a CI proof gate (unit + a11y + Lighthouse) on every change.</p>
+          <div class="lab-stack"><span class="lab-tag">Vercel functions</span><span class="lab-tag">Supabase</span><span class="lab-tag">Stripe</span><span class="lab-tag">Playwright CI</span></div>
+          <div class="lab-foot"><span class="lab-metric">Self-tested, CI-gated</span><a class="lab-link" href="index.html">Open <span aria-hidden="true">&#8599;</span></a></div>
+        </article>
+        <article class="lab-card" style="--accent:#10b981">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Live</span>
+            <span class="lab-cat">Media automation</span>
+          </div>
+          <h3 class="lab-name">reel-forge</h3>
+          <p class="lab-blurb">A programmatic short-form video pipeline — script to rendered vertical video — for a $0-marginal-cost content channel plus a paid generative lane.</p>
+          <div class="lab-stack"><span class="lab-tag">Remotion</span><span class="lab-tag">Node</span><span class="lab-tag">ElevenLabs</span><span class="lab-tag">Generative video</span></div>
+          <div class="lab-foot"><span class="lab-metric">Episode pipeline in production</span></div>
+        </article>
+        <article class="lab-card" style="--accent:#10b981">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Live</span>
+            <span class="lab-cat">Quant research infra</span>
+          </div>
+          <h3 class="lab-name">SageQuant</h3>
+          <p class="lab-blurb">Quantitative research infrastructure over a market-data lake: rule-based setup detection, meta-labeling, and combinatorial purged cross-validation before anything is trusted.</p>
+          <div class="lab-stack"><span class="lab-tag">Python</span><span class="lab-tag">DuckDB</span><span class="lab-tag">NinjaTrader</span><span class="lab-tag">CPCV / DSR</span></div>
+          <div class="lab-foot"><span class="lab-metric">Backtest → validation harness</span></div>
+        </article>
+        </div>
+      </section>
+
+      <section class="lab-tier" aria-labelledby="tier-beta">
+        <div class="sec-rule"><h2 class="sec-label" id="tier-beta" style="color:#22d3ee;margin:0">In build <span class="lab-count">3</span></h2><span class="line"></span></div>
+        <p class="lab-tier-note">Real, working, still hardening toward GA.</p>
+        <div class="lab-grid">
+        <article class="lab-card" style="--accent:#22d3ee">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>In build</span>
+            <span class="lab-cat">Mobile · Consumer</span>
+          </div>
+          <h3 class="lab-name">Voza</h3>
+          <p class="lab-blurb">A cross-platform mobile app built to production discipline — every route hardened against missing params — with a four-tier verification harness gating each build.</p>
+          <div class="lab-stack"><span class="lab-tag">Expo</span><span class="lab-tag">React Native</span><span class="lab-tag">Supabase</span></div>
+          <div class="lab-foot"><span class="lab-metric">256 screens · sim-certified</span></div>
+        </article>
+        <article class="lab-card" style="--accent:#22d3ee">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>In build</span>
+            <span class="lab-cat">Mobile · AI social</span>
+          </div>
+          <h3 class="lab-name">GIGGL</h3>
+          <p class="lab-blurb">An AI-driven social app with a custom quality engine on the backend, shipping to iOS through an automated EAS / TestFlight pipeline.</p>
+          <div class="lab-stack"><span class="lab-tag">Expo</span><span class="lab-tag">Node API</span><span class="lab-tag">EAS / TestFlight</span></div>
+          <div class="lab-foot"><span class="lab-metric">iOS E2E on TestFlight</span></div>
+        </article>
+        <article class="lab-card" style="--accent:#22d3ee">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>In build</span>
+            <span class="lab-cat">Consumer · Habit</span>
+          </div>
+          <h3 class="lab-name">Hard Things Daily</h3>
+          <p class="lab-blurb">A daily-discipline app with a shared web + mobile core; the web app has completed its backend cutover behind a fixture-mode toggle.</p>
+          <div class="lab-stack"><span class="lab-tag">Next.js</span><span class="lab-tag">Supabase</span><span class="lab-tag">Expo</span></div>
+          <div class="lab-foot"><span class="lab-metric">Web backend live</span></div>
+        </article>
+        </div>
+      </section>
+
+      <section class="lab-tier" aria-labelledby="tier-prototype">
+        <div class="sec-rule"><h2 class="sec-label" id="tier-prototype" style="color:#a78bfa;margin:0">Prototype <span class="lab-count">2</span></h2><span class="line"></span></div>
+        <p class="lab-tier-note">Designed and specced; selectively built.</p>
+        <div class="lab-grid">
+        <article class="lab-card" style="--accent:#a78bfa">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Prototype</span>
+            <span class="lab-cat">Prototype · AI product</span>
+          </div>
+          <h3 class="lab-name">Knox</h3>
+          <p class="lab-blurb">An AI car-diagnostic concept: photo and symptom input into a guided triage flow. Full product blueprint and mobile hero flow designed; build is selective.</p>
+          <div class="lab-stack"><span class="lab-tag">Mobile</span><span class="lab-tag">LLM</span><span class="lab-tag">Supabase</span></div>
+          <div class="lab-foot"></div>
+        </article>
+        <article class="lab-card" style="--accent:#a78bfa">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Prototype</span>
+            <span class="lab-cat">Prototype · AI product</span>
+          </div>
+          <h3 class="lab-name">Undeny</h3>
+          <p class="lab-blurb">An AI assistant that helps people appeal insurance denials — turning a denial letter into a structured, evidence-backed appeal. Specced and documented; gated on domain validation.</p>
+          <div class="lab-stack"><span class="lab-tag">LLM</span><span class="lab-tag">Document AI</span></div>
+          <div class="lab-foot"></div>
+        </article>
+        </div>
+      </section>
+
+      <section class="lab-tier" aria-labelledby="tier-client">
+        <div class="sec-rule"><h2 class="sec-label" id="tier-client" style="color:#F59E0B;margin:0">Client build <span class="lab-count">2</span></h2><span class="line"></span></div>
+        <p class="lab-tier-note">Delivered for a client — shown anonymized.</p>
+        <div class="lab-grid">
+        <article class="lab-card" style="--accent:#F59E0B">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Client build</span>
+            <span class="lab-cat">Client · Local services</span>
+          </div>
+          <h3 class="lab-name">AI Front Desk (client)</h3>
+          <p class="lab-blurb">An AI receptionist and operations app for a home-services business: voice intake, photo-based estimates, and a lead-to-job pipeline. Delivered under NDA — shown anonymized.</p>
+          <div class="lab-stack"><span class="lab-tag">Next.js</span><span class="lab-tag">Supabase</span><span class="lab-tag">Voice + vision AI</span></div>
+          <div class="lab-foot"></div>
+        </article>
+        <article class="lab-card" style="--accent:#F59E0B">
+          <div class="lab-card-head">
+            <span class="lab-chip"><span class="lab-dot"></span>Client build</span>
+            <span class="lab-cat">Client · Creator brand</span>
+          </div>
+          <h3 class="lab-name">Creator commerce site (client)</h3>
+          <p class="lab-blurb">A dark, high-motion commerce and content site for a creator brand — editorial art direction with a production-grade component system. Shown anonymized.</p>
+          <div class="lab-stack"><span class="lab-tag">Next.js</span><span class="lab-tag">Motion</span><span class="lab-tag">Commerce</span></div>
+          <div class="lab-foot"></div>
+        </article>
+        </div>
+      </section>
+
+    <section class="lab-tier" aria-label="Work together">
+      <div class="sec-rule"><h2 class="sec-label" style="color:var(--cyan);margin:0">Work with me</h2><span class="line"></span></div>
+      <div class="lab-card" style="--accent:var(--green);border-left-width:3px;max-width:none">
+        <h3 class="lab-name" style="max-width:24ch">Want a system like these, built for your business?</h3>
+        <p class="lab-blurb" style="max-width:60ch">I take on a small number of AI build and QA engagements. If you have something real to ship, let&#8217;s scope it.</p>
+        <div class="lab-foot" style="margin-top:6px">
+          <a class="btn-solid green" href="build.html" style="padding:11px 20px">Scope a project &rarr;</a>
+          <a class="btn-ghost" href="case-studies.html" style="padding:11px 20px">See measured outcomes</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"The Lab — systems built by Jason Teixeira","url":"https://agency.sageideas.dev/lab.html","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntity":{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"CreativeWork","name":"Nexural Federation","url":"https://nexural.io","abstract":"A transparent trading-media platform: real-time market data, a signal engine, a research desk, and a public track record — the \"printing press with the lights on\"."}},{"@type":"ListItem","position":2,"item":{"@type":"CreativeWork","name":"Sage Ideas Academy","url":"https://sageideas.dev/academy","abstract":"A markets and AI-engineering academy: structured courses with in-browser code labs, mastery quizzes, certificates, and a retrieval-grounded AI tutor."}},{"@type":"ListItem","position":3,"item":{"@type":"CreativeWork","name":"This site","abstract":"The agency site you are on right now runs its own QA: a proposal→deposit→client-portal money path, an operator CRM, and a CI proof gate (unit + a11y + Lighthouse) on every change."}},{"@type":"ListItem","position":4,"item":{"@type":"CreativeWork","name":"reel-forge","abstract":"A programmatic short-form video pipeline — script to rendered vertical video — for a $0-marginal-cost content channel plus a paid generative lane."}},{"@type":"ListItem","position":5,"item":{"@type":"CreativeWork","name":"SageQuant","abstract":"Quantitative research infrastructure over a market-data lake: rule-based setup detection, meta-labeling, and combinatorial purged cross-validation before anything is trusted."}},{"@type":"ListItem","position":6,"item":{"@type":"CreativeWork","name":"Voza","abstract":"A cross-platform mobile app built to production discipline — every route hardened against missing params — with a four-tier verification harness gating each build."}},{"@type":"ListItem","position":7,"item":{"@type":"CreativeWork","name":"GIGGL","abstract":"An AI-driven social app with a custom quality engine on the backend, shipping to iOS through an automated EAS / TestFlight pipeline."}},{"@type":"ListItem","position":8,"item":{"@type":"CreativeWork","name":"Hard Things Daily","abstract":"A daily-discipline app with a shared web + mobile core; the web app has completed its backend cutover behind a fixture-mode toggle."}},{"@type":"ListItem","position":9,"item":{"@type":"CreativeWork","name":"AI Front Desk (client)","abstract":"An AI receptionist and operations app for a home-services business: voice intake, photo-based estimates, and a lead-to-job pipeline. Delivered under NDA — shown anonymized."}},{"@type":"ListItem","position":10,"item":{"@type":"CreativeWork","name":"Creator commerce site (client)","abstract":"A dark, high-motion commerce and content site for a creator brand — editorial art direction with a production-grade component system. Shown anonymized."}},{"@type":"ListItem","position":11,"item":{"@type":"CreativeWork","name":"Knox","abstract":"An AI car-diagnostic concept: photo and symptom input into a guided triage flow. Full product blueprint and mobile hero flow designed; build is selective."}},{"@type":"ListItem","position":12,"item":{"@type":"CreativeWork","name":"Undeny","abstract":"An AI assistant that helps people appeal insurance denials — turning a denial letter into a structured, evidence-backed appeal. Specced and documented; gated on domain validation."}}]}}</script>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Social links" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Email" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academy &#8599;</a> · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a> · <a href="demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="what-i-build.html" class="dim-link" style="color:inherit">what I build</a></span>
+    <span>set in Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>every number labeled verified or estimated. no fake green.</span>
+  </footer>
+</div>
+<script>
+/* TESTIMONIALS — add real quotes here and the section appears automatically.
+   Keep them real: only quote people who actually said it, ideally with a
+   LinkedIn recommendation you can link. Empty = section stays hidden. */
+(function () {
+  var TESTIMONIALS = [
+    // { quote: "…", name: "Full Name", role: "Title, Company", href: "https://linkedin.com/in/…" },
+  ];
+  if (!TESTIMONIALS.length) return;
+  var wrap = document.getElementById('tq');
+  TESTIMONIALS.forEach(function (t) {
+    var card = document.createElement('figure');
+    card.style.cssText = 'margin:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:22px';
+    var attribution = t.name + (t.role ? ' — ' + t.role : '');
+    card.innerHTML = '<blockquote style="margin:0;font-size:14.5px;line-height:1.7;color:var(--ink)">“' + t.quote + '”</blockquote>' +
+      '<figcaption style="margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--faint)">' +
+      (t.href ? '<a href="' + t.href + '" style="color:var(--cyan)">' + attribution + ' ↗</a>' : attribution) + '</figcaption>';
+    wrap.appendChild(card);
+  });
+  document.getElementById('testimonials').style.display = '';
+})();
+</script>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+</body>
+</html>

@@ -995,3 +995,29 @@ test.describe('unsubscribe page', () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe('lab — builds wall', () => {
+  test('loads, shows Lab as current nav, and renders every build card', async ({ page }) => {
+    const errors = trackErrors(page);
+    // keep the assertion in sync with the data source of truth
+    const { BUILDS } = await import('../scripts/lab.data.mjs');
+    await page.goto('/lab.html');
+    await expect(page).toHaveTitle(/The Lab/);
+    await expect(page.locator('h1')).toContainText('build and ship');
+    // build cards are <article>; the CTA card is a <div>, so this counts builds exactly
+    await expect(page.locator('article.lab-card')).toHaveCount(BUILDS.length);
+    await expect(page.locator('a.site-nav-link[href="lab.html"][aria-current="page"]')).toHaveCount(1);
+    expect(errors).toEqual([]);
+  });
+
+  test('no horizontal overflow', async ({ page }) => {
+    await page.goto('/lab.html');
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+    expect(overflow).toBe(false);
+  });
+
+  test('homepage teaser links to the Lab', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('a[href="lab.html"][data-evt="flagships-lab"]')).toHaveCount(1);
+  });
+});
