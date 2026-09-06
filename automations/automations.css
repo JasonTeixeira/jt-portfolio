@@ -246,3 +246,13 @@ b { font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto; } }
 
 .hp i { font-style: normal; font-size: 0.82em; color: var(--dim); display: block; margin-top: 2px; }
+
+/* proof band — backs the "we prove it" claim + bridges to operator credibility */
+.proof-band { margin-top: 28px; border: 1px solid var(--line); border-left: 3px solid var(--green); background: var(--green-wash); border-radius: 0 16px 16px 0; padding: clamp(20px,3vw,28px); }
+.proof-band-in { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(18px,3vw,32px); align-items: center; }
+@media (max-width: 720px) { .proof-band-in { grid-template-columns: 1fr; } }
+.proof-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-d); font-weight: 600; }
+.proof-copy { margin: 10px 0 0; font-size: 14.5px; line-height: 1.65; color: var(--ink-2); }
+.proof-links { display: flex; flex-direction: column; gap: 10px; }
+.proof-link { font-family: var(--mono); font-size: 13px; color: var(--green-d); border: 1px solid var(--line); background: var(--paper); border-radius: 10px; padding: 11px 14px; transition: border-color .2s, transform .2s; }
+.proof-link:hover { border-color: var(--green); transform: translateY(-1px); }
