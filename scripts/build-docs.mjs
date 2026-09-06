@@ -228,6 +228,7 @@ ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script
   .d-empty { padding:22px; text-align:center; color:var(--faint); font-size:13px; }
 
   @media (max-width:1120px){ .d-layout { grid-template-columns:262px minmax(0,1fr); } .d-rail { display:none; } }
+  @media (max-width:400px){ .d-brand .nm { display:none; } }
   @media (max-width:860px){
     .d-layout { grid-template-columns:1fr; }
     .d-menu-btn { display:inline-block; }
