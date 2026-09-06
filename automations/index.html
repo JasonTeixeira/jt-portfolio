@@ -38,6 +38,7 @@
       <a href="#demo" class="btn btn-primary">See it work ↓</a>
       <a href="#pricing" class="btn btn-ghost" data-book>Get a live demo on my number →</a>
     </div>
+    <p class="hero-live"><a href="/front-desk.html" target="_blank" rel="noopener">Or talk to a real one right now — the live AI receptionist &nearr;</a></p>
     <div class="hero-proof">
       <div class="hp"><b>~62%</b><span>of callers who hit voicemail never call back <i>(industry research)</i></span></div>
       <div class="hp"><b>~78%</b><span>of jobs go to whoever responds first <i>(industry research)</i></span></div>
@@ -248,6 +249,33 @@
   </div>
 </section>
 
+<!-- ── risk reversal ── -->
+<section class="reversal">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="kicker">Low risk, on purpose</span>
+      <h2 class="h2">The odds are stacked in your favor.</h2>
+    </div>
+    <div class="rev-grid">
+      <div class="rev-item"><div class="rev-i">↻</div><h3>Cancel anytime</h3><p>Month-to-month. No long contract, no cancellation fee. If it stops earning its keep, you leave — no friction.</p></div>
+      <div class="rev-item"><div class="rev-i">☎</div><h3>Keep your number</h3><p>It runs on your existing number and tools. Nothing to rip out, no new hardware, no lock-in to us.</p></div>
+      <div class="rev-item"><div class="rev-i">◎</div><h3>You see the math</h3><p>A monthly report shows calls answered and jobs recovered in plain dollars. If it isn't paying for itself, you'll know first — and you can walk.</p></div>
+      <div class="rev-item"><div class="rev-i">✓</div><h3>Honest fit check</h3><p>On the call, if this isn't right for your business, we say so. A clear "not a fit" beats a wrong engagement — for both of us.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── testimonials (renders only when a real quote is added below; never faked) ── -->
+<section class="quotes" id="testimonials" hidden>
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="kicker">In their words</span>
+      <h2 class="h2">What owners say after it's running.</h2>
+    </div>
+    <div class="quote-grid" id="quote-grid"></div>
+  </div>
+</section>
+
 <!-- ── final CTA ── -->
 <section class="final">
   <div class="wrap final-in">
@@ -285,5 +313,22 @@
 
 <script type="module" src="demo.js"></script>
 <script type="module" src="agent.js"></script>
+<script>
+/* Testimonials — add REAL quotes here and the section appears. Empty = stays hidden.
+   Only quote people who actually said it. Never fabricate. */
+(function () {
+  var QUOTES = [
+    // { quote: "…", name: "Full Name", biz: "Business, City" },
+  ];
+  if (!QUOTES.length) return;
+  var grid = document.getElementById('quote-grid');
+  QUOTES.forEach(function (q) {
+    var f = document.createElement('figure'); f.className = 'quote-card';
+    f.innerHTML = '<blockquote>“' + q.quote + '”</blockquote><figcaption>' + q.name + (q.biz ? ' · ' + q.biz : '') + '</figcaption>';
+    grid.appendChild(f);
+  });
+  document.getElementById('testimonials').hidden = false;
+})();
+</script>
 </body>
 </html>
