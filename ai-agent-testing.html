@@ -69,6 +69,7 @@
   .diagram figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:16px; line-height:1.6; }
   .agent-svg { width:100%; height:auto; display:block; }
   .agent-svg text { font-family:'JetBrains Mono',monospace; }
+  @media (prefers-reduced-motion: reduce) { .flow-packet { display:none; } }
 </style>
   <script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"AI Agent Testing: What Breaks in Production","about":"Failure modes of agentic AI systems that unit tests miss — multi-turn drift, tool-call errors, prompt injection across turns, non-determinism — and the multi-turn golden probes, red-team battery, and robustness checks that catch them.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/ai-agent-testing.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
@@ -214,6 +215,8 @@
 
           <!-- forward edges -->
           <line x1="154" y1="182" x2="228" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <circle class="flow-packet" r="3.2" cy="182" fill="#22d3ee"><animate attributeName="cx" values="140;660" dur="2.4s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" repeatCount="indefinite"></animate></circle>
+            <circle class="flow-packet" r="3.2" cy="182" fill="#10b981"><animate attributeName="cx" values="140;660" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate></circle>
           <line x1="364" y1="182" x2="438" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
           <line x1="574" y1="182" x2="648" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
 

@@ -84,6 +84,7 @@
   .diagram { margin-top:22px; border:1px solid var(--line); border-radius:14px; background:#0A0A0C; padding:clamp(16px,3vw,28px); }
   .diagram svg { width:100%; display:block; }
   .dgcap { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-top:12px; text-align:center; line-height:1.6; }
+  @media (prefers-reduced-motion: reduce) { .flow-packet { display:none; } }
 </style>
   <script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"Hire an AI QA Engineer to Test Your AI","about":"Why and when to hire a dedicated AI QA engineer to build eval suites, judge gates, and CI regression discipline for LLM features before they fail in production.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/hire-ai-qa-engineer.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
@@ -246,6 +247,8 @@
             <text x="95" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#F4F2EF">AI output</text>
             <text x="95" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">the raw answer</text>
             <line x1="170" y1="150" x2="212" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <circle class="flow-packet" r="3.2" cy="150" fill="#22d3ee"><animate attributeName="cx" values="150;480" dur="2.4s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" repeatCount="indefinite"></animate></circle>
+            <circle class="flow-packet" r="3.2" cy="150" fill="#10b981"><animate attributeName="cx" values="150;480" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate></circle>
             <!-- 2. Checks -->
             <rect x="220" y="60" width="200" height="180" rx="12" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5"></rect>
             <text x="320" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" letter-spacing="0.08em" fill="#a78bfa">SAFETY + QUALITY</text>
