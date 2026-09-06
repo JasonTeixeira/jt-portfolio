@@ -715,7 +715,9 @@ test.describe('portfolio — docs hub', () => {
     for (const g of ['/guide-eval-gate.html','/guide-probes.html','/guide-golden-set.html','/guide-human-approval.html']) {
       await page.goto(g);
       await expect(page.locator('h1')).toBeVisible();
-      await expect(page.locator('svg')).toHaveCount(1);
+      // the guide's diagram renders (scoped to .diagram; the standardized footer
+      // now adds social-icon SVGs, so an all-page svg count is no longer 1)
+      await expect(page.locator('.diagram svg').first()).toBeVisible();
       await expect(page.locator('a[href="book.html"]').first()).toBeVisible();
     }
   });

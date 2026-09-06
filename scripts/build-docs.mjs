@@ -340,7 +340,7 @@ function contentPage(slug) {
     <div class="d-body">${p.blocks.map(renderBlock).join('\n')}</div>
     <div class="d-help"><span>Was this helpful?</span><a href="book.html" data-evt="docs-help-yes">Book a call →</a><a href="sample.html" data-evt="docs-help-eval">Get a free mini-eval →</a></div>
     ${pn}
-    <div class="d-foot">© <span data-year>2026</span> ${esc(AUTHOR)} · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a></div>
+    <div class="d-foot">© <span data-year>2026</span> ${esc(AUTHOR)} · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a> · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>`;
 
   const jsonLd = contentSchema(slug, p);
@@ -371,7 +371,7 @@ function homePage() {
     <style>.d-card-link{font-size:13.5px;color:var(--dim);padding:5px 0}.d-card-link:hover{color:var(--cyan)}</style>
     <div class="d-cards" style="margin-top:28px">${cats}</div>
     <div class="d-cta"><div><div class="d-cta-h">Prefer to talk it through?</div><div class="d-cta-s">Ask my AI associate on any page, or book a 15-minute call.</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-home-cta">Book a call →</a></div>
-    <div class="d-foot">© <span data-year>2026</span> ${esc(AUTHOR)} · Sage Ideas LLC</div>
+    <div class="d-foot">© <span data-year>2026</span> ${esc(AUTHOR)} · Sage Ideas LLC · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>`;
 
   const jsonLd = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Documentation', description: 'Complete documentation of what Jason Teixeira builds and how engagements work.', url: `${SITE_URL}/docs.html` };
