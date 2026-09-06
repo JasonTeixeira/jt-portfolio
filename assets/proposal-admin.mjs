@@ -472,6 +472,142 @@ function renderDetail(mount, row, key, project, milestones, contracts) {
   mount.appendChild(renderMilestonesCard(project, milestones, key));
 }
 
+// ---- Pipeline / CRM (prospects) --------------------------------------------
+
+const STAGE_META = {
+  new:     { label: 'New',     color: '#8E8882' },
+  scoped:  { label: 'Scoped',  color: '#22d3ee' },
+  engaged: { label: 'Engaged', color: '#F59E0B' },
+  won:     { label: 'Won',     color: '#10b981' },
+  lost:    { label: 'Lost',    color: '#f43f5e' },
+};
+const STAGE_ORDER = ['new', 'scoped', 'engaged', 'won', 'lost'];
+function stageChip(stage) { return chipFor(stage, STAGE_META); }
+
+function setStage(id, stage, key, lostReason) {
+  return fetch('/api/prospects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+    body: JSON.stringify({ id, stage, lostReason }),
+  }).then((res) => res.json().catch(() => null));
+}
+
+function prospectRow(p, key, onChanged) {
+  const stageCell = h('td', {}, stageChip(p.stage || 'new'));
+  const move = h('select', { class: 'mono', style: 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:6px 8px' },
+    ...STAGE_ORDER.map((s) => {
+      const o = h('option', { value: s }, STAGE_META[s].label);
+      if (s === (p.stage || 'new')) o.setAttribute('selected', 'selected');
+      return o;
+    }),
+  );
+  move.addEventListener('change', () => {
+    const stage = move.value;
+    let lostReason;
+    if (stage === 'lost') { lostReason = (window.prompt('Reason lost? (optional)') || '').trim() || undefined; }
+    move.disabled = true;
+    setStage(p.id, stage, key, lostReason).then((data) => {
+      move.disabled = false;
+      if (data && data.ok) { clear(stageCell); stageCell.appendChild(stageChip(stage)); if (onChanged) onChanged(); }
+    }).catch(() => { move.disabled = false; });
+  });
+
+  const openBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:6px 12px;font-size:12px' }, 'Timeline');
+  const tl = h('tr', { style: 'display:none' }, h('td', { colspan: '6' }, h('div', { class: 'tl-mount subtle', style: 'font-size:12.5px;padding:4px 6px' }, '')));
+  openBtn.addEventListener('click', () => {
+    const shown = tl.style.display !== 'none';
+    tl.style.display = shown ? 'none' : '';
+    if (!shown) loadTimeline(tl.querySelector('.tl-mount'), p.id, key);
+  });
+
+  const row = h('tr', {},
+    stageCell,
+    h('td', {}, p.company || p.name || '—'),
+    h('td', {}, p.email || '—'),
+    h('td', { class: 'mono', style: 'color:var(--faint)' }, p.segment || '—'),
+    h('td', { class: 'mono', style: 'color:var(--faint)' }, formatAge(p.updated_at)),
+    h('td', {}, h('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap' }, move, openBtn)),
+  );
+  return [row, tl];
+}
+
+function loadTimeline(mount, id, key) {
+  clear(mount); mount.appendChild(document.createTextNode('Loading…'));
+  apiGet(`/api/prospects?id=${encodeURIComponent(id)}`, key).then((r) => {
+    clear(mount);
+    const events = r.json && r.json.ok ? (r.json.events || []) : [];
+    if (!events.length) { mount.appendChild(document.createTextNode('No activity recorded yet.')); return; }
+    for (const e of events) {
+      mount.appendChild(h('div', { class: 'mono', style: 'padding:3px 0;border-bottom:1px solid var(--line)' },
+        h('span', { style: 'color:var(--cyan)' }, e.type), '  ',
+        h('span', { style: 'color:var(--faint)' }, formatAge(e.created_at)),
+      ));
+    }
+  }).catch(() => { clear(mount); mount.appendChild(document.createTextNode('Couldn’t load activity.')); });
+}
+
+function renderPipeline(root, key) {
+  clear(root);
+  const wrap = h('div', {});
+  wrap.appendChild(tabBar('pipeline', root, key));
+  wrap.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'CRM · every prospect'), h('span', { class: 'line' })));
+  wrap.appendChild(h('h1', { class: 'sec-title' }, 'Pipeline'));
+
+  const statMount = h('div', { class: 'stat-row' });
+  const tbody = h('tbody');
+  wrap.appendChild(statMount);
+  wrap.appendChild(h('div', { class: 'admin-card' },
+    h('div', { style: 'overflow-x:auto' },
+      h('table', { class: 'admin-table' },
+        h('thead', {}, h('tr', {}, h('th', {}, 'Stage'), h('th', {}, 'Company'), h('th', {}, 'Email'), h('th', {}, 'Segment'), h('th', {}, 'Last touch'), h('th', {}, ''))),
+        tbody,
+      ),
+    ),
+  ));
+  root.appendChild(wrap);
+
+  function load() {
+    apiGet('/api/prospects?list=1', key).then((r) => {
+      const prospects = r.json && r.json.ok ? (r.json.prospects || []) : [];
+      const counts = r.json && r.json.ok ? (r.json.counts || {}) : {};
+      clear(statMount);
+      for (const s of STAGE_ORDER) {
+        statMount.appendChild(h('div', { class: 'stat' },
+          h('div', { class: 'n', style: `color:${STAGE_META[s].color}` }, String(counts[s] || 0)),
+          h('div', { class: 'l' }, STAGE_META[s].label),
+        ));
+      }
+      clear(tbody);
+      if (!prospects.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects yet — they appear here the moment someone uses the scope studio.'))); return; }
+      for (const p of prospects) { const [row, tl] = prospectRow(p, key, load); tbody.appendChild(row); tbody.appendChild(tl); }
+    }).catch(() => {});
+  }
+  load();
+}
+
+function tabBar(active, root, key) {
+  function tab(id, label) {
+    const on = id === active;
+    const b = h('button', { type: 'button', class: on ? 'btn-solid green' : 'btn-ghost', style: 'padding:8px 16px;font-size:13px' }, label);
+    if (!on) b.addEventListener('click', () => { id === 'pipeline' ? renderPipeline(root, key) : renderProposals(root, key); });
+    return b;
+  }
+  return h('div', { style: 'display:flex;gap:10px;margin-bottom:4px' }, tab('pipeline', 'Pipeline'), tab('proposals', 'Proposals'));
+}
+
+function renderProposals(root, key) {
+  apiGet('/api/proposal-admin?list=1', key).then((r) => {
+    if (r.unauthorized) { renderNotAuthorized(root); return; }
+    if (!r.json || !r.json.ok) { renderUnconfigured(root); return; }
+    clear(root);
+    const shell = h('div', {}, tabBar('proposals', root, key));
+    const listMount = h('div', {});
+    shell.appendChild(listMount);
+    root.appendChild(shell);
+    renderList(listMount, Array.isArray(r.json.list) ? r.json.list : [], key);
+  }).catch(() => renderNotAuthorized(root));
+}
+
 async function init() {
   const root = document.getElementById('admin-root');
   if (!root) return;
@@ -479,6 +615,7 @@ async function init() {
   const key = (new URLSearchParams(location.search).get('key') || '').trim();
   if (!key) { renderNotAuthorized(root); return; }
 
+  // Auth/config probe via the proposals endpoint, then default to the Pipeline (CRM) view.
   let result;
   try {
     result = await apiGet('/api/proposal-admin?list=1', key);
@@ -488,7 +625,7 @@ async function init() {
   }
   if (result.unauthorized) { renderNotAuthorized(root); return; }
   if (!result.json || !result.json.ok) { renderUnconfigured(root); return; }
-  renderList(root, Array.isArray(result.json.list) ? result.json.list : [], key);
+  renderPipeline(root, key);
 }
 
 init().catch(() => {
