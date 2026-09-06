@@ -244,3 +244,5 @@ b { font-weight: 700; }
   .bar-cta { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto; } }
+
+.hp i { font-style: normal; font-size: 0.82em; color: var(--dim); display: block; margin-top: 2px; }
