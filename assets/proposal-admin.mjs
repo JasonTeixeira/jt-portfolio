@@ -484,12 +484,21 @@ const STAGE_META = {
 const STAGE_ORDER = ['new', 'scoped', 'engaged', 'won', 'lost'];
 function stageChip(stage) { return chipFor(stage, STAGE_META); }
 
-function setStage(id, stage, key, lostReason) {
+function postProspect(payload, key) {
   return fetch('/api/prospects', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
-    body: JSON.stringify({ id, stage, lostReason }),
+    body: JSON.stringify(payload),
   }).then((res) => res.json().catch(() => null));
+}
+function setStage(id, stage, key, lostReason) { return postProspect({ id, stage, lostReason }, key); }
+
+// touch_email -> "Email", follow_up -> "Follow-up" — for the timeline + picker
+const TOUCH_KINDS = ['email', 'dm', 'call', 'meeting', 'note', 'follow_up'];
+const TOUCH_LABEL = { email: 'Email', dm: 'DM', call: 'Call', meeting: 'Meeting', note: 'Note', follow_up: 'Follow-up' };
+function eventLabel(type) {
+  if (typeof type === 'string' && type.indexOf('touch_') === 0) return TOUCH_LABEL[type.slice(6)] || type.slice(6);
+  return type;
 }
 
 function prospectRow(p, key, onChanged) {
@@ -531,16 +540,36 @@ function prospectRow(p, key, onChanged) {
   return [row, tl];
 }
 
+// Compact "log an outreach touch" form shown inside a prospect's timeline panel.
+function touchForm(id, key, onLogged) {
+  const kind = h('select', { class: 'mono', style: 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:6px 8px' },
+    ...TOUCH_KINDS.map((k) => h('option', { value: k }, TOUCH_LABEL[k])));
+  const note = h('input', { type: 'text', placeholder: 'note (optional)', maxlength: '1000',
+    style: 'flex:1;min-width:140px;background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:6px 10px' });
+  const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'padding:6px 14px;font-size:12px' }, 'Log touch');
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+    postProspect({ action: 'touch', id, kind: kind.value, note: note.value }, key).then((d) => {
+      btn.disabled = false;
+      if (d && d.ok) { note.value = ''; if (onLogged) onLogged(); }
+    }).catch(() => { btn.disabled = false; });
+  });
+  return h('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px' }, kind, note, btn);
+}
+
 function loadTimeline(mount, id, key) {
   clear(mount); mount.appendChild(document.createTextNode('Loading…'));
   apiGet(`/api/prospects?id=${encodeURIComponent(id)}`, key).then((r) => {
     clear(mount);
+    mount.appendChild(touchForm(id, key, () => loadTimeline(mount, id, key)));
     const events = r.json && r.json.ok ? (r.json.events || []) : [];
     if (!events.length) { mount.appendChild(document.createTextNode('No activity recorded yet.')); return; }
     for (const e of events) {
+      const note = e.meta && typeof e.meta.note === 'string' ? e.meta.note : '';
       mount.appendChild(h('div', { class: 'mono', style: 'padding:3px 0;border-bottom:1px solid var(--line)' },
-        h('span', { style: 'color:var(--cyan)' }, e.type), '  ',
+        h('span', { style: 'color:var(--cyan)' }, eventLabel(e.type)), '  ',
         h('span', { style: 'color:var(--faint)' }, formatAge(e.created_at)),
+        note ? h('div', { style: 'color:var(--ink);white-space:pre-wrap;margin-top:2px' }, note) : null,
       ));
     }
   }).catch(() => { clear(mount); mount.appendChild(document.createTextNode('Couldn’t load activity.')); });
@@ -556,6 +585,29 @@ function renderPipeline(root, key) {
   const statMount = h('div', { class: 'stat-row' });
   const tbody = h('tbody');
   wrap.appendChild(statMount);
+
+  // Outbound: log a cold-reached lead straight into the pipeline.
+  const inEmail = h('input', { type: 'email', placeholder: 'email *', maxlength: '200', style: 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:7px 10px;min-width:180px' });
+  const inCompany = h('input', { type: 'text', placeholder: 'company', maxlength: '160', style: 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:7px 10px;min-width:150px' });
+  const inName = h('input', { type: 'text', placeholder: 'name', maxlength: '120', style: 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:7px 10px;min-width:130px' });
+  const inSeg = h('input', { type: 'text', placeholder: 'segment', maxlength: '60', style: 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:7px 10px;min-width:120px' });
+  const addBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'padding:7px 16px;font-size:12px' }, 'Add prospect');
+  const addMsg = h('span', { class: 'mono', style: 'font-size:12px;color:var(--faint)' }, '');
+  addBtn.addEventListener('click', () => {
+    const email = (inEmail.value || '').trim();
+    if (!email) { clear(addMsg); addMsg.appendChild(document.createTextNode('email required')); return; }
+    addBtn.disabled = true; clear(addMsg); addMsg.appendChild(document.createTextNode('adding…'));
+    postProspect({ action: 'create', email, company: inCompany.value, name: inName.value, segment: inSeg.value }, key).then((d) => {
+      addBtn.disabled = false; clear(addMsg);
+      if (d && d.ok) { inEmail.value = inCompany.value = inName.value = inSeg.value = ''; load(); }
+      else { addMsg.appendChild(document.createTextNode(d && d.error ? d.error : 'couldn’t add (already in pipeline?)')); }
+    }).catch(() => { addBtn.disabled = false; clear(addMsg); addMsg.appendChild(document.createTextNode('network error')); });
+  });
+  wrap.appendChild(h('div', { class: 'admin-card', style: 'margin-bottom:14px' },
+    h('div', { class: 'mono', style: 'font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px' }, 'Log an outbound lead'),
+    h('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap' }, inEmail, inCompany, inName, inSeg, addBtn, addMsg),
+  ));
+
   wrap.appendChild(h('div', { class: 'admin-card' },
     h('div', { style: 'overflow-x:auto' },
       h('table', { class: 'admin-table' },

@@ -39,3 +39,17 @@ test('prospects POST rejects a bad stage value (400)', async () => {
   assert.ok([400, 401, 200].includes(res.code));
   assert.equal(typeof res.body.ok, 'boolean');
 });
+
+test('prospects POST create/touch actions never throw on malformed bodies', async () => {
+  for (const body of [
+    { action: 'create' },                       // missing email
+    { action: 'create', email: 'not-an-email' },// bad email
+    { action: 'touch' },                        // missing id/kind
+    { action: 'touch', id: 'x', kind: 'text' }, // bad kind
+  ]) {
+    const res = mockRes();
+    await handler(req('POST', {}, body, { 'x-admin-token': 'anything' }), res);
+    assert.ok([400, 401, 200].includes(res.code));
+    assert.equal(typeof res.body.ok, 'boolean');
+  }
+});
