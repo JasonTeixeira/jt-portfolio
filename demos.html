@@ -31,8 +31,9 @@
   .btn-solid.green { border:none; }
   /* matrix */
   .matrix { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr)); gap:12px; margin-top:28px; }
-  .tile { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:20px; cursor:default; transition:transform .3s cubic-bezier(.16,1,.3,1), border-color .3s; opacity:0; animation:jt-fadeup .5s ease-out forwards; }
+  .tile { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:20px; cursor:pointer; transition:transform .3s cubic-bezier(.16,1,.3,1), border-color .3s; opacity:0; animation:jt-fadeup .5s ease-out forwards; }
   .tile:hover { transform:translateY(-4px); }
+  .tile:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
   .tile .ic { display:inline-flex; align-items:center; }
   .tile .ic svg { display:block; }
   .vbtn { display:inline-flex; align-items:center; gap:7px; }
@@ -40,7 +41,7 @@
   .tile h3 { font-family:var(--serif); font-weight:400; font-size:1.2rem; margin:12px 0 6px; }
   .tile p { margin:0; font-size:13px; line-height:1.6; color:var(--dim); }
   .tile .out { margin-top:12px; font-family:var(--mono); font-size:11px; color:var(--faint); max-height:0; overflow:hidden; opacity:0; transition:max-height .35s ease, opacity .35s ease, margin .35s ease; }
-  .tile:hover .out { max-height:80px; opacity:1; }
+  .tile:hover .out, .tile.open .out, .tile:focus-within .out { max-height:80px; opacity:1; margin-top:12px; }
   .cat { display:flex; gap:8px; flex-wrap:wrap; margin-top:26px; }
   .catchip { font-family:var(--mono); font-size:11px; padding:7px 14px; border-radius:16px; border:1px solid var(--line); color:var(--dim); cursor:pointer; background:transparent; }
   .catchip.on { color:var(--ink); border-color:#3a3632; background:rgba(255,255,255,0.04); }
@@ -405,7 +406,12 @@
     CAPS.filter(function(c){ return curCat==='All'||c.cat===curCat; }).forEach(function(c,i){
       var col=CATCOLOR[c.cat]||'#888';
       var t=document.createElement('div'); t.className='tile'; t.style.animationDelay=(i*0.04)+'s'; t.style.borderColor='var(--line)';
-      t.onmouseenter=function(){ t.style.borderColor=col; }; t.onmouseleave=function(){ t.style.borderColor='var(--line)'; };
+      t.setAttribute('role','button'); t.setAttribute('tabindex','0'); t.setAttribute('aria-expanded','false');
+      t.setAttribute('aria-label', c.n+' — tap to see the outcome');
+      t.onmouseenter=function(){ t.style.borderColor=col; }; t.onmouseleave=function(){ if(!t.classList.contains('open')) t.style.borderColor='var(--line)'; };
+      function toggle(){ var open=t.classList.toggle('open'); t.setAttribute('aria-expanded',open?'true':'false'); t.style.borderColor=open?col:'var(--line)'; }
+      t.addEventListener('click', toggle);
+      t.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
       t.innerHTML='<div class="ic">'+icon(c.ic,col,20)+'</div><div class="mono" style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:'+col+';margin-top:6px">'+c.cat+'</div><h3>'+c.n+'</h3><p>'+c.p+'</p><div class="out" style="color:'+col+'">'+c.o+'</div>';
       grid.appendChild(t);
     });
