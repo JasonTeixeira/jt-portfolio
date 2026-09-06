@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const PAGES = ['/', '/field-notes.html', '/notes/no-fake-green.html', '/case-studies.html', '/work-nexural.html', '/work-academy.html', '/services.html', '/roi.html', '/eval.html', '/docs.html', '/docs-evaluation-and-quality.html', '/docs-choose-your-path.html', '/docs-stack-integrations.html', '/automations/', '/privacy.html', '/terms.html', '/hire-ai-qa-engineer.html', '/llm-evaluation-consultant.html', '/rag-evaluation-guide.html', '/ai-agent-testing.html', '/reduce-test-flakiness.html'];
+const PAGES = ['/', '/lab.html', '/field-notes.html', '/notes/no-fake-green.html', '/case-studies.html', '/work-nexural.html', '/work-academy.html', '/services.html', '/roi.html', '/eval.html', '/docs.html', '/docs-evaluation-and-quality.html', '/docs-choose-your-path.html', '/docs-stack-integrations.html', '/automations/', '/privacy.html', '/terms.html', '/hire-ai-qa-engineer.html', '/llm-evaluation-consultant.html', '/rag-evaluation-guide.html', '/ai-agent-testing.html', '/reduce-test-flakiness.html'];
 
 for (const path of PAGES) {
   test(`axe scan — ${path} has no serious/critical violations`, async ({ page }) => {
