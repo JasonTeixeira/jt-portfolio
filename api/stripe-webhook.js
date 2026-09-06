@@ -1,6 +1,6 @@
 import { markPaidIfUnpaid, createProjectOnce, getProposalById } from '../lib/proposal-db.mjs';
 import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs';
-import { appendEvent } from '../lib/scope-db.mjs';
+import { appendEvent, setProspectStage } from '../lib/scope-db.mjs';
 import { sendOperator, sendClient } from '../lib/notify.mjs';
 import { constructEvent } from '../lib/stripe.mjs';
 import { captureError } from '../lib/observe.mjs';
@@ -55,6 +55,8 @@ export default async function handler(req, res) {
           await createProjectOnce(proposalId, row && row.prospect_id); // idempotent (unique index) -> self-heals on retry
           if (paid.transitioned) {
             appendEvent({ prospect_id: row && row.prospect_id, type: 'deposit_paid', meta: { proposalId } }).catch(() => {});
+            // stage machine: a paid deposit = a closed-won prospect
+            if (row && row.prospect_id) setProspectStage(row.prospect_id, 'won').catch(() => {});
             try {
               await sendOperator({ subject: `Deposit paid — ${row ? money(row.deposit_cents) : ''}`,
                 text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` });
