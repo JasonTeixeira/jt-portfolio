@@ -4,6 +4,7 @@
 // innerHTML — because milestone titles/deliverables come from the operator's own input.
 import { computePlan, SEGMENTS } from './scope-core.mjs';
 import { money } from './proposal-core.mjs';
+import { deliverableTokens } from './portal-core.mjs';
 
 const CONTACT_EMAIL = 'hello@sageideas.dev';
 
@@ -65,6 +66,29 @@ function renderUnavailable(root) {
   ));
 }
 
+/* ── one deliverable line: plain text, but any http(s) URL becomes a safe link ──
+   A line like "Loom walkthrough — https://loom.com/share/abc" renders the label as
+   text and the URL as a clickable link. The href is only ever set from a URL the
+   pure classifier already proved is http/https, so a javascript:/data: string can
+   never reach the href — it stays inert text. Links open in a new tab with
+   rel=noopener to prevent reverse-tabnabbing. */
+function deliverableLine(line) {
+  const { tokens, hasLink } = deliverableTokens(line);
+  if (!hasLink) return h('div', {}, line);
+  const div = h('div', {});
+  for (const t of tokens) {
+    if (t.type === 'link') {
+      div.appendChild(h('a', {
+        href: t.href, target: '_blank', rel: 'noopener noreferrer nofollow',
+        style: 'color:#22d3ee;text-decoration:underline;word-break:break-word',
+      }, t.text));
+    } else {
+      div.appendChild(document.createTextNode(t.text));
+    }
+  }
+  return div;
+}
+
 /* ── one milestone row: seq dot, title/badge/amount, deliverables, and (if delivered) an approve control ── */
 function buildMilestoneRow(m, portalToken) {
   const statusKey = msStyleKey(m.status);
@@ -79,7 +103,7 @@ function buildMilestoneRow(m, portalToken) {
   if (lines.length === 0) {
     delivWrap.appendChild(h('div', {}, 'Details to follow.'));
   } else {
-    for (const line of lines) delivWrap.appendChild(h('div', {}, line));
+    for (const line of lines) delivWrap.appendChild(deliverableLine(line));
   }
   row.appendChild(delivWrap);
 
