@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Services — Everything I Build · Jason Teixeira</title>
-<meta name="description" content="One operator, full stack: AI engineering, LLM evaluation, test automation & CI, and workflow automation. A 30+ capability matrix, scoped and quoted to your problem.">
+<meta name="description" content="One operator, full stack: AI engineering, LLM evaluation, test automation & CI, and workflow automation. A 35+ capability matrix, scoped and quoted to your problem.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://agency.sageideas.dev/services.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Services — Everything I Build">
-<meta property="og:description" content="30+ capabilities across AI engineering, evaluation, test automation, and automation, each scoped and quoted for your exact problem.">
+<meta property="og:description" content="35+ capabilities across AI engineering, evaluation, test automation, and automation, each scoped and quoted for your exact problem.">
 <meta property="og:url" content="https://agency.sageideas.dev/services.html">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
@@ -144,7 +144,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(20px,3vw,32px)">
     <div class="kick">Services &middot; the full stack, one operator</div>
     <h1 style="margin-top:20px;max-width:16ch">Everything I build: <em style="color:var(--green)">scoped &amp; quoted for you.</em></h1>
-    <p class="subtle lead" style="margin-top:20px">No agency, no handoff, no fixed price list padded to cover overhead you don't have. Three flagship engagements, a 30+ capability matrix, and one path from a short audit to a shipped system. Tell me the problem and you leave with a plan and a real number. You pay for your problem, priced to it.</p>
+    <p class="subtle lead" style="margin-top:20px">No agency, no handoff, no fixed price list padded to cover overhead you don't have. Three flagship engagements, a 35+ capability matrix, and one path from a short audit to a shipped system. Tell me the problem and you leave with a plan and a real number. You pay for your problem, priced to it.</p>
     <div style="display:flex;gap:14px;margin-top:26px;flex-wrap:wrap">
       <a href="book.html" class="cta" data-evt="svc-hero-book">Start a conversation &rarr;</a>
       <a href="#matrix" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">jump to the full matrix &darr;</a>
@@ -174,7 +174,7 @@
   <!-- MATRIX -->
   <section id="matrix"><div class="wrap">
     <div class="kick" style="color:var(--cyan)">03: the full capability matrix</div>
-    <h2 style="margin-top:12px">30+ things I can build for you.</h2>
+    <h2 style="margin-top:12px">35+ things I can build for you.</h2>
     <p class="subtle" style="margin-top:12px;max-width:56ch">Filter by track. Click any card for the explainer: what it is, what you get, and the outcome. Every one ends in a quote, worked out on a call.</p>
     <div class="cat-filter" id="cats"></div>
     <div id="capgrid"></div>
@@ -305,7 +305,8 @@
     {key:'Eval & QA', n:'02', color:PURPLE, blurb:'Proof it works: golden sets, safety batteries, and the CI gate that blocks a bad change.'},
     {key:'Test Automation', n:'03', color:GREEN, blurb:'The deterministic surface: E2E coverage, CI wiring, flake protocol, performance baselines.'},
     {key:'Automation', n:'04', color:AMBER, blurb:'The repetitive work, automated end-to-end and owned by your team.'},
-    {key:'Product', n:'05', color:ROSE, blurb:'The application layer everything else runs inside: apps, tools, APIs, dashboards.'}
+    {key:'Product', n:'05', color:ROSE, blurb:'The application layer everything else runs inside: apps, tools, APIs, dashboards.'},
+    {key:'Brand, Content & Growth', n:'06', color:BLUE, blurb:'Brand, content, and lead-gen — built the way an automation engineer builds: as systems and pipelines, not one-off gigs.'}
   ];
   var TC={}; TRACKS.forEach(function(t){ TC[t.key]=t.color; });
 
@@ -346,7 +347,15 @@
     {track:'Product', ic:'monitor', name:'Web apps & customer portals', flag:true, blurb:'Auth, payments, dashboards, production-grade.', detail:'The real thing: authentication, payments, dashboards, and the boring-but-critical parts done right, on Next.js + Supabase or your stack.', out:'→ a product you can ship to customers'},
     {track:'Product', ic:'tools', name:'Internal tools / admin panels', blurb:'Replace the spreadsheet your team runs by hand.', detail:'The admin panel, ops dashboard, or back-office tool your team currently operates in a fragile spreadsheet, built properly, with the right permissions and audit trail.', out:'→ automate the manual ops'},
     {track:'Product', ic:'server', name:'APIs & backends', blurb:'The service layer everything else depends on.', detail:'REST or typed APIs with validation, auth, rate limiting, and tests. The dependable backend your app, your integrations, your automations all build on.', out:'→ a backend you can build on'},
-    {track:'Product', ic:'bars', name:'Dashboards & data visualization', blurb:'Turn your raw data into a decision you can act on.', detail:'Institutional-grade dashboards and visualizations treated as part of the design system. The metric your team argues about, made legible and live.', out:'→ decisions from data, at a glance'}
+    {track:'Product', ic:'bars', name:'Dashboards & data visualization', blurb:'Turn your raw data into a decision you can act on.', detail:'Institutional-grade dashboards and visualizations treated as part of the design system. The metric your team argues about, made legible and live.', out:'→ decisions from data, at a glance'},
+    // ── Brand, Content & Growth ──
+    {track:'Brand, Content & Growth', ic:'pen', name:'Brand & design system', flag:true, blurb:'A real design system, not just a logo.', detail:'Design tokens, a component library, and a typography + motion language — the same system discipline behind this site and the products I run. Built so your team ships on-brand without a designer in the loop for every asset.', out:'→ on-brand at scale, no design bottleneck'},
+    {track:'Brand, Content & Growth', ic:'broadcast', name:'Content engine (YouTube / social)', blurb:'A repeatable content machine, not one-off posts.', detail:'Research → script → thumbnail → publish, wired as a pipeline. The system that turns your expertise into a consistent publishing cadence — the AI does the heavy lifting, you approve the output. The same machine I run for my own channels.', out:'→ a consistent cadence without a content team'},
+    {track:'Brand, Content & Growth', ic:'monitor', name:'AI video & motion pipeline', flag:true, blurb:'Explainers and reels, generated on a pipeline.', detail:'Code-native motion plus AI voice (your cloned voice or a pro VO) that turns a script — or a URL — into a finished explainer or promo. The exact pipeline behind the videos on this site. Batch-render a slate, not a one-off.', out:'→ video at the speed of code'},
+    {track:'Brand, Content & Growth', ic:'mobile', name:'Short-form / reels at scale', blurb:'Educational short-form, templated and batched.', detail:'A reusable reel template plus a content catalog, so you produce dozens of on-brand vertical videos from one system instead of editing each by hand.', out:'→ a reel library, not a single reel'},
+    {track:'Brand, Content & Growth', ic:'magnet', name:'Lead-generation funnel', blurb:'Capture → qualify → route → nurture, automated.', detail:'The full inbound machine: a scoping/qualification flow, lead capture wired to your CRM, and a gentle nurture sequence — the same funnel discipline running on this site. Every lead caught, scored, and followed up in minutes.', out:'→ no lead slips through'},
+    {track:'Brand, Content & Growth', ic:'zap', name:'Outbound & 1:1 video outreach', blurb:'Personalized outreach that actually gets replies.', detail:'Per-prospect landing pages plus a 1:1 video-outreach workflow — the highest-reply tactic there is — semi-automated so you send at volume without the copy-paste, built on real prospect research rather than spray-and-pray.', out:'→ outreach that converts, not spam'},
+    {track:'Brand, Content & Growth', ic:'eye', name:'Thumbnail & creative systems', blurb:'A thumbnail engine, not a Canva tab.', detail:'A manifest-driven system that generates on-brand thumbnails and creative at scale from a template plus data — so every video and post looks intentional without a designer per asset.', out:'→ creative at scale, on-brand'}
   ];
 
   var capgrid=document.getElementById('capgrid'), catWrap=document.getElementById('cats'), cur='All';
