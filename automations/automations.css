@@ -1,26 +1,33 @@
 /* Sage Automations — local-business demo microsite.
    Direction: confident, warm, trustworthy. Money-green + safety-amber signal.
    Deliberately brighter/friendlier than the technical agency brand. */
+/* Brand fonts (self-hosted, shared with the main site) — the premium family. */
+@font-face { font-family:'Plus Jakarta Sans'; font-style:normal; font-weight:200 800; font-display:swap; src:url('../assets/fonts/plus-jakarta-var.woff2') format('woff2'); }
+@font-face { font-family:'JetBrains Mono'; font-style:normal; font-weight:100 800; font-display:swap; src:url('../assets/fonts/jetbrains-mono-var.woff2') format('woff2'); }
+@font-face { font-family:'Instrument Serif'; font-style:normal; font-weight:400; font-display:swap; src:url('../assets/fonts/instrument-serif.woff2') format('woff2'); }
+@font-face { font-family:'Instrument Serif'; font-style:italic; font-weight:400; font-display:swap; src:url('../assets/fonts/instrument-serif-italic.woff2') format('woff2'); }
+
 :root {
-  --ink: #0d1b16;
-  --ink-2: #33403a;
-  --dim: #6b7a72;
-  --line: #e3e8e4;
-  --paper: #ffffff;
-  --wash: #f4f7f4;
-  --wash-2: #eef3ee;
+  --ink: #14231d;
+  --ink-2: #3a463f;
+  --dim: #5a6a61;
+  --line: #e6e9e3;
+  --paper: #FBFAF7;
+  --wash: #F3F5EF;
+  --wash-2: #edf1ea;
   --green: #0f7a52;
-  --green-d: #064e3b;
+  --green-d: #0a5c3d;
   --green-l: #34d399;
   --green-wash: #e7f6ee;
-  --amber: #e8820e;
+  --amber: #955208;
   --amber-wash: #fdf2e2;
   --red: #d64545;
-  --shadow: 0 18px 48px -20px rgba(6, 40, 28, 0.35);
-  --shadow-sm: 0 6px 20px -10px rgba(6, 40, 28, 0.28);
+  --shadow: 0 24px 60px -28px rgba(10, 40, 28, 0.28);
+  --shadow-sm: 0 8px 24px -14px rgba(10, 40, 28, 0.22);
   --radius: 16px;
-  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   --maxw: 1140px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -63,10 +70,10 @@ b { font-weight: 700; }
 
 /* hero */
 .hero { padding: clamp(48px, 8vw, 96px) 0 clamp(40px, 6vw, 72px); background: radial-gradient(120% 90% at 80% -10%, var(--green-wash) 0%, transparent 55%), var(--paper); }
-.eyebrow { display: inline-flex; align-items: center; gap: 9px; font-weight: 650; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); background: var(--green-wash); padding: 7px 14px; border-radius: 999px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 9px; font-family: var(--mono); font-weight: 600; font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); background: var(--green-wash); padding: 7px 14px; border-radius: 999px; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-l); box-shadow: 0 0 0 0 rgba(52,211,153,.6); animation: pulse 2.2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.5);} 70% { box-shadow: 0 0 0 10px rgba(52,211,153,0);} 100%{ box-shadow:0 0 0 0 rgba(52,211,153,0);} }
-.h1 { font-family: var(--display); font-weight: 820; font-size: clamp(2.4rem, 5.2vw, 4.2rem); line-height: 1.04; letter-spacing: -0.035em; margin: 22px 0 0; max-width: 16ch; }
+.h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.6rem, 5.6vw, 4.6rem); line-height: 1.02; letter-spacing: -0.018em; margin: 22px 0 0; max-width: 18ch; }
 .lede { font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--ink-2); max-width: 60ch; margin: 22px 0 0; }
 .lede-2 { margin-top: 16px; }
 .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 32px; }
@@ -80,8 +87,8 @@ b { font-weight: 700; }
 .demo.alt { background: var(--wash); }
 .sec-head { max-width: 640px; margin: 0 auto 40px; }
 .sec-head.center { text-align: center; }
-.kicker { display: inline-block; font-weight: 700; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 12px; }
-.h2 { font-family: var(--display); font-weight: 800; font-size: clamp(1.7rem, 3.4vw, 2.6rem); line-height: 1.1; letter-spacing: -0.03em; margin: 0; }
+.kicker { display: inline-block; font-family: var(--mono); font-weight: 600; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
+.h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.9rem, 3.6vw, 2.9rem); line-height: 1.06; letter-spacing: -0.014em; margin: 0; }
 .sub { font-size: clamp(1rem, 1.4vw, 1.15rem); color: var(--ink-2); margin: 14px 0 0; }
 
 /* ── phones (missed-call demo) ── */
@@ -135,7 +142,7 @@ b { font-weight: 700; }
 .you .race-timer { color: var(--green-d); } .them .race-timer { color: var(--dim); }
 .race-msg { font-size: 14px; color: var(--ink-2); }
 .tag { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.04em; }
-.tag.ok { background: var(--green); color: #fff; } .tag.bad { background: #e4d4d4; color: var(--red); }
+.tag.ok { background: var(--green); color: #fff; } .tag.bad { background: #f0dede; color: #8a2020; }
 
 /* ── reviews ── */
 .rev-stage { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; }
@@ -180,10 +187,8 @@ b { font-weight: 700; }
 .tier { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 30px 26px; position: relative; }
 .tier.featured { border: 2px solid var(--green); box-shadow: var(--shadow); transform: translateY(-8px); }
 .tier-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--green); color: #fff; font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 999px; letter-spacing: 0.04em; }
-.tier-name { font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--green); }
-.tier-price { font-size: 44px; font-weight: 820; font-family: var(--display); letter-spacing: -0.03em; margin: 10px 0 2px; }
-.tier-price small { font-size: 17px; color: var(--dim); font-weight: 600; }
-.tier-setup { font-size: 13px; color: var(--dim); }
+.tier-name { font-family: var(--mono); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--green); }
+.tier-tag { font-family: var(--display); font-size: 1.75rem; line-height: 1.05; letter-spacing: -0.01em; color: var(--ink); margin: 8px 0 6px; }
 .tier-list { list-style: none; padding: 0; margin: 22px 0; display: flex; flex-direction: column; gap: 11px; }
 .tier-list li { padding-left: 26px; position: relative; font-size: 15px; }
 .tier-list li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 800; }
@@ -196,12 +201,12 @@ b { font-weight: 700; }
 .final .sub { color: #b7e3cb; max-width: 58ch; margin-left: auto; margin-right: auto; }
 .final .btn-primary { background: var(--green-l); color: #06231a; margin-top: 30px; }
 .final .btn-primary:hover { background: #fff; }
-.final-fine { color: #7fae99; font-size: 14px; margin-top: 18px; }
+.final-fine { color: #c8e5d6; font-size: 14px; margin-top: 18px; }
 
 /* footer */
-.foot { padding: 28px 0; border-top: 1px solid #12352a; background: var(--green-d); color: #7fae99; }
+.foot { padding: 28px 0; border-top: 1px solid #12352a; background: var(--green-d); color: #cfe6da; }
 .foot-in { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px; }
-.foot-dim { color: #5c7d6f; }
+.foot-dim { color: #a9cebe; }
 
 /* modal */
 .modal { position: fixed; inset: 0; z-index: 90; background: rgba(6,40,28,0.55); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 20px; }
