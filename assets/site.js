@@ -416,7 +416,8 @@
     var cu = setInterval(function () {
       step++;
       var e = 1 - Math.pow(1 - step / steps, 3);
-      paintStats(Math.round(GATES_T * e), Math.round(TESTS_T * e), Math.round(COV_T * e));
+      var fe = 0.9 + 0.1 * e;  // animate from 90% -> 100%, never flash 0
+      paintStats(Math.round(GATES_T * fe), Math.round(TESTS_T * fe), Math.round(COV_T * fe));
       if (step >= steps) clearInterval(cu);
     }, 38);
   }

@@ -93,17 +93,20 @@ function sidebar(activeSlug) {
 function shell({ slug, title, desc, breadcrumb, breadcrumbLd, jsonLd, body, toc = '' }) {
   const canonical = `${SITE_URL}/${slug === '__home__' ? 'docs.html' : href(slug)}`;
   const ld = [jsonLd].concat(breadcrumbLd ? [breadcrumbLd] : []);
+  // Avoid doubling "Documentation" on the docs home (title is already "Documentation").
+  const titleTag = /documentation/i.test(title) ? title : `${title} — Documentation`;
+  const ogTitle = /documentation/i.test(title) ? title : `${title} — Documentation`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)} — Documentation · ${esc(AUTHOR)}</title>
+<title>${esc(titleTag)} · ${esc(AUTHOR)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${canonical}">
 <meta property="og:type" content="article">
-<meta property="og:title" content="${esc(title)} — Documentation">
+<meta property="og:title" content="${esc(ogTitle)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}">
 <meta property="og:image" content="${SITE_URL}/assets/og.png">
