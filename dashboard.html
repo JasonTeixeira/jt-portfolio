@@ -23,6 +23,9 @@
   .db-pay{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:10px}
   .db-open{font-family:var(--mono);font-size:12px;color:var(--cyan);margin-top:16px;display:inline-block}
   .db-empty{border:1px dashed var(--line);border-radius:16px;padding:40px 28px;text-align:center;color:var(--faint)}
+  .db-flag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;margin-top:12px;padding:4px 9px;border-radius:999px;border:1px solid}
+  .db-flag.sign{color:#F59E0B;border-color:color-mix(in oklab,#F59E0B 45%,transparent);background:color-mix(in oklab,#F59E0B 10%,transparent)}
+  .db-flag.signed{color:var(--green);border-color:color-mix(in oklab,var(--green) 45%,transparent);background:color-mix(in oklab,var(--green) 10%,transparent)}
   .db-admin{border:1px solid color-mix(in oklab,var(--green) 40%,var(--line));background:color-mix(in oklab,var(--green) 8%,transparent);border-radius:14px;padding:16px 20px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
 </style>
 </head>
@@ -83,6 +86,7 @@
       return;
     }
 
+    const fmtDate = (iso) => { if (!iso) return ''; const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); };
     const grid = el('div', 'db-grid');
     for (const p of projects) {
       const plan = p.plan || {};
@@ -90,8 +94,15 @@
       card.className = 'db-card'; card.href = `portal.html?id=${encodeURIComponent(p.portalToken)}`;
       card.appendChild(el('div', 'db-chip', STATUS[String(p.status || 'kickoff').toLowerCase()] || 'Active'));
       card.appendChild(el('div', 'db-total', money(plan.firm_cents)));
-      const pay = plan.balance_paid_at ? 'Paid in full' : `Deposit paid · ${money(plan.balance_cents)} balance`;
+      // Payment history with real dates
+      let pay;
+      if (plan.balance_paid_at) pay = `Paid in full · ${fmtDate(plan.balance_paid_at)}`;
+      else if (plan.paid_at) pay = `Deposit paid ${fmtDate(plan.paid_at)} · ${money(plan.balance_cents)} balance due`;
+      else pay = 'Awaiting deposit';
       card.appendChild(el('div', 'db-pay', pay));
+      // Contract status surfaced at the dashboard level (the gap we're closing)
+      if (p.contract && p.contract.status === 'sent') card.appendChild(el('span', 'db-flag sign', '✍ Contract awaiting your signature'));
+      else if (p.contract && p.contract.status === 'accepted') card.appendChild(el('span', 'db-flag signed', '✓ Contract signed'));
       card.appendChild(el('div', 'db-open', 'Open project →'));
       grid.appendChild(card);
     }
