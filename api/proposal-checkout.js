@@ -29,6 +29,8 @@ async function handler(req, res) {
   if (row.status !== PROPOSAL_STATUS.APPROVED) return res.status(409).json({ ok: false, error: 'not_payable' });
   if (isExpired(row, nowIso)) return res.status(410).json({ ok: false, error: 'expired' });
   if (!stripe.isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'payments_off' });
+  // don't take a deposit we can't record: require the webhook secret before charging
+  if (!stripe.webhookConfigured()) { console.error('[proposal-checkout] blocked: STRIPE_WEBHOOK_SECRET not configured'); return res.status(200).json({ ok: false, reason: 'payments_unavailable' }); }
   // record acceptance intent (finalized by payment webhook)
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || null;
   const acc = await updateProposal(row.id, { accepted_name: req.body.acceptName.trim(), accepted_at: nowIso,

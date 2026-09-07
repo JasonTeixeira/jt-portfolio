@@ -1,4 +1,4 @@
-import { markPaidIfUnpaid, createProjectOnce, getProposalById } from '../lib/proposal-db.mjs';
+import { markPaidIfUnpaid, markBalancePaidIfUnpaid, createProjectOnce, getProposalById } from '../lib/proposal-db.mjs';
 import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs';
 import { appendEvent, setProspectStage } from '../lib/scope-db.mjs';
 import { sendOperator, sendClient } from '../lib/notify.mjs';
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     const r = await constructEvent(raw, sig);
     if (r.skipped) return res.status(200).json({ ok: false, skipped: true }); // webhook secret unset
     event = r.event;
-  } catch (e) {
+  } catch {
     return res.status(400).json({ ok: false, error: 'bad signature' });
   }
   try {
@@ -46,6 +46,21 @@ export default async function handler(req, res) {
         return res.status(200).json({ ok: true, received: true });
       }
       const proposalId = obj.metadata && obj.metadata.proposalId;
+      const kind = obj.metadata && obj.metadata.kind;
+      if (proposalId && kind === 'balance') {
+        // balance payment (client paid the remainder from the portal)
+        const bal = await markBalancePaidIfUnpaid(proposalId, { session: obj.id, paidAtIso: new Date().toISOString() });
+        if (bal.ok && bal.transitioned) {
+          const got = await getProposalById(proposalId);
+          const row = got.ok ? got.data : null;
+          appendEvent({ prospect_id: row && row.prospect_id, type: 'balance_paid', meta: { proposalId } }).catch(() => {});
+          try {
+            await sendOperator({ subject: `Balance paid — ${row ? money(row.balance_cents) : ''}`,
+              text: `A client just paid the remaining balance.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\n` });
+          } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
+        }
+        return res.status(200).json({ ok: true, received: true });
+      }
       if (proposalId) {
         const paid = await markPaidIfUnpaid(proposalId, {
           session: obj.id, intent: obj.payment_intent, paidAtIso: new Date().toISOString() });

@@ -3,9 +3,10 @@ import {
   isEnabled, getProjectByPortalToken, listMilestones, approveMilestone, getContractsForProposal,
   listMessages, addMessage, markMessagesRead, listDeliverables, signDeliverableDownload,
 } from '../lib/portal-db.mjs';
-import { getProposalById } from '../lib/proposal-db.mjs';
+import { getProposalById, updateProposal } from '../lib/proposal-db.mjs';
 import { sendOperator } from '../lib/notify.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { createCheckoutSession, retrieveSession, isEnabled as stripeEnabled, webhookConfigured } from '../lib/stripe.mjs';
 
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
@@ -49,6 +50,7 @@ export function clientView(project, proposal, milestones, contract, messages) {
     deposit_cents: proposal.deposit_cents,
     balance_cents: proposal.balance_cents,
     paid_at: proposal.paid_at || null,
+    balance_paid_at: proposal.balance_paid_at || null,
   } : null;
   const ms = Array.isArray(milestones) ? milestones.map((m) => ({
     id: m.id, seq: m.seq, title: m.title, deliverables: m.deliverables,
@@ -121,6 +123,42 @@ async function handler(req, res) {
         text: `A client sent you a message in their project portal:\n\n"${body.body.trim().slice(0, 800)}"\n\nReply in the admin: ${SITE}/proposal-admin.html\n` });
     } catch (e) { console.error('[portal] notify send failed', (e && e.message) || e); }
     return res.status(200).json({ ok: true, sent: true });
+  }
+
+  // client starts a Stripe checkout for the remaining balance
+  if (body.action === 'pay_balance') {
+    if (typeof body.portalToken !== 'string' || !body.portalToken.trim()) return res.status(400).json({ ok: false, error: 'portalToken required' });
+    if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
+    const token = body.portalToken.trim();
+    const pR = await getProjectByPortalToken(token);
+    if (!pR.ok || !pR.data) return res.status(404).json({ ok: false, error: 'not_found' });
+    const propR = await getProposalById(pR.data.proposal_id);
+    const prop = propR.ok ? propR.data : null;
+    if (!prop) return res.status(404).json({ ok: false, error: 'not_found' });
+    if (prop.balance_paid_at) return res.status(200).json({ ok: true, alreadyPaid: true });
+    if (!(prop.balance_cents > 0)) return res.status(200).json({ ok: false, reason: 'no_balance' });
+    if (!stripeEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'payments_off' });
+    // Never take money we can't record: if the webhook secret is missing, a paid balance would
+    // never be marked and the client could be asked to pay again. Refuse to start checkout.
+    if (!webhookConfigured()) { console.error('[portal] pay_balance blocked: STRIPE_WEBHOOK_SECRET not configured'); return res.status(200).json({ ok: false, reason: 'payments_unavailable' }); }
+    // Reuse an already-open balance session instead of minting a new one — stops a client with
+    // two tabs / a retry from completing two real charges (only the DB write is idempotent, not Stripe).
+    if (prop.balance_stripe_session) {
+      const got = await retrieveSession(prop.balance_stripe_session);
+      if (got.ok && got.session && got.session.status === 'open' && got.session.url) {
+        return res.status(200).json({ ok: true, url: got.session.url });
+      }
+    }
+    const sess = await createCheckoutSession({
+      amountCents: prop.balance_cents, currency: prop.currency || 'usd', productName: 'Project balance',
+      proposalId: prop.id, publicId: prop.public_id, customerEmail: prop.client_email || undefined, kind: 'balance',
+      successUrl: `${SITE}/portal.html?id=${encodeURIComponent(token)}&balance=paid`,
+      cancelUrl: `${SITE}/portal.html?id=${encodeURIComponent(token)}`,
+    });
+    if (!sess.ok || !sess.url) { console.error('[portal] balance checkout failed', sess.error || ''); return res.status(200).json({ ok: false, reason: 'checkout_failed' }); }
+    // remember the pending session so a retry reuses it (best-effort)
+    await updateProposal(prop.id, { balance_stripe_session: sess.id });
+    return res.status(200).json({ ok: true, url: sess.url });
   }
 
   if (body.action && body.action !== 'approve_milestone') return res.status(400).json({ ok: false, error: 'unknown action' });
