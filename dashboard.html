@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Your dashboard · Jason Teixeira</title>
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<style>
+  .db-wrap{max-width:920px;margin:0 auto;padding:clamp(28px,6vw,72px) clamp(18px,4vw,32px);min-height:100vh;background:var(--bg)}
+  .db-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:8px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .db-top a,.db-top button{color:var(--cyan);text-decoration:none;background:none;border:none;font:inherit;cursor:pointer}
+  .db-wrap h1{font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(2rem,1.3rem+2.6vw,3rem);letter-spacing:-.02em;margin:14px 0 4px}
+  .db-sub{color:var(--faint);margin:0 0 28px}
+  .db-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:16px}
+  .db-card{display:block;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:22px;text-decoration:none;color:var(--ink);transition:border-color .2s,transform .2s}
+  .db-card:hover{border-color:color-mix(in oklab,var(--cyan) 50%,var(--line));transform:translateY(-2px)}
+  .db-chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan)}
+  .db-total{font-family:var(--serif,'Instrument Serif',Georgia,serif);font-size:1.9rem;margin:8px 0 2px}
+  .db-pay{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:10px}
+  .db-open{font-family:var(--mono);font-size:12px;color:var(--cyan);margin-top:16px;display:inline-block}
+  .db-empty{border:1px dashed var(--line);border-radius:16px;padding:40px 28px;text-align:center;color:var(--faint)}
+  .db-admin{border:1px solid color-mix(in oklab,var(--green) 40%,var(--line));background:color-mix(in oklab,var(--green) 8%,transparent);border-radius:14px;padding:16px 20px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<main class="db-wrap" id="root">
+  <p class="db-sub">Loading your dashboard…</p>
+</main>
+<script type="module">
+  import { getSession, currentUser, signOut } from './assets/auth.mjs';
+  import { money } from './assets/proposal-core.mjs';
+  const root = document.getElementById('root');
+  const s = getSession();
+  if (!s || !s.access_token) { location.replace('login.html?next=dashboard.html'); }
+
+  const STATUS = { kickoff: 'Kickoff', active: 'Active', in_progress: 'In progress', delivered: 'Delivered', complete: 'Complete', completed: 'Complete' };
+  function el(tag, cls, txt) { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
+
+  (async () => {
+    const u = await currentUser();
+    if (!u) { location.replace('login.html?next=dashboard.html'); return; }
+    let data = { projects: [], admin: false, email: u.email };
+    try {
+      const r = await fetch('/api/my-projects', { headers: { Authorization: `Bearer ${s.access_token}` } });
+      if (r.ok) data = await r.json();
+    } catch { /* fall through to empty */ }
+
+    root.innerHTML = '';
+    const top = el('div', 'db-top');
+    top.appendChild(el('span', null, data.email || u.email));
+    const right = el('span');
+    const home = el('a', null, 'Home'); home.href = 'index.html'; right.appendChild(home);
+    right.appendChild(document.createTextNode('  ·  '));
+    const out = el('button', null, 'Log out'); out.addEventListener('click', async () => { await signOut(); location.href = 'index.html'; }); right.appendChild(out);
+    top.appendChild(right);
+    root.appendChild(top);
+
+    root.appendChild(el('h1', null, 'Your projects'));
+    root.appendChild(el('p', 'db-sub', 'Everything we’re building for you — status, files, messages, and payments.'));
+
+    if (data.admin) {
+      const a = el('div', 'db-admin');
+      a.appendChild(el('div', null, 'You’re signed in as the operator.'));
+      const link = el('a', 'btn-solid green', 'Open admin cockpit →'); link.href = 'proposal-admin.html'; link.style.cssText = 'padding:8px 16px;font-size:13px;text-decoration:none';
+      a.appendChild(link);
+      root.appendChild(a);
+    }
+
+    const projects = Array.isArray(data.projects) ? data.projects : [];
+    if (!projects.length) {
+      const e = el('div', 'db-empty');
+      e.appendChild(el('div', null, data.admin ? 'No client projects yet — they appear here as clients come aboard.' : 'No projects yet.'));
+      e.appendChild(el('div', null, ''));
+      const p2 = el('p', null, data.admin ? '' : 'Once you’ve booked a project it will show up here. Questions in the meantime?');
+      p2.style.cssText = 'margin-top:8px;font-size:14px';
+      if (!data.admin) { const talk = el('a', null, 'Talk to Jason →'); talk.href = 'book.html'; talk.style.color = 'var(--cyan)'; talk.style.textDecoration = 'none'; p2.appendChild(document.createTextNode(' ')); p2.appendChild(talk); }
+      e.appendChild(p2);
+      root.appendChild(e);
+      return;
+    }
+
+    const grid = el('div', 'db-grid');
+    for (const p of projects) {
+      const plan = p.plan || {};
+      const card = document.createElement('a');
+      card.className = 'db-card'; card.href = `portal.html?id=${encodeURIComponent(p.portalToken)}`;
+      card.appendChild(el('div', 'db-chip', STATUS[String(p.status || 'kickoff').toLowerCase()] || 'Active'));
+      card.appendChild(el('div', 'db-total', money(plan.firm_cents)));
+      const pay = plan.balance_paid_at ? 'Paid in full' : `Deposit paid · ${money(plan.balance_cents)} balance`;
+      card.appendChild(el('div', 'db-pay', pay));
+      card.appendChild(el('div', 'db-open', 'Open project →'));
+      grid.appendChild(card);
+    }
+    root.appendChild(grid);
+  })();
+</script>
+</body>
+</html>

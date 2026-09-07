@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Log in · Jason Teixeira</title>
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<style>
+  .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:var(--bg)}
+  .auth-card{width:100%;max-width:420px;border:1px solid var(--line);background:var(--card);border-radius:18px;padding:clamp(26px,4vw,38px)}
+  .auth-kick{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+  .auth-card h1{font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.9rem,1.3rem+2vw,2.6rem);letter-spacing:-.02em;margin:10px 0 6px;line-height:1.05}
+  .auth-card .sub{color:var(--faint);font-size:14px;margin:0 0 22px}
+  .auth-field{display:block;margin-bottom:14px}
+  .auth-field span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .auth-field input{width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:15px;padding:12px 14px}
+  .auth-field input:focus{outline:2px solid var(--cyan);outline-offset:1px}
+  .auth-btn{width:100%;padding:13px;font-size:15px;margin-top:6px}
+  .auth-msg{font-size:13px;margin-top:14px;min-height:18px}
+  .auth-msg.err{color:var(--rose,#f43f5e)}
+  .auth-msg.ok{color:var(--green)}
+  .auth-links{display:flex;justify-content:space-between;gap:12px;margin-top:20px;font-size:13px;flex-wrap:wrap}
+  .auth-links a{color:var(--cyan);text-decoration:none}
+  .auth-home{position:fixed;top:20px;left:22px;font-family:var(--mono);font-size:13px;color:var(--faint);text-decoration:none}
+</style>
+</head>
+<body>
+<a class="auth-home" href="index.html">&larr; jason.teixeira<span style="color:var(--green)">()</span></a>
+<main class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-kick">client &amp; operator access</div>
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to your project dashboard.</p>
+    <form id="f">
+      <label class="auth-field"><span>Email</span><input type="email" id="email" autocomplete="email" required></label>
+      <label class="auth-field"><span>Password</span><input type="password" id="password" autocomplete="current-password" required></label>
+      <button type="submit" class="btn-solid green auth-btn" id="btn">Log in</button>
+      <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
+    </form>
+    <div class="auth-links">
+      <a href="reset.html">Forgot password?</a>
+      <a href="signup.html">Need an account? Sign up</a>
+    </div>
+  </div>
+</main>
+<script type="module">
+  import { signIn, getSession } from './assets/auth.mjs';
+  const params = new URLSearchParams(location.search);
+  // Only allow redirecting to a LOCAL page (prevents open-redirect via ?next=//evil.com).
+  const raw = params.get('next') || 'dashboard.html';
+  const next = /^[a-z0-9._-]+\.html([?#].*)?$/i.test(raw) ? raw : 'dashboard.html';
+  if (getSession()) location.replace(next);
+  const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn');
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.className = 'auth-msg'; msg.textContent = '';
+    btn.disabled = true; btn.textContent = 'Logging in…';
+    const r = await signIn(document.getElementById('email').value.trim(), document.getElementById('password').value);
+    if (r.ok && r.data.access_token) { location.replace(next); return; }
+    btn.disabled = false; btn.textContent = 'Log in';
+    msg.className = 'auth-msg err';
+    msg.textContent = r.status === 400 ? 'That email or password isn’t right.' : (r.data.msg || r.data.error_description || 'Couldn’t log in. Try again.');
+  });
+</script>
+</body>
+</html>
