@@ -1,8 +1,22 @@
 import { withObserve } from '../lib/observe.mjs';
 import {
   isEnabled, getProjectByPortalToken, listMilestones, approveMilestone, getContractsForProposal,
+  listMessages, addMessage, markMessagesRead,
 } from '../lib/portal-db.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
+import { sendOperator } from '../lib/notify.mjs';
+import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+
+const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
+
+// A client message needs a token + a non-empty body (kept separate from the approve validator).
+export function validateMessage(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
+  if (typeof body.portalToken !== 'string' || !body.portalToken.trim()) return { ok: false, error: 'portalToken required' };
+  const t = typeof body.body === 'string' ? body.body.trim() : '';
+  if (t.length < 1 || t.length > 5000) return { ok: false, error: 'message required' };
+  return { ok: true };
+}
 
 // Only a sent/accepted contract is worth surfacing to the client — a draft is invisible.
 const VISIBLE_CONTRACT_STATUSES = new Set(['sent', 'accepted']);
@@ -26,7 +40,7 @@ export function milestoneBelongsToProject(milestones, milestoneId) {
 // Pure whitelist: turns raw DB rows into exactly what the client is allowed to see.
 // No client_email, ip, tokens, or internal proposal id — the milestone `id` IS included
 // so the client can send it back on approve.
-export function clientView(project, proposal, milestones, contract) {
+export function clientView(project, proposal, milestones, contract, messages) {
   if (!project) return null;
   const plan = proposal ? {
     keys: Array.isArray(proposal.keys) ? proposal.keys : [],
@@ -42,7 +56,10 @@ export function clientView(project, proposal, milestones, contract) {
   })) : [];
   const contractOut = (contract && VISIBLE_CONTRACT_STATUSES.has(contract.status))
     ? { public_id: contract.public_id, status: contract.status } : null;
-  return { project: { status: project.status }, plan, milestones: ms, contract: contractOut };
+  const msgs = Array.isArray(messages) ? messages.map((m) => ({
+    sender: m.sender, body: m.body, created_at: m.created_at,
+  })) : [];
+  return { project: { status: project.status }, plan, milestones: ms, contract: contractOut, messages: msgs };
 }
 
 async function loadContractSummary(proposalId) {
@@ -62,19 +79,42 @@ async function handler(req, res) {
     const projR = await getProjectByPortalToken(token);
     if (!projR.ok || !projR.data) return res.status(200).json({ ok: false, reason: 'not_found' });
     const project = projR.data;
-    const [proposalR, milestonesR, contract] = await Promise.all([
+    const [proposalR, milestonesR, contract, messagesR] = await Promise.all([
       getProposalById(project.proposal_id),
       listMilestones(project.id),
       loadContractSummary(project.proposal_id),
+      listMessages(project.id),
     ]);
     const proposal = proposalR.ok ? proposalR.data : null;
     const milestones = milestonesR.ok ? milestonesR.data : [];
-    const view = clientView(project, proposal, milestones, contract);
+    const messages = messagesR.ok ? messagesR.data : [];
+    // client is looking at the thread now — mark operator messages read (fire-and-forget)
+    markMessagesRead(project.id, 'client').catch(() => {});
+    const view = clientView(project, proposal, milestones, contract, messages);
     if (!view) return res.status(200).json({ ok: false, reason: 'not_found' });
     return res.status(200).json({ ok: true, ...view });
   }
   if (req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
+  // Rate-limit every client POST (message + approve). The message branch fires an operator
+  // email per call, so a leaked/forwarded portal token must not be able to email-bomb.
+  if (await rateLimited(clientIp(req), 20, 'portal-post')) return res.status(429).json({ ok: false, error: 'slow_down' });
   const body = req.body || {};
+
+  // client posts a message to the project thread
+  if (body.action === 'message') {
+    const mv = validateMessage(body); if (!mv.ok) return res.status(400).json({ ok: false, error: mv.error });
+    if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
+    const pR = await getProjectByPortalToken(body.portalToken.trim());
+    if (!pR.ok || !pR.data) return res.status(404).json({ ok: false, error: 'not_found' });
+    const sent = await addMessage(pR.data.id, 'client', body.body.trim());
+    if (!sent.ok) { console.error('[portal] addMessage failed', sent.error || ''); return res.status(200).json({ ok: false, reason: 'write_failed' }); }
+    try {
+      await sendOperator({ subject: 'New message from a client — project portal',
+        text: `A client sent you a message in their project portal:\n\n"${body.body.trim().slice(0, 800)}"\n\nReply in the admin: ${SITE}/proposal-admin.html\n` });
+    } catch (e) { console.error('[portal] notify send failed', (e && e.message) || e); }
+    return res.status(200).json({ ok: true, sent: true });
+  }
+
   if (body.action && body.action !== 'approve_milestone') return res.status(400).json({ ok: false, error: 'unknown action' });
   const v = validate(body); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });

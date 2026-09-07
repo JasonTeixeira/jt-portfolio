@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validate, clientView, milestoneBelongsToProject } from '../../api/portal.js';
+import { validate, clientView, milestoneBelongsToProject, validateMessage } from '../../api/portal.js';
 import { validate as validateMilestone } from '../../api/milestone.js';
 import portalHandler from '../../api/portal.js';
 import milestoneHandler from '../../api/milestone.js';
@@ -100,4 +100,23 @@ test('milestone endpoint rejects non-POST', async () => {
   const res = mockRes();
   await milestoneHandler({ method: 'GET', headers: {}, query: {} }, res);
   assert.equal(res.code, 405);
+});
+
+test('validateMessage requires a portalToken and a 1..5000 char body', () => {
+  assert.equal(validateMessage({ portalToken: 't', body: 'hello' }).ok, true);
+  assert.equal(validateMessage({ body: 'hello' }).ok, false);           // no token
+  assert.equal(validateMessage({ portalToken: 't', body: '' }).ok, false); // empty
+  assert.equal(validateMessage({ portalToken: 't' }).ok, false);         // no body
+  assert.equal(validateMessage({ portalToken: 't', body: 'x'.repeat(5001) }).ok, false); // too long
+  assert.equal(validateMessage(null).ok, false);
+});
+
+test('clientView includes a messages array (whitelisted to sender/body/created_at)', () => {
+  const v = clientView({ status: 'kickoff' }, null, [], null, [
+    { sender: 'client', body: 'hi', created_at: '2026-09-07T00:00:00Z', read_by_operator_at: null, id: 'secret' },
+  ]);
+  assert.equal(v.messages.length, 1);
+  assert.equal(v.messages[0].body, 'hi');
+  assert.equal(v.messages[0].id, undefined);   // internal id not leaked
+  assert.equal(v.messages[0].read_by_operator_at, undefined);
 });

@@ -154,3 +154,18 @@ create unique index if not exists scope_contracts_public on scope_contracts(publ
 alter table scope_milestones enable row level security;
 alter table scope_contracts enable row level security;
 -- (No policies → deny-all-anon; service role bypasses.)
+
+-- ============================================================================
+-- Client <-> operator message thread (per project). Service-role only.
+-- ============================================================================
+create table if not exists scope_messages (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references scope_projects(id) on delete cascade,
+  sender text not null check (sender in ('client','operator')),
+  body text not null,
+  created_at timestamptz not null default now(),
+  read_by_operator_at timestamptz,
+  read_by_client_at timestamptz
+);
+create index if not exists scope_messages_project on scope_messages(project_id, created_at);
+alter table scope_messages enable row level security;
