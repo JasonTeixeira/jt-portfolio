@@ -230,6 +230,32 @@ function buildMessagesCard(view, portalToken) {
   return card;
 }
 
+/* ── project progress stepper (Kickoff → Building → Delivered → Complete) ── */
+function buildStepper(view, plan) {
+  const STAGES = ['Kickoff', 'Building', 'Delivered', 'Complete'];
+  const raw = String((view.project && view.project.status) || 'kickoff').toLowerCase();
+  const ms = Array.isArray(view.milestones) ? view.milestones : [];
+  const anyActive = ms.some((m) => ['in_progress', 'delivered', 'approved'].includes(m.status)) || ['active', 'in_progress'].includes(raw);
+  const allDelivered = ms.length > 0 && ms.every((m) => ['delivered', 'approved'].includes(m.status));
+  const allApproved = ms.length > 0 && ms.every((m) => m.status === 'approved');
+  const complete = ['complete', 'completed'].includes(raw) || (allApproved && !!plan.balance_paid_at);
+  let idx = 0;
+  if (anyActive) idx = 1;
+  if (allDelivered) idx = 2;
+  if (complete) idx = 3;
+
+  const card = h('div', { class: 'portal-card', style: 'display:flex;align-items:flex-start;padding:22px clamp(18px,3vw,30px)' });
+  STAGES.forEach((label, i) => {
+    const done = i <= idx; const current = i === idx;
+    const dot = h('div', { style: `width:${current ? '14px' : '11px'};height:${current ? '14px' : '11px'};border-radius:50%;flex:none;background:${done ? 'var(--green)' : 'transparent'};border:2px solid ${done ? 'var(--green)' : 'var(--line)'};box-shadow:${current ? '0 0 0 4px rgba(16,185,129,0.18)' : 'none'}` });
+    card.appendChild(h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:9px;flex:none' },
+      h('div', { style: 'height:14px;display:flex;align-items:center' }, dot),
+      h('div', { style: `font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:${done ? 'var(--ink)' : 'var(--faint)'};white-space:nowrap` }, label)));
+    if (i < STAGES.length - 1) card.appendChild(h('div', { style: `flex:1;min-width:16px;height:2px;margin-top:6px;background:${i < idx ? 'var(--green)' : 'var(--line)'}` }));
+  });
+  return card;
+}
+
 function renderPortal(root, view, portalToken) {
   clear(root);
   const plan = view.plan || {};
@@ -243,6 +269,9 @@ function renderPortal(root, view, portalToken) {
     ),
     statusChip(view.project && view.project.status),
   ));
+
+  // progress stepper
+  root.appendChild(buildStepper(view, plan));
 
   // The plan they bought — itemized from the catalog keys, grouped by phase, display-only.
   const planData = computePlan(Array.isArray(plan.keys) ? plan.keys : [], plan.segment || null);
