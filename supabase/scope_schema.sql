@@ -215,3 +215,37 @@ create index if not exists idx_scope_cal_starts on scope_calendar_events (starts
 create index if not exists idx_scope_cal_prospect on scope_calendar_events (prospect_id);
 create index if not exists idx_scope_cal_project on scope_calendar_events (project_id);
 alter table scope_calendar_events enable row level security;
+
+-- ── Tasks & budgets (operator cockpit ③; service-role only, RLS deny-all) ──
+create table if not exists scope_tasks (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  status text not null default 'todo' check (status in ('todo','doing','done','blocked')),
+  priority text not null default 'medium' check (priority in ('low','medium','high')),
+  due_at timestamptz,
+  notes text,
+  position double precision not null default 0,
+  proposal_id uuid references scope_proposals(id) on delete set null,
+  project_id uuid references scope_projects(id) on delete set null,
+  done_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_scope_tasks_status on scope_tasks (status);
+create index if not exists idx_scope_tasks_due on scope_tasks (due_at);
+create index if not exists idx_scope_tasks_proposal on scope_tasks (proposal_id);
+alter table scope_tasks enable row level security;
+
+create table if not exists scope_project_costs (
+  id uuid primary key default gen_random_uuid(),
+  proposal_id uuid not null references scope_proposals(id) on delete cascade,
+  label text not null,
+  kind text not null default 'other' check (kind in ('subcontractor','tool','ads','fees','other')),
+  amount_cents integer not null default 0 check (amount_cents >= 0),
+  incurred_at timestamptz not null default now(),
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_scope_costs_proposal on scope_project_costs (proposal_id);
+alter table scope_project_costs enable row level security;
