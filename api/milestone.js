@@ -1,6 +1,6 @@
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
-import { checkToken } from '../lib/admin-auth.mjs';
+import { authorizeAdmin } from '../lib/admin-auth.mjs';
 import { isEnabled, upsertMilestone, markDelivered } from '../lib/portal-db.mjs';
 
 export function validate(body) {
@@ -20,7 +20,7 @@ async function handler(req, res) {
   if (await rateLimited(clientIp(req), 30, 'admin')) return res.status(429).json({ ok: false, error: 'slow_down' });
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   // Fail-closed admin gate BEFORE any DB work.
-  if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
+  if (!(await authorizeAdmin(req))) return res.status(401).json({ ok: false, error: 'unauthorized' });
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true });
   const body = req.body || {};
   const v = validate(body); if (!v.ok) return res.status(400).json({ ok: false, error: v.error });

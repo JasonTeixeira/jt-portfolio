@@ -3,6 +3,17 @@
 // All dynamic values (client email, scope notes, etc.) go through textContent —
 // never innerHTML — since this data is client-editable.
 import { depositCents, balanceCents, money, PROPOSAL_STATUS } from './proposal-core.mjs';
+import { getSession } from './auth.mjs';
+
+// Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
+// ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
+let AUTH = null;
+function authHeaders(extra) {
+  const h = extra ? { ...extra } : {};
+  if (AUTH && AUTH.mode === 'jwt') h.Authorization = 'Bearer ' + AUTH.value;
+  else if (AUTH && AUTH.mode === 'key') h['x-admin-token'] = AUTH.value;
+  return h;
+}
 
 const STATUS_META = {
   [PROPOSAL_STATUS.DRAFT]: { label: 'Draft', color: '#F59E0B' },
@@ -95,8 +106,8 @@ function renderUnconfigured(root) {
   ));
 }
 
-async function apiGet(path, key) {
-  const res = await fetch(path, { headers: { 'x-admin-token': key } });
+async function apiGet(path) {
+  const res = await fetch(path, { headers: authHeaders() });
   if (res.status === 401) return { unauthorized: true };
   const json = await res.json().catch(() => null);
   return { status: res.status, json };
@@ -174,7 +185,7 @@ async function openDetail(mount, id, key) {
 
 // ---- Contracts (generate + send) -------------------------------------------
 
-function contractRow(c, key) {
+function contractRow(c) {
   const link = `${location.origin}/contract.html?id=${c.public_id}`;
   const row = h('div', { style: 'display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)' },
     h('span', { class: 'chip mono' }, c.kind === 'msa' ? 'MSA' : 'SOW'),
@@ -189,7 +200,7 @@ function contractRow(c, key) {
       sendBtn.textContent = 'Sending…';
       fetch('/api/contract-send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ id: c.id }),
       })
         .then((res) => res.json().catch(() => null))
@@ -225,7 +236,7 @@ function renderContractsCard(row, key, contracts) {
     btn.textContent = 'Generating…';
     fetch('/api/contract-generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ proposalId: row.id, kind }),
     })
       .then((res) => res.json().catch(() => null))
@@ -262,7 +273,7 @@ function renderContractsCard(row, key, contracts) {
 
 // ---- Milestones (add + mark delivered) -------------------------------------
 
-function milestoneRow(m, key) {
+function milestoneRow(m) {
   const row = h('div', { style: 'display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)' },
     h('span', { class: 'mono', style: 'color:var(--faint);font-size:11.5px;min-width:18px' }, String(m.seq ?? 0)),
     h('span', { style: 'flex:1 1 160px' }, m.title || '—'),
@@ -276,7 +287,7 @@ function milestoneRow(m, key) {
       btn.textContent = 'Marking…';
       fetch('/api/milestone', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ id: m.id, action: 'deliver' }),
       })
         .then((res) => res.json().catch(() => null))
@@ -329,7 +340,7 @@ function renderMilestonesCard(project, milestones, key) {
     const dueAt = dueInput.value ? new Date(`${dueInput.value}T23:59:59`).toISOString() : undefined;
     fetch('/api/milestone', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ projectId: project.id, title, deliverables: deliverablesInput.value, amountCents, seq, dueAt }),
     })
       .then((res) => res.json().catch(() => null))
@@ -413,7 +424,7 @@ function renderDetail(mount, row, key, project, milestones, contracts) {
 
     fetch('/api/proposal-approve', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ id: row.id, firmCents, depositPct, scopeNote: noteInput.value, expiresAt }),
     })
       .then((res) => res.json().catch(() => null))
@@ -492,7 +503,7 @@ function renderDeliverablesCard(project, key) {
     del.addEventListener('click', () => {
       if (!window.confirm('Delete this file? The client will no longer see it.')) return;
       del.disabled = true;
-      fetch('/api/deliverables', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ action: 'delete', projectId: project.id, id: f.id }) })
+      fetch('/api/deliverables', { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ action: 'delete', projectId: project.id, id: f.id }) })
         .then((r) => r.json().catch(() => null)).then((d) => { if (d && d.ok) rowEl.remove(); else del.disabled = false; }).catch(() => { del.disabled = false; });
     });
     return rowEl;
@@ -513,11 +524,11 @@ function renderDeliverablesCard(project, key) {
     if (!file) { clear(upStatus); upStatus.appendChild(document.createTextNode('Choose a file first.')); return; }
     upBtn.disabled = true; clear(upStatus); upStatus.appendChild(document.createTextNode('Uploading…'));
     try {
-      const signResp = await fetch('/api/deliverables', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ action: 'signUpload', projectId: project.id, filename: file.name }) }).then((r) => r.json().catch(() => null));
+      const signResp = await fetch('/api/deliverables', { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ action: 'signUpload', projectId: project.id, filename: file.name }) }).then((r) => r.json().catch(() => null));
       if (!signResp || !signResp.ok || !signResp.signedUrl) throw new Error('sign');
       const put = await fetch(signResp.signedUrl, { method: 'PUT', headers: { 'Content-Type': file.type || 'application/octet-stream' }, body: file });
       if (!put.ok) throw new Error('put');
-      const reg = await fetch('/api/deliverables', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ action: 'register', projectId: project.id, name: file.name, storagePath: signResp.path, sizeBytes: file.size, contentType: file.type || null }) }).then((r) => r.json().catch(() => null));
+      const reg = await fetch('/api/deliverables', { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ action: 'register', projectId: project.id, name: file.name, storagePath: signResp.path, sizeBytes: file.size, contentType: file.type || null }) }).then((r) => r.json().catch(() => null));
       if (!reg || !reg.ok) throw new Error('register');
       fileInput.value = ''; clear(upStatus); upBtn.disabled = false; load();
     } catch { upBtn.disabled = false; clear(upStatus); upStatus.appendChild(document.createTextNode('Upload failed. Try again.')); }
@@ -556,7 +567,7 @@ function renderMessagesCard(project, key) {
     const text = (ta.value || '').trim();
     if (text.length < 1) return;
     btn.disabled = true; clear(st); st.appendChild(document.createTextNode('Sending…'));
-    fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ projectId: project.id, body: text }) })
+    fetch('/api/messages', { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ projectId: project.id, body: text }) })
       .then((r) => r.json().catch(() => null)).then((d) => {
         btn.disabled = false; clear(st);
         if (d && d.ok) { if (thread.contains(empty)) clear(thread); thread.appendChild(bubble({ sender: 'operator', body: text, created_at: new Date().toISOString() })); ta.value = ''; }
@@ -580,10 +591,10 @@ const STAGE_META = {
 const STAGE_ORDER = ['new', 'scoped', 'engaged', 'won', 'lost'];
 function stageChip(stage) { return chipFor(stage, STAGE_META); }
 
-function postProspect(payload, key) {
+function postProspect(payload) {
   return fetch('/api/prospects', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-admin-token': key },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(payload),
   }).then((res) => res.json().catch(() => null));
 }
@@ -761,7 +772,10 @@ async function init() {
   if (!root) return;
 
   const key = (new URLSearchParams(location.search).get('key') || '').trim();
-  if (!key) { renderNotAuthorized(root); return; }
+  const session = getSession();
+  if (key) AUTH = { mode: 'key', value: key };
+  else if (session && session.access_token) AUTH = { mode: 'jwt', value: session.access_token };
+  if (!AUTH) { location.replace('login.html?next=proposal-admin.html'); return; }
 
   // Auth/config probe via the proposals endpoint, then default to the Pipeline (CRM) view.
   let result;
