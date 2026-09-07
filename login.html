@@ -5,60 +5,65 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Log in · Jason Teixeira</title>
-<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css?v=20260901b">
-<link rel="stylesheet" href="assets/auth.css?v=20260907">
+<link rel="stylesheet" href="assets/auth.css?v=20260907b">
 </head>
 <body>
 <main class="auth-shell">
-  <section class="auth-panel">
-    <a class="auth-brand" href="index.html">&larr; <b>jason.teixeira</b><span class="p">()</span></a>
-    <div class="auth-inner">
-      <div class="auth-eyebrow"><span class="dot"></span> secure session</div>
-      <h1>Welcome back</h1>
-      <p class="sub">Log in to your project dashboard — status, files, messages, and payments in one place.</p>
-      <form id="f" novalidate>
-        <label class="auth-field"><span>Email</span><input type="email" id="email" autocomplete="email" placeholder="you@company.com" required></label>
-        <label class="auth-field"><span>Password</span><input type="password" id="password" autocomplete="current-password" placeholder="••••••••" required></label>
-        <button type="submit" class="btn-solid green auth-btn" id="btn">Log in</button>
-        <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
-      </form>
-      <div class="auth-links">
-        <a href="reset.html">Forgot password?</a>
-        <a href="signup.html">Need an account? Sign up</a>
+  <div class="auth-bar top">
+    <a href="index.html" style="color:inherit;text-decoration:none">&larr; JASON.TEIXEIRA<span style="color:var(--a-acc)">()</span></a>
+    <span class="stat">Secure</span>
+  </div>
+
+  <div class="auth-main">
+    <aside class="auth-rail">
+      <div class="auth-index">01 / Client &amp; operator access</div>
+      <div class="auth-slug">A studio that ships — then <em>proves</em> its work.</div>
+      <div class="auth-meta"><b>Sage Ideas LLC</b><br>Chicago · Est. 2024<br>agency.sageideas.dev</div>
+    </aside>
+
+    <section class="auth-formcol">
+      <div class="inner">
+        <h1 class="auth-h">Welcome back</h1>
+        <p class="auth-lede">Log in to your project workspace — status, deliverables, messages, and billing in one place.</p>
+        <form id="f" novalidate>
+          <label class="auth-field"><span>Email <span class="idx">01</span></span><input class="auth-cell" type="email" id="email" autocomplete="email" placeholder="you@company.com" required></label>
+          <label class="auth-field"><span>Password <span class="idx">02</span></span><input class="auth-cell" type="password" id="password" autocomplete="current-password" placeholder="••••••••" required></label>
+          <button type="submit" class="auth-submit" id="btn"><span id="lbl">Log in</span><span class="arw">&rarr;</span></button>
+          <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
+        </form>
+        <div class="auth-foot">
+          <a href="reset.html">Forgot password?</a>
+          <a href="signup.html">New here — <span class="mk">sign up</span></a>
+        </div>
       </div>
-    </div>
-  </section>
-  <aside class="auth-stage" aria-hidden="true">
-    <canvas id="viz"></canvas>
-    <div class="auth-caption">
-      <div class="term" id="term"></div>
-      <div class="tag">The studio that <em>proves</em> its own work.</div>
-    </div>
-  </aside>
+    </section>
+  </div>
+
+  <div class="auth-bar bot">
+    <span>Encrypted session</span>
+    <span class="lit">Nexural &middot; Sage Ideas</span>
+  </div>
 </main>
 <script type="module">
   import { signIn, getSession } from './assets/auth.mjs';
-  import { mountAuthVisual, mountAuthTerminal } from './assets/auth-visual.mjs';
-  mountAuthVisual(document.getElementById('viz'));
-  mountAuthTerminal(document.getElementById('term'));
   const params = new URLSearchParams(location.search);
   // Only allow redirecting to a LOCAL page (prevents open-redirect via ?next=//evil.com).
   const raw = params.get('next') || 'dashboard.html';
   const next = /^[a-z0-9._-]+\.html([?#].*)?$/i.test(raw) ? raw : 'dashboard.html';
   if (getSession()) location.replace(next);
-  const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn');
+  const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
   f.addEventListener('submit', async (e) => {
     e.preventDefault();
     msg.className = 'auth-msg'; msg.textContent = '';
-    btn.disabled = true; btn.textContent = 'Logging in…';
+    btn.disabled = true; lbl.textContent = 'Authenticating…';
     const r = await signIn(document.getElementById('email').value.trim(), document.getElementById('password').value);
     if (r.ok && r.data.access_token) { location.replace(next); return; }
-    btn.disabled = false; btn.textContent = 'Log in';
+    btn.disabled = false; lbl.textContent = 'Log in';
     msg.className = 'auth-msg err';
-    msg.textContent = r.status === 400 ? 'That email or password isn’t right.' : (r.data.msg || r.data.error_description || 'Couldn’t log in. Try again.');
+    msg.textContent = r.status === 400 ? '// that email or password isn’t right.' : ('// ' + (r.data.msg || r.data.error_description || 'couldn’t log in. try again.'));
   });
 </script>
 </body>
