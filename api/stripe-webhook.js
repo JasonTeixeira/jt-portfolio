@@ -58,6 +58,15 @@ export default async function handler(req, res) {
             await sendOperator({ subject: `Balance paid — ${row ? money(row.balance_cents) : ''}`,
               text: `A client just paid the remaining balance.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\n` });
           } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
+          // Client receipt — the balance payment previously sent the client nothing.
+          if (row && row.client_email) {
+            const portalLine = await portalLinkLine(proposalId);
+            try {
+              await sendClient({ to: row.client_email,
+                subject: 'Payment received — paid in full',
+                text: `Thank you — your balance payment of ${money(row.balance_cents)} came through and your project is now paid in full (total ${money(row.firm_cents)}).\n\nYour itemized receipt is in your project portal, where you can print or save it as a PDF.\n\n— Jason\n${portalLine}` });
+            } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
+          }
         }
         return res.status(200).json({ ok: true, received: true });
       }

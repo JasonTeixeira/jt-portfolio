@@ -4,7 +4,14 @@ import {
   isEnabled, getProjectByPortalToken, getProjectByProposalId, ensurePortalToken,
   listMilestones, upsertMilestone, markDelivered, approveMilestone,
   createContract, getContractByPublicId, getContractsForProposal, sendContract, acceptContract,
+  listClientProjectsByEmail, contractSummariesForProposals,
 } from '../../lib/portal-db.mjs';
+
+test('contractSummariesForProposals returns [] for empty ids and is degrade-safe', async () => {
+  assert.deepEqual(await listClientProjectsByEmail('a@b.co'), { ok: false, skipped: true });
+  assert.deepEqual(await contractSummariesForProposals([]), { ok: false, skipped: true });
+  assert.deepEqual(await contractSummariesForProposals(['id1', 'id2']), { ok: false, skipped: true });
+});
 
 test('disabled without env — never throws, reports skipped', async () => {
   assert.equal(isEnabled(), false);

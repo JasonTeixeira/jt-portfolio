@@ -305,16 +305,27 @@ function renderPortal(root, view, portalToken) {
   const filesCard = buildDeliverablesCard(view);
   if (filesCard) root.appendChild(filesCard);
 
-  // Payment summary + pay-balance action.
+  // Billing & receipt — itemized deposit/balance with paid dates + total, printable.
+  const fmtDay = (iso) => { try { return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return ''; } };
+  const receiptRow = (label, amountCents, sub, paid) => {
+    const lbl = h('span', { class: 'lbl' }, label);
+    if (sub) lbl.appendChild(h('span', { style: 'display:block;font-size:11px;color:var(--faint);font-family:var(--mono);margin-top:2px' }, sub));
+    return h('div', { class: 'portal-pay-row' }, lbl, h('span', { class: 'val', style: paid ? 'color:var(--green)' : '' }, money(amountCents) + (paid ? ' ✓' : '')));
+  };
   const payCard = h('div', { class: 'portal-card' },
-    h('h2', { class: 'portal-card-title' }, 'Payment'),
-    h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Deposit paid'), h('span', { class: 'val' }, money(plan.deposit_cents))),
+    h('h2', { class: 'portal-card-title' }, 'Billing & receipt'),
+    receiptRow('Deposit', plan.deposit_cents, plan.paid_at ? `Paid ${fmtDay(plan.paid_at)}` : 'Pending', Boolean(plan.paid_at)),
   );
   if (plan.balance_paid_at) {
-    payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance paid'), h('span', { class: 'val', style: 'color:var(--green)' }, money(plan.balance_cents) + ' ✓')));
+    payCard.appendChild(receiptRow('Balance', plan.balance_cents, `Paid ${fmtDay(plan.balance_paid_at)}`, true));
+    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, 'Total'), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
     payCard.appendChild(h('p', { class: 'subtle', style: 'margin-top:10px;font-size:13px' }, 'Paid in full. Thank you.'));
+    const printBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:12px;padding:9px 16px;font-size:13px' }, 'Print / Save PDF');
+    printBtn.addEventListener('click', () => window.print());
+    payCard.appendChild(printBtn);
   } else if (plan.balance_cents > 0) {
-    payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance remaining'), h('span', { class: 'val' }, money(plan.balance_cents))));
+    payCard.appendChild(receiptRow('Balance remaining', plan.balance_cents, 'Due', false));
+    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, 'Total'), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
     const payBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:14px;padding:11px 20px;font-size:14px' }, `Pay balance — ${money(plan.balance_cents)}`);
     const payStatus = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
     payBtn.addEventListener('click', () => {
