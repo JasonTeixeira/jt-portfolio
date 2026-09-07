@@ -253,3 +253,21 @@ alter table scope_project_costs enable row level security;
 -- Fix: scope_prospects.id had no default, so every prospect insert (createProspect,
 -- scope-funnel upsert, contact-form capture) failed silently. Match sibling scope_* tables.
 alter table scope_prospects alter column id set default gen_random_uuid();
+
+-- ── Content studio (operator cockpit ⑤; service-role only, RLS deny-all) ──
+create table if not exists scope_content (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  channel text not null default 'blog' check (channel in ('blog','linkedin','x','instagram','youtube','newsletter','other')),
+  status text not null default 'idea' check (status in ('idea','draft','scheduled','published')),
+  notes text,
+  url text,
+  scheduled_for timestamptz,
+  published_at timestamptz,
+  position double precision not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_scope_content_status on scope_content (status);
+create index if not exists idx_scope_content_scheduled on scope_content (scheduled_for);
+alter table scope_content enable row level security;

@@ -8,6 +8,7 @@ import { renderCalendar as renderCalendarView } from './admin-calendar.mjs';
 import { renderTasks as renderTasksView } from './admin-tasks.mjs';
 import { renderMoneyBody } from './admin-money.mjs';
 import { renderMarketing as renderMarketingView } from './admin-marketing.mjs';
+import { renderContent as renderContentView } from './admin-content.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -767,11 +768,12 @@ function tabBar(active, root, key) {
       else if (id === 'calendar') renderCalendar(root, key);
       else if (id === 'tasks') renderTasks(root, key);
       else if (id === 'marketing') renderMarketing(root, key);
+      else if (id === 'content') renderContent(root, key);
       else renderProposals(root, key);
     });
     return b;
   }
-  return h('div', { style: 'display:flex;gap:10px;margin-bottom:4px;flex-wrap:wrap' }, tab('pipeline', 'Pipeline'), tab('calendar', 'Calendar'), tab('tasks', 'Tasks & budgets'), tab('marketing', 'Marketing'), tab('money', 'Money'), tab('proposals', 'Proposals'));
+  return h('div', { style: 'display:flex;gap:10px;margin-bottom:4px;flex-wrap:wrap' }, tab('pipeline', 'Pipeline'), tab('calendar', 'Calendar'), tab('tasks', 'Tasks & budgets'), tab('marketing', 'Marketing'), tab('content', 'Content'), tab('money', 'Money'), tab('proposals', 'Proposals'));
 }
 
 // Money command center — real figures from the proposals ledger (see admin-money.mjs).
@@ -824,6 +826,19 @@ function renderMarketing(root, key) {
   wrap.appendChild(mount);
   root.appendChild(wrap);
   renderMarketingView(mount, key, { h, clear, authHeaders, renderNotAuthorized });
+}
+
+// Content studio — plan/track marketing content (see admin-content.mjs).
+function renderContent(root, key) {
+  clear(root);
+  const wrap = h('div', {});
+  wrap.appendChild(tabBar('content', root, key));
+  wrap.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'content · studio'), h('span', { class: 'line' })));
+  wrap.appendChild(h('h1', { class: 'sec-title' }, 'Content'));
+  const mount = h('div', {});
+  wrap.appendChild(mount);
+  root.appendChild(wrap);
+  renderContentView(mount, key, { h, clear, authHeaders, renderNotAuthorized });
 }
 
 function renderProposals(root, key) {
