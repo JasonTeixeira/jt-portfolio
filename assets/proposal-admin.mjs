@@ -98,6 +98,15 @@ function renderNotAuthorized(root) {
   ));
 }
 
+function renderLoginPrompt(root) {
+  clear(root);
+  root.appendChild(h('div', { class: 'admin-card' },
+    h('h1', { class: 'sec-title', style: 'font-size:1.8rem;margin-top:0' }, 'Operator sign-in required'),
+    h('p', { class: 'subtle' }, 'Log in with your operator account to open the cockpit.'),
+    h('a', { href: 'login.html?next=proposal-admin.html', class: 'btn-solid green', style: 'display:inline-flex;margin-top:14px;padding:10px 18px;text-decoration:none' }, 'Log in →'),
+  ));
+}
+
 function renderUnconfigured(root) {
   clear(root);
   root.appendChild(h('div', { class: 'admin-card' },
@@ -775,7 +784,7 @@ async function init() {
   const session = getSession();
   if (key) AUTH = { mode: 'key', value: key };
   else if (session && session.access_token) AUTH = { mode: 'jwt', value: session.access_token };
-  if (!AUTH) { location.replace('login.html?next=proposal-admin.html'); return; }
+  if (!AUTH) { renderLoginPrompt(root); return; }
 
   // Auth/config probe via the proposals endpoint, then default to the Pipeline (CRM) view.
   let result;
