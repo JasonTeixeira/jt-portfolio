@@ -10,6 +10,7 @@ import { withObserve } from '../lib/observe.mjs';
 // the account owner's verified email — fine, since TO is your own inbox), then
 // switch to a verified-domain sender like portfolio@agency.sageideas.dev later.
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
+import { captureInboundLead } from '../lib/scope-db.mjs';
 
 const TO = process.env.RESEND_TO || 'hello@sageideas.dev';
 const FROM = process.env.RESEND_FROM || 'portfolio@agency.sageideas.dev';
@@ -39,17 +40,28 @@ async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'invalid input' });
   }
 
+  // Persist to the CRM FIRST so an inbound lead is never dropped — even if email
+  // delivery isn't configured or fails. captureInboundLead is degrade-safe (guarded).
+  // Timeout-guard it so a slow Supabase round-trip can't hold this public endpoint open.
+  const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(() => r({ ok: false, error: 'timeout' }), ms))]);
+  const cap = await withTimeout(captureInboundLead({ email, name, company, source: 'contact_form', note: message, stage: 'engaged' }), 4000);
+  if (!cap || (!cap.ok && !cap.skipped)) console.error('[contact] crm capture failed', (cap && cap.error) || 'unknown');
+
   const key = process.env.RESEND_API_KEY;
   if (!key) return res.status(501).json({ ok: false, error: 'mail delivery not configured' });
 
+  // RESEND_FROM may already be a full "Name <email>" (as in prod) — don't double-wrap
+  // it into `Portfolio contact <Name <email>>`, which Resend rejects (the 502 that was
+  // silently dropping operator notifications). Wrap only a bare address.
+  const fromHeader = FROM.includes('<') ? FROM : `Portfolio contact <${FROM}>`;
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: `Portfolio contact <${FROM}>`,
+      from: fromHeader,
       to: [TO],
       reply_to: email,
-      subject: `Portfolio inquiry — ${name.trim().slice(0, 80)}`,
+      subject: `Portfolio inquiry — ${name.trim().replace(/\s+/g, ' ').slice(0, 80)}`,
       text: `From: ${name.trim()} <${email}>\nCompany: ${(company || '—').toString().trim()}\nStage: ${(stage || '—').toString().trim()}\n\n${message.trim()}`
     })
   });
