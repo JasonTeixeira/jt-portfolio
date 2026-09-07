@@ -120,3 +120,17 @@ test('clientView includes a messages array (whitelisted to sender/body/created_a
   assert.equal(v.messages[0].id, undefined);   // internal id not leaked
   assert.equal(v.messages[0].read_by_operator_at, undefined);
 });
+
+test('portal pay_balance requires a portalToken (400) and never throws', async () => {
+  const res = mockRes();
+  await portalHandler({ method: 'POST', headers: {}, body: { action: 'pay_balance' } }, res);
+  assert.ok([400, 429].includes(res.code));
+  assert.equal(typeof res.body.ok, 'boolean');
+});
+
+test('clientView exposes balance_paid_at so the portal can show paid vs pay-balance', () => {
+  const paid = clientView({ status: 'active' }, { firm_cents: 1000, deposit_cents: 300, balance_cents: 700, paid_at: 'x', balance_paid_at: '2026-09-07T00:00:00Z' }, [], null);
+  assert.equal(paid.plan.balance_paid_at, '2026-09-07T00:00:00Z');
+  const unpaid = clientView({ status: 'active' }, { firm_cents: 1000, deposit_cents: 300, balance_cents: 700, paid_at: 'x' }, [], null);
+  assert.equal(unpaid.plan.balance_paid_at, null);
+});

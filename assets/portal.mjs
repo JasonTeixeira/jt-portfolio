@@ -276,12 +276,34 @@ function renderPortal(root, view, portalToken) {
   const filesCard = buildDeliverablesCard(view);
   if (filesCard) root.appendChild(filesCard);
 
-  // Payment summary.
-  root.appendChild(h('div', { class: 'portal-card' },
+  // Payment summary + pay-balance action.
+  const payCard = h('div', { class: 'portal-card' },
     h('h2', { class: 'portal-card-title' }, 'Payment'),
     h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Deposit paid'), h('span', { class: 'val' }, money(plan.deposit_cents))),
-    h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance due on delivery'), h('span', { class: 'val' }, money(plan.balance_cents))),
-  ));
+  );
+  if (plan.balance_paid_at) {
+    payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance paid'), h('span', { class: 'val', style: 'color:var(--green)' }, money(plan.balance_cents) + ' ✓')));
+    payCard.appendChild(h('p', { class: 'subtle', style: 'margin-top:10px;font-size:13px' }, 'Paid in full. Thank you.'));
+  } else if (plan.balance_cents > 0) {
+    payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance remaining'), h('span', { class: 'val' }, money(plan.balance_cents))));
+    const payBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:14px;padding:11px 20px;font-size:14px' }, `Pay balance — ${money(plan.balance_cents)}`);
+    const payStatus = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
+    payBtn.addEventListener('click', () => {
+      payBtn.disabled = true; clear(payStatus); payStatus.appendChild(document.createTextNode('Opening secure checkout…'));
+      fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay_balance', portalToken }) })
+        .then((r) => r.json().catch(() => null)).then((d) => {
+          if (d && d.ok && d.url) { window.location.href = d.url; return; }
+          if (d && d.alreadyPaid) { window.location.reload(); return; }
+          payBtn.disabled = false; clear(payStatus); payStatus.appendChild(document.createTextNode('Couldn’t start checkout. Email '));
+          payStatus.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL));
+          payStatus.appendChild(document.createTextNode('.'));
+        }).catch(() => { payBtn.disabled = false; clear(payStatus); payStatus.appendChild(document.createTextNode('Network error. Try again.')); });
+    });
+    payCard.appendChild(h('div', {}, payBtn, payStatus));
+  } else {
+    payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance'), h('span', { class: 'val' }, money(plan.balance_cents))));
+  }
+  root.appendChild(payCard);
 
   // Messages — two-way thread with Jason.
   root.appendChild(buildMessagesCard(view, portalToken));

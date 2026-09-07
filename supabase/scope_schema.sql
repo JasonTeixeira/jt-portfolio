@@ -189,3 +189,7 @@ create table if not exists scope_deliverable_files (
 );
 create index if not exists scope_deliverable_files_project on scope_deliverable_files(project_id, created_at);
 alter table scope_deliverable_files enable row level security;
+
+-- Balance payment (separate from the deposit which uses paid_at/status).
+alter table scope_proposals add column if not exists balance_paid_at timestamptz;
+alter table scope_proposals add column if not exists balance_stripe_session text;
