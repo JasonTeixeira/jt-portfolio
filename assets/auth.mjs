@@ -35,6 +35,15 @@ export async function signIn(email, password) {
 export async function requestReset(email, redirectTo) {
   return post(`/recover`, { email, ...(redirectTo ? { options: { redirect_to: redirectTo } } : {}) });
 }
+// Signup-confirm + password-reset emails go through our own Resend-backed endpoint
+// (Supabase's built-in mailer isn't configured). Always resolves; the endpoint answers
+// generically so nothing about account existence leaks.
+export async function sendAuthEmail(email, type) {
+  try {
+    const r = await fetch('/api/auth-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, type }) });
+    return r.ok;
+  } catch { return false; }
+}
 export async function updatePassword(accessToken, password) {
   const headers = { ...H, Authorization: `Bearer ${accessToken}` };
   const r = await fetch(`${SUPA_URL}/auth/v1/user`, { method: 'PUT', headers, body: JSON.stringify({ password }) });

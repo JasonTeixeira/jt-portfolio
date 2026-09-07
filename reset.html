@@ -5,33 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Reset password · Jason Teixeira</title>
-<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css?v=20260901b">
-<link rel="stylesheet" href="assets/auth.css?v=20260907">
+<link rel="stylesheet" href="assets/auth.css?v=20260907b">
 </head>
 <body>
 <main class="auth-shell">
-  <section class="auth-panel">
-    <a class="auth-brand" href="index.html">&larr; <b>jason.teixeira</b><span class="p">()</span></a>
-    <div class="auth-inner" id="card"></div>
-  </section>
-  <aside class="auth-stage" aria-hidden="true">
-    <canvas id="viz"></canvas>
-    <div class="auth-caption">
-      <div class="term" id="term"></div>
-      <div class="tag">Back in, in <em>a moment</em>.</div>
-    </div>
-  </aside>
+  <div class="auth-bar top">
+    <a href="index.html" style="color:inherit;text-decoration:none">&larr; JASON.TEIXEIRA<span style="color:var(--a-acc)">()</span></a>
+    <span class="stat">Secure</span>
+  </div>
+
+  <div class="auth-main">
+    <aside class="auth-rail">
+      <div class="auth-index">03 / Recovery</div>
+      <div class="auth-slug">Back in, in <em>a moment</em>.</div>
+      <div class="auth-meta"><b>Sage Ideas LLC</b><br>Chicago · Est. 2024<br>agency.sageideas.dev</div>
+    </aside>
+
+    <section class="auth-formcol">
+      <div class="inner" id="card"></div>
+    </section>
+  </div>
+
+  <div class="auth-bar bot">
+    <span>Encrypted session</span>
+    <span class="lit">Nexural &middot; Sage Ideas</span>
+  </div>
 </main>
 <script type="module">
-  import { requestReset, updatePassword } from './assets/auth.mjs';
-  import { mountAuthVisual, mountAuthTerminal } from './assets/auth-visual.mjs';
-  mountAuthVisual(document.getElementById('viz'));
-  mountAuthTerminal(document.getElementById('term'), ['> secure recovery channel', '> verifying request', '> everything here is tested']);
+  import { sendAuthEmail, updatePassword } from './assets/auth.mjs';
   const card = document.getElementById('card');
-  // Supabase sends the recovery link back with tokens in the URL hash.
   const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''));
   const recoveryToken = hash.get('type') === 'recovery' ? hash.get('access_token') : null;
   // STATIC HTML ONLY — never interpolate user/URL-derived data into these template
@@ -41,48 +46,45 @@
   if (recoveryToken) {
     card.appendChild(el(`
       <div>
-        <div class="auth-eyebrow"><span class="dot"></span> choose a new password</div>
-        <h1>Set a new password</h1>
-        <p class="sub">Enter a new password for your account.</p>
+        <h1 class="auth-h">Set a new password</h1>
+        <p class="auth-lede">Choose a new password for your account.</p>
         <form id="f" novalidate>
-          <label class="auth-field"><span>New password</span><input type="password" id="pw" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required></label>
-          <button type="submit" class="btn-solid green auth-btn" id="btn">Update password</button>
+          <label class="auth-field"><span>New password <span class="idx">01</span></span><input class="auth-cell" type="password" id="pw" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required></label>
+          <button type="submit" class="auth-submit" id="btn"><span id="lbl">Update password</span><span class="arw">&rarr;</span></button>
           <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
         </form>
       </div>`));
-    const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn');
+    const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
     f.addEventListener('submit', async (e) => {
       e.preventDefault();
       const pw = document.getElementById('pw').value;
-      if (pw.length < 8) { msg.className = 'auth-msg err'; msg.textContent = 'Use at least 8 characters.'; return; }
-      btn.disabled = true; btn.textContent = 'Updating…';
+      if (pw.length < 8) { msg.className = 'auth-msg err'; msg.textContent = '// use at least 8 characters.'; return; }
+      btn.disabled = true; lbl.textContent = 'Updating…';
       const r = await updatePassword(recoveryToken, pw);
-      if (r.ok) { msg.className = 'auth-msg ok'; msg.textContent = 'Password updated. Redirecting to log in…'; setTimeout(() => location.replace('login.html'), 1400); return; }
-      btn.disabled = false; btn.textContent = 'Update password';
-      msg.className = 'auth-msg err'; msg.textContent = r.data.msg || 'That reset link has expired. Request a new one.';
+      if (r.ok) { msg.className = 'auth-msg ok'; msg.textContent = '// password updated. redirecting to log in…'; setTimeout(() => location.replace('login.html'), 1400); return; }
+      btn.disabled = false; lbl.textContent = 'Update password';
+      msg.className = 'auth-msg err'; msg.textContent = '// ' + (r.data.msg || 'that reset link has expired. request a new one.');
     });
   } else {
     card.appendChild(el(`
       <div>
-        <div class="auth-eyebrow"><span class="dot"></span> password reset</div>
-        <h1>Reset your password</h1>
-        <p class="sub">Enter your email and we’ll send a secure reset link.</p>
+        <h1 class="auth-h">Reset password</h1>
+        <p class="auth-lede">Enter your email and we’ll send a secure reset link.</p>
         <form id="f" novalidate>
-          <label class="auth-field"><span>Email</span><input type="email" id="email" autocomplete="email" placeholder="you@company.com" required></label>
-          <button type="submit" class="btn-solid green auth-btn" id="btn">Send reset link</button>
+          <label class="auth-field"><span>Email <span class="idx">01</span></span><input class="auth-cell" type="email" id="email" autocomplete="email" placeholder="you@company.com" required></label>
+          <button type="submit" class="auth-submit" id="btn"><span id="lbl">Send reset link</span><span class="arw">&rarr;</span></button>
           <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
         </form>
-        <div class="auth-links center"><a href="login.html">Back to log in</a></div>
+        <div class="auth-foot"><a href="login.html">Back to <span class="mk">log in</span></a></div>
       </div>`));
-    const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn');
+    const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
     f.addEventListener('submit', async (e) => {
       e.preventDefault();
-      btn.disabled = true; btn.textContent = 'Sending…';
-      await requestReset(document.getElementById('email').value.trim(), `${location.origin}/reset.html`);
-      // Always show success (don't reveal whether an email exists).
+      btn.disabled = true; lbl.textContent = 'Sending…';
+      await sendAuthEmail(document.getElementById('email').value.trim(), 'recovery');
       msg.className = 'auth-msg ok';
-      msg.textContent = 'If that email has an account, a reset link is on its way.';
-      btn.textContent = 'Sent';
+      msg.textContent = '// if that email has an account, a reset link is on its way.';
+      lbl.textContent = 'Sent';
     });
   }
 </script>
