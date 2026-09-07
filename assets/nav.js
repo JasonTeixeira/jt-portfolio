@@ -58,6 +58,31 @@
     else if (mq.addListener) mq.addListener(handleViewportChange);
   }
 
+  // Inject auth buttons into every nav (Login/Sign up when logged out, Dashboard/Log out
+  // when logged in). Reads the same localStorage session key that assets/auth.mjs writes.
+  function readSession() {
+    try { return JSON.parse(localStorage.getItem('jt_auth') || 'null'); } catch { return null; }
+  }
+  function injectAuth(nav) {
+    var panel = nav.querySelector('.site-nav-links');
+    if (!panel || panel.getAttribute('data-auth-injected')) return;
+    panel.setAttribute('data-auth-injected', '1');
+    var session = readSession();
+    function link(label, href, cls) { var a = document.createElement('a'); a.textContent = label; a.href = href; a.className = cls || 'site-nav-link'; return a; }
+    if (session && session.email) {
+      panel.appendChild(link('Dashboard', 'dashboard.html'));
+      var out = document.createElement('button');
+      out.type = 'button'; out.className = 'site-nav-link';
+      out.style.cssText = 'background:none;border:none;cursor:pointer;font:inherit;color:inherit';
+      out.textContent = 'Log out';
+      out.addEventListener('click', function () { try { localStorage.removeItem('jt_auth'); } catch { /* ignore */ } location.href = 'index.html'; });
+      panel.appendChild(out);
+    } else {
+      panel.appendChild(link('Log in', 'login.html'));
+      panel.appendChild(link('Sign up', 'signup.html', 'btn-solid green site-nav-cta'));
+    }
+  }
+
   var navs = document.querySelectorAll('.site-nav');
-  for (var i = 0; i < navs.length; i++) initNav(navs[i]);
+  for (var i = 0; i < navs.length; i++) { initNav(navs[i]); injectAuth(navs[i]); }
 })();
