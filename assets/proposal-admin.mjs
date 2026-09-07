@@ -4,6 +4,7 @@
 // never innerHTML — since this data is client-editable.
 import { depositCents, balanceCents, money, PROPOSAL_STATUS } from './proposal-core.mjs';
 import { getSession } from './auth.mjs';
+import { renderCalendar as renderCalendarView } from './admin-calendar.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -760,11 +761,12 @@ function tabBar(active, root, key) {
     if (!on) b.addEventListener('click', () => {
       if (id === 'pipeline') renderPipeline(root, key);
       else if (id === 'money') renderMoney(root, key);
+      else if (id === 'calendar') renderCalendar(root, key);
       else renderProposals(root, key);
     });
     return b;
   }
-  return h('div', { style: 'display:flex;gap:10px;margin-bottom:4px;flex-wrap:wrap' }, tab('pipeline', 'Pipeline'), tab('money', 'Money'), tab('proposals', 'Proposals'));
+  return h('div', { style: 'display:flex;gap:10px;margin-bottom:4px;flex-wrap:wrap' }, tab('pipeline', 'Pipeline'), tab('calendar', 'Calendar'), tab('money', 'Money'), tab('proposals', 'Proposals'));
 }
 
 // Money command center — real figures from the proposals ledger.
@@ -807,6 +809,19 @@ function renderMoney(root, key) {
       detail.appendChild(card);
     }
   }).catch(() => {});
+}
+
+// Calendar & scheduling — native events (see admin-calendar.mjs for the view).
+function renderCalendar(root, key) {
+  clear(root);
+  const wrap = h('div', {});
+  wrap.appendChild(tabBar('calendar', root, key));
+  wrap.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'calendar · schedule'), h('span', { class: 'line' })));
+  wrap.appendChild(h('h1', { class: 'sec-title' }, 'Calendar'));
+  const mount = h('div', {});
+  wrap.appendChild(mount);
+  root.appendChild(wrap);
+  renderCalendarView(mount, key, { h, clear, authHeaders, renderNotAuthorized });
 }
 
 function renderProposals(root, key) {
