@@ -173,6 +173,25 @@ function buildMilestoneRow(m, portalToken) {
 
 /* ── the real page: header + plan + milestone timeline + payment + agreement ── */
 function fmtTime(iso) { try { return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return ''; } }
+function fmtBytes(n) { if (!n && n !== 0) return ''; if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(0) + ' KB'; return (n / 1048576).toFixed(1) + ' MB'; }
+
+/* ── deliverable files (download-only; short-lived signed URLs) ── */
+function buildDeliverablesCard(view) {
+  const files = Array.isArray(view.deliverables) ? view.deliverables : [];
+  if (!files.length) return null;
+  const card = h('div', { class: 'portal-card' });
+  card.appendChild(h('h2', { class: 'portal-card-title' }, 'Files'));
+  const wrap = h('div', { style: 'display:flex;flex-direction:column;gap:8px' });
+  for (const f of files) {
+    wrap.appendChild(h('div', { style: 'display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:10px;padding:10px 14px' },
+      h('div', { style: 'min-width:0' },
+        f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', style: 'color:#22d3ee;font-size:14px;word-break:break-word' }, f.name) : h('span', { style: 'font-size:14px' }, f.name),
+        h('div', { style: 'font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px' }, fmtBytes(f.size_bytes))),
+      f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', class: 'btn-ghost', style: 'padding:5px 12px;font-size:12px' }, 'Download') : null));
+  }
+  card.appendChild(wrap);
+  return card;
+}
 
 /* ── client <-> operator message thread ── */
 function buildMessagesCard(view, portalToken) {
@@ -252,6 +271,10 @@ function renderPortal(root, view, portalToken) {
     msCard.appendChild(timeline);
   }
   root.appendChild(msCard);
+
+  // Files — client-downloadable deliverables (only shown when there are any).
+  const filesCard = buildDeliverablesCard(view);
+  if (filesCard) root.appendChild(filesCard);
 
   // Payment summary.
   root.appendChild(h('div', { class: 'portal-card' },

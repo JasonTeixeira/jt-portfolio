@@ -1,7 +1,7 @@
 import { withObserve } from '../lib/observe.mjs';
 import {
   isEnabled, getProjectByPortalToken, listMilestones, approveMilestone, getContractsForProposal,
-  listMessages, addMessage, markMessagesRead,
+  listMessages, addMessage, markMessagesRead, listDeliverables, signDeliverableDownload,
 } from '../lib/portal-db.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { sendOperator } from '../lib/notify.mjs';
@@ -92,7 +92,15 @@ async function handler(req, res) {
     markMessagesRead(project.id, 'client').catch(() => {});
     const view = clientView(project, proposal, milestones, contract, messages);
     if (!view) return res.status(200).json({ ok: false, reason: 'not_found' });
-    return res.status(200).json({ ok: true, ...view });
+    // deliverable files: mint a fresh short-lived signed download URL per file (no storage_path leak)
+    const filesR = await listDeliverables(project.id);
+    const files = filesR.ok ? filesR.data : [];
+    const deliverables = await Promise.all(files.map(async (f) => {
+      const s = await signDeliverableDownload(f.storage_path, 300);
+      return { name: f.name, size_bytes: f.size_bytes, content_type: f.content_type,
+        milestone_id: f.milestone_id, created_at: f.created_at, url: s.ok ? s.url : null };
+    }));
+    return res.status(200).json({ ok: true, ...view, deliverables });
   }
   if (req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
   // Rate-limit every client POST (message + approve). The message branch fires an operator

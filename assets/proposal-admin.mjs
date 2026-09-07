@@ -470,7 +470,61 @@ function renderDetail(mount, row, key, project, milestones, contracts) {
 
   mount.appendChild(renderContractsCard(row, key, contracts));
   mount.appendChild(renderMilestonesCard(project, milestones, key));
+  mount.appendChild(renderDeliverablesCard(project, key));
   mount.appendChild(renderMessagesCard(project, key));
+}
+
+// ---- Deliverable files (operator: upload / list / delete) -------------------
+function fmtBytes(n) { if (!n && n !== 0) return ''; if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(0) + ' KB'; return (n / 1048576).toFixed(1) + ' MB'; }
+function renderDeliverablesCard(project, key) {
+  const card = h('div', { class: 'admin-card', style: 'margin-top:16px' });
+  card.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#a78bfa' }, 'Deliverable files'), h('span', { class: 'line' })));
+  if (!project) { card.appendChild(h('p', { class: 'subtle' }, 'Files can be shared once a project exists.')); return card; }
+  const list = h('div', { style: 'display:flex;flex-direction:column;gap:8px;margin:12px 0' });
+  const empty = h('p', { class: 'subtle', style: 'font-size:13px' }, 'No files uploaded yet.');
+  function fileRow(f) {
+    const del = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:4px 10px;font-size:11px;border-color:#f43f5e;color:#f43f5e' }, 'Delete');
+    const rowEl = h('div', { style: 'display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:10px;padding:9px 13px;background:#0F0F13' },
+      h('div', { style: 'min-width:0' },
+        f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', style: 'color:#22d3ee;font-size:13.5px;word-break:break-word' }, f.name) : h('span', { style: 'font-size:13.5px' }, f.name),
+        h('div', { class: 'mono', style: 'font-size:10.5px;color:var(--faint);margin-top:2px' }, [fmtBytes(f.size_bytes), f.content_type].filter(Boolean).join(' · '))),
+      del);
+    del.addEventListener('click', () => {
+      if (!window.confirm('Delete this file? The client will no longer see it.')) return;
+      del.disabled = true;
+      fetch('/api/deliverables', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ action: 'delete', projectId: project.id, id: f.id }) })
+        .then((r) => r.json().catch(() => null)).then((d) => { if (d && d.ok) rowEl.remove(); else del.disabled = false; }).catch(() => { del.disabled = false; });
+    });
+    return rowEl;
+  }
+  function load() {
+    apiGet(`/api/deliverables?projectId=${encodeURIComponent(project.id)}`, key).then((r) => {
+      const files = r.json && r.json.ok ? (r.json.files || []) : [];
+      clear(list);
+      if (!files.length) list.appendChild(empty); else files.forEach((f) => list.appendChild(fileRow(f)));
+    }).catch(() => {});
+  }
+  card.appendChild(list);
+  const fileInput = h('input', { type: 'file', style: 'font-size:12px;color:var(--faint)' });
+  const upBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'padding:8px 16px;font-size:13px;margin-left:8px' }, 'Upload');
+  const upStatus = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
+  upBtn.addEventListener('click', async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) { clear(upStatus); upStatus.appendChild(document.createTextNode('Choose a file first.')); return; }
+    upBtn.disabled = true; clear(upStatus); upStatus.appendChild(document.createTextNode('Uploading…'));
+    try {
+      const signResp = await fetch('/api/deliverables', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ action: 'signUpload', projectId: project.id, filename: file.name }) }).then((r) => r.json().catch(() => null));
+      if (!signResp || !signResp.ok || !signResp.signedUrl) throw new Error('sign');
+      const put = await fetch(signResp.signedUrl, { method: 'PUT', headers: { 'Content-Type': file.type || 'application/octet-stream' }, body: file });
+      if (!put.ok) throw new Error('put');
+      const reg = await fetch('/api/deliverables', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ action: 'register', projectId: project.id, name: file.name, storagePath: signResp.path, sizeBytes: file.size, contentType: file.type || null }) }).then((r) => r.json().catch(() => null));
+      if (!reg || !reg.ok) throw new Error('register');
+      fileInput.value = ''; clear(upStatus); upBtn.disabled = false; load();
+    } catch { upBtn.disabled = false; clear(upStatus); upStatus.appendChild(document.createTextNode('Upload failed. Try again.')); }
+  });
+  card.appendChild(h('div', { style: 'display:flex;align-items:center;flex-wrap:wrap;gap:6px' }, fileInput, upBtn, upStatus));
+  load();
+  return card;
 }
 
 // ---- Messages (operator side of the client thread) -------------------------
