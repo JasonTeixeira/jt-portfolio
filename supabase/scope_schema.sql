@@ -249,3 +249,7 @@ create table if not exists scope_project_costs (
 );
 create index if not exists idx_scope_costs_proposal on scope_project_costs (proposal_id);
 alter table scope_project_costs enable row level security;
+
+-- Fix: scope_prospects.id had no default, so every prospect insert (createProspect,
+-- scope-funnel upsert, contact-form capture) failed silently. Match sibling scope_* tables.
+alter table scope_prospects alter column id set default gen_random_uuid();

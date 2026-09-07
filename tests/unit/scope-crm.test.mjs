@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   isValidStage, isValidTouch, isEnabled, listProspects, getProspect,
   listProspectEvents, setProspectStage, prospectStageCounts,
-  createProspect, logTouch,
+  createProspect, logTouch, captureInboundLead,
 } from '../../lib/scope-db.mjs';
 
 test('isValidStage accepts the 5 pipeline stages and rejects others', () => {
@@ -26,4 +26,5 @@ test('CRM reads are degrade-safe when Supabase is not configured (no throw)', as
   assert.deepEqual(await setProspectStage('x', 'won'), { ok: false, skipped: true });
   assert.deepEqual(await createProspect({ email: 'a@b.co' }), { ok: false, skipped: true });
   assert.deepEqual(await logTouch('x', 'email', 'hi'), { ok: false, skipped: true });
+  assert.deepEqual(await captureInboundLead({ email: 'a@b.co', source: 'contact_form' }), { ok: false, skipped: true });
 });
