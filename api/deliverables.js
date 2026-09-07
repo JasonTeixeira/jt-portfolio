@@ -11,7 +11,7 @@
  */
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
-import { checkToken } from '../lib/admin-auth.mjs';
+import { authorizeAdmin } from '../lib/admin-auth.mjs';
 import {
   isEnabled, signDeliverableUpload, registerDeliverable, listDeliverables,
   signDeliverableDownload, deleteDeliverable,
@@ -21,7 +21,7 @@ const str = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
 
 async function handler(req, res) {
   if (await rateLimited(clientIp(req), 60, 'admin')) return res.status(429).json({ ok: false, error: 'slow_down' });
-  if (!checkToken(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
+  if (!(await authorizeAdmin(req))) return res.status(401).json({ ok: false, error: 'unauthorized' });
   if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, files: [] });
 
   if (req.method === 'GET') {
