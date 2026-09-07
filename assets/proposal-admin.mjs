@@ -470,6 +470,48 @@ function renderDetail(mount, row, key, project, milestones, contracts) {
 
   mount.appendChild(renderContractsCard(row, key, contracts));
   mount.appendChild(renderMilestonesCard(project, milestones, key));
+  mount.appendChild(renderMessagesCard(project, key));
+}
+
+// ---- Messages (operator side of the client thread) -------------------------
+function renderMessagesCard(project, key) {
+  const card = h('div', { class: 'admin-card', style: 'margin-top:16px' });
+  card.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'Messages'), h('span', { class: 'line' })));
+  if (!project) { card.appendChild(h('p', { class: 'subtle' }, 'Messages open once the deposit is paid and a project exists.')); return card; }
+  const thread = h('div', { style: 'display:flex;flex-direction:column;gap:10px;margin:12px 0' });
+  const empty = h('p', { class: 'subtle', style: 'font-size:13px' }, 'No messages yet.');
+  function bubble(m) {
+    const mine = m.sender === 'operator';
+    return h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:82%;border:1px solid var(--line);border-radius:14px;padding:9px 13px;background:${mine ? 'rgba(16,185,129,0.08)' : '#0F0F13'}` },
+      h('div', { style: 'font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:3px' }, mine ? 'You (Jason)' : 'Client'),
+      h('div', { style: 'font-size:13.5px;line-height:1.55;color:var(--ink);white-space:pre-wrap' }, m.body),
+      h('div', { class: 'mono', style: 'font-size:10px;color:var(--faint);margin-top:4px' }, formatAge(m.created_at)));
+  }
+  function load() {
+    apiGet(`/api/messages?projectId=${encodeURIComponent(project.id)}`, key).then((r) => {
+      const msgs = r.json && r.json.ok ? (r.json.messages || []) : [];
+      clear(thread);
+      if (!msgs.length) thread.appendChild(empty); else msgs.forEach((m) => thread.appendChild(bubble(m)));
+    }).catch(() => {});
+  }
+  card.appendChild(thread);
+  const ta = h('textarea', { rows: '3', placeholder: 'Reply to the client…', style: 'width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:13.5px;padding:10px 12px;resize:vertical' });
+  const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:8px 16px;font-size:13px' }, 'Send reply');
+  const st = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
+  btn.addEventListener('click', () => {
+    const text = (ta.value || '').trim();
+    if (text.length < 1) return;
+    btn.disabled = true; clear(st); st.appendChild(document.createTextNode('Sending…'));
+    fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-token': key }, body: JSON.stringify({ projectId: project.id, body: text }) })
+      .then((r) => r.json().catch(() => null)).then((d) => {
+        btn.disabled = false; clear(st);
+        if (d && d.ok) { if (thread.contains(empty)) clear(thread); thread.appendChild(bubble({ sender: 'operator', body: text, created_at: new Date().toISOString() })); ta.value = ''; }
+        else { st.appendChild(document.createTextNode('Couldn’t send.')); }
+      }).catch(() => { btn.disabled = false; clear(st); st.appendChild(document.createTextNode('Network error.')); });
+  });
+  card.appendChild(h('div', {}, ta, h('div', { style: 'display:flex;align-items:center' }, btn, st)));
+  load();
+  return card;
 }
 
 // ---- Pipeline / CRM (prospects) --------------------------------------------

@@ -172,6 +172,45 @@ function buildMilestoneRow(m, portalToken) {
 }
 
 /* ── the real page: header + plan + milestone timeline + payment + agreement ── */
+function fmtTime(iso) { try { return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return ''; } }
+
+/* ── client <-> operator message thread ── */
+function buildMessagesCard(view, portalToken) {
+  const card = h('div', { class: 'portal-card' });
+  card.appendChild(h('h2', { class: 'portal-card-title' }, 'Messages'));
+  card.appendChild(h('p', { class: 'subtle', style: 'margin:-4px 0 14px;font-size:13px' }, 'Message Jason directly about your project — he’s notified by email when you send.'));
+  const thread = h('div', { style: 'display:flex;flex-direction:column;gap:10px;margin-bottom:14px' });
+  const empty = h('p', { class: 'subtle', style: 'font-size:13px' }, 'No messages yet.');
+  function addBubble(m) {
+    const mine = m.sender === 'client';
+    thread.appendChild(h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:82%;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:${mine ? 'rgba(34,211,238,0.08)' : 'var(--card)'}` },
+      h('div', { style: 'font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-bottom:4px' }, mine ? 'You' : 'Jason'),
+      h('div', { style: 'font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-wrap' }, m.body),
+      h('div', { style: 'font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:5px' }, fmtTime(m.created_at)),
+    ));
+  }
+  const msgs = Array.isArray(view.messages) ? view.messages : [];
+  if (!msgs.length) thread.appendChild(empty); else msgs.forEach(addBubble);
+  card.appendChild(thread);
+
+  const ta = h('textarea', { rows: '3', placeholder: 'Write a message…', style: 'width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;resize:vertical' });
+  const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:9px 18px;font-size:13px' }, 'Send');
+  const status = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
+  btn.addEventListener('click', () => {
+    const text = (ta.value || '').trim();
+    if (text.length < 1) return;
+    btn.disabled = true; clear(status); status.appendChild(document.createTextNode('Sending…'));
+    fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'message', portalToken, body: text }) })
+      .then((r) => r.json().catch(() => null)).then((d) => {
+        btn.disabled = false; clear(status);
+        if (d && d.ok) { if (thread.contains(empty)) clear(thread); addBubble({ sender: 'client', body: text, created_at: new Date().toISOString() }); ta.value = ''; }
+        else { status.appendChild(document.createTextNode('Couldn’t send — try again or email ')); status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL)); status.appendChild(document.createTextNode('.')); }
+      }).catch(() => { btn.disabled = false; clear(status); status.appendChild(document.createTextNode('Network error.')); });
+  });
+  card.appendChild(h('div', {}, ta, h('div', { style: 'display:flex;align-items:center' }, btn, status)));
+  return card;
+}
+
 function renderPortal(root, view, portalToken) {
   clear(root);
   const plan = view.plan || {};
@@ -220,6 +259,9 @@ function renderPortal(root, view, portalToken) {
     h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Deposit paid'), h('span', { class: 'val' }, money(plan.deposit_cents))),
     h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance due on delivery'), h('span', { class: 'val' }, money(plan.balance_cents))),
   ));
+
+  // Messages — two-way thread with Jason.
+  root.appendChild(buildMessagesCard(view, portalToken));
 
   // Agreement — only shown once a contract has been sent (or accepted).
   if (view.contract && view.contract.public_id) {
