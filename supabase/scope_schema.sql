@@ -193,3 +193,25 @@ alter table scope_deliverable_files enable row level security;
 -- Balance payment (separate from the deposit which uses paid_at/status).
 alter table scope_proposals add column if not exists balance_paid_at timestamptz;
 alter table scope_proposals add column if not exists balance_stripe_session text;
+
+-- ── Calendar & scheduling (operator cockpit; service-role only, RLS deny-all) ──
+create table if not exists scope_calendar_events (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  kind text not null default 'meeting' check (kind in ('meeting','call','deadline','task','reminder')),
+  starts_at timestamptz not null,
+  ends_at timestamptz,
+  all_day boolean not null default false,
+  location text,
+  url text,
+  notes text,
+  status text not null default 'scheduled' check (status in ('scheduled','done','canceled')),
+  prospect_id uuid references scope_prospects(id) on delete set null,
+  project_id uuid references scope_projects(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_scope_cal_starts on scope_calendar_events (starts_at);
+create index if not exists idx_scope_cal_prospect on scope_calendar_events (prospect_id);
+create index if not exists idx_scope_cal_project on scope_calendar_events (project_id);
+alter table scope_calendar_events enable row level security;
