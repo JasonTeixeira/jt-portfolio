@@ -9,47 +9,43 @@
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css?v=20260901b">
-<style>
-  .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:var(--bg)}
-  .auth-card{width:100%;max-width:420px;border:1px solid var(--line);background:var(--card);border-radius:18px;padding:clamp(26px,4vw,38px)}
-  .auth-kick{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
-  .auth-card h1{font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.9rem,1.3rem+2vw,2.6rem);letter-spacing:-.02em;margin:10px 0 6px;line-height:1.05}
-  .auth-card .sub{color:var(--faint);font-size:14px;margin:0 0 22px}
-  .auth-field{display:block;margin-bottom:14px}
-  .auth-field span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
-  .auth-field input{width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:15px;padding:12px 14px}
-  .auth-field input:focus{outline:2px solid var(--cyan);outline-offset:1px}
-  .auth-btn{width:100%;padding:13px;font-size:15px;margin-top:6px}
-  .auth-msg{font-size:13px;margin-top:14px;min-height:18px}
-  .auth-msg.err{color:var(--rose,#f43f5e)}
-  .auth-msg.ok{color:var(--green)}
-  .auth-links{display:flex;justify-content:center;gap:12px;margin-top:20px;font-size:13px}
-  .auth-links a{color:var(--cyan);text-decoration:none}
-  .auth-home{position:fixed;top:20px;left:22px;font-family:var(--mono);font-size:13px;color:var(--faint);text-decoration:none}
-</style>
+<link rel="stylesheet" href="assets/auth.css?v=20260907">
 </head>
 <body>
-<a class="auth-home" href="index.html">&larr; jason.teixeira<span style="color:var(--green)">()</span></a>
-<main class="auth-wrap">
-  <div class="auth-card" id="card"></div>
+<main class="auth-shell">
+  <section class="auth-panel">
+    <a class="auth-brand" href="index.html">&larr; <b>jason.teixeira</b><span class="p">()</span></a>
+    <div class="auth-inner" id="card"></div>
+  </section>
+  <aside class="auth-stage" aria-hidden="true">
+    <canvas id="viz"></canvas>
+    <div class="auth-caption">
+      <div class="term" id="term"></div>
+      <div class="tag">Back in, in <em>a moment</em>.</div>
+    </div>
+  </aside>
 </main>
 <script type="module">
   import { requestReset, updatePassword } from './assets/auth.mjs';
+  import { mountAuthVisual, mountAuthTerminal } from './assets/auth-visual.mjs';
+  mountAuthVisual(document.getElementById('viz'));
+  mountAuthTerminal(document.getElementById('term'), ['> secure recovery channel', '> verifying request', '> everything here is tested']);
   const card = document.getElementById('card');
   // Supabase sends the recovery link back with tokens in the URL hash.
   const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''));
   const recoveryToken = hash.get('type') === 'recovery' ? hash.get('access_token') : null;
-
+  // STATIC HTML ONLY — never interpolate user/URL-derived data into these template
+  // strings (recoveryToken, Supabase error text, query params). This is an innerHTML sink.
   function el(html) { const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
 
   if (recoveryToken) {
     card.appendChild(el(`
       <div>
-        <div class="auth-kick">choose a new password</div>
+        <div class="auth-eyebrow"><span class="dot"></span> choose a new password</div>
         <h1>Set a new password</h1>
         <p class="sub">Enter a new password for your account.</p>
-        <form id="f">
-          <label class="auth-field"><span>New password</span><input type="password" id="pw" autocomplete="new-password" minlength="8" required></label>
+        <form id="f" novalidate>
+          <label class="auth-field"><span>New password</span><input type="password" id="pw" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required></label>
           <button type="submit" class="btn-solid green auth-btn" id="btn">Update password</button>
           <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
         </form>
@@ -68,15 +64,15 @@
   } else {
     card.appendChild(el(`
       <div>
-        <div class="auth-kick">password reset</div>
+        <div class="auth-eyebrow"><span class="dot"></span> password reset</div>
         <h1>Reset your password</h1>
-        <p class="sub">Enter your email and we’ll send a reset link.</p>
-        <form id="f">
-          <label class="auth-field"><span>Email</span><input type="email" id="email" autocomplete="email" required></label>
+        <p class="sub">Enter your email and we’ll send a secure reset link.</p>
+        <form id="f" novalidate>
+          <label class="auth-field"><span>Email</span><input type="email" id="email" autocomplete="email" placeholder="you@company.com" required></label>
           <button type="submit" class="btn-solid green auth-btn" id="btn">Send reset link</button>
           <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
         </form>
-        <div class="auth-links"><a href="login.html">Back to log in</a></div>
+        <div class="auth-links center"><a href="login.html">Back to log in</a></div>
       </div>`));
     const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn');
     f.addEventListener('submit', async (e) => {
