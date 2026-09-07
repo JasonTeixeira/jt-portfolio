@@ -169,3 +169,23 @@ create table if not exists scope_messages (
 );
 create index if not exists scope_messages_project on scope_messages(project_id, created_at);
 alter table scope_messages enable row level security;
+
+-- ============================================================================
+-- Deliverable files (private 'deliverables' bucket; access via signed URLs only).
+-- ============================================================================
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('deliverables', 'deliverables', false, 52428800)
+on conflict (id) do nothing;
+
+create table if not exists scope_deliverable_files (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references scope_projects(id) on delete cascade,
+  milestone_id uuid references scope_milestones(id) on delete set null,
+  name text not null,
+  storage_path text not null,
+  size_bytes bigint,
+  content_type text,
+  created_at timestamptz not null default now()
+);
+create index if not exists scope_deliverable_files_project on scope_deliverable_files(project_id, created_at);
+alter table scope_deliverable_files enable row level security;
