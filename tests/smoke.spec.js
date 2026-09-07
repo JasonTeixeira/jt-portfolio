@@ -963,9 +963,10 @@ test.describe('proposal page', () => {
     expect(errors).toEqual([]);
   });
 
-  test('admin console with no token shows "Not authorized"', async ({ page }) => {
+  test('admin console with no token/session prompts operator sign-in', async ({ page }) => {
     await page.goto('/proposal-admin.html');
-    await expect(page.locator('body')).toContainText('Not authorized');
+    await expect(page.locator('body')).toContainText('Operator sign-in required');
+    await expect(page.locator('a[href="login.html?next=proposal-admin.html"]')).toBeVisible();
   });
 });
 
