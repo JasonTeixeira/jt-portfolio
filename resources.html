@@ -16,7 +16,8 @@
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css?v=20260901b">
-<link rel="stylesheet" href="assets/resources.css?v=20260908">
+<link rel="stylesheet" href="assets/client.css?v=20260908">
+<link rel="stylesheet" href="assets/resources.css?v=20260908b">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -52,6 +53,11 @@
       <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
     </div>
   </nav>
+
+  <header class="cx-top rc-authonly" id="rc-client-top">
+    <a class="cx-brand" href="dashboard.html"><span class="cx-logo"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span><span class="cx-brandtext">Sage Ideas <span class="s">· client workspace</span></span></a>
+    <div class="cx-top-right"><a href="dashboard.html" style="color:#22d3ee;text-decoration:none;font-size:13px">&larr; Dashboard</a><span id="rc-client-email"></span><button type="button" class="cx-logout" id="rc-client-logout">Log out</button></div>
+  </header>
 
   <header class="rc-wrap" style="padding-top:clamp(48px,7vw,84px)">
     <div class="rc-kick">Client resource center</div>
@@ -181,6 +187,7 @@
     <!-- WELCOME & ONBOARDING -->
     <section class="rc-panel" id="panel-welcome" role="tabpanel" hidden>
       <p class="rc-intro">Signed on? Here's exactly what the first two weeks look like, a checklist to get us moving, and how your private client portal works.</p>
+      <div id="rc-engagement" class="rc-authonly"></div>
       <div class="rc-rule"><span class="lbl">your first two weeks</span><span class="line"></span></div>
       <div class="rc-steps">
         <div class="rc-stepc"><div class="w">Day 0</div><h4>Kickoff call</h4><p>We align on scope, success criteria, and access. You get your portal link.</p></div>

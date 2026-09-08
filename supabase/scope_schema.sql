@@ -275,3 +275,14 @@ alter table scope_content enable row level security;
 -- Client 360 hub: per-client operator notes + external links (GitHub/Drive/Figma).
 alter table scope_prospects add column if not exists notes text;
 alter table scope_prospects add column if not exists links jsonb not null default '[]'::jsonb;
+
+-- Per-client manual onboarding-step state (server-persisted, keyed by Supabase Auth
+-- user id). Applied 2026-09-08. Service-role only; the /api/client-onboarding endpoint
+-- verifies the caller's JWT and scopes every row to their own user_id.
+create table if not exists public.scope_client_onboarding (
+  user_id uuid primary key,
+  steps jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+alter table public.scope_client_onboarding enable row level security;

@@ -5,6 +5,7 @@ import {
   listProspectEvents, setProspectStage, prospectStageCounts,
   createProspect, logTouch, captureInboundLead, marketingSummary,
   clientList, clientDetail, updateClientMeta, bulkImportProspects,
+  getClientOnboarding, setClientOnboardingStep, CLIENT_ONBOARDING_STEPS,
 } from '../../lib/scope-db.mjs';
 
 test('isValidStage accepts the 5 pipeline stages and rejects others', () => {
@@ -33,4 +34,10 @@ test('CRM reads are degrade-safe when Supabase is not configured (no throw)', as
   assert.deepEqual(await clientDetail('id'), { ok: false, skipped: true });
   assert.deepEqual(await updateClientMeta('id', { notes: 'x' }), { ok: false, skipped: true });
   assert.deepEqual(await bulkImportProspects([{ email: 'a@b.co' }]), { ok: false, skipped: true });
+  assert.deepEqual(await getClientOnboarding('00000000-0000-0000-0000-000000000000'), { ok: false, skipped: true });
+  assert.deepEqual(await setClientOnboardingStep('00000000-0000-0000-0000-000000000000', 'repo_access', true), { ok: false, skipped: true });
+});
+
+test('CLIENT_ONBOARDING_STEPS is a fixed whitelist of manual steps', () => {
+  assert.deepEqual(CLIENT_ONBOARDING_STEPS, ['repo_access', 'shared_feature', 'kickoff_booked', 'billing_contact']);
 });

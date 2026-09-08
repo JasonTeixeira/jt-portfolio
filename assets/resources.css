@@ -171,3 +171,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+
+/* ── auth-adaptive chrome: swap marketing nav for the client workspace header ── */
+.rc-authonly { display:none; }
+body.rc-authed .site-nav { display:none; }
+body.rc-authed #rc-client-top { display:flex; }
+body.rc-authed #rc-engagement { display:block; margin-bottom:24px; }
+@media print { body.rc-authed #rc-client-top { display:none; } }
+
+/* ── keyboard focus for the disclosure "buttons" + checklist rows ── */
+.rc-track-h:focus-visible, .rc-phase-h:focus-visible, .rc-acc-h:focus-visible, .rc-check:focus-visible, .rc-tab:focus-visible {
+  outline:2px solid var(--cyan); outline-offset:2px; border-radius:8px;
+}
