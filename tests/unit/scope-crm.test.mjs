@@ -4,7 +4,7 @@ import {
   isValidStage, isValidTouch, isEnabled, listProspects, getProspect,
   listProspectEvents, setProspectStage, prospectStageCounts,
   createProspect, logTouch, captureInboundLead, marketingSummary,
-  clientList, clientDetail, updateClientMeta,
+  clientList, clientDetail, updateClientMeta, bulkImportProspects,
 } from '../../lib/scope-db.mjs';
 
 test('isValidStage accepts the 5 pipeline stages and rejects others', () => {
@@ -32,4 +32,5 @@ test('CRM reads are degrade-safe when Supabase is not configured (no throw)', as
   assert.deepEqual(await clientList(), { ok: false, skipped: true });
   assert.deepEqual(await clientDetail('id'), { ok: false, skipped: true });
   assert.deepEqual(await updateClientMeta('id', { notes: 'x' }), { ok: false, skipped: true });
+  assert.deepEqual(await bulkImportProspects([{ email: 'a@b.co' }]), { ok: false, skipped: true });
 });

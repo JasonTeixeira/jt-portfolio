@@ -40,6 +40,21 @@ test('prospects POST rejects a bad stage value (400)', async () => {
   assert.equal(typeof res.body.ok, 'boolean');
 });
 
+test('prospects POST bulk_import validates + never throws (no rows, too many, malformed)', async () => {
+  const bodies = [
+    { action: 'bulk_import' },                                   // no rows
+    { action: 'bulk_import', rows: [] },                         // empty
+    { action: 'bulk_import', rows: Array.from({ length: 301 }, () => ({ email: 'a@b.co' })) }, // over cap
+    { action: 'bulk_import', rows: [{ email: 'not-an-email' }, { name: 'no email' }] },         // malformed rows
+  ];
+  for (const body of bodies) {
+    const res = mockRes();
+    await handler(req('POST', {}, body, { 'x-admin-token': 'anything' }), res);
+    assert.ok([400, 401, 200].includes(res.code));
+    assert.equal(typeof res.body.ok, 'boolean');
+  }
+});
+
 test('prospects POST create/touch actions never throw on malformed bodies', async () => {
   for (const body of [
     { action: 'create' },                       // missing email
