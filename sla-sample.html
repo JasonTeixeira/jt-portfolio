@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Service Level Agreement — Sage Ideas LLC</title>
+<meta name="description" content="A sample Service Level Agreement for an ongoing AI systems support & maintenance (Operate) engagement: services covered, response targets, monitoring, escalation, and reporting.">
+<meta name="robots" content="noindex">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="stylesheet" href="assets/doc.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<main class="paper">
+  <div class="doc-head">
+    <div class="brand">Sage&nbsp;Ideas<span class="g">.</span>
+      <span class="sub">Jason Teixeira · AI engineering &amp; quality</span>
+    </div>
+    <div class="doc-meta">
+      <div><b>Service Level Agreement</b></div>
+      <div>Ref: SLA-SAMPLE-01</div>
+      <div>Version 1.0 · Illustrative</div>
+      <div>agency.sageideas.dev</div>
+    </div>
+  </div>
+
+  <div class="doc-kicker">Service level agreement &middot; the Operate phase</div>
+  <h1 class="doc-title">Ongoing support &amp; maintenance for a live AI system.</h1>
+  <p class="doc-lede">When you'd rather a system be <em>run</em> than handed off, this is the shape of the ongoing relationship: what's covered, how fast I respond, how you know it's healthy, and what happens when something drifts. It's a support agreement for a consulting engagement — not a five-nines infrastructure uptime guarantee.</p>
+
+  <div class="doc-banner">
+    <b>Sample document — not legal advice.</b> This is an illustrative template to show how an Operate engagement is structured. It is not a binding agreement and has not been reviewed for your jurisdiction. Real terms are scoped with you and reviewed by your counsel before signing.
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">1</span><h2>Scope of covered services</h2></div>
+    <p><span class="lead-in">What this covers.</span> Ongoing operation of the AI system built during the engagement — the feature, its eval/test harness, and the CI gates — running in <b>your</b> infrastructure.</p>
+    <ul>
+      <li><b>Monitoring</b> — health, quality drift, cost, and error-rate signals on the covered system.</li>
+      <li><b>Maintenance</b> — dependency updates, prompt/model tuning within the agreed scope, and eval-suite upkeep.</li>
+      <li><b>Regression runs</b> — the eval and test gates continue to run on a defined cadence; failures are triaged.</li>
+      <li><b>Support</b> — a named channel for issues and questions about the covered system.</li>
+    </ul>
+    <p><span class="lead-in">Out of scope.</span> New features, net-new integrations, unrelated systems, and incidents caused by third-party outages or changes made by your team outside the covered code. These are quoted separately.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">2</span><h2>Response targets</h2></div>
+    <p>Targets are for <b>response</b> (acknowledgement and start of work), measured in business hours. Because this is a solo consulting engagement, targets are commitments to responsiveness, not a staffed 24/7 NOC.</p>
+    <table class="doc">
+      <thead><tr><th>Severity</th><th>Example</th><th class="r">Response target</th></tr></thead>
+      <tbody>
+        <tr><th>S1 · Critical</th><td>Covered system down or returning unsafe output to customers</td><td class="r">Same business day</td></tr>
+        <tr><th>S2 · High</th><td>Quality gate failing, degraded but running</td><td class="r">1 business day</td></tr>
+        <tr><th>S3 · Normal</th><td>Non-urgent question, minor issue, tuning request</td><td class="r">2–3 business days</td></tr>
+      </tbody>
+    </table>
+    <p class="fine">Business hours and time zone are stated in the signed agreement. Outside covered hours, S1 issues are handled on a best-effort basis.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">3</span><h2>Reporting &amp; transparency</h2></div>
+    <p>You get a periodic summary — regression-run results, any drift caught, changes made, and cost. No black box: the monitoring and gates run in your infrastructure, and you can see them any time.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="num">4</span><h2>Commercials &amp; term</h2></div>
+    <p><span class="lead-in">Retainer.</span> A monthly retainer sized to the covered scope and expected activity, agreed in writing. <span class="band">indicative, scoped per engagement</span></p>
+    <p><span class="lead-in">Term.</span> Month-to-month unless a fixed term is agreed, with a notice period for either party. Nothing is retained on my side after the relationship ends — the system continues to run in your infrastructure.</p>
+  </div>
+
+  <div class="sign">
+    <div class="line"><span class="who">Client</span><span class="role">Authorized signatory</span></div>
+    <div class="line"><span class="who">Jason Teixeira</span><span class="role">Sage Ideas LLC</span></div>
+  </div>
+
+  <p class="fine">Sage Ideas LLC · Illustrative sample, not a binding agreement and not legal advice. Have your counsel review any agreement before signing.</p>
+  <p class="no-print" style="margin-top:20px;font-family:var(--mono);font-size:10.5px;color:#837D77">Sample SLA · <a href="#" onclick="window.print();return false" style="color:#0F6B4F">save as PDF ↓</a> · <a href="resources.html" style="color:#0F6B4F">← resources</a></p>
+</main>
+</body>
+</html>

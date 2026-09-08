@@ -180,6 +180,10 @@ async function handler(req, res) {
     console.error('[portal] approveMilestone failed', approved.error || '');
     return res.status(200).json({ ok: false, reason: 'write_failed' });
   }
+  if (approved.approved) {
+    sendOperator({ subject: 'Milestone approved by client', text: `${body.name.trim()} just approved a delivered milestone on their project.` })
+      .catch((e) => console.error('[portal] approve notify failed', (e && e.message) || e));
+  }
   return res.status(200).json({ ok: true, approved: Boolean(approved.approved) });
 }
 

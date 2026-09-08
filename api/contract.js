@@ -1,6 +1,7 @@
 import { withObserve } from '../lib/observe.mjs';
 import { isEnabled, getContractByPublicId, acceptContract } from '../lib/portal-db.mjs';
 import { CONTRACT_CAVEAT } from '../assets/contract-core.mjs';
+import { sendOperator } from '../lib/notify.mjs';
 
 // Only a contract that has been sent (or already accepted) is visible to the client.
 // Drafts stay invisible — matches the proposal-draft convention.
@@ -46,6 +47,10 @@ async function handler(req, res) {
   // Past the isEnabled() gate, a failure is a real write error — not "not configured".
   // Report it honestly so the client sees "something went wrong", not "not switched on".
   if (!acc.ok) { console.error('[contract] accept failed', acc.error || ''); return res.status(200).json({ ok: false, reason: 'write_failed' }); }
+  if (acc.accepted) {
+    sendOperator({ subject: 'Contract signed by client', text: `${body.name.trim()} just signed the ${row.kind === 'msa' ? 'MSA' : 'SOW'}.\nContract: ${row.public_id || publicId}` })
+      .catch((e) => console.error('[contract] accept notify failed', (e && e.message) || e));
+  }
   return res.status(200).json({ ok: true, accepted: Boolean(acc.accepted) });
 }
 
