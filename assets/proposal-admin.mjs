@@ -3,7 +3,7 @@
 // All dynamic values (client email, scope notes, etc.) go through textContent —
 // never innerHTML — since this data is client-editable.
 import { depositCents, balanceCents, money, PROPOSAL_STATUS } from './proposal-core.mjs';
-import { getSession } from './auth.mjs';
+import { getSession, signOut } from './auth.mjs';
 import { renderCalendar as renderCalendarView } from './admin-calendar.mjs';
 import { renderTasks as renderTasksView } from './admin-tasks.mjs';
 import { renderMoneyBody } from './admin-money.mjs';
@@ -774,23 +774,9 @@ function renderPipeline(root, key) {
   load();
 }
 
-function tabBar(active, root, key) {
-  function tab(id, label) {
-    const on = id === active;
-    const b = h('button', { type: 'button', class: on ? 'btn-solid green' : 'btn-ghost', style: 'padding:8px 16px;font-size:13px' }, label);
-    if (!on) b.addEventListener('click', () => {
-      if (id === 'pipeline') renderPipeline(root, key);
-      else if (id === 'money') renderMoney(root, key);
-      else if (id === 'calendar') renderCalendar(root, key);
-      else if (id === 'tasks') renderTasks(root, key);
-      else if (id === 'marketing') renderMarketing(root, key);
-      else if (id === 'content') renderContent(root, key);
-      else renderProposals(root, key);
-    });
-    return b;
-  }
-  return h('div', { style: 'display:flex;gap:10px;margin-bottom:4px;flex-wrap:wrap' }, tab('pipeline', 'Pipeline'), tab('calendar', 'Calendar'), tab('tasks', 'Tasks & budgets'), tab('marketing', 'Marketing'), tab('content', 'Content'), tab('money', 'Money'), tab('proposals', 'Proposals'));
-}
+// Navigation now lives in the app-shell sidebar (see buildNav/navigate). The old
+// in-content tab bar is neutralized to an empty node so existing view code is unchanged.
+function tabBar() { return h('div', { style: 'display:none' }); }
 
 // Money command center — real figures from the proposals ledger (see admin-money.mjs).
 function renderMoney(root, key) {
@@ -870,17 +856,117 @@ function renderProposals(root, key) {
   }).catch(() => renderServerError(root));
 }
 
+// Mission-control home — at-a-glance across money, pipeline, work, and schedule.
+function renderOverview(root) {
+  clear(root);
+  const wrap = h('div', {});
+  wrap.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'cockpit · overview'), h('span', { class: 'line' })));
+  wrap.appendChild(h('h1', { class: 'sec-title' }, 'Overview'));
+  const statMount = h('div', { class: 'stat-row' });
+  const grid = h('div', { class: 'ax-grid', style: 'margin-top:22px' });
+  wrap.appendChild(statMount);
+  wrap.appendChild(grid);
+  root.appendChild(wrap);
+
+  const stat = (n, l, color) => h('div', { class: 'stat' }, h('div', { class: 'n', style: color ? `color:${color}` : '' }, n), h('div', { class: 'l' }, l));
+  const panel = (title, span) => { const p = h('div', { class: 'ax-panel', style: `grid-column:span ${span}` }, h('h3', {}, title)); grid.appendChild(p); return p; };
+  const line = (a, b, color) => h('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid #17171d;font-size:13px' }, h('span', { style: 'min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' }, a), h('span', { class: 'mono', style: `font-size:11px;flex:none;color:${color || 'var(--faint)'}` }, b));
+  const moreBtn = (label, id, mount) => { const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:12px;padding:6px 12px;font-size:12px' }, label); btn.addEventListener('click', () => navigate(id)); mount.appendChild(btn); };
+
+  apiGet('/api/revenue').then((r) => {
+    if (r.unauthorized) { renderNotAuthorized(root); return; }
+    clear(statMount);
+    const v = r.json && r.json.ok && r.json.revenue ? r.json.revenue : null;
+    if (v) {
+      statMount.appendChild(stat(money(v.collectedCents), 'Collected', '#10b981'));
+      statMount.appendChild(stat(money(v.outstandingCents), 'Outstanding', '#F59E0B'));
+      statMount.appendChild(stat(money(v.pipelineCents), 'Open pipeline', '#22d3ee'));
+      statMount.appendChild(stat(String(v.wonCount), 'Deals won'));
+    } else { statMount.appendChild(stat('$0', 'Collected', '#10b981')); statMount.appendChild(stat('—', 'No revenue yet')); }
+  }).catch(() => {});
+
+  const needs = panel('Needs you now', 6); const needsL = h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'); needs.appendChild(needsL);
+  apiGet('/api/marketing').then((r) => {
+    needsL.remove(); if (r.unauthorized) return;
+    const leads = r.json && r.json.ok ? (r.json.leads || []).filter((l) => l.needsAction) : [];
+    if (!leads.length) { needs.appendChild(h('p', { class: 'subtle', style: 'font-size:13px' }, 'Nothing needs a touch right now.')); return; }
+    for (const l of leads.slice(0, 6)) needs.appendChild(line(l.name || l.email || 'Lead', `${l.daysSinceActivity}d · ${l.suggestedAction}`, '#F59E0B'));
+    moreBtn('Open Marketing →', 'marketing', needs);
+  }).catch(() => {});
+
+  const up = panel('Upcoming', 6); const upL = h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'); up.appendChild(upL);
+  apiGet('/api/calendar?upcoming=1').then((r) => {
+    upL.remove(); if (r.unauthorized) return;
+    const ev = r.json && r.json.ok ? (r.json.events || []) : [];
+    if (!ev.length) { up.appendChild(h('p', { class: 'subtle', style: 'font-size:13px' }, 'Nothing scheduled ahead.')); return; }
+    for (const e of ev.slice(0, 6)) { let d; try { d = new Date(e.starts_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch { d = ''; } up.appendChild(line(e.title, d || '')); }
+    moreBtn('Open Calendar →', 'calendar', up);
+  }).catch(() => {});
+
+  const tk = panel('Open tasks', 12); const tkL = h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'); tk.appendChild(tkL);
+  apiGet('/api/tasks').then((r) => {
+    tkL.remove(); if (r.unauthorized) return;
+    const tasks = r.json && r.json.ok ? (r.json.tasks || []).filter((t) => t.status !== 'done') : [];
+    if (!tasks.length) { tk.appendChild(h('p', { class: 'subtle', style: 'font-size:13px' }, 'No open tasks.')); return; }
+    for (const t of tasks.slice(0, 8)) tk.appendChild(line(t.title, t.status, t.priority === 'high' ? '#f43f5e' : 'var(--faint)'));
+    moreBtn('Open Tasks →', 'tasks', tk);
+  }).catch(() => {});
+}
+
+// ── App-shell navigation ────────────────────────────────────────────────────
+const SECTIONS = [
+  { id: 'overview', label: 'Overview', ico: '◱', fn: renderOverview },
+  { id: 'pipeline', label: 'Pipeline', ico: '⇉', fn: renderPipeline },
+  { id: 'calendar', label: 'Calendar', ico: '▦', fn: renderCalendar },
+  { id: 'tasks', label: 'Tasks & budgets', ico: '✓', fn: renderTasks },
+  { id: 'marketing', label: 'Marketing', ico: '◎', fn: renderMarketing },
+  { id: 'content', label: 'Content', ico: '✎', fn: renderContent },
+  { id: 'money', label: 'Money', ico: '$', fn: renderMoney },
+  { id: 'proposals', label: 'Proposals', ico: '▤', fn: renderProposals },
+];
+let ADMIN_KEY = '';
+
+function navigate(id) {
+  const sec = SECTIONS.find((s) => s.id === id) || SECTIONS[0];
+  const root = document.getElementById('admin-root');
+  const nav = document.getElementById('ax-nav');
+  if (nav) for (const b of nav.querySelectorAll('.ax-navitem')) b.classList.toggle('on', b.dataset.id === sec.id);
+  const title = document.getElementById('ax-top-title');
+  if (title) title.textContent = sec.label;
+  clear(root);
+  try { location.hash = sec.id; } catch { /* ignore */ }
+  sec.fn(root, ADMIN_KEY);
+}
+
+function buildShell(email) {
+  const nav = document.getElementById('ax-nav');
+  if (nav) {
+    clear(nav);
+    for (const s of SECTIONS) {
+      const b = h('button', { type: 'button', class: 'ax-navitem', 'data-id': s.id },
+        h('span', { class: 'ax-ico' }, s.ico), h('span', {}, s.label));
+      b.addEventListener('click', () => navigate(s.id));
+      nav.appendChild(b);
+    }
+  }
+  const emailEl = document.getElementById('ax-email');
+  if (emailEl && email) emailEl.textContent = email;
+  const logout = document.getElementById('ax-logout');
+  if (logout) logout.addEventListener('click', async () => { try { await signOut(); } catch { /* ignore */ } location.href = 'login.html'; });
+}
+
 async function init() {
   const root = document.getElementById('admin-root');
   if (!root) return;
 
   const key = (new URLSearchParams(location.search).get('key') || '').trim();
   const session = getSession();
+  ADMIN_KEY = key;
   if (key) AUTH = { mode: 'key', value: key };
   else if (session && session.access_token) AUTH = { mode: 'jwt', value: session.access_token };
   if (!AUTH) { renderLoginPrompt(root); return; }
 
-  // Auth/config probe via the proposals endpoint, then default to the Pipeline (CRM) view.
+  // Auth/config probe, then boot the shell + land on the requested section (or Overview).
   let result;
   try {
     result = await apiGet('/api/proposal-admin?list=1', key);
@@ -890,7 +976,9 @@ async function init() {
   }
   if (result.unauthorized) { renderNotAuthorized(root); return; }
   if (!result.json || !result.json.ok) { renderUnconfigured(root); return; }
-  renderPipeline(root, key);
+  buildShell(session && session.email);
+  const start = (location.hash || '').replace(/^#/, '');
+  navigate(SECTIONS.some((s) => s.id === start) ? start : 'overview');
 }
 
 init().catch(() => {
