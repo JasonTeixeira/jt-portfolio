@@ -88,6 +88,46 @@
   <script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"LLM Evaluation Consultant — Eval Suites & Gates","about":"What an LLM-evaluation engagement delivers: a 4-dimension rubric (grounding, hallucination, safety & injection, answer quality), a golden-set → LLM-as-judge → CI-gate methodology, and proof it blocks bad releases.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/llm-evaluation-consultant.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/index.html#services"},{"@type":"ListItem","position":3,"name":"LLM Evaluation Consultant","item":"https://agency.sageideas.dev/llm-evaluation-consultant.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is an LLM evaluation, concretely?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A repeatable way to score your model’s output — accuracy, faithfulness, safety — against known-good cases, so a prompt or model change that makes things worse is caught before it ships."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many test cases do you need to start?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Usually 50–200 representative cases — enough signal to gate on — expanded as real failure modes surface in production."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can you gate our CI on eval results?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The eval runs in CI and blocks the merge if a threshold regresses (citation coverage, hallucination rate, injection resistance). Red before production, not after."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which frameworks and models do you use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Provider-agnostic — Promptfoo, DeepEval, and Pytest against an OpenAI-compatible interface, using your models and your accounts wherever possible."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
@@ -338,6 +378,26 @@
         <a href="eval.html#byo" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">&#9654; try the live judge</a>
         <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">the full service &rarr;</a>
       </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">frequently asked</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Questions, answered.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What is an LLM evaluation, concretely?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A repeatable way to score your model’s output — accuracy, faithfulness, safety — against known-good cases, so a prompt or model change that makes things worse is caught before it ships.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How many test cases do you need to start?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Usually 50–200 representative cases — enough signal to gate on — expanded as real failure modes surface in production.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Can you gate our CI on eval results?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Yes. The eval runs in CI and blocks the merge if a threshold regresses (citation coverage, hallucination rate, injection resistance). Red before production, not after.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Which frameworks and models do you use?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Provider-agnostic — Promptfoo, DeepEval, and Pytest against an OpenAI-compatible interface, using your models and your accounts wherever possible.</div>
+      </details>
     </section>
   </main>
 

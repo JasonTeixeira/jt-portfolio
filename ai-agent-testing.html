@@ -74,6 +74,46 @@
   <script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"AI Agent Testing: What Breaks in Production","about":"Failure modes of agentic AI systems that unit tests miss — multi-turn drift, tool-call errors, prompt injection across turns, non-determinism — and the multi-turn golden probes, red-team battery, and robustness checks that catch them.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/ai-agent-testing.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"AI Agent Testing","item":"https://agency.sageideas.dev/ai-agent-testing.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why are agents harder to test than a single prompt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "They take multi-step actions with tools and memory, so failures compound across steps and the same input can take different paths. You test the whole trajectory, not just the final answer."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What do you actually check on an agent?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tool-call correctness, loop and termination behavior, guardrail adherence, cost and latency, and recovery from a bad step — plus the end-to-end outcome."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this work with LangGraph or a custom loop?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The same families of checks apply whether it’s LangGraph, a custom agent loop, or another framework; I wire the harness to your implementation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can you gate deploys on agent evals?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The agent eval runs in CI and blocks a release that regresses on the trajectories that matter."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
@@ -341,6 +381,26 @@
         <a href="eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">▸ try the live eval demo</a>
         <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">LLM evaluation &amp; QA &rarr;</a>
       </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">frequently asked</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Questions, answered.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Why are agents harder to test than a single prompt?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">They take multi-step actions with tools and memory, so failures compound across steps and the same input can take different paths. You test the whole trajectory, not just the final answer.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What do you actually check on an agent?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Tool-call correctness, loop and termination behavior, guardrail adherence, cost and latency, and recovery from a bad step — plus the end-to-end outcome.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Does this work with LangGraph or a custom loop?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Yes. The same families of checks apply whether it’s LangGraph, a custom agent loop, or another framework; I wire the harness to your implementation.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Can you gate deploys on agent evals?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Yes. The agent eval runs in CI and blocks a release that regresses on the trajectories that matter.</div>
+      </details>
     </section>
   </main>
 

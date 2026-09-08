@@ -18,6 +18,16 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Test automation + CI","description":"Freelance QA automation engineer (ISTQB Test Automation Engineer). Risk-scoped Playwright/Pytest regression suites with traces, reports, and artifacts — wired into GitHub Actions from day one.","url":"https://agency.sageideas.dev/services/test-automation-ci.html","provider":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"areaServed":"Remote (US)","serviceType":"Test automation + CI","offers":[{"@type":"Offer","name":"Test automation + CI — Suite Audit","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"Risk map of your release path, honest read on the current suite (including whether it's worth saving), and a prioritized plan you own — the fastest way to a concrete quote."},{"@type":"Offer","name":"Test automation + CI — Stabilize Sprint","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"The flake protocol installed on your existing suite: quarantine lane, retry policy, isolation fixes — red becomes meaningful again."},{"@type":"Offer","name":"Test automation + CI — Regression Suite Build","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"Risk-scoped Playwright/Pytest coverage with traces, reporters, CI wiring, and the discipline documents your team maintains after I leave."}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/index.html#services"},{"@type":"ListItem","position":3,"name":"Test automation + CI","item":"https://agency.sageideas.dev/services/test-automation-ci.html"}]}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Selenium, Cypress, or Playwright?","acceptedAnswer":{"@type":"Answer","text":"Playwright for new builds — speed, tracing, and parallelism. I've shipped 300+ test Selenium frameworks at Fortune-50 scale, so migrations are familiar territory."}},
+{"@type":"Question","name":"Can you fix our existing flaky suite instead of rebuilding?","acceptedAnswer":{"@type":"Answer","text":"Usually yes — in a prior role I cut a live suite's flake rate from ~10% to under 1% with retry logic and isolation fixes. Rebuild is the last resort, not the default. (Self-reported.)"}},
+{"@type":"Question","name":"Do you do load testing?","acceptedAnswer":{"@type":"Answer","text":"k6 baselines on the critical path are part of the standard engagement; deeper performance work is scoped separately."}},
+{"@type":"Question","name":"How do you price this?","acceptedAnswer":{"@type":"Answer","text":"Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a one-week audit, and that fee credits into the build if you continue."}},
+{"@type":"Question","name":"How long until the suite is green and trusted?","acceptedAnswer":{"@type":"Answer","text":"A quarantine lane and the first stable CI run typically land within about two weeks; from there red means red and the suite keeps getting faster."}},
+{"@type":"Question","name":"What do we own at the end?","acceptedAnswer":{"@type":"Answer","text":"The suite and your CI config live in your repo, documented, with a coverage and flake report — nothing retained on my side after handoff."}}
+]}
+</script>
 </head>
 <body>
 <div style="min-height:100vh;background:#09090B;position:relative">
@@ -143,6 +153,19 @@
     </div>
   </section>
 
+  <section style="max-width:920px;margin:0 auto;padding:12px clamp(18px,4vw,40px) 0">
+    <div class="sec-rule"><span class="sec-label" style="color:#10b981">worked example</span><span class="line"></span></div>
+    <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);margin:16px 0 8px">Making red mean something again.</h2>
+    <div style="border:1px solid #2A2826;background:#0C0C0E;border-radius:14px;padding:clamp(18px,3vw,26px);margin-top:12px">
+      <p style="font-size:14px;line-height:1.7;color:#A8A29E;margin:0 0 12px">A live suite ran <b style="color:#F4F2EF">500+ tests against real trading workflows</b> — but red had stopped meaning anything, so the team had learned to re-run until green. That's how a real regression ships.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="border-left:2px solid #f43f5e;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#f43f5e">before</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0"><b style="color:#F4F2EF">~10%</b> flake rate · <b style="color:#F4F2EF">45-minute</b> runs · red ignored by default.</p></div>
+        <div style="border-left:2px solid #10b981;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#10b981">after</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0"><b style="color:#F4F2EF">&lt;1%</b> flake · <b style="color:#F4F2EF">8-minute</b> runs · a quarantine lane so red blocks the merge.</p></div>
+      </div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6E6862;margin:14px 0 0">Diagnosed source (shared state, timing, ordering) and fixed isolation — no rebuild. Prior full-time role; figures self-reported.</p>
+    </div>
+  </section>
+
   <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 64px">
     <div class="sec-rule"><span class="sec-label" style="color:#10b981">questions</span><span class="line"></span></div>
     <div style="margin-top:16px">
@@ -160,6 +183,21 @@
       <details class="faq" style="border-color:#2A2826">
         <summary style="color:#F4F2EF">Do you do load testing?</summary>
         <p style="color:#A8A29E">k6 baselines on the critical path are part of the standard engagement; deeper performance work is scoped separately.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How do you price this?</summary>
+        <p style="color:#A8A29E">Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a one-week audit, and that fee credits into the build if you continue.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How long until the suite is green and trusted?</summary>
+        <p style="color:#A8A29E">A quarantine lane and the first stable CI run typically land within about two weeks; from there red means red and the suite keeps getting faster.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">What do we own at the end?</summary>
+        <p style="color:#A8A29E">The suite and your CI config live in your repo, documented, with a coverage and flake report — nothing retained on my side after handoff.</p>
       </details>
     </div>
     <div style="margin-top:44px;text-align:center;border:1px solid #2A2826;background:#0C0C0E;padding:clamp(28px,5vw,48px)">

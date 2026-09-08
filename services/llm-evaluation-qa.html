@@ -18,6 +18,16 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"LLM evaluation & AI quality","description":"Freelance LLM evaluation and AI QA engineer. Golden datasets, LLM-as-judge scoring, hallucination and prompt-injection testing with Promptfoo/DeepEval — wired into your CI so quality regressions block the deploy.","url":"https://agency.sageideas.dev/services/llm-evaluation-qa.html","provider":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"areaServed":"Remote (US)","serviceType":"LLM evaluation & AI quality","offers":[{"@type":"Offer","name":"LLM evaluation & AI quality — Eval Audit","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"I map where your LLM feature can fail, score your current coverage against the failure modes that matter, and hand you a prioritized plan you own. The fastest way to a concrete quote."},{"@type":"Offer","name":"LLM evaluation & AI quality — Minimum Viable Gate","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"30–50 golden traces, one judge, one CI step that can block a merge. The regression you currently can't see, caught this month."},{"@type":"Offer","name":"LLM evaluation & AI quality — Full Eval Battery","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"Safety runners, ratcheting floors, RAG retrieval metrics, cost budgets, runbook and handoff — the complete quality system, owned by your team."}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/index.html#services"},{"@type":"ListItem","position":3,"name":"LLM evaluation & AI quality","item":"https://agency.sageideas.dev/services/llm-evaluation-qa.html"}]}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Which tools do you use?","acceptedAnswer":{"@type":"Answer","text":"Promptfoo and DeepEval where they fit, custom runners where they don't. The tool matters less than the discipline: computed scores from real commands, never opinions."}},
+{"@type":"Question","name":"Our feature uses RAG — does that change the approach?","acceptedAnswer":{"@type":"Answer","text":"It adds retrieval-quality evals (context precision/recall, citation coverage) in front of the generation evals."}},
+{"@type":"Question","name":"How long until we have a working gate?","acceptedAnswer":{"@type":"Answer","text":"A minimal gate — 30 golden traces and one faithfulness judge in CI — typically lands in the first two weeks. The battery grows from there."}},
+{"@type":"Question","name":"How do you price this?","acceptedAnswer":{"@type":"Answer","text":"There's no fixed price list — the work is scoped and quoted in writing after a short call. Most engagements start with a one-week audit, and that fee credits into the build if you continue."}},
+{"@type":"Question","name":"We already have some tests — do you rip them out?","acceptedAnswer":{"@type":"Answer","text":"No. I extend and harden what you have before considering a rebuild. Evals sit alongside your existing tests."}},
+{"@type":"Question","name":"What do we own at the end?","acceptedAnswer":{"@type":"Answer","text":"Everything: the eval suite in your repo, the CI gate in your pipeline, a runbook your team operates, and no retained dependency on me. It runs on your models and your accounts."}}
+]}
+</script>
 </head>
 <body>
 <div style="min-height:100vh;background:#09090B;position:relative">
@@ -148,6 +158,18 @@
     </div>
   </section>
 
+  <section style="max-width:920px;margin:0 auto;padding:12px clamp(18px,4vw,40px) 0">
+    <div class="sec-rule"><span class="sec-label" style="color:#a78bfa">worked example</span><span class="line"></span></div>
+    <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);margin:16px 0 8px">What "caught at the gate" looks like.</h2>
+    <div style="border:1px solid #2A2826;background:#0C0C0E;border-radius:14px;padding:clamp(18px,3vw,26px);margin-top:12px">
+      <p style="font-size:14px;line-height:1.7;color:#A8A29E;margin:0 0 12px">A support-bot team couldn't tell whether a new prompt helped or hurt — every version "looked fine" in a spot check. We built <b style="color:#F4F2EF">120 graded cases</b>, added a faithfulness + citation gate, and wired it into CI.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="border-left:2px solid #f43f5e;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#f43f5e">before the gate</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">The next "harmless" prompt tweak shipped — and quietly dropped citation coverage to <b style="color:#F4F2EF">71%</b>. Nobody knew until a customer hit it.</p></div>
+        <div style="border-left:2px solid #10b981;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#10b981">after the gate</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">The same change <b style="color:#F4F2EF">turned the PR red</b> in CI — caught in review, fixed before merge, never reached production.</p></div>
+      </div>
+    </div>
+  </section>
+
   <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 64px">
     <div class="sec-rule"><span class="sec-label" style="color:#a78bfa">questions</span><span class="line"></span></div>
     <div style="margin-top:16px">
@@ -165,6 +187,21 @@
       <details class="faq" style="border-color:#2A2826">
         <summary style="color:#F4F2EF">How long until we have a working gate?</summary>
         <p style="color:#A8A29E">A minimal gate — 30 golden traces and one faithfulness judge in CI — typically lands in the first two weeks. The battery grows from there.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How do you price this?</summary>
+        <p style="color:#A8A29E">There's no fixed price list — the work is scoped and quoted in writing after a short call, fixed scope rather than open-ended hours. Most engagements start with a one-week audit, and that fee credits into the build if you continue.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">We already have some tests — do you rip them out?</summary>
+        <p style="color:#A8A29E">No. I extend and harden what you have before considering a rebuild. Evals sit alongside your existing tests; keeping your coverage and making it trustworthy is faster and cheaper than starting over.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">What do we own at the end?</summary>
+        <p style="color:#A8A29E">Everything: the eval suite in your repo, the CI gate in your pipeline, a runbook your team operates, and no retained dependency on me. It runs on your models and your accounts.</p>
       </details>
     </div>
     <div style="margin-top:44px;text-align:center;border:1px solid #2A2826;background:#0C0C0E;padding:clamp(28px,5vw,48px)">

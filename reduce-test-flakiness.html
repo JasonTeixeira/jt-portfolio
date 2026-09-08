@@ -87,6 +87,46 @@
   <script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"Cut Test Flakiness: 10% to Under 1%","about":"A protocol for reducing test flakiness in CI so a red run signals a real regression: diagnose flake sources, quarantine and set a retry policy, fix isolation, and keep the existing suite.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/reduce-test-flakiness.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Reduce Test Flakiness","item":"https://agency.sageideas.dev/reduce-test-flakiness.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What actually causes flaky tests?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Almost always shared state, timing and races, or test-ordering dependencies — not bad luck. I diagnose the source instead of blanket-retrying."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you just add retries?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Retries are a stopgap that hides the signal. I install a quarantine lane and retry policy while fixing the root cause — isolation, waits, fixtures."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will you rebuild our whole suite?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Rarely. Keeping your existing suite and making it trustworthy is faster and cheaper; a rebuild is the last resort, not the first move."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What result can I expect?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A fast, stable suite where red means red. In a prior full-time role I cut a live suite’s flake rate from ~10% to under 1% and runtime from 45 to 8 minutes (self-reported)."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
@@ -370,6 +410,26 @@
         <a href="book.html" class="cta" data-evt="flake-book">Book a call &rarr;</a>
         <a href="services/test-automation-ci.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">Test automation &amp; CI service &rarr;</a>
       </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">frequently asked</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Questions, answered.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What actually causes flaky tests?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Almost always shared state, timing and races, or test-ordering dependencies — not bad luck. I diagnose the source instead of blanket-retrying.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Do you just add retries?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Retries are a stopgap that hides the signal. I install a quarantine lane and retry policy while fixing the root cause — isolation, waits, fixtures.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Will you rebuild our whole suite?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Rarely. Keeping your existing suite and making it trustworthy is faster and cheaper; a rebuild is the last resort, not the first move.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What result can I expect?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A fast, stable suite where red means red. In a prior full-time role I cut a live suite’s flake rate from ~10% to under 1% and runtime from 45 to 8 minutes (self-reported).</div>
+      </details>
     </section>
   </main>
 

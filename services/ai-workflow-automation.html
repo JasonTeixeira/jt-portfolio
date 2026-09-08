@@ -18,6 +18,16 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"AI workflow automation","description":"Freelance AI automation engineer. Intake, triage, routing, and RAG-backed workflows on n8n, Make, or LangGraph — with human-in-the-loop approval points, structured outputs, and logs you can audit.","url":"https://agency.sageideas.dev/services/ai-workflow-automation.html","provider":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"areaServed":"Remote (US)","serviceType":"AI workflow automation","offers":[{"@type":"Offer","name":"AI workflow automation — Automation Audit","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"I map your intake → decision → action flows, find the single highest-leverage automation, and hand you a plan with the risk gates drawn in — the fastest way to a concrete quote."},{"@type":"Offer","name":"AI workflow automation — One-Workflow Sprint","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"One scoped workflow shipped end-to-end in your accounts — intake, classify, route, act — with human approval points and full run logs."},{"@type":"Offer","name":"AI workflow automation — Automation System Build","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"The full pipeline: multiple workflows, eval-gated AI steps, cost model, structured outputs, runbook and handoff."}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/index.html#services"},{"@type":"ListItem","position":3,"name":"AI workflow automation","item":"https://agency.sageideas.dev/services/ai-workflow-automation.html"}]}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"n8n, Make, Zapier, or custom code?","acceptedAnswer":{"@type":"Answer","text":"Whichever your team can own after I leave. Make/Zapier for linear flows, n8n when you need branching and self-hosting, LangGraph when the logic is genuinely agentic."}},
+{"@type":"Question","name":"Will the AI talk to our customers?","acceptedAnswer":{"@type":"Answer","text":"Not until an eval suite proves it should. The most reliable automation I've shipped sends zero AI-written messages — it reads, classifies, routes, and alerts a human, which deletes entire failure classes."}},
+{"@type":"Question","name":"What does this cost to run?","acceptedAnswer":{"@type":"Answer","text":"Part of the build is a cost model — per-run LLM spend tracked and budgeted, with cheaper models routed in where quality allows."}},
+{"@type":"Question","name":"How do you price this?","acceptedAnswer":{"@type":"Answer","text":"Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a one-week audit that credits into the build if you continue."}},
+{"@type":"Question","name":"How do you keep it from breaking silently?","acceptedAnswer":{"@type":"Answer","text":"Monitoring and alerts around the automation, plus an eval on the AI step — so if quality drifts or an integration changes, you find out before your customer does."}},
+{"@type":"Question","name":"What do we own at the end?","acceptedAnswer":{"@type":"Answer","text":"The automation runs in your infrastructure and accounts, with docs and monitoring your team operates. Nothing is retained on my side after handoff."}}
+]}
+</script>
 </head>
 <body>
 <div style="min-height:100vh;background:#09090B;position:relative">
@@ -143,6 +153,19 @@
     </div>
   </section>
 
+  <section style="max-width:920px;margin:0 auto;padding:12px clamp(18px,4vw,40px) 0">
+    <div class="sec-rule"><span class="sec-label" style="color:#0e7490">worked example</span><span class="line"></span></div>
+    <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);margin:16px 0 8px">The boring middle, automated.</h2>
+    <div style="border:1px solid #2A2826;background:#0C0C0E;border-radius:14px;padding:clamp(18px,3vw,26px);margin-top:12px">
+      <p style="font-size:14px;line-height:1.7;color:#A8A29E;margin:0 0 12px">Take inbound-request triage — an ops person reading every message, tagging it, and routing it by hand between an inbox, a spreadsheet, and the right queue. The classic time sink.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="border-left:2px solid #f43f5e;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#f43f5e">before</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">Manual copy-paste, inconsistent tagging, no audit trail, and the person is the bottleneck.</p></div>
+        <div style="border-left:2px solid #10b981;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#10b981">the reliable design</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">The automation reads, classifies, routes, and posts a summary to the human — sending <b style="color:#F4F2EF">zero AI-written customer messages</b>, so the riskiest failure class is designed out. Monitoring + an eval catch drift.</p></div>
+      </div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6E6862;margin:14px 0 0">Representative of the pattern — the exact steps, tools, and where a human stays in the loop are scoped with you.</p>
+    </div>
+  </section>
+
   <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 64px">
     <div class="sec-rule"><span class="sec-label" style="color:#0e7490">questions</span><span class="line"></span></div>
     <div style="margin-top:16px">
@@ -160,6 +183,21 @@
       <details class="faq" style="border-color:#2A2826">
         <summary style="color:#F4F2EF">What does this cost to run?</summary>
         <p style="color:#A8A29E">Part of the build is a cost model — per-run LLM spend tracked and budgeted, with cheaper models routed in where quality allows.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How do you price this?</summary>
+        <p style="color:#A8A29E">Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a one-week audit that credits into the build if you continue.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How do you keep it from breaking silently?</summary>
+        <p style="color:#A8A29E">Monitoring and alerts around the automation, plus an eval on the AI step — so if quality drifts or an integration changes, you find out before your customer does, not after.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">What do we own at the end?</summary>
+        <p style="color:#A8A29E">The automation runs in your infrastructure and accounts, with docs and monitoring your team operates. Nothing is retained on my side after handoff.</p>
       </details>
     </div>
     <div style="margin-top:44px;text-align:center;border:1px solid #2A2826;background:#0C0C0E;padding:clamp(28px,5vw,48px)">

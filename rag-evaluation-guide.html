@@ -88,6 +88,46 @@
   <script defer src="/_vercel/insights/script.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"RAG Evaluation: Citation Coverage & Groundedness","about":"A concrete methodology for testing retrieval-augmented generation systems: citation coverage, retrieval precision, groundedness, abstention, and latency.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/rag-evaluation-guide.html","image":"https://agency.sageideas.dev/assets/og.png","dateCreated":"2026-09-05"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"RAG Evaluation Guide","item":"https://agency.sageideas.dev/rag-evaluation-guide.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How is testing RAG different from a plain LLM?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "RAG has two failure surfaces: retrieval (did it fetch the right context?) and generation (did it answer faithfully and cite it?). You must measure both — a confident answer from the wrong chunk is still wrong."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you measure faithfulness and hallucination?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Each answer is scored against its retrieved context with LLM-as-judge plus deterministic citation checks, so an answer that isn’t grounded in a real source fails even when it reads well."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can the RAG eval run in CI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The suite gates merges — a retrieval or prompt change that drops citation coverage goes red before it ships."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What do we get at the end?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A graded RAG eval suite in your repo, a scored dashboard, a CI gate, and a runbook your team can operate."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
@@ -291,6 +331,47 @@
         <a href="eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">try the live eval demo &rarr;</a>
         <a href="case-studies.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">see the 100%-cited build &rarr;</a>
       </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label" style="color:var(--cyan)">worked example</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 8px">What the gate actually catches.</h2>
+      <p class="lede" style="margin:0 0 20px">A real RAG failure isn't a crash — it's a confident, wrong answer that reads fine. Here's one the eval catches:</p>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:clamp(18px,3vw,26px)">
+        <div style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)">Query</div>
+        <p style="font-size:15px;color:var(--ink);margin:6px 0 18px">"What's our refund window for enterprise plans?"</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="border:1px solid color-mix(in oklab,var(--rose) 40%,var(--line));border-radius:10px;padding:14px 16px;background:color-mix(in oklab,var(--rose) 7%,transparent)">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose)">✕ retrieved the wrong chunk</div>
+            <p style="font-size:13px;color:var(--dim);line-height:1.6;margin:8px 0 0">Top match was the <b style="color:var(--ink)">consumer</b> policy ("30-day money-back"). The model answered <b style="color:var(--ink)">"Yes — 30 days"</b> — fluent, confident, and wrong for enterprise. A human skims it and ships it.</p>
+          </div>
+          <div style="border:1px solid color-mix(in oklab,var(--green) 40%,var(--line));border-radius:10px;padding:14px 16px;background:color-mix(in oklab,var(--green) 7%,transparent)">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--green)">✓ gate catches it, then corrected</div>
+            <p style="font-size:13px;color:var(--dim);line-height:1.6;margin:8px 0 0">Faithfulness scoring flags that the answer isn't grounded in an <b style="color:var(--ink)">enterprise</b> source — <b style="color:var(--ink)">fails the citation gate</b>. Retrieval is tuned to fetch the order-form terms; the corrected answer cites the right clause.</p>
+          </div>
+        </div>
+        <p style="font-family:var(--mono);font-size:11.5px;color:var(--faint);margin:16px 0 0">The point: the wrong answer looked <em>identical</em> in quality to the right one. Only a grounding check told them apart.</p>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">frequently asked</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Questions, answered.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How is testing RAG different from a plain LLM?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">RAG has two failure surfaces: retrieval (did it fetch the right context?) and generation (did it answer faithfully and cite it?). You must measure both — a confident answer from the wrong chunk is still wrong.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How do you measure faithfulness and hallucination?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Each answer is scored against its retrieved context with LLM-as-judge plus deterministic citation checks, so an answer that isn’t grounded in a real source fails even when it reads well.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Can the RAG eval run in CI?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Yes. The suite gates merges — a retrieval or prompt change that drops citation coverage goes red before it ships.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What do we get at the end?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A graded RAG eval suite in your repo, a scored dashboard, a CI gate, and a runbook your team can operate.</div>
+      </details>
     </section>
   </main>
 
