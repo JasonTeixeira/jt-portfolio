@@ -105,6 +105,8 @@
     <div class="site-nav-links" id="site-nav-panel">
       <a href="services.html" class="site-nav-link">Services</a>
       <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="proof.html" class="site-nav-link">Proof</a>
+      <a href="resources.html" class="site-nav-link">Resources</a>
       <a href="lab.html" class="site-nav-link">Lab</a>
       <a href="build.html" class="site-nav-link">Scope a project</a>
       <a href="docs.html" class="site-nav-link">Docs</a>
@@ -374,7 +376,7 @@
     var labels=['lead captured','AI classified: "plumbing · urgent"','routed to on-call tech','AI drafted the reply','human approved → booked + logged'];
     var i=0;
     function step(){
-      if(i>=PATH.length){ running=false; playBtn.textContent='▶ run another'; statusEl.textContent='✓ booked in 4.2s — zero missed'; statusEl.style.color='#10b981'; return; }
+      if(i>=PATH.length){ running=false; playBtn.textContent='▶ run another'; statusEl.textContent='✓ booked — simulated demo, not a live call'; statusEl.style.color='#10b981'; return; }
       var n=NODES[PATH[i]]; pkt.setAttribute('opacity','1'); pkt.setAttribute('cx',n.x); pkt.setAttribute('cy',n.y);
       pkt.setAttribute('fill', i>=4?'#10b981':i>=1?'#F59E0B':'#22d3ee');
       flash(PATH[i], i>=4); statusEl.style.color=''; statusEl.textContent=labels[i]||'';
