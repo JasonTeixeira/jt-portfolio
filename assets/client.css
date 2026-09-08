@@ -1,0 +1,45 @@
+/* Client workspace shell — shared by the client dashboard + project portal.
+   Its own clean chrome (no marketing nav / lang switcher / footer). Premium,
+   focused, trustworthy. Uses site.css tokens; falls back if absent. */
+
+.cx-page { min-height:100vh; min-height:100dvh; background:var(--bg,#09090B); color:var(--ink,#F4F2EF); display:flex; flex-direction:column; }
+
+.cx-top { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px clamp(18px,4vw,44px); background:rgba(9,9,11,0.86); backdrop-filter:blur(14px); border-bottom:1px solid var(--line,#2A2826); }
+.cx-brand { display:inline-flex; align-items:center; gap:11px; color:var(--ink,#F4F2EF); text-decoration:none; }
+.cx-logo { width:28px; height:28px; border:1px solid var(--line,#2A2826); border-radius:7px; display:inline-flex; align-items:center; justify-content:center; font-family:var(--mono,monospace); font-size:11px; font-weight:700; background:var(--card,#0C0C0E); }
+.cx-brandtext { font-family:var(--mono,monospace); font-size:13px; font-weight:600; letter-spacing:.01em; }
+.cx-brandtext .s { color:var(--faint,#8E8882); font-weight:400; }
+.cx-top-right { display:flex; align-items:center; gap:14px; font-family:var(--mono,monospace); font-size:12px; color:var(--faint,#8E8882); }
+.cx-top-right a { color:var(--faint,#8E8882); text-decoration:none; }
+.cx-top-right a:hover { color:var(--ink,#F4F2EF); }
+.cx-chip { font-family:var(--mono,monospace); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan,#22d3ee); border:1px solid color-mix(in oklab,var(--cyan,#22d3ee) 32%,transparent); border-radius:999px; padding:4px 10px; }
+.cx-logout { background:none; border:1px solid var(--line,#2A2826); border-radius:8px; color:var(--dim,#A8A29E); font-family:var(--mono,monospace); font-size:11px; padding:6px 12px; cursor:pointer; }
+.cx-logout:hover { color:var(--ink,#F4F2EF); border-color:var(--dim,#A8A29E); }
+
+.cx-main { flex:1; width:100%; max-width:940px; margin:0 auto; padding:clamp(28px,5vw,56px) clamp(18px,4vw,32px); }
+
+/* page intro */
+.cx-eyebrow { font-family:var(--mono,monospace); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--cyan,#22d3ee); }
+.cx-h1 { font-family:var(--serif,'Instrument Serif',Georgia,serif); font-weight:400; font-size:clamp(2rem,1.4rem+2.4vw,3rem); letter-spacing:-.02em; line-height:1.04; margin:10px 0 6px; }
+.cx-sub { color:var(--dim,#A8A29E); font-size:14.5px; line-height:1.6; margin:0 0 26px; }
+
+.cx-foot { border-top:1px solid var(--line,#2A2826); padding:18px clamp(18px,4vw,44px); font-family:var(--mono,monospace); font-size:11px; color:var(--faint,#8E8882); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.cx-foot a { color:inherit; text-decoration:none; }
+.cx-foot a:hover { color:var(--ink,#F4F2EF); }
+
+/* elevated project cards (client dashboard) */
+.cx-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); gap:16px; }
+.cx-card { display:block; border:1px solid var(--line,#2A2826); background:var(--card,#0C0C0E); border-radius:16px; padding:22px 22px 18px; text-decoration:none; color:inherit; transition:border-color .18s ease, transform .18s ease; position:relative; overflow:hidden; }
+.cx-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--green,#10b981); opacity:.0; transition:opacity .18s ease; }
+.cx-card:hover { border-color:color-mix(in oklab,var(--cyan,#22d3ee) 45%,var(--line,#2A2826)); transform:translateY(-2px); }
+.cx-card:hover::before { opacity:.9; }
+.cx-card .st { font-family:var(--mono,monospace); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan,#22d3ee); }
+.cx-card .amt { font-family:var(--serif,'Instrument Serif',Georgia,serif); font-size:2rem; margin:10px 0 2px; line-height:1; }
+.cx-card .pay { font-family:var(--mono,monospace); font-size:11.5px; color:var(--faint,#8E8882); margin-top:8px; }
+.cx-card .flag { display:inline-block; font-family:var(--mono,monospace); font-size:10.5px; margin-top:12px; padding:4px 9px; border-radius:999px; border:1px solid; }
+.cx-card .flag.sign { color:var(--amber,#F59E0B); border-color:color-mix(in oklab,var(--amber,#F59E0B) 45%,transparent); background:color-mix(in oklab,var(--amber,#F59E0B) 10%,transparent); }
+.cx-card .flag.signed { color:var(--green,#10b981); border-color:color-mix(in oklab,var(--green,#10b981) 45%,transparent); background:color-mix(in oklab,var(--green,#10b981) 10%,transparent); }
+.cx-card .go { font-family:var(--mono,monospace); font-size:12px; color:var(--cyan,#22d3ee); margin-top:16px; display:inline-block; }
+.cx-empty { border:1px dashed var(--line,#2A2826); border-radius:16px; padding:40px 28px; text-align:center; color:var(--dim,#A8A29E); }
+
+@media (prefers-reduced-motion: reduce) { .cx-card:hover { transform:none; } }
