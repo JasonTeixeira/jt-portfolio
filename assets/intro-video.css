@@ -32,7 +32,7 @@
 /* scenes */
 /* extra bottom padding reserves a band for the caption + controls so centered
    scene content never collides with the subtitles */
-.scene { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:5cqw 6cqw 16cqw; box-sizing:border-box; opacity:0; visibility:hidden; transition:opacity .5s ease, visibility .5s; }
+.scene { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:5cqw 6cqw 18cqw; box-sizing:border-box; opacity:0; visibility:hidden; transition:opacity .5s ease, visibility .5s; }
 .scene.active { opacity:1; visibility:visible; }
 .s-center { text-align:center; display:flex; flex-direction:column; align-items:center; gap:2.4cqw; }
 .s-stack { width:100%; display:flex; flex-direction:column; align-items:center; gap:3cqw; }
