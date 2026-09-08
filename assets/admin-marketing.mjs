@@ -7,9 +7,9 @@ const TOUCH_KINDS = ['email', 'dm', 'call', 'meeting', 'note', 'follow_up'];
 
 function opener(lead) {
   const first = String(lead.name || '').trim().split(/\s+/)[0] || 'there';
-  const co = lead.company ? lead.company : 'your team';
-  const who = lead.segment ? lead.segment : 'small businesses';
-  return `Hi ${first} — I build and then test AI automations for ${who}: missed-call text-back, instant web-lead reply, a 24/7 receptionist. I sketched a quick idea for ${co}. Worth a 15-minute look? — Jason`;
+  const co = lead.company ? lead.company : 'your shop';
+  const who = lead.segment ? lead.segment : 'service';
+  return `Hi ${first} — I set up an AI front desk for ${who} businesses: it texts back every missed call, answers 24/7, and replies to web leads in seconds — so the jobs that hit voicemail stop going to the next guy on the list. I build it and, because I'm a QA engineer, I actually test it before it talks to your customers. Worth a quick look at what it'd catch for ${co}? — Jason`;
 }
 
 export function renderMarketing(mount, key, deps) {

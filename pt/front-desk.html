@@ -223,15 +223,51 @@
   </div></section>
 
   <!-- PRICING -->
-  <section><div class="wrap">
-    <div class="kick" style="color:var(--amber)">preços</div>
-    <h2 style="margin-top:12px">Uma taxa fixa de configuração, depois um valor mensal baixo.</h2>
-    <p class="subtle" style="margin-top:14px;max-width:58ch">Sem pacote para adivinhar. Cada configuração é definida para o seu negócio numa chamada rápida, então o número reflete o que você realmente precisa &mdash; não uma lista de preços genérica.</p>
-    <div class="price-card">
-      <div class="price-row"><span class="lbl">Configuração (pagamento único)</span><span class="val">~$1.000 para começar</span></div>
-      <div class="price-row"><span class="lbl">Operação e melhoria (mensal)</span><span class="val">~$600&ndash;800/mês</span></div>
+  <section id="pricing"><div class="wrap">
+    <div class="kick" style="color:var(--amber)">preços · planos</div>
+    <h2 style="margin-top:12px">Uma configuração, depois um plano que cresce com você.</h2>
+    <p class="subtle" style="margin-top:14px;max-width:60ch">Comece com a configuração e escolha o plano mensal que encaixa. Para a maioria dos ofícios, um único trabalho recuperado por mês já cobre &mdash; um só lead de telhado ou restauração paga o ano.</p>
+
+    <div class="price-card" style="margin-top:24px">
+      <div class="price-row" style="align-items:center;padding-top:0">
+        <div><span class="lbl" style="font-size:15px;color:var(--ink)">Recepção com IA &mdash; Configuração</span><div style="font-size:13px;color:var(--dim);margin-top:5px;max-width:52ch">Retorno de chamadas perdidas por texto, uma recepcionista com IA 24/7 e resposta instantânea a leads da web &mdash; construída e <b>testada</b> para o seu ofício. No ar em ~uma semana. Creditada no seu primeiro mês.</div></div>
+        <span class="val">$2,500 <span style="font-size:13px;color:var(--dim);font-family:inherit">pagamento único</span></span>
+      </div>
     </div>
-    <p class="price-note">Esses são números indicativos, não um orçamento final. Seu preço real depende do seu volume de ligações, suas ferramentas de agendamento, e quanta lógica de qualificação você precisa &mdash; definimos isso juntos na chamada, e você recebe um número real antes de qualquer coisa começar.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:16px">
+      <div style="border:1px solid var(--line);border-radius:16px;background:var(--card);padding:26px 24px;display:flex;flex-direction:column">
+        <div class="lbl" style="font-size:13px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em">Manter</div>
+        <div style="font-family:var(--serif);font-size:2.1rem;margin:10px 0 0;line-height:1">$2,500<span style="font-size:14px;color:var(--dim)">/mês</span></div>
+        <div style="font-size:12.5px;color:var(--dim);margin:4px 0 16px">Manter funcionando.</div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Recepcionista + retorno de chamadas + resposta a leads da web</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Monitorada e ajustada todo mês</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Relatório mensal de leads</p></div>
+        <a class="cta" href="book.html" style="margin-top:auto">Começar &rarr;</a>
+      </div>
+      <div style="border:1px solid color-mix(in oklab,var(--green) 55%,var(--line));border-radius:16px;background:color-mix(in oklab,var(--green) 6%,var(--card));padding:26px 24px;display:flex;flex-direction:column;position:relative">
+        <span style="position:absolute;top:-10px;left:24px;font-family:var(--mono,monospace);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--green);color:#04140d;padding:3px 9px;border-radius:4px">Mais popular</span>
+        <div class="lbl" style="font-size:13px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em">Crescer</div>
+        <div style="font-family:var(--serif);font-size:2.1rem;margin:10px 0 0;line-height:1">$4,500<span style="font-size:14px;color:var(--dim)">/mês</span></div>
+        <div style="font-size:12.5px;color:var(--dim);margin:4px 0 16px">Capture mais.</div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Tudo do Manter</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Agendamento online + sincronização de calendário</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Follow-up de orçamentos, avaliações, reativação</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>2 novas automações a cada trimestre</p></div>
+        <a class="cta" href="book.html" style="margin-top:auto">Começar &rarr;</a>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:16px;background:var(--card);padding:26px 24px;display:flex;flex-direction:column">
+        <div class="lbl" style="font-size:13px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em">Escalar</div>
+        <div style="font-family:var(--serif);font-size:2.1rem;margin:10px 0 0;line-height:1">$7,500<span style="font-size:14px;color:var(--dim)">/mês</span></div>
+        <div style="font-size:12.5px;color:var(--dim);margin:4px 0 16px">Multi-local.</div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Tudo do Crescer</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Múltiplos números e locais</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Fila de desenvolvimento prioritária</p></div>
+        <div class="get" style="font-size:13.5px"><span class="b">→</span><p>Revisão de estratégia trimestral</p></div>
+        <a class="cta" href="book.html" style="margin-top:auto">Começar &rarr;</a>
+      </div>
+    </div>
+    <p class="price-note">Mensalidade fixa, sem contratos longos &mdash; cancele quando quiser. O escopo da configuração é confirmado numa chamada de 15 minutos antes de começar. Os preços mostrados são do produto Recepção com IA; desenvolvimentos sob medida são orçados à parte.</p>
   </div></section>
 
   <!-- FAQ -->
