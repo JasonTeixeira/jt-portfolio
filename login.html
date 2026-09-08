@@ -48,12 +48,15 @@
   </div>
 </main>
 <script type="module">
-  import { signIn, getSession } from './assets/auth.mjs';
+  import { signIn, getSession, currentUser, clearSession } from './assets/auth.mjs';
   const params = new URLSearchParams(location.search);
   // Only allow redirecting to a LOCAL page (prevents open-redirect via ?next=//evil.com).
   const raw = params.get('next') || 'dashboard.html';
   const next = /^[a-z0-9._-]+\.html([?#].*)?$/i.test(raw) ? raw : 'dashboard.html';
-  if (getSession()) location.replace(next);
+  // Only redirect an already-signed-in visitor once the session is VALIDATED. Redirecting
+  // on mere token presence caused a login<->dashboard loop when the stored session was
+  // stale or partial (the destination requires a valid user; login used to skip that check).
+  if (getSession()) { currentUser().then((u) => { if (u) location.replace(next); else clearSession(); }).catch(() => clearSession()); }
   const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
   f.addEventListener('submit', async (e) => {
     e.preventDefault();

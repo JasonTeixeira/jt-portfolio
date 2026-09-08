@@ -48,11 +48,12 @@
   </div>
 </main>
 <script type="module">
-  import { signIn, getSession } from '/assets/auth.mjs';
+  import { signIn, getSession, currentUser, clearSession } from '/assets/auth.mjs';
   const params = new URLSearchParams(location.search);
   const raw = params.get('next') || 'dashboard.html';
   const next = /^[a-z0-9._-]+\.html([?#].*)?$/i.test(raw) ? raw : 'dashboard.html';
-  if (getSession()) location.replace(next);
+  // Only redirect once the session is validated — avoids the login<->dashboard loop.
+  if (getSession()) { currentUser().then((u) => { if (u) location.replace(next); else clearSession(); }).catch(() => clearSession()); }
   const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
   f.addEventListener('submit', async (e) => {
     e.preventDefault();

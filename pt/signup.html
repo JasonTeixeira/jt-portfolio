@@ -48,8 +48,8 @@
   </div>
 </main>
 <script type="module">
-  import { signUp, getSession, sendAuthEmail } from '/assets/auth.mjs';
-  if (getSession()) location.replace('dashboard.html');
+  import { signUp, getSession, sendAuthEmail, currentUser, clearSession } from '/assets/auth.mjs';
+  if (getSession()) { currentUser().then((u) => { if (u) location.replace('dashboard.html'); else clearSession(); }).catch(() => clearSession()); }
   const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
   f.addEventListener('submit', async (e) => {
     e.preventDefault();
