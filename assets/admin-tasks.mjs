@@ -86,7 +86,7 @@ export function renderTasks(mount, key, deps) {
         const r = await api('POST', '/api/tasks', { action: 'task_update', id: t.id, status: sel.value });
         if (r.json && r.json.ok) drawTasks(root);
       });
-      const del = h('button', { type: 'button', title: 'Delete', class: 'btn-ghost', style: 'padding:2px 7px;font-size:11px;color:#f87171', onClick: async () => { const r = await api('POST', '/api/tasks', { action: 'task_delete', id: t.id }); if (r.json && r.json.ok) drawTasks(root); } }, '✕');
+      const del = h('button', { type: 'button', title: 'Delete', class: 'btn-ghost', style: 'padding:2px 7px;font-size:11px;color:#f87171', onClick: async () => { if (!window.confirm('Delete this task?')) return; const r = await api('POST', '/api/tasks', { action: 'task_delete', id: t.id }); if (r.json && r.json.ok) drawTasks(root); } }, '✕');
       meta.appendChild(sel); meta.appendChild(del);
       card.appendChild(meta);
       return card;
@@ -193,7 +193,7 @@ export function renderTasks(mount, key, deps) {
               h('span', { class: 'mono', style: 'color:#F59E0B;width:80px;text-align:right' }, money(cst.amount_cents)),
               h('span', { style: 'color:var(--faint);width:90px' }, cst.kind),
               h('span', { style: 'flex:1' }, cst.label),
-              h('button', { type: 'button', class: 'btn-ghost', style: 'padding:2px 7px;font-size:11px;color:#f87171', onClick: async () => { const dr = await api('POST', '/api/tasks', { action: 'cost_delete', id: cst.id }); if (dr.json && dr.json.ok) drawBudget(root); } }, '✕')));
+              h('button', { type: 'button', class: 'btn-ghost', style: 'padding:2px 7px;font-size:11px;color:#f87171', onClick: async () => { if (!window.confirm('Delete this cost entry?')) return; const dr = await api('POST', '/api/tasks', { action: 'cost_delete', id: cst.id }); if (dr.json && dr.json.ok) drawBudget(root); } }, '✕')));
           }
         });
       }

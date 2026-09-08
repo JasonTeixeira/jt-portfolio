@@ -47,10 +47,12 @@
     const u = await currentUser();
     if (!u) { location.replace('login.html?next=dashboard.html'); return; }
     let data = { projects: [], admin: false, email: u.email };
+    let loadError = false;
     try {
       const r = await fetch('/api/my-projects', { headers: { Authorization: `Bearer ${s.access_token}` } });
       if (r.ok) data = await r.json();
-    } catch { /* fall through to empty */ }
+      else loadError = true; // don't render "no projects" on a 429/500/401 — that reads as "your project vanished"
+    } catch { loadError = true; }
 
     root.innerHTML = '';
     const top = el('div', 'db-top');
@@ -74,6 +76,13 @@
     }
 
     const projects = Array.isArray(data.projects) ? data.projects : [];
+    if (loadError) {
+      const e = el('div', 'db-empty');
+      e.appendChild(el('div', null, 'We couldn’t load your projects right now.'));
+      const p2 = el('p', null, 'This is on our end, not yours. Please refresh in a moment.'); p2.style.cssText = 'margin-top:8px;font-size:14px';
+      const rb = el('button', 'btn-solid green', 'Retry'); rb.style.cssText = 'margin-top:16px;padding:9px 18px;font-size:13px;cursor:pointer'; rb.addEventListener('click', () => location.reload());
+      e.appendChild(p2); e.appendChild(rb); root.appendChild(e); return;
+    }
     if (!projects.length) {
       const e = el('div', 'db-empty');
       e.appendChild(el('div', null, data.admin ? 'No client projects yet — they appear here as clients come aboard.' : 'No projects yet.'));

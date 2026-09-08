@@ -103,6 +103,19 @@ function renderNotAuthorized(root) {
   ));
 }
 
+// A transient/network failure is NOT the same as being unauthorized — show a retry,
+// not a scary "Not authorized" that implies your session died.
+function renderServerError(root) {
+  clear(root);
+  const retry = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:14px;padding:10px 18px;cursor:pointer' }, 'Retry');
+  retry.addEventListener('click', () => location.reload());
+  root.appendChild(h('div', { class: 'admin-card' },
+    h('h1', { class: 'sec-title', style: 'font-size:1.8rem;margin-top:0' }, 'Couldn’t reach the server'),
+    h('p', { class: 'subtle' }, 'This looks like a temporary network issue, not your login. Try again in a moment.'),
+    retry,
+  ));
+}
+
 function renderLoginPrompt(root) {
   clear(root);
   root.appendChild(h('div', { class: 'admin-card' },
@@ -740,9 +753,12 @@ function renderPipeline(root, key) {
   root.appendChild(wrap);
 
   function load() {
+    const errRow = (msg) => h('tr', {}, h('td', { colspan: '6', class: 'subtle', style: 'color:#F59E0B' }, msg));
     apiGet('/api/prospects?list=1', key).then((r) => {
-      const prospects = r.json && r.json.ok ? (r.json.prospects || []) : [];
-      const counts = r.json && r.json.ok ? (r.json.counts || {}) : {};
+      if (r.unauthorized) { renderNotAuthorized(root); return; } // dead session must not look like an empty CRM
+      if (!r.json || !r.json.ok) { clear(tbody); tbody.appendChild(errRow('Couldn’t load the pipeline — refresh to retry.')); return; }
+      const prospects = r.json.prospects || [];
+      const counts = r.json.counts || {};
       clear(statMount);
       for (const s of STAGE_ORDER) {
         statMount.appendChild(h('div', { class: 'stat' },
@@ -753,7 +769,7 @@ function renderPipeline(root, key) {
       clear(tbody);
       if (!prospects.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects yet — they appear here the moment someone uses the scope studio.'))); return; }
       for (const p of prospects) { const [row, tl] = prospectRow(p, key, load); tbody.appendChild(row); tbody.appendChild(tl); }
-    }).catch(() => {});
+    }).catch(() => { clear(tbody); tbody.appendChild(errRow('Couldn’t reach the server — refresh to retry.')); });
   }
   load();
 }
@@ -851,7 +867,7 @@ function renderProposals(root, key) {
     shell.appendChild(listMount);
     root.appendChild(shell);
     renderList(listMount, Array.isArray(r.json.list) ? r.json.list : [], key);
-  }).catch(() => renderNotAuthorized(root));
+  }).catch(() => renderServerError(root));
 }
 
 async function init() {
@@ -869,7 +885,7 @@ async function init() {
   try {
     result = await apiGet('/api/proposal-admin?list=1', key);
   } catch {
-    renderNotAuthorized(root);
+    renderServerError(root);
     return;
   }
   if (result.unauthorized) { renderNotAuthorized(root); return; }
@@ -879,5 +895,5 @@ async function init() {
 
 init().catch(() => {
   const root = document.getElementById('admin-root');
-  if (root) renderNotAuthorized(root);
+  if (root) renderServerError(root);
 });

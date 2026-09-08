@@ -124,6 +124,13 @@ function renderContract(root, contract, publicId) {
           submitBtn.textContent = 'Accepted';
           return;
         }
+        // Already accepted (e.g. a second tab or reload-then-resubmit) is not an error.
+        if (data && data.error === 'not_acceptable') {
+          clear(status); status.classList.remove('err'); status.classList.add('ok');
+          status.appendChild(document.createTextNode('This agreement is already accepted — you’re all set.'));
+          submitBtn.textContent = 'Accepted';
+          return;
+        }
         clear(status); status.classList.remove('ok'); status.classList.add('err');
         if (data && data.skipped) {
           status.appendChild(document.createTextNode('Acceptance isn’t switched on yet. Email Jason and he’ll confirm it another way. '));

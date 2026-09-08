@@ -256,7 +256,7 @@ function buildStepper(view, plan) {
   return card;
 }
 
-function renderPortal(root, view, portalToken) {
+function renderPortal(root, view, portalToken, opts = {}) {
   clear(root);
   const plan = view.plan || {};
   const segLabel = plan.segment && SEGMENTS[plan.segment] ? SEGMENTS[plan.segment].label : null;
@@ -323,6 +323,14 @@ function renderPortal(root, view, portalToken) {
     const printBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:12px;padding:9px 16px;font-size:13px' }, 'Print / Save PDF');
     printBtn.addEventListener('click', () => window.print());
     payCard.appendChild(printBtn);
+  } else if (plan.balance_cents > 0 && opts.justPaid) {
+    // Returned from Stripe checkout; webhook not yet processed. Suppress the pay
+    // button entirely so a second click can't create a second charge.
+    payCard.appendChild(receiptRow('Balance', plan.balance_cents, 'Payment submitted', false));
+    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, 'Total'), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
+    payCard.appendChild(h('p', { class: 'subtle', style: 'margin-top:12px;font-size:13px;color:var(--green)' }, 'Payment received — confirming it now. This page will update in a moment.'));
+    // Escape hatch so a delayed webhook never dead-ends the client (reloads without ?balance=paid).
+    payCard.appendChild(h('a', { href: `portal.html?id=${encodeURIComponent(portalToken)}`, class: 'subtle', style: 'font-size:12px;color:#22d3ee' }, 'Taking a while? Refresh →'));
   } else if (plan.balance_cents > 0) {
     payCard.appendChild(receiptRow('Balance remaining', plan.balance_cents, 'Due', false));
     payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, 'Total'), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
@@ -380,7 +388,20 @@ async function init() {
 
   // Covers no id, {ok:false} (not found / bad request), and dormant ({ok:false, reason:'not_configured'}).
   if (!json || !json.ok) { renderUnavailable(root); return; }
-  renderPortal(root, json, id);
+  // Stripe returns from balance checkout with ?balance=paid. If the webhook hasn't
+  // marked the balance paid yet, we must NOT re-show the Pay button (double-charge guard).
+  const justPaid = params.get('balance') === 'paid';
+  renderPortal(root, json, id, { justPaid });
+  // Give the webhook a moment, then refresh once to pick up the confirmed payment.
+  if (justPaid && json.plan && !json.plan.balance_paid_at) {
+    setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/portal?id=${encodeURIComponent(id)}`);
+        const j = r.ok ? await r.json().catch(() => null) : null;
+        if (j && j.ok) { clear(root); renderPortal(root, j, id, { justPaid }); }
+      } catch { /* keep the confirming state */ }
+    }, 4000);
+  }
 }
 
 init().catch(() => {
