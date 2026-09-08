@@ -49,10 +49,26 @@ export async function updatePassword(accessToken, password) {
   const r = await fetch(`${SUPA_URL}/auth/v1/user`, { method: 'PUT', headers, body: JSON.stringify({ password }) });
   return { ok: r.ok, status: r.status, data: await r.json().catch(() => ({})) };
 }
+// Exchange the stored refresh_token for a fresh access token. Keeps a returning
+// client logged in past the ~1h access-token expiry instead of bouncing them.
+export async function refreshSession() {
+  const s = getSession();
+  if (!s || !s.refresh_token) return null;
+  const r = await post(`/token?grant_type=refresh_token`, { refresh_token: s.refresh_token });
+  if (r.ok && r.data && r.data.access_token) { saveSession(r.data); return r.data; }
+  return null;
+}
 export async function currentUser() {
   const s = getSession();
   if (!s || !s.access_token) return null;
-  const r = await fetch(`${SUPA_URL}/auth/v1/user`, { headers: { ...H, Authorization: `Bearer ${s.access_token}` } });
+  let r = await fetch(`${SUPA_URL}/auth/v1/user`, { headers: { ...H, Authorization: `Bearer ${s.access_token}` } });
+  if (r.status === 401 && s.refresh_token) {
+    // access token expired — try the refresh token before giving up
+    const refreshed = await refreshSession();
+    if (refreshed && refreshed.access_token) {
+      r = await fetch(`${SUPA_URL}/auth/v1/user`, { headers: { ...H, Authorization: `Bearer ${refreshed.access_token}` } });
+    }
+  }
   if (!r.ok) { if (r.status === 401) clearSession(); return null; }
   return r.json().catch(() => null);
 }

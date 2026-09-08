@@ -43,7 +43,9 @@ async function handler(req, res) {
   if (row.status !== 'sent') return res.status(409).json({ ok: false, error: 'not_acceptable' });
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.headers['x-real-ip'] || null;
   const acc = await acceptContract(row.id, { name: body.name.trim(), ip });
-  if (!acc.ok) return res.status(200).json({ ok: false, skipped: true });
+  // Past the isEnabled() gate, a failure is a real write error — not "not configured".
+  // Report it honestly so the client sees "something went wrong", not "not switched on".
+  if (!acc.ok) { console.error('[contract] accept failed', acc.error || ''); return res.status(200).json({ ok: false, reason: 'write_failed' }); }
   return res.status(200).json({ ok: true, accepted: Boolean(acc.accepted) });
 }
 

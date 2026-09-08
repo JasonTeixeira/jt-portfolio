@@ -169,6 +169,7 @@ export function renderCalendar(mount, key, deps) {
         draw();
       }
       async function del() {
+        if (!window.confirm('Delete this event? This can’t be undone.')) return;
         const r = await api('POST', '/api/calendar', { action: 'delete', id: ev.id });
         if (r.json && r.json.ok) draw(); else err.textContent = 'Could not delete.';
       }

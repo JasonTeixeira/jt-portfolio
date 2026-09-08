@@ -94,7 +94,7 @@ export function renderContent(mount, key, deps) {
         if (!r.json || !r.json.ok) { err.textContent = (r.json && r.json.error) ? `Could not save: ${r.json.error}` : 'Could not save.'; return; }
         draw();
       }
-      async function del() { const r = await api('POST', '/api/content', { action: 'delete', id: it.id }); if (r.json && r.json.ok) draw(); else err.textContent = 'Could not delete.'; }
+      async function del() { if (!window.confirm('Delete this content item? This can’t be undone.')) return; const r = await api('POST', '/api/content', { action: 'delete', id: it.id }); if (r.json && r.json.ok) draw(); else err.textContent = 'Could not delete.'; }
       const card2 = h('div', { class: 'admin-card', style: 'margin-bottom:14px' },
         h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, editing ? 'edit content' : 'new content'), h('span', { class: 'line' })),
         h('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:12px' },
