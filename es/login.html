@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Iniciar sesión · Jason Teixeira</title>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260901b">
+<link rel="stylesheet" href="/assets/auth.css?v=20260907b">
+</head>
+<body>
+<main class="auth-shell">
+  <div class="auth-bar top">
+    <a href="/es/index.html" style="color:inherit;text-decoration:none">&larr; JASON.TEIXEIRA<span style="color:var(--a-acc)">()</span></a>
+    <span class="stat">Seguro</span>
+  </div>
+
+  <div class="auth-main">
+    <aside class="auth-rail">
+      <div class="auth-index">01 / Acceso de cliente y operador</div>
+      <div class="auth-slug">Un estudio que entrega — y luego <em>prueba</em> su trabajo.</div>
+      <div class="auth-meta"><b>Sage Ideas LLC</b><br>Chicago · Est. 2024<br>agency.sageideas.dev</div>
+    </aside>
+
+    <section class="auth-formcol">
+      <div class="inner">
+        <h1 class="auth-h">Bienvenido de nuevo</h1>
+        <p class="auth-lede">Inicia sesión en tu espacio de proyecto — estado, entregables, mensajes y facturación en un solo lugar.</p>
+        <form id="f" novalidate>
+          <label class="auth-field"><span>Correo <span class="idx">01</span></span><input class="auth-cell" type="email" id="email" autocomplete="email" placeholder="tú@empresa.com" required></label>
+          <label class="auth-field"><span>Contraseña <span class="idx">02</span></span><input class="auth-cell" type="password" id="password" autocomplete="current-password" placeholder="••••••••" required></label>
+          <button type="submit" class="auth-submit" id="btn"><span id="lbl">Iniciar sesión</span><span class="arw">&rarr;</span></button>
+          <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
+        </form>
+        <div class="auth-foot">
+          <a href="/es/reset.html">¿Olvidaste tu contraseña?</a>
+          <a href="/es/signup.html">¿Nuevo aquí? — <span class="mk">regístrate</span></a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="auth-bar bot">
+    <span>Sesión cifrada</span>
+    <span class="lit">Nexural &middot; Sage Ideas</span>
+  </div>
+</main>
+<script type="module">
+  import { signIn, getSession } from '/assets/auth.mjs';
+  const params = new URLSearchParams(location.search);
+  const raw = params.get('next') || 'dashboard.html';
+  const next = /^[a-z0-9._-]+\.html([?#].*)?$/i.test(raw) ? raw : 'dashboard.html';
+  if (getSession()) location.replace(next);
+  const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.className = 'auth-msg'; msg.textContent = '';
+    btn.disabled = true; lbl.textContent = 'Autenticando…';
+    const r = await signIn(document.getElementById('email').value.trim(), document.getElementById('password').value);
+    if (r.ok && r.data.access_token) { location.replace(next); return; }
+    btn.disabled = false; lbl.textContent = 'Iniciar sesión';
+    msg.className = 'auth-msg err';
+    msg.textContent = r.status === 400 ? '// ese correo o esa contraseña no es correcta.' : ('// ' + (r.data.msg || r.data.error_description || 'no se pudo iniciar sesión. inténtalo de nuevo.'));
+  });
+</script>
+</body>
+</html>
