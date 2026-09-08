@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof — click it yourself · Jason Teixeira</title>
+<meta name="description" content="Don't take my word for it. Two live products, open-source repos, public run captures, and a site that runs its own QA — every claim links to something you can open.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/proof.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Proof — click it yourself">
+<meta property="og:description" content="Two live products, open-source repos, public run captures, and a site that runs its own QA. Every claim links to something you can open.">
+<meta property="og:url" content="https://agency.sageideas.dev/proof.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--green); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.7; }
+  h1.pt-h { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,5.5vw,4rem); line-height:1.03; letter-spacing:-0.01em; color:var(--ink); margin:20px 0 0; }
+  h1.pt-h em { font-style:italic; color:var(--green); }
+  .cred { display:flex; flex-wrap:wrap; gap:9px; margin-top:26px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); }
+  .cred .pill .dot { width:7px; height:7px; border-radius:50%; }
+  .pgrid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:22px; }
+  .pcard { display:block; border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(22px,3vw,32px); text-decoration:none; transition:border-color .2s ease, transform .2s ease; }
+  .pcard:hover { border-color:var(--ac,var(--green)); transform:translateY(-3px); }
+  .pcard .pc-k { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac,var(--green)); }
+  .pcard h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.7rem,3vw,2.2rem); color:var(--ink); margin:8px 0 0; }
+  .pcard .pc-d { font-size:14px; line-height:1.65; color:var(--dim); margin-top:12px; }
+  .pcard .pc-stats { display:flex; gap:20px; margin-top:16px; flex-wrap:wrap; }
+  .pcard .pc-stats .n { font-family:var(--serif); font-size:22px; color:var(--ink); line-height:1; }
+  .pcard .pc-stats .u { font-family:var(--mono); font-size:8.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--faint); display:block; margin-top:4px; }
+  .pcard .pc-go { font-family:var(--mono); font-size:11.5px; color:var(--ac,var(--green)); margin-top:16px; display:inline-flex; align-items:center; gap:6px; }
+  .plive { display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--green); border:1px solid color-mix(in oklab,var(--green) 40%,var(--line)); border-radius:20px; padding:3px 9px; vertical-align:middle; margin-left:10px; }
+  .plive::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px color-mix(in oklab,var(--green) 25%,transparent); }
+  .rgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); gap:16px; margin-top:20px; }
+  .rcard { border:1px solid var(--line); border-radius:14px; background:var(--card); padding:20px 22px; }
+  .rcard h4 { font-size:15px; color:var(--ink); margin:0; font-weight:600; }
+  .rcard p { font-size:13px; line-height:1.6; color:var(--dim); margin:8px 0 0; }
+  .rcard .m { font-family:var(--serif); font-size:24px; color:var(--green); margin-top:12px; }
+  .rcard a.ev { font-family:var(--mono); font-size:11px; color:var(--cyan); margin-top:12px; display:inline-block; }
+  .statband { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:22px; }
+  .statband .s { border:1px solid var(--line); border-radius:14px; background:var(--card); padding:18px 20px; text-align:center; }
+  .statband .s .n { font-family:var(--serif); font-size:clamp(2rem,4vw,2.8rem); color:var(--ink); line-height:1; }
+  .statband .s .u { font-family:var(--mono); font-size:9.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--faint); display:block; margin-top:8px; }
+  .sec-block { padding:clamp(36px,6vw,64px) 0 0; }
+  @media (max-width:680px){ .pgrid{grid-template-columns:1fr;} .statband{grid-template-columns:1fr 1fr;} }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="proof.html" class="site-nav-link" aria-current="page">Proof</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="docs.html" class="site-nav-link">Docs</a>
+      <a href="field-notes.html" class="site-nav-link">Field Notes</a>
+      <span class="nav-social" aria-label="Social links" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Email" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px)">
+    <div class="kick">Proof &middot; don't take my word for it</div>
+    <h1 class="pt-h" style="max-width:20ch">Most consultants ask you to trust them. <em>I'd rather you clicked.</em></h1>
+    <p class="subtle" style="margin-top:22px;max-width:64ch">No logo wall, no borrowed credibility. Everything below is something I built and can show you — two live products you can log into, open-source code you can read, verbatim run captures, and this very site, which runs its own quality gates on every deploy.</p>
+    <div class="cred">
+      <span class="pill"><span class="dot" style="background:var(--green)"></span>13+ years Fortune-50 test engineering</span>
+      <span class="pill"><b>ISTQB</b> CT-AI · Test Automation Engineer</span>
+      <span class="pill"><span class="dot" style="background:var(--purple)"></span>This site runs its own QA — axe-clean, Lighthouse-gated</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- BUILT & OPERATED -->
+    <section class="sec-block">
+      <div class="sec-rule"><span class="sec-label" style="color:var(--cyan)">built &amp; operated · my own products</span><span class="line"></span></div>
+      <h2 class="sec-title" style="margin-top:14px">Two live products. One operator. Open the front door.</h2>
+      <div class="pgrid">
+        <a class="pcard" style="--ac:var(--green)" href="https://nexural.io/proof" target="_blank" rel="noopener">
+          <div class="pc-k">Flagship 1 · trading-media platform</div>
+          <h3>Nexural <span class="plive">live</span></h3>
+          <div class="pc-d">A production SaaS platform — member cockpit, admin ops, Stripe billing, real market-data engines, and a Discord AI engine running around the clock. Row-level security on every table, and a public track-record page that renders real engine output.</div>
+          <div class="pc-stats">
+            <div><span class="n">~800</span><span class="u">API routes</span></div>
+            <div><span class="n">86</span><span class="u">scheduled jobs</span></div>
+            <div><span class="n">244</span><span class="u">RLS tables</span></div>
+          </div>
+          <span class="pc-go">Open the live track record &rarr;</span>
+        </a>
+        <a class="pcard" style="--ac:var(--cyan)" href="https://sageideas.dev/academy" target="_blank" rel="noopener">
+          <div class="pc-k">Flagship 2 · learning platform</div>
+          <h3>Sage Ideas Academy <span class="plive">live</span></h3>
+          <div class="pc-d">A live learning product — a lesson player, an AI tutor wired to a real model, hands-on interactive labs, Stripe billing, and cryptographically verifiable certificates with a public verify page. Content gated by ~180 automated quality scripts.</div>
+          <div class="pc-stats">
+            <div><span class="n">26</span><span class="u">courses</span></div>
+            <div><span class="n">347</span><span class="u">lessons</span></div>
+            <div><span class="n">~180</span><span class="u">quality gates</span></div>
+          </div>
+          <span class="pc-go">Open the academy &rarr;</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- THIS SITE PROVES ITSELF -->
+    <section class="sec-block">
+      <div class="sec-rule"><span class="sec-label" style="color:var(--purple)">meta-proof · the site you're on</span><span class="line"></span></div>
+      <h2 class="sec-title" style="margin-top:14px">This site is a work sample.</h2>
+      <p class="subtle" style="margin-top:16px;max-width:62ch">The thing I sell is "ship it, then prove it works." So this site does exactly that to itself: every deploy runs a Lighthouse quality gate and an accessibility scan, it's fully localized in three languages, and the client portal, proposals, and payments are real wired systems — not mockups.</p>
+      <div class="rgrid">
+        <div class="rcard"><h4>Runs its own QA gate</h4><p>Lighthouse SEO / a11y / best-practices thresholds enforced in CI on every build — the same red-means-red discipline I bring to your repo.</p></div>
+        <div class="rcard"><h4>Interactive demos, live</h4><p>An AI grader and an AI receptionist you can try in the browser — not screenshots.</p><a class="ev" href="demos.html">Try the demos &rarr;</a></div>
+        <div class="rcard"><h4>Real eval engine</h4><p>Run an LLM-as-judge evaluation and read the scored output yourself.</p><a class="ev" href="eval.html">Open the eval demo &rarr;</a></div>
+      </div>
+    </section>
+
+    <!-- OPEN SOURCE -->
+    <section class="sec-block">
+      <div class="sec-rule"><span class="sec-label" style="color:var(--amber)">open source · read the code</span><span class="line"></span></div>
+      <h2 class="sec-title" style="margin-top:14px">Code you can read, not just claims.</h2>
+      <div class="rgrid">
+        <div class="rcard"><h4>playwright-sdet-regression-suite</h4><p>A Playwright regression suite that runs 37/37 green in CI in ~15s against a public demo site — the pattern I bring to flaky test estates.</p><a class="ev" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">View on GitHub &rarr;</a></div>
+        <div class="rcard"><h4>llm-eval-gate</h4><p>A starter eval gate for LLM output — the skeleton of the citation/quality gates I build into RAG systems.</p><a class="ev" href="https://github.com/JasonTeixeira" target="_blank" rel="noopener">Browse my GitHub &rarr;</a></div>
+        <div class="rcard"><h4>140 public repos</h4><p>The full body of work — platforms, tooling, and experiments — is public. Look around.</p><a class="ev" href="https://github.com/JasonTeixeira" target="_blank" rel="noopener">github.com/JasonTeixeira &rarr;</a></div>
+      </div>
+    </section>
+
+    <!-- CASE RECEIPTS -->
+    <section class="sec-block">
+      <div class="sec-rule"><span class="sec-label" style="color:var(--green)">case receipts · every number links to evidence</span><span class="line"></span></div>
+      <h2 class="sec-title" style="margin-top:14px">Measured outcomes, with the receipt.</h2>
+      <div class="rgrid">
+        <div class="rcard"><h4>The QA platform that refused a fake green</h4><p>A CVE gate went red mid-release, blocked the ship, and was back to 13/13 green within the hour.</p><div class="m">red&nbsp;→&nbsp;green</div><a class="ev" href="captures/nexural-qa-os.html" target="_blank" rel="noopener">See the blocked run &rarr;</a></div>
+        <div class="rcard"><h4>A suite a release manager can trust</h4><p>Playwright regression specs green in CI, in seconds, with zero flakes.</p><div class="m">37/37 · 0 flakes</div><a class="ev" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">Read the repo &rarr;</a></div>
+        <div class="rcard"><h4>An assistant that can't answer without a citation</h4><p>A RAG dashboard that enforces citation coverage on every response.</p><div class="m">100% citations</div><a class="ev" href="case-studies.html" target="_blank" rel="noopener">See the full case &rarr;</a></div>
+      </div>
+      <p class="subtle" style="margin-top:18px;font-size:13px">Full write-ups, including prior full-time roles (HighStrike, The Home Depot) with self-reported figures clearly labeled, are on the <a href="case-studies.html" class="dim-link" style="color:var(--cyan)">case studies</a> page.</p>
+    </section>
+
+    <!-- BY THE NUMBERS -->
+    <section class="sec-block">
+      <div class="sec-rule"><span class="sec-label">by the numbers · counted from source</span><span class="line"></span></div>
+      <div class="statband">
+        <div class="s"><div class="n">13+</div><span class="u">years in QA &amp; automation</span></div>
+        <div class="s"><div class="n">140</div><span class="u">public repos</span></div>
+        <div class="s"><div class="n">85</div><span class="u">quality runners built</span></div>
+        <div class="s"><div class="n">78</div><span class="u">release gates, all green</span></div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS (appears automatically once real quotes are added) -->
+    <section id="testimonials" class="sec-block" style="display:none">
+      <div class="sec-rule"><span class="sec-label" style="color:var(--cyan)">in their words</span><span class="line"></span></div>
+      <div id="tq" class="rgrid" style="margin-top:20px"></div>
+    </section>
+
+    <!-- CTA -->
+    <section class="sec-block" style="padding-bottom:clamp(48px,8vw,88px)">
+      <div style="border:1px solid var(--line);border-radius:20px;background:var(--card);padding:clamp(28px,5vw,48px);text-align:center">
+        <h2 class="sec-title" style="justify-content:center">Bring the AI feature you're not sure about.</h2>
+        <p class="subtle" style="margin:14px auto 0;max-width:52ch">A free 30-minute call. You leave with a plan whether or not we work together.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px">
+          <a href="book.html" class="btn-solid green">Book a call &rarr;</a>
+          <a href="company.html" class="btn-ghost">Company overview</a>
+          <a href="assets/Jason-Teixeira-Resume.pdf" download class="btn-ghost">Download résumé &darr;</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Social links" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Email" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="company.html" class="dim-link" style="color:inherit">company</a> · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a> · <a href="demos.html" class="dim-link" style="color:inherit">demos</a></span>
+    <span>every number labeled verified or estimated. no fake green.</span>
+  </footer>
+</div>
+<script defer src="assets/agent.js"></script>
+<script defer src="assets/nav.js"></script>
+<script defer src="assets/transitions.js"></script>
+<script>
+/* TESTIMONIALS — add real quotes here and the section appears automatically.
+   Only quote people who actually said it, ideally with a LinkedIn recommendation
+   you can link. Empty = section stays hidden. */
+(function () {
+  var TESTIMONIALS = [
+    // { quote: "…", name: "Full Name", role: "Title, Company", href: "https://linkedin.com/in/…" },
+  ];
+  if (!TESTIMONIALS.length) return;
+  var wrap = document.getElementById('tq');
+  TESTIMONIALS.forEach(function (t) {
+    var card = document.createElement('figure');
+    card.style.cssText = 'margin:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:22px';
+    var attribution = t.name + (t.role ? ' — ' + t.role : '');
+    var block = document.createElement('blockquote');
+    block.style.cssText = 'margin:0;font-size:14.5px;line-height:1.7;color:var(--ink)';
+    block.textContent = '“' + t.quote + '”';
+    var cap = document.createElement('figcaption');
+    cap.style.cssText = 'margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--faint)';
+    if (t.href) { var a = document.createElement('a'); a.href = t.href; a.style.color = 'var(--cyan)'; a.textContent = attribution + ' ↗'; cap.appendChild(a); }
+    else { cap.textContent = attribution; }
+    card.appendChild(block); card.appendChild(cap);
+    wrap.appendChild(card);
+  });
+  document.getElementById('testimonials').style.display = '';
+})();
+</script>
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+</body>
+</html>
