@@ -212,6 +212,23 @@ function buildMessagesCard(view, portalToken) {
   if (!msgs.length) thread.appendChild(empty); else msgs.forEach(addBubble);
   card.appendChild(thread);
 
+  // Poll so the client sees Jason's replies without reloading. Lightweight: refetch
+  // the portal every 25s and append only messages beyond the count we've rendered.
+  let shown = msgs.length;
+  const poll = setInterval(async () => {
+    if (!document.body.contains(card)) { clearInterval(poll); return; } // stop if navigated away
+    try {
+      const r = await fetch(`/api/portal?id=${encodeURIComponent(portalToken)}`);
+      const j = r.ok ? await r.json().catch(() => null) : null;
+      const list = j && j.ok && Array.isArray(j.messages) ? j.messages : null;
+      if (list && list.length > shown) {
+        if (thread.contains(empty)) clear(thread);
+        for (let i = shown; i < list.length; i++) addBubble(list[i]);
+        shown = list.length;
+      }
+    } catch { /* transient — try again next tick */ }
+  }, 25000);
+
   const ta = h('textarea', { rows: '3', placeholder: 'Write a message…', style: 'width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;resize:vertical' });
   const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:9px 18px;font-size:13px' }, 'Send');
   const status = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
@@ -222,7 +239,7 @@ function buildMessagesCard(view, portalToken) {
     fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'message', portalToken, body: text }) })
       .then((r) => r.json().catch(() => null)).then((d) => {
         btn.disabled = false; clear(status);
-        if (d && d.ok) { if (thread.contains(empty)) clear(thread); addBubble({ sender: 'client', body: text, created_at: new Date().toISOString() }); ta.value = ''; }
+        if (d && d.ok) { if (thread.contains(empty)) clear(thread); addBubble({ sender: 'client', body: text, created_at: new Date().toISOString() }); shown += 1; ta.value = ''; }
         else { status.appendChild(document.createTextNode('Couldn’t send — try again or email ')); status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL)); status.appendChild(document.createTextNode('.')); }
       }).catch(() => { btn.disabled = false; clear(status); status.appendChild(document.createTextNode('Network error.')); });
   });
