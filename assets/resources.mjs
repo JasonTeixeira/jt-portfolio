@@ -60,7 +60,8 @@ function wireDisclosure(header) {
   header.addEventListener('click', toggle);
   header.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
 }
-$$('.rc-track .rc-track-h, #rc-phases .rc-phase-h, #rc-accs .rc-acc-h').forEach(wireDisclosure);
+// wire every disclosure across all panels (tracks, phases, and any .rc-acc — incl. FAQs)
+$$('.rc-track .rc-track-h, #rc-phases .rc-phase-h, .rc-acc-h').forEach(wireDisclosure);
 
 /* ── capabilities: need highlighter ── */
 const tracks = $$('.rc-track');

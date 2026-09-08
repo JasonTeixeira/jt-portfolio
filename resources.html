@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css?v=20260901b">
 <link rel="stylesheet" href="assets/client.css?v=20260908">
-<link rel="stylesheet" href="assets/resources.css?v=20260908b">
+<link rel="stylesheet" href="assets/resources.css?v=20260908c">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -97,6 +97,11 @@
         <a class="rc-tile" style="--ac:var(--green)" href="https://nexural.io/proof" target="_blank" rel="noopener"><span class="live">live</span><span class="k">trading-media platform</span><h4>Nexural</h4><p>A production SaaS platform — cockpit, admin ops, Stripe billing, real market-data engines, and a public track-record page that renders real output.</p><span class="go">Open the live track record →</span></a>
         <a class="rc-tile" style="--ac:var(--cyan)" href="https://sageideas.dev/academy" target="_blank" rel="noopener"><span class="live">live</span><span class="k">learning platform</span><h4>Sage Ideas Academy</h4><p>A live learning product — lesson player, AI tutor on a real model, interactive labs, Stripe billing, and verifiable certificates.</p><span class="go">Open the academy →</span></a>
       </div>
+      <div class="rc-rule"><span class="lbl">who this is for</span><span class="line"></span></div>
+      <div class="rc-cards">
+        <div class="rc-pcard"><h4 style="color:var(--green)">A good fit</h4><p>Teams shipping an AI feature to real users who need it reliable — and provably so — before it embarrasses them in front of a customer.</p></div>
+        <div class="rc-pcard"><h4 style="color:var(--faint)">Probably not yet</h4><p>A weekend prototype with no users, or a pure research problem with no path to production. Come back when it has to be trustworthy.</p></div>
+      </div>
       <div class="rc-jumps">
         <button class="rc-jump" data-goto="capabilities">What I can do for you →</button>
         <button class="rc-jump" data-goto="how">How an engagement runs →</button>
@@ -116,10 +121,21 @@
       <div class="rc-track" data-track="eval" style="--ac:var(--cyan)">
         <div class="rc-track-h"><span class="ico"><svg><use href="#r-eval"/></svg></span><div><h3>LLM &amp; RAG Evaluation</h3><div class="tg">make "it works" a number you can see</div></div><svg class="chev"><use href="#r-chev"/></svg></div>
         <div class="rc-track-body">
+          <p class="body">Most AI features ship without a way to say whether they're getting better or worse. I build the measurement first — a suite of representative cases with known-good answers — then wire scoring (LLM-as-judge plus deterministic checks) so "is it working?" becomes a number you can watch on every change. The same suite becomes a CI gate: if a prompt tweak or model upgrade drops citation coverage, the merge goes red before it reaches a customer.</p>
           <div class="col2">
             <div><h5>What's included</h5><ul><li>An <b>eval harness</b> wired to your model and data</li><li><b>Golden sets</b> + LLM-as-judge scoring</li><li>Faithfulness, citation-coverage &amp; injection <b>gates</b></li><li>Wired into <b>CI</b> so a regression blocks the ship</li></ul></div>
             <div><h5>What you get</h5><ul><li>The eval suite, in <b>your repo</b></li><li>A scored dashboard you can read</li><li>A CI gate that goes red when it should</li><li>A runbook your team can operate</li></ul>
               <h5 style="margin-top:14px">Tools</h5><div class="rc-tools"><span class="rc-tool">Promptfoo</span><span class="rc-tool">DeepEval</span><span class="rc-tool">Pytest</span><span class="rc-tool">LangGraph</span></div></div>
+          </div>
+          <div class="rc-eg"><span class="egk">Typical engagement</span>A support-bot team couldn't tell if a new prompt helped or hurt. We built 120 graded cases, added a faithfulness + citation gate, and wired it to CI. The next "harmless" prompt change dropped citation coverage to 71% — caught in the PR instead of by a customer.</div>
+          <div class="rc-sample"><span class="stag">illustrative sample</span><h5>What a scorecard looks like</h5>
+            <div class="rc-score">
+              <div class="row"><span class="lbl3">Faithfulness</span><span class="m"><i style="width:96%"></i></span><span class="v">96%</span></div>
+              <div class="row"><span class="lbl3">Citation coverage</span><span class="m"><i style="width:100%"></i></span><span class="v">100%</span></div>
+              <div class="row"><span class="lbl3">Injection resistance</span><span class="m"><i style="width:92%"></i></span><span class="v">92%</span></div>
+              <div class="row"><span class="lbl3">Answer relevance</span><span class="m"><i class="warn" style="width:84%"></i></span><span class="v">84% ⚠</span></div>
+            </div>
+            <p class="body" style="margin:12px 0 0;font-size:12.5px;color:var(--faint)">Your metrics, thresholds, and pass/fail lines are defined with you — this is a shape, not a claim.</p>
           </div>
         </div>
       </div>
@@ -127,24 +143,33 @@
       <div class="rc-track" data-track="ci" style="--ac:var(--green)">
         <div class="rc-track-h"><span class="ico"><svg><use href="#r-ci"/></svg></span><div><h3>Test Automation &amp; CI</h3><div class="tg">a suite a release manager can trust</div></div><svg class="chev"><use href="#r-chev"/></svg></div>
         <div class="rc-track-body">
+          <p class="body">A flaky suite is worse than no suite — when red is noise, the team learns to ignore it, and the real regression sails through with the false alarms. I diagnose the flake sources (shared state, timing, ordering), install a flake protocol (quarantine lane, retry policy, isolation fixes), and get the suite fast and trustworthy again — rebuild is the last resort, not the first. Then it gates your merges so red means red.</p>
           <div class="col2">
             <div><h5>What's included</h5><ul><li><b>Playwright / Pytest</b> regression suites</li><li><b>Flake triage</b>: quarantine lane, retry policy, isolation fixes</li><li>CI pipelines that gate merges</li><li>Load/perf checks with <b>k6</b> where it matters</li></ul></div>
             <div><h5>What you get</h5><ul><li>A <b>green suite</b> in CI, fast and stable</li><li>A quarantine lane so red means red</li><li>Your CI config, documented</li><li>A coverage &amp; flake report</li></ul>
               <h5 style="margin-top:14px">Tools</h5><div class="rc-tools"><span class="rc-tool">Playwright</span><span class="rc-tool">Pytest</span><span class="rc-tool">k6</span><span class="rc-tool">GitHub Actions</span></div></div>
           </div>
+          <div class="rc-eg"><span class="egk">From my own track record</span>On a live trading-workflow suite in a prior role, I cut the flaky rate from ~10% to under 1% and execution from 45 minutes to 8 — with retry logic and test-isolation fixes, no rebuild. <span style="color:var(--faint)">(prior full-time role; figures self-reported)</span></div>
         </div>
       </div>
 
       <div class="rc-track" data-track="auto" style="--ac:var(--amber)">
         <div class="rc-track-h"><span class="ico"><svg><use href="#r-auto"/></svg></span><div><h3>AI Workflow Automation</h3><div class="tg">give your week back</div></div><svg class="chev"><use href="#r-chev"/></svg></div>
         <div class="rc-track-body">
+          <p class="body">The work that quietly eats a week is usually a chain of manual steps between systems that don't talk to each other. I map the workflow, automate the boring middle with RAG, agents, or pipelines (n8n/Make or code), wire it into the tools you already use, and — because it's AI touching real work — put monitoring and evals around it so you find out it drifted before your customer does.</p>
           <div class="col2">
             <div><h5>What's included</h5><ul><li><b>RAG systems</b> and <b>agents</b> wired to real tools</li><li>Pipelines in <b>n8n / Make</b> or code</li><li>Integrations across your stack</li><li>Monitoring so you know it's still working</li></ul></div>
             <div><h5>What you get</h5><ul><li>A working automation, in production</li><li>Monitoring + alerts</li><li>Docs your team can run</li><li>The eval/tests that keep it honest</li></ul>
               <h5 style="margin-top:14px">Tools</h5><div class="rc-tools"><span class="rc-tool">LangGraph</span><span class="rc-tool">n8n</span><span class="rc-tool">Make</span><span class="rc-tool">OpenAI-compatible</span></div></div>
           </div>
+          <div class="rc-eg"><span class="egk">Where this fits</span>Intake triage, document extraction, first-draft replies, lead routing, report generation — anywhere a person is copy-pasting between an inbox, a spreadsheet, and a model. We start with the single highest-leverage step, not a moonshot.</div>
         </div>
       </div>
+      <div class="rc-faq-h">Common questions</div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">How do you price this?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">There's no fixed price list, by design — the work is scoped and quoted in writing after a short call, fixed scope rather than open-ended hours. Most engagements start with a one-week audit; that fee credits into the build if you continue.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">Which model or provider do you use?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">Yours, wherever possible — I work provider-agnostic against an OpenAI-compatible interface and use your accounts and chosen models so the data path stays inside your control. Any provider that would touch your data is named up front.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">Do I need all three service lines?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">No. We start with the one that's actually hurting — the audit exists to find that. The others are there if and when they're relevant.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">We already have tests / an eval — do you replace them?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">I extend and harden what you have before considering a rebuild. Rebuild is the last resort, not the opening move — keeping your existing coverage and making it trustworthy is usually faster and cheaper.</div></div>
     </section>
 
     <!-- HOW WE WORK -->
@@ -182,6 +207,17 @@
         </div>
       </div>
       <div class="rc-callout"><b>Yours to keep.</b> Everything lands in <b>your repo</b>, runs in <b>your CI</b>, and nothing is retained on my side after handoff. No lock-in, no black box.</div>
+
+      <div class="rc-sample"><span class="stag">illustrative sample</span><h5>What a milestone looks like in your portal</h5>
+        <p class="body" style="margin:0 0 10px"><b style="color:var(--ink)">Milestone 2 · Build — eval harness + CI gate</b> <span style="font-family:var(--mono);font-size:11px;color:var(--green)">DELIVERED</span></p>
+        <p class="body" style="margin:0"><b>Deliverables:</b> a 120-case eval suite in your repo · faithfulness + citation gate wired to CI · a scored dashboard · a one-page runbook. You review it in the portal and click <b>Approve</b> — nothing advances without your sign-off.</p>
+      </div>
+
+      <div class="rc-faq-h">Common questions</div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">How soon do I see something real?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">The audit gives you a concrete plan in about a week. On a build, you see a working slice plus the evidence it behaves by roughly week two — early signal is deliberate, so there are no surprises at the end.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">What if it isn't working out?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">The audit is designed to be low-risk on purpose: fixed scope, fixed fee, and you leave with a plan whether or not we continue. Everything produced is yours in your repo, so there's no long lock-in to walk away from.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">How do we communicate day to day?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">Async by default in your client portal — milestones, approvals, and a direct message thread — with calls when a conversation is faster. I reply within one business day, usually much sooner.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">What actually happens at handoff?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">You get the code in your repository, the CI gates running in your pipeline, documentation and a live walkthrough, and my access is revoked. The goal is a system your team can operate without me.</div></div>
     </section>
 
     <!-- WELCOME & ONBOARDING -->
@@ -213,6 +249,18 @@
         <div class="rc-pcard"><h4><svg><use href="#r-msg"/></svg>Messages</h4><p>A direct thread with me about your project — I'm notified by email the moment you send.</p></div>
         <div class="rc-pcard"><h4><svg><use href="#r-bill"/></svg>Billing</h4><p>Deposit and balance handled securely via Stripe, with a printable receipt and full payment history.</p></div>
       </div>
+      <div class="rc-rule"><span class="lbl">what the kickoff call covers</span><span class="line"></span></div>
+      <div class="rc-cards">
+        <div class="rc-pcard"><h4>Scope &amp; success</h4><p>What we're building, and the specific, measurable definition of "working" we'll hold it to.</p></div>
+        <div class="rc-pcard"><h4>Access</h4><p>The repo, environments, and accounts I'll need — least-privilege, your providers, revoked at handoff.</p></div>
+        <div class="rc-pcard"><h4>Cadence</h4><p>How we'll communicate, how often, and who the decision-maker is on your side.</p></div>
+        <div class="rc-pcard"><h4>First milestone</h4><p>The one thing we'll deliver and prove first — so you see real signal fast.</p></div>
+      </div>
+      <div class="rc-faq-h">New-client questions</div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">Who do I actually work with?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">Me, directly, start to finish — no account managers, no handoff to a junior. The same person who scopes it builds it and hands it off.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">How do payments work?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">A deposit to start and the balance on delivery, handled securely via Stripe with a printable receipt and full history in your portal. Terms are written into the agreement before any work begins.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">Can you sign our NDA?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">Yes — happy to sign yours, or provide a mutual one before we get into specifics. Your project is confidential by default either way.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">What do you need from us to start?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">Three things: access to the relevant repo/environment, the AI feature plus an honest account of where it breaks today, and a point of contact who can make decisions. The checklist above walks you through it.</div></div>
       <div class="rc-callout" style="border-color:color-mix(in oklab,var(--green) 40%,var(--line));background:color-mix(in oklab,var(--green) 7%,transparent)"><b style="color:var(--green)">Reaching me.</b> Email <a href="mailto:hello@sageideas.dev" style="color:var(--green)">hello@sageideas.dev</a> or message me in the portal — I reply within one business day, usually much sooner.</div>
     </section>
 
@@ -230,7 +278,12 @@
         <div class="rc-led do"><h4>What I always do</h4><ul><li>Least-privilege, scoped access</li><li>Secrets in your vault, never in code</li><li>Name every data-touching subprocessor up front</li><li>Ship to your repo / your CI</li><li>Revoke access at handoff</li></ul></div>
         <div class="rc-led never"><h4>What I never do</h4><ul><li>Hardcode or paste your secrets</li><li>Reuse your data to train anything</li><li>Show your work without written OK</li><li>Leave a black box only I can run</li><li>Retain working copies after handoff</li></ul></div>
       </div>
-      <p class="rc-sub" style="font-size:12.5px;margin-top:16px;color:var(--faint)">This is a plain-English summary, not the contract. The signed agreement and any NDA are the binding terms.</p>
+      <div class="rc-faq-h">Common questions</div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">Where does our data actually live?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">In your infrastructure and accounts wherever possible — your repo, your CI, your model provider. I work inside your environment rather than copying data into mine, and any working copies on my side are removed at handoff.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">Do you train models on our data?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">Never. Your data is used only to do your work. I use providers and settings that don't retain or train on your inputs, and I'll configure that explicitly against your requirements.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">Are you SOC 2 certified?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">Honestly: no — I'm a solo operator, not a certified organization, and I won't claim otherwise. What I do is work inside <b>your</b> controls and least-privilege access, sign your security addenda, and meet the requirements your team sets. If a formal certification is a hard gate for you, I'll tell you up front rather than paper over it.</div></div>
+      <div class="rc-acc"><div class="rc-acc-h"><span class="t">What happens if there's a security incident?</span><svg class="chev"><use href="#r-chev"/></svg></div><div class="rc-acc-body">I notify you promptly, help contain it, and follow your incident process. Because the work lives in your infrastructure with scoped access, the blast radius is small by design.</div></div>
+      <p class="rc-sub" style="font-size:12.5px;margin-top:20px;color:var(--faint)">This is a plain-English summary, not the contract. The signed agreement and any NDA are the binding terms.</p>
     </section>
   </div>
 
@@ -241,7 +294,7 @@
   </footer>
 </div>
 <script defer src="assets/nav.js"></script>
-<script type="module" src="assets/resources.mjs?v=20260908c"></script>
+<script type="module" src="assets/resources.mjs?v=20260908d"></script>
 <script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
 </body>
 </html>
