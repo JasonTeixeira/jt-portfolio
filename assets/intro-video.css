@@ -30,7 +30,9 @@
 .vgrain { position:absolute; inset:0; opacity:.05; background-image:radial-gradient(circle,#fff 0.5px,transparent 0.6px); background-size:3px 3px; }
 
 /* scenes */
-.scene { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:6cqw; box-sizing:border-box; opacity:0; visibility:hidden; transition:opacity .5s ease, visibility .5s; }
+/* extra bottom padding reserves a band for the caption + controls so centered
+   scene content never collides with the subtitles */
+.scene { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:5cqw 6cqw 16cqw; box-sizing:border-box; opacity:0; visibility:hidden; transition:opacity .5s ease, visibility .5s; }
 .scene.active { opacity:1; visibility:visible; }
 .s-center { text-align:center; display:flex; flex-direction:column; align-items:center; gap:2.4cqw; }
 .s-stack { width:100%; display:flex; flex-direction:column; align-items:center; gap:3cqw; }
@@ -158,7 +160,7 @@
 @keyframes pop { 0%{opacity:0;transform:scale(.85);} 70%{transform:scale(1.04);} 100%{opacity:1;transform:scale(1);} }
 
 /* caption */
-.vcaption { position:absolute; left:0; right:0; bottom:9cqw; text-align:center; padding:0 8cqw; font-size:2.3cqw; line-height:1.4; color:var(--v-ink); text-shadow:0 2px 12px rgba(0,0,0,.9); opacity:0; transition:opacity .3s; pointer-events:none; }
+.vcaption { position:absolute; left:0; right:0; bottom:7cqw; text-align:center; padding:0 10cqw; font-size:2.2cqw; line-height:1.4; color:var(--v-ink); text-shadow:0 2px 12px rgba(0,0,0,.95); opacity:0; transition:opacity .3s; pointer-events:none; }
 .vcaption.show { opacity:1; }
 
 /* poster */
