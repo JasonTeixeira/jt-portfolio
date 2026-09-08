@@ -2,7 +2,39 @@
    Its own clean chrome (no marketing nav / lang switcher / footer). Premium,
    focused, trustworthy. Uses site.css tokens; falls back if absent. */
 
-.cx-page { min-height:100vh; min-height:100dvh; background:var(--bg,#09090B); color:var(--ink,#F4F2EF); display:flex; flex-direction:column; }
+body { background:var(--bg,#09090B); }
+.cx-page { min-height:100vh; min-height:100dvh; background:transparent; color:var(--ink,#F4F2EF); display:flex; flex-direction:column; }
+
+/* ── ambient atmosphere (behind dashboard + portal) ── */
+.cx-atmos { position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:-1; }
+.cx-atmos .glow { position:absolute; width:52vw; height:52vw; max-width:760px; max-height:760px; border-radius:50%; filter:blur(90px); }
+.cx-atmos .g1 { background:var(--cyan,#22d3ee); opacity:.12; top:-16vw; left:-8vw; animation:cx-d1 24s ease-in-out infinite; }
+.cx-atmos .g2 { background:var(--purple,#a78bfa); opacity:.11; top:36vh; right:-12vw; animation:cx-d2 28s ease-in-out infinite; }
+.cx-atmos .g3 { background:var(--green,#10b981); opacity:.08; bottom:-18vw; left:26vw; animation:cx-d1 32s ease-in-out infinite reverse; }
+.cx-atmos .grain { position:absolute; inset:0; opacity:.04; background-image:radial-gradient(circle,#fff .5px,transparent .6px); background-size:3px 3px; }
+@keyframes cx-d1 { 50% { transform:translate(6vw,4vh) scale(1.15); } }
+@keyframes cx-d2 { 50% { transform:translate(-5vw,-4vh) scale(1.1); } }
+
+/* ── card reveal (opacity only, so hover transforms still work) ── */
+.portal-card, .cx-card { animation:cx-fadein .55s ease both; }
+.portal-card:nth-of-type(2){ animation-delay:.05s } .portal-card:nth-of-type(3){ animation-delay:.1s } .portal-card:nth-of-type(4){ animation-delay:.15s } .portal-card:nth-of-type(n+5){ animation-delay:.2s }
+@keyframes cx-fadein { from { opacity:0 } to { opacity:1 } }
+
+/* ── animated project progress rail (portal) ── */
+.pp-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
+.pp-stage { font-family:var(--serif,'Instrument Serif',Georgia,serif); font-size:clamp(1.5rem,3vw,2rem); color:var(--ink,#F4F2EF); line-height:1; }
+.pp-of { font-family:var(--mono,monospace); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint,#8E8882); }
+.portal-rail { position:relative; display:grid; grid-template-columns:repeat(4,1fr); gap:0; padding:4px 0 2px; }
+.portal-rail::before { content:""; position:absolute; left:12.5%; right:12.5%; top:23px; height:2px; background:var(--line,#2A2826); border-radius:2px; }
+.portal-rail .prog { position:absolute; left:12.5%; top:23px; height:2px; background:linear-gradient(90deg,var(--green,#10b981),var(--cyan,#22d3ee)); border-radius:2px; transition:width .8s cubic-bezier(.16,1,.3,1); }
+.portal-stage { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:9px; text-align:center; }
+.portal-stage .knob { width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono,monospace); font-size:14px; font-weight:600; color:var(--faint,#8E8882); background:var(--card,#0C0C0E); border:2px solid var(--line,#2A2826); transition:border-color .2s, color .2s; }
+.portal-stage.done .knob { border-color:var(--green,#10b981); color:var(--green,#10b981); background:color-mix(in oklab,var(--green,#10b981) 14%,var(--card,#0C0C0E)); }
+.portal-stage.current .knob { border-color:var(--green,#10b981); color:var(--green,#10b981); box-shadow:0 0 0 5px color-mix(in oklab,var(--green,#10b981) 16%,transparent); animation:cx-knob 2.6s ease-in-out infinite; }
+.portal-stage .lb { font-family:var(--mono,monospace); font-size:11px; letter-spacing:.05em; color:var(--faint,#8E8882); }
+.portal-stage.done .lb, .portal-stage.current .lb { color:var(--ink,#F4F2EF); }
+@keyframes cx-knob { 0%,100% { box-shadow:0 0 0 5px color-mix(in oklab,var(--green,#10b981) 16%,transparent); } 50% { box-shadow:0 0 0 9px color-mix(in oklab,var(--green,#10b981) 5%,transparent); } }
+@media (max-width:520px){ .portal-stage .knob { width:38px; height:38px; font-size:12px; } .portal-rail::before, .portal-rail .prog { top:19px; } }
 
 .cx-top { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px clamp(18px,4vw,44px); background:rgba(9,9,11,0.86); backdrop-filter:blur(14px); border-bottom:1px solid var(--line,#2A2826); }
 .cx-brand { display:inline-flex; align-items:center; gap:11px; color:var(--ink,#F4F2EF); text-decoration:none; }
@@ -42,4 +74,9 @@
 .cx-card .go { font-family:var(--mono,monospace); font-size:12px; color:var(--cyan,#22d3ee); margin-top:16px; display:inline-block; }
 .cx-empty { border:1px dashed var(--line,#2A2826); border-radius:16px; padding:40px 28px; text-align:center; color:var(--dim,#A8A29E); }
 
-@media (prefers-reduced-motion: reduce) { .cx-card:hover { transform:none; } }
+@media (prefers-reduced-motion: reduce) {
+  .cx-card:hover { transform:none; }
+  .cx-atmos .glow, .portal-stage.current .knob, .portal-card, .cx-card { animation:none !important; }
+  .portal-card, .cx-card { opacity:1 !important; }
+  .portal-rail .prog { transition:none !important; }
+}
