@@ -262,15 +262,20 @@ function buildStepper(view, plan) {
   if (allDelivered) idx = 2;
   if (complete) idx = 3;
 
-  const card = h('div', { class: 'portal-card', style: 'display:flex;align-items:flex-start;padding:22px clamp(18px,3vw,30px)' });
+  // Animated progress rail: a connected metro-line with a lit, pulsing current stage.
+  const card = h('div', { class: 'portal-card portal-progress' });
+  card.appendChild(h('div', { class: 'pp-head' },
+    h('span', { class: 'pp-stage' }, STAGES[idx]),
+    h('span', { class: 'pp-of' }, `stage ${idx + 1} of ${STAGES.length}`)));
+  const rail = h('div', { class: 'portal-rail' });
+  rail.appendChild(h('div', { class: 'prog', style: `width:${idx * 25}%` }));
   STAGES.forEach((label, i) => {
-    const done = i <= idx; const current = i === idx;
-    const dot = h('div', { style: `width:${current ? '14px' : '11px'};height:${current ? '14px' : '11px'};border-radius:50%;flex:none;background:${done ? 'var(--green)' : 'transparent'};border:2px solid ${done ? 'var(--green)' : 'var(--line)'};box-shadow:${current ? '0 0 0 4px rgba(16,185,129,0.18)' : 'none'}` });
-    card.appendChild(h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:9px;flex:none' },
-      h('div', { style: 'height:14px;display:flex;align-items:center' }, dot),
-      h('div', { style: `font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:${done ? 'var(--ink)' : 'var(--faint)'};white-space:nowrap` }, label)));
-    if (i < STAGES.length - 1) card.appendChild(h('div', { style: `flex:1;min-width:16px;height:2px;margin-top:6px;background:${i < idx ? 'var(--green)' : 'var(--line)'}` }));
+    const done = i < idx; const current = i === idx;
+    rail.appendChild(h('div', { class: `portal-stage${done ? ' done' : ''}${current ? ' current' : ''}` },
+      h('span', { class: 'knob' }, done ? '✓' : String(i + 1)),
+      h('span', { class: 'lb' }, label)));
   });
+  card.appendChild(rail);
   return card;
 }
 
