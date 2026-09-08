@@ -4,6 +4,51 @@
 
 const STAGE_COLOR = { new: '#22d3ee', scoped: '#a78bfa', engaged: '#10b981' };
 const TOUCH_KINDS = ['email', 'dm', 'call', 'meeting', 'note', 'follow_up'];
+const IMPORT_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_IMPORT = 300;
+
+// Minimal RFC-4180-ish CSV parser (handles quoted fields + escaped "" + CRLF).
+function parseCsv(text) {
+  const rows = []; let field = '', row = [], inQ = false, i = 0;
+  const pushF = () => { row.push(field); field = ''; };
+  const pushR = () => { pushF(); rows.push(row); row = []; };
+  while (i < text.length) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') { if (text[i + 1] === '"') { field += '"'; i += 2; continue; } inQ = false; i++; continue; }
+      field += ch; i++; continue;
+    }
+    if (ch === '"') { inQ = true; i++; continue; }
+    if (ch === ',') { pushF(); i++; continue; }
+    if (ch === '\r') { i++; continue; }
+    if (ch === '\n') { pushR(); i++; continue; }
+    field += ch; i++;
+  }
+  if (field.length || row.length) pushR();
+  return rows.filter((r) => r.some((c) => String(c).trim() !== ''));
+}
+
+// Turn CSV text into {email,name,company,segment} rows via header-aliased columns.
+// Requires an 'email' column; other fields are optional. Returns {leads, skipped, error}.
+function csvToLeads(text) {
+  const rows = parseCsv(String(text || ''));
+  if (!rows.length) return { leads: [], skipped: 0, error: 'empty' };
+  const header = rows[0].map((c) => String(c).trim().toLowerCase());
+  const find = (aliases) => header.findIndex((hh) => aliases.includes(hh));
+  const iEmail = find(['email', 'e-mail', 'email address', 'emailaddress']);
+  if (iEmail === -1) return { leads: [], skipped: 0, error: 'no_email_col' };
+  const iName = find(['name', 'first name', 'firstname', 'contact', 'contact name', 'owner']);
+  const iCompany = find(['company', 'business', 'business name', 'businessname', 'company name']);
+  const iSegment = find(['segment', 'niche', 'category', 'industry', 'type']);
+  const cell = (arr, idx) => (idx > -1 ? String(arr[idx] || '').trim() : '');
+  const leads = []; let skipped = 0;
+  for (let r = 1; r < rows.length; r++) {
+    const email = cell(rows[r], iEmail).toLowerCase();
+    if (!IMPORT_EMAIL_RE.test(email)) { skipped++; continue; }
+    leads.push({ email, name: cell(rows[r], iName), company: cell(rows[r], iCompany), segment: cell(rows[r], iSegment) });
+  }
+  return { leads, skipped };
+}
 
 function opener(lead) {
   const first = String(lead.name || '').trim().split(/\s+/)[0] || 'there';
@@ -24,8 +69,55 @@ export function renderMarketing(mount, key, deps) {
     return { status: res.status, json };
   }
 
+  // Bulk-import panel: paste/upload a scored shortlist CSV → deduped into the pipeline.
+  function importPanel() {
+    const details = h('details', { class: 'admin-card', style: 'margin-bottom:16px' });
+    details.appendChild(h('summary', { style: 'cursor:pointer;font-size:13px;color:#e5e5ea' }, 'Import leads from CSV'));
+    details.appendChild(h('p', { class: 'subtle', style: 'font-size:12px;margin:10px 0' },
+      'Paste your scored shortlist or choose a .csv file. Needs an "email" column; name / company / segment are used if present. Re-importing is safe — leads are matched by email, never duplicated.'));
+    const ta = h('textarea', { rows: '6', placeholder: 'email,name,company,segment\njane@acme.co,Jane Doe,Acme HVAC,hvac', style: 'width:100%;box-sizing:border-box;background:#0d0d11;border:1px solid #23232b;border-radius:8px;color:#e5e5ea;font-family:var(--mono,monospace);font-size:12px;padding:10px' });
+    const file = h('input', { type: 'file', accept: '.csv,text/csv', style: 'font-size:12px;color:#8E8882;max-width:220px' });
+    const previewBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:7px 14px;font-size:12px' }, 'Preview');
+    const importBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'padding:7px 14px;font-size:12px', disabled: 'disabled' }, 'Import');
+    const status = h('span', { class: 'subtle', style: 'font-size:12px' }, '');
+    let parsed = [];
+    const say = (msg) => { clear(status); status.appendChild(document.createTextNode(msg)); };
+    function preview() {
+      const { leads, skipped, error } = csvToLeads(ta.value || '');
+      parsed = leads;
+      if (error === 'no_email_col') { importBtn.disabled = true; say('CSV needs an "email" column header.'); return; }
+      if (!leads.length) { importBtn.disabled = true; say('No valid rows with an email found.'); return; }
+      const n = Math.min(leads.length, MAX_IMPORT);
+      importBtn.disabled = false; importBtn.textContent = `Import ${n}`;
+      say(`${n} lead${n === 1 ? '' : 's'} ready${skipped ? ` · ${skipped} skipped (no email)` : ''}${leads.length > MAX_IMPORT ? ` · capped at ${MAX_IMPORT}` : ''}`);
+    }
+    file.addEventListener('change', () => {
+      const f = file.files && file.files[0]; if (!f) return;
+      const reader = new window.FileReader();
+      reader.onload = () => { ta.value = String(reader.result || ''); preview(); };
+      reader.readAsText(f);
+    });
+    ta.addEventListener('input', () => { importBtn.disabled = true; importBtn.textContent = 'Import'; });
+    previewBtn.addEventListener('click', preview);
+    importBtn.addEventListener('click', async () => {
+      if (!parsed.length) return;
+      importBtn.disabled = true; say('Importing…');
+      const r = await api('POST', '/api/prospects', { action: 'bulk_import', rows: parsed.slice(0, MAX_IMPORT) });
+      if (r.unauthorized) { renderNotAuthorized(mount.parentNode || mount); return; }
+      if (r.json && r.json.ok) {
+        say(`Imported ✓ ${r.json.created || 0} new, ${r.json.updated || 0} updated${r.json.invalid ? `, ${r.json.invalid} invalid` : ''}`);
+        ta.value = ''; parsed = []; importBtn.textContent = 'Import';
+        setTimeout(draw, 1000); // refresh the board so the new leads appear
+      } else { importBtn.disabled = false; say('Import failed — check the CSV and retry.'); }
+    });
+    details.appendChild(ta);
+    details.appendChild(h('div', { style: 'display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap' }, file, previewBtn, importBtn, status));
+    return details;
+  }
+
   function draw() {
     clear(mount);
+    mount.appendChild(importPanel());
     const statMount = h('div', { class: 'stat-row' });
     const nurtureMount = h('div', {});
     const listMount = h('div', { style: 'margin-top:18px' });

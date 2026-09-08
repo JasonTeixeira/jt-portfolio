@@ -14,8 +14,10 @@ import { authorizeAdmin } from '../lib/admin-auth.mjs';
 import {
   isEnabled, listProspects, getProspect, listProspectEvents,
   setProspectStage, prospectStageCounts, isValidStage,
-  createProspect, logTouch, isValidTouch,
+  createProspect, logTouch, isValidTouch, bulkImportProspects,
 } from '../lib/scope-db.mjs';
+
+const MAX_BULK_ROWS = 300;
 
 // minimal email sanity — the funnel already validates on the way in; this is a
 // server-side guard for operator-typed outbound leads.
@@ -57,6 +59,23 @@ async function handler(req, res) {
       });
       if (!r.ok) return res.status(200).json({ ok: false, reason: 'write_failed' });
       return res.status(200).json({ ok: true, created: Array.isArray(r.data) ? r.data[0] : r.data });
+    }
+
+    // bulk import a scored shortlist (CSV) into the pipeline, deduped by email
+    if (action === 'bulk_import') {
+      const rows = Array.isArray(body.rows) ? body.rows : null;
+      if (!rows || !rows.length) return res.status(400).json({ ok: false, error: 'rows required' });
+      if (rows.length > MAX_BULK_ROWS) return res.status(400).json({ ok: false, error: `too many rows (max ${MAX_BULK_ROWS})` });
+      const clean = rows.map((x) => ({
+        email: str(x && x.email, 200).toLowerCase(),
+        name: str(x && x.name, 120) || null,
+        company: str(x && x.company, 160) || null,
+        segment: str(x && x.segment, 60) || null,
+        source: 'import',
+      }));
+      const r = await bulkImportProspects(clean);
+      if (!r.ok) return res.status(200).json({ ok: false, reason: 'write_failed' });
+      return res.status(200).json({ ok: true, ...r.data });
     }
 
     // record an outreach touch on a prospect's timeline
