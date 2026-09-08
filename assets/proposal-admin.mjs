@@ -9,6 +9,7 @@ import { renderTasks as renderTasksView } from './admin-tasks.mjs';
 import { renderMoneyBody } from './admin-money.mjs';
 import { renderMarketing as renderMarketingView } from './admin-marketing.mjs';
 import { renderContent as renderContentView } from './admin-content.mjs';
+import { renderClients as renderClientsView } from './admin-clients.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -913,9 +914,15 @@ function renderOverview(root) {
   }).catch(() => {});
 }
 
+// Client 360 hub — one client's whole world (see admin-clients.mjs).
+function renderClientsSection(root, key) {
+  renderClientsView(root, key, { h, clear, authHeaders, renderNotAuthorized, money });
+}
+
 // ── App-shell navigation ────────────────────────────────────────────────────
 const SECTIONS = [
   { id: 'overview', label: 'Overview', ico: '◱', fn: renderOverview },
+  { id: 'clients', label: 'Clients', ico: '◕', fn: renderClientsSection },
   { id: 'pipeline', label: 'Pipeline', ico: '⇉', fn: renderPipeline },
   { id: 'calendar', label: 'Calendar', ico: '▦', fn: renderCalendar },
   { id: 'tasks', label: 'Tasks & budgets', ico: '✓', fn: renderTasks },

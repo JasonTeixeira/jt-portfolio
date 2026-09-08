@@ -271,3 +271,7 @@ create table if not exists scope_content (
 create index if not exists idx_scope_content_status on scope_content (status);
 create index if not exists idx_scope_content_scheduled on scope_content (scheduled_for);
 alter table scope_content enable row level security;
+
+-- Client 360 hub: per-client operator notes + external links (GitHub/Drive/Figma).
+alter table scope_prospects add column if not exists notes text;
+alter table scope_prospects add column if not exists links jsonb not null default '[]'::jsonb;
