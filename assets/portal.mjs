@@ -5,6 +5,7 @@
 import { computePlan, SEGMENTS } from './scope-core.mjs';
 import { money } from './proposal-core.mjs';
 import { deliverableTokens } from './portal-core.mjs';
+import { t, LOCALE } from './i18n.mjs';
 
 const CONTACT_EMAIL = 'hello@sageideas.dev';
 
@@ -30,29 +31,29 @@ function h(tag, props, ...children) {
 function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
 function bookLink(label) {
-  return h('a', { href: 'book.html', class: 'btn-ghost', style: 'border-color:#a78bfa;color:#a78bfa;margin-top:16px;display:inline-flex' }, label || 'Talk to Jason →');
+  return h('a', { href: 'book.html', class: 'btn-ghost', style: 'border-color:#a78bfa;color:#a78bfa;margin-top:16px;display:inline-flex' }, label || t('hdr.talk'));
 }
 
 /* ── project status chip — free-text status, mapped where known, title-cased otherwise ── */
 const PROJECT_STYLE = new Set(['kickoff', 'active', 'in_progress', 'delivered', 'complete', 'completed']);
-const PROJECT_LABEL = { kickoff: 'Kickoff', active: 'Active', in_progress: 'In progress', delivered: 'Delivered', complete: 'Complete', completed: 'Complete' };
+const PROJECT_LABEL = { kickoff: 'st.kickoff', active: 'st.active', in_progress: 'st.in_progress', delivered: 'st.delivered', complete: 'st.complete', completed: 'st.complete' };
 function titleCase(s) { return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()); }
 function statusChip(status) {
   const raw = String(status || 'kickoff').toLowerCase();
   const styleKey = PROJECT_STYLE.has(raw) ? raw : 'kickoff';
-  const label = PROJECT_LABEL[raw] || titleCase(raw);
+  const label = PROJECT_LABEL[raw] ? t(PROJECT_LABEL[raw]) : titleCase(raw);
   return h('span', { class: `portal-chip st-${styleKey}` }, h('span', { class: 'dot' }), label);
 }
 
 /* ── milestone status badge: pending -> in_progress -> delivered -> approved ── */
-const MS_LABEL = { pending: 'Pending', in_progress: 'In progress', delivered: 'Delivered', approved: 'Approved' };
+const MS_LABEL = { pending: 'st.pending', in_progress: 'st.in_progress', delivered: 'st.delivered', approved: 'st.approved' };
 function msStyleKey(status) {
   const raw = String(status || 'pending').toLowerCase();
   return MS_LABEL[raw] ? raw : 'pending';
 }
 function milestoneBadge(status) {
   const key = msStyleKey(status);
-  return h('span', { class: `portal-badge st-${key}` }, MS_LABEL[key]);
+  return h('span', { class: `portal-badge st-${key}` }, t(MS_LABEL[key]));
 }
 
 /* ── calm, single-note unavailable state — covers no id, not-ok, and dormant (DB off) ── */
@@ -60,8 +61,8 @@ function renderUnavailable(root) {
   clear(root);
   root.appendChild(h('div', { class: 'portal-empty' },
     h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'portal'), h('span', { class: 'line' })),
-    h('h1', { class: 'portal-title', style: 'font-size:clamp(1.8rem,4vw,2.6rem)' }, "This project isn’t available."),
-    h('p', { class: 'subtle', style: 'margin-top:12px' }, 'It may have moved, or the link might be off. Talk to me and I’ll help you find it.'),
+    h('h1', { class: 'portal-title', style: 'font-size:clamp(1.8rem,4vw,2.6rem)' }, t('portal.unavailable.title')),
+    h('p', { class: 'subtle', style: 'margin-top:12px' }, t('portal.unavailable.body')),
     bookLink(),
   ));
 }
@@ -101,7 +102,7 @@ function buildMilestoneRow(m, portalToken) {
   const delivWrap = h('div', { class: 'portal-ms-deliverables' });
   const lines = String(m.deliverables || '').split('\n').map((s) => s.trim()).filter(Boolean);
   if (lines.length === 0) {
-    delivWrap.appendChild(h('div', {}, 'Details to follow.'));
+    delivWrap.appendChild(h('div', {}, t('ms.detailsToFollow')));
   } else {
     for (const line of lines) delivWrap.appendChild(deliverableLine(line));
   }
@@ -113,9 +114,9 @@ function buildMilestoneRow(m, portalToken) {
     const status = h('div', { class: 'portal-approve-status', role: 'status', 'aria-live': 'polite' });
     const nameId = `ms-name-${m.id}`;
     const nameInput = h('input', { type: 'text', id: nameId, required: 'required', autocomplete: 'name' });
-    const submitBtn = h('button', { type: 'submit', class: 'btn-solid green', style: 'padding:10px 18px;font-size:13px' }, 'Approve delivery');
+    const submitBtn = h('button', { type: 'submit', class: 'btn-solid green', style: 'padding:10px 18px;font-size:13px' }, t('ms.approveBtn'));
     const form = h('form', { class: 'portal-approve' },
-      h('label', { for: nameId }, h('span', { class: 'lbl-text' }, 'Your full name'), nameInput),
+      h('label', { for: nameId }, h('span', { class: 'lbl-text' }, t('ms.approveName')), nameInput),
       submitBtn,
       status,
     );
@@ -125,11 +126,11 @@ function buildMilestoneRow(m, portalToken) {
       const name = nameInput.value.trim();
       if (name.length < 2) {
         clear(status); status.classList.remove('ok'); status.classList.add('err');
-        status.appendChild(document.createTextNode('Add your name to approve.'));
+        status.appendChild(document.createTextNode(t('ms.approvePrompt')));
         return;
       }
       status.classList.remove('err'); clear(status);
-      nameInput.disabled = true; submitBtn.disabled = true; submitBtn.textContent = 'Approving…';
+      nameInput.disabled = true; submitBtn.disabled = true; submitBtn.textContent = t('ms.approving');
 
       fetch('/api/portal', {
         method: 'POST',
@@ -142,26 +143,26 @@ function buildMilestoneRow(m, portalToken) {
             row.classList.remove('st-delivered');
             row.classList.add('st-approved');
             const badge = titleBlock.querySelector('.portal-badge');
-            if (badge) { badge.className = 'portal-badge st-approved'; clear(badge); badge.appendChild(document.createTextNode('Approved')); }
+            if (badge) { badge.className = 'portal-badge st-approved'; clear(badge); badge.appendChild(document.createTextNode(t('st.approved'))); }
             clear(status); status.classList.remove('err'); status.classList.add('ok');
-            status.appendChild(document.createTextNode('Approved. Thank you.'));
-            submitBtn.textContent = 'Approved';
+            status.appendChild(document.createTextNode(t('ms.approved')));
+            submitBtn.textContent = t('st.approved');
             return;
           }
           clear(status); status.classList.add('err');
           if (data && data.skipped) {
-            status.appendChild(document.createTextNode('Approvals aren’t switched on yet. Email Jason to confirm.'));
+            status.appendChild(document.createTextNode(t('ms.approveOff')));
           } else {
-            status.appendChild(document.createTextNode('Something went wrong. Try again, or email '));
+            status.appendChild(document.createTextNode(t('ms.error') + ' '));
             status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL));
             status.appendChild(document.createTextNode('.'));
           }
-          nameInput.disabled = false; submitBtn.disabled = false; submitBtn.textContent = 'Approve delivery';
+          nameInput.disabled = false; submitBtn.disabled = false; submitBtn.textContent = t('ms.approveBtn');
         })
         .catch(() => {
           clear(status); status.classList.add('err');
-          status.appendChild(document.createTextNode('Couldn’t reach the server. Try again in a moment.'));
-          nameInput.disabled = false; submitBtn.disabled = false; submitBtn.textContent = 'Approve delivery';
+          status.appendChild(document.createTextNode(t('ms.network')));
+          nameInput.disabled = false; submitBtn.disabled = false; submitBtn.textContent = t('ms.approveBtn');
         });
     });
 
@@ -172,7 +173,7 @@ function buildMilestoneRow(m, portalToken) {
 }
 
 /* ── the real page: header + plan + milestone timeline + payment + agreement ── */
-function fmtTime(iso) { try { return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return ''; } }
+function fmtTime(iso) { try { return new Date(iso).toLocaleString(LOCALE, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch { return ''; } }
 function fmtBytes(n) { if (!n && n !== 0) return ''; if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(0) + ' KB'; return (n / 1048576).toFixed(1) + ' MB'; }
 
 /* ── deliverable files (download-only; short-lived signed URLs) ── */
@@ -180,14 +181,14 @@ function buildDeliverablesCard(view) {
   const files = Array.isArray(view.deliverables) ? view.deliverables : [];
   if (!files.length) return null;
   const card = h('div', { class: 'portal-card' });
-  card.appendChild(h('h2', { class: 'portal-card-title' }, 'Files'));
+  card.appendChild(h('h2', { class: 'portal-card-title' }, t('files.title')));
   const wrap = h('div', { style: 'display:flex;flex-direction:column;gap:8px' });
   for (const f of files) {
     wrap.appendChild(h('div', { style: 'display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:10px;padding:10px 14px' },
       h('div', { style: 'min-width:0' },
         f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', style: 'color:#22d3ee;font-size:14px;word-break:break-word' }, f.name) : h('span', { style: 'font-size:14px' }, f.name),
         h('div', { style: 'font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px' }, fmtBytes(f.size_bytes))),
-      f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', class: 'btn-ghost', style: 'padding:5px 12px;font-size:12px' }, 'Download') : null));
+      f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', class: 'btn-ghost', style: 'padding:5px 12px;font-size:12px' }, t('files.download')) : null));
   }
   card.appendChild(wrap);
   return card;
@@ -196,14 +197,14 @@ function buildDeliverablesCard(view) {
 /* ── client <-> operator message thread ── */
 function buildMessagesCard(view, portalToken) {
   const card = h('div', { class: 'portal-card' });
-  card.appendChild(h('h2', { class: 'portal-card-title' }, 'Messages'));
-  card.appendChild(h('p', { class: 'subtle', style: 'margin:-4px 0 14px;font-size:13px' }, 'Message Jason directly about your project — he’s notified by email when you send.'));
+  card.appendChild(h('h2', { class: 'portal-card-title' }, t('msg.title')));
+  card.appendChild(h('p', { class: 'subtle', style: 'margin:-4px 0 14px;font-size:13px' }, t('msg.intro')));
   const thread = h('div', { style: 'display:flex;flex-direction:column;gap:10px;margin-bottom:14px' });
-  const empty = h('p', { class: 'subtle', style: 'font-size:13px' }, 'No messages yet.');
+  const empty = h('p', { class: 'subtle', style: 'font-size:13px' }, t('msg.empty'));
   function addBubble(m) {
     const mine = m.sender === 'client';
     thread.appendChild(h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:82%;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:${mine ? 'rgba(34,211,238,0.08)' : 'var(--card)'}` },
-      h('div', { style: 'font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-bottom:4px' }, mine ? 'You' : 'Jason'),
+      h('div', { style: 'font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-bottom:4px' }, mine ? t('msg.you') : 'Jason'),
       h('div', { style: 'font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-wrap' }, m.body),
       h('div', { style: 'font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:5px' }, fmtTime(m.created_at)),
     ));
@@ -229,19 +230,19 @@ function buildMessagesCard(view, portalToken) {
     } catch { /* transient — try again next tick */ }
   }, 25000);
 
-  const ta = h('textarea', { rows: '3', placeholder: 'Write a message…', style: 'width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;resize:vertical' });
-  const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:9px 18px;font-size:13px' }, 'Send');
+  const ta = h('textarea', { rows: '3', placeholder: t('msg.placeholder'), style: 'width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;resize:vertical' });
+  const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:9px 18px;font-size:13px' }, t('msg.send'));
   const status = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
   btn.addEventListener('click', () => {
     const text = (ta.value || '').trim();
     if (text.length < 1) return;
-    btn.disabled = true; clear(status); status.appendChild(document.createTextNode('Sending…'));
+    btn.disabled = true; clear(status); status.appendChild(document.createTextNode(t('msg.sending')));
     fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'message', portalToken, body: text }) })
       .then((r) => r.json().catch(() => null)).then((d) => {
         btn.disabled = false; clear(status);
         if (d && d.ok) { if (thread.contains(empty)) clear(thread); addBubble({ sender: 'client', body: text, created_at: new Date().toISOString() }); shown += 1; ta.value = ''; }
-        else { status.appendChild(document.createTextNode('Couldn’t send — try again or email ')); status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL)); status.appendChild(document.createTextNode('.')); }
-      }).catch(() => { btn.disabled = false; clear(status); status.appendChild(document.createTextNode('Network error.')); });
+        else { status.appendChild(document.createTextNode(t('msg.sendErr') + ' ')); status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL)); status.appendChild(document.createTextNode('.')); }
+      }).catch(() => { btn.disabled = false; clear(status); status.appendChild(document.createTextNode(t('msg.network'))); });
   });
   card.appendChild(h('div', {}, ta, h('div', { style: 'display:flex;align-items:center' }, btn, status)));
   return card;
@@ -249,7 +250,7 @@ function buildMessagesCard(view, portalToken) {
 
 /* ── project progress stepper (Kickoff → Building → Delivered → Complete) ── */
 function buildStepper(view, plan) {
-  const STAGES = ['Kickoff', 'Building', 'Delivered', 'Complete'];
+  const STAGES = [t('step.kickoff'), t('step.building'), t('step.delivered'), t('step.complete')];
   const raw = String((view.project && view.project.status) || 'kickoff').toLowerCase();
   const ms = Array.isArray(view.milestones) ? view.milestones : [];
   const anyActive = ms.some((m) => ['in_progress', 'delivered', 'approved'].includes(m.status)) || ['active', 'in_progress'].includes(raw);
@@ -280,8 +281,8 @@ function renderPortal(root, view, portalToken, opts = {}) {
 
   root.appendChild(h('div', { class: 'portal-head' },
     h('div', {},
-      h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'client portal'), h('span', { class: 'line' })),
-      h('h1', { class: 'portal-title' }, 'Your project'),
+      h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, t('portal.eyebrow')), h('span', { class: 'line' })),
+      h('h1', { class: 'portal-title' }, t('portal.title')),
       segLabel ? h('p', { class: 'portal-sub' }, segLabel) : null,
     ),
     statusChip(view.project && view.project.status),
@@ -292,9 +293,9 @@ function renderPortal(root, view, portalToken, opts = {}) {
 
   // The plan they bought — itemized from the catalog keys, grouped by phase, display-only.
   const planData = computePlan(Array.isArray(plan.keys) ? plan.keys : [], plan.segment || null);
-  const planCard = h('div', { class: 'portal-card' }, h('h2', { class: 'portal-card-title' }, 'The plan you bought'));
+  const planCard = h('div', { class: 'portal-card' }, h('h2', { class: 'portal-card-title' }, t('plan.title')));
   if (planData.phases.length === 0) {
-    planCard.appendChild(h('p', { class: 'subtle' }, 'Scope details are being finalized.'));
+    planCard.appendChild(h('p', { class: 'subtle' }, t('plan.finalizing')));
   } else {
     for (const phase of planData.phases) {
       const phaseBlock = h('div', { class: 'portal-phase' }, h('h3', {}, phase.label));
@@ -307,10 +308,10 @@ function renderPortal(root, view, portalToken, opts = {}) {
   root.appendChild(planCard);
 
   // Milestone timeline — the centerpiece.
-  const msCard = h('div', { class: 'portal-card' }, h('h2', { class: 'portal-card-title' }, 'Milestones'));
+  const msCard = h('div', { class: 'portal-card' }, h('h2', { class: 'portal-card-title' }, t('ms.title')));
   const milestones = Array.isArray(view.milestones) ? [...view.milestones].sort((a, b) => (a.seq || 0) - (b.seq || 0)) : [];
   if (milestones.length === 0) {
-    msCard.appendChild(h('p', { class: 'subtle' }, 'Milestones will appear here once the project kicks off.'));
+    msCard.appendChild(h('p', { class: 'subtle' }, t('ms.empty')));
   } else {
     const timeline = h('div', { class: 'portal-timeline' });
     for (const m of milestones) timeline.appendChild(buildMilestoneRow(m, portalToken));
@@ -323,50 +324,50 @@ function renderPortal(root, view, portalToken, opts = {}) {
   if (filesCard) root.appendChild(filesCard);
 
   // Billing & receipt — itemized deposit/balance with paid dates + total, printable.
-  const fmtDay = (iso) => { try { return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return ''; } };
+  const fmtDay = (iso) => { try { return new Date(iso).toLocaleDateString(LOCALE, { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return ''; } };
   const receiptRow = (label, amountCents, sub, paid) => {
     const lbl = h('span', { class: 'lbl' }, label);
     if (sub) lbl.appendChild(h('span', { style: 'display:block;font-size:11px;color:var(--faint);font-family:var(--mono);margin-top:2px' }, sub));
     return h('div', { class: 'portal-pay-row' }, lbl, h('span', { class: 'val', style: paid ? 'color:var(--green)' : '' }, money(amountCents) + (paid ? ' ✓' : '')));
   };
   const payCard = h('div', { class: 'portal-card' },
-    h('h2', { class: 'portal-card-title' }, 'Billing & receipt'),
-    receiptRow('Deposit', plan.deposit_cents, plan.paid_at ? `Paid ${fmtDay(plan.paid_at)}` : 'Pending', Boolean(plan.paid_at)),
+    h('h2', { class: 'portal-card-title' }, t('billing.title')),
+    receiptRow(t('billing.deposit'), plan.deposit_cents, plan.paid_at ? t('billing.paidOn', { date: fmtDay(plan.paid_at) }) : t('billing.pending'), Boolean(plan.paid_at)),
   );
   if (plan.balance_paid_at) {
-    payCard.appendChild(receiptRow('Balance', plan.balance_cents, `Paid ${fmtDay(plan.balance_paid_at)}`, true));
-    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, 'Total'), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
-    payCard.appendChild(h('p', { class: 'subtle', style: 'margin-top:10px;font-size:13px' }, 'Paid in full. Thank you.'));
-    const printBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:12px;padding:9px 16px;font-size:13px' }, 'Print / Save PDF');
+    payCard.appendChild(receiptRow(t('billing.balance'), plan.balance_cents, t('billing.paidOn', { date: fmtDay(plan.balance_paid_at) }), true));
+    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, t('billing.total')), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
+    payCard.appendChild(h('p', { class: 'subtle', style: 'margin-top:10px;font-size:13px' }, t('billing.paidInFull')));
+    const printBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:12px;padding:9px 16px;font-size:13px' }, t('billing.print'));
     printBtn.addEventListener('click', () => window.print());
     payCard.appendChild(printBtn);
   } else if (plan.balance_cents > 0 && opts.justPaid) {
     // Returned from Stripe checkout; webhook not yet processed. Suppress the pay
     // button entirely so a second click can't create a second charge.
-    payCard.appendChild(receiptRow('Balance', plan.balance_cents, 'Payment submitted', false));
-    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, 'Total'), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
-    payCard.appendChild(h('p', { class: 'subtle', style: 'margin-top:12px;font-size:13px;color:var(--green)' }, 'Payment received — confirming it now. This page will update in a moment.'));
+    payCard.appendChild(receiptRow(t('billing.balance'), plan.balance_cents, t('billing.paymentSubmitted'), false));
+    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, t('billing.total')), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
+    payCard.appendChild(h('p', { class: 'subtle', style: 'margin-top:12px;font-size:13px;color:var(--green)' }, t('billing.confirming')));
     // Escape hatch so a delayed webhook never dead-ends the client (reloads without ?balance=paid).
-    payCard.appendChild(h('a', { href: `portal.html?id=${encodeURIComponent(portalToken)}`, class: 'subtle', style: 'font-size:12px;color:#22d3ee' }, 'Taking a while? Refresh →'));
+    payCard.appendChild(h('a', { href: `portal.html?id=${encodeURIComponent(portalToken)}`, class: 'subtle', style: 'font-size:12px;color:#22d3ee' }, t('billing.refresh')));
   } else if (plan.balance_cents > 0) {
-    payCard.appendChild(receiptRow('Balance remaining', plan.balance_cents, 'Due', false));
-    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, 'Total'), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
-    const payBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:14px;padding:11px 20px;font-size:14px' }, `Pay balance — ${money(plan.balance_cents)}`);
+    payCard.appendChild(receiptRow(t('billing.balanceRemaining'), plan.balance_cents, t('billing.due'), false));
+    payCard.appendChild(h('div', { class: 'portal-pay-row', style: 'border-top:1px solid var(--line);margin-top:6px;padding-top:12px' }, h('span', { class: 'lbl', style: 'font-weight:600' }, t('billing.total')), h('span', { class: 'val', style: 'font-weight:600' }, money(plan.firm_cents))));
+    const payBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:14px;padding:11px 20px;font-size:14px' }, t('billing.pay', { amount: money(plan.balance_cents) }));
     const payStatus = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
     payBtn.addEventListener('click', () => {
-      payBtn.disabled = true; clear(payStatus); payStatus.appendChild(document.createTextNode('Opening secure checkout…'));
+      payBtn.disabled = true; clear(payStatus); payStatus.appendChild(document.createTextNode(t('billing.opening')));
       fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay_balance', portalToken }) })
         .then((r) => r.json().catch(() => null)).then((d) => {
           if (d && d.ok && d.url) { window.location.href = d.url; return; }
           if (d && d.alreadyPaid) { window.location.reload(); return; }
-          payBtn.disabled = false; clear(payStatus); payStatus.appendChild(document.createTextNode('Couldn’t start checkout. Email '));
+          payBtn.disabled = false; clear(payStatus); payStatus.appendChild(document.createTextNode(t('billing.checkoutErr') + ' '));
           payStatus.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL));
           payStatus.appendChild(document.createTextNode('.'));
-        }).catch(() => { payBtn.disabled = false; clear(payStatus); payStatus.appendChild(document.createTextNode('Network error. Try again.')); });
+        }).catch(() => { payBtn.disabled = false; clear(payStatus); payStatus.appendChild(document.createTextNode(t('msg.network'))); });
     });
     payCard.appendChild(h('div', {}, payBtn, payStatus));
   } else {
-    payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, 'Balance'), h('span', { class: 'val' }, money(plan.balance_cents))));
+    payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, t('billing.balance')), h('span', { class: 'val' }, money(plan.balance_cents))));
   }
   root.appendChild(payCard);
 
@@ -376,9 +377,9 @@ function renderPortal(root, view, portalToken, opts = {}) {
   // Agreement — only shown once a contract has been sent (or accepted).
   if (view.contract && view.contract.public_id) {
     root.appendChild(h('div', { class: 'portal-card' },
-      h('h2', { class: 'portal-card-title' }, 'Agreement'),
-      h('a', { href: `contract.html?id=${encodeURIComponent(view.contract.public_id)}`, class: 'portal-agreement-link' }, 'View your agreement →'),
-      h('div', { class: 'portal-agreement-status' }, view.contract.status === 'accepted' ? 'Accepted' : 'Awaiting your review'),
+      h('h2', { class: 'portal-card-title' }, t('agr.title')),
+      h('a', { href: `contract.html?id=${encodeURIComponent(view.contract.public_id)}`, class: 'portal-agreement-link' }, t('agr.view')),
+      h('div', { class: 'portal-agreement-status' }, view.contract.status === 'accepted' ? t('agr.accepted') : t('agr.awaiting')),
     ));
   }
 }
@@ -393,7 +394,7 @@ async function init() {
 
   // Immediate placeholder inside the reserved min-height so the fetch->render
   // transition does not shift the page (keeps CLS ~0).
-  root.appendChild(h('p', { class: 'subtle', style: 'padding-top:8vh;text-align:center' }, 'Loading your project…'));
+  root.appendChild(h('p', { class: 'subtle', style: 'padding-top:8vh;text-align:center' }, t('portal.loading')));
 
   let json = null;
   try {

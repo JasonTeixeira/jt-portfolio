@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Crie sua conta · Jason Teixeira</title>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260901b">
+<link rel="stylesheet" href="/assets/auth.css?v=20260907b">
+</head>
+<body>
+<main class="auth-shell">
+  <div class="auth-bar top">
+    <a href="/pt/index.html" style="color:inherit;text-decoration:none">&larr; JASON.TEIXEIRA<span style="color:var(--a-acc)">()</span></a>
+    <span class="stat">Seguro</span>
+  </div>
+
+  <div class="auth-main">
+    <aside class="auth-rail">
+      <div class="auth-index">02 / Conta nova</div>
+      <div class="auth-slug">Construído e depois <em>testado</em> — antes de chegar a você.</div>
+      <div class="auth-meta"><b>Sage Ideas LLC</b><br>Chicago · Est. 2024<br>agency.sageideas.dev</div>
+    </aside>
+
+    <section class="auth-formcol">
+      <div class="inner">
+        <h1 class="auth-h">Abra seu portal</h1>
+        <p class="auth-lede">Um único espaço para acompanhar seu projeto, revisar entregas, me enviar mensagens e cuidar do faturamento.</p>
+        <form id="f" novalidate>
+          <label class="auth-field"><span>E-mail <span class="idx">01</span></span><input class="auth-cell" type="email" id="email" autocomplete="email" placeholder="voce@empresa.com" required></label>
+          <label class="auth-field"><span>Senha <span class="idx">02</span></span><input class="auth-cell" type="password" id="password" autocomplete="new-password" minlength="8" placeholder="Pelo menos 8 caracteres" required></label>
+          <p class="auth-hint">Mínimo de 8 caracteres.</p>
+          <button type="submit" class="auth-submit" id="btn"><span id="lbl">Criar conta</span><span class="arw">&rarr;</span></button>
+          <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
+        </form>
+        <div class="auth-foot">
+          <a href="/pt/login.html">Já tem uma? — <span class="mk">entre</span></a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="auth-bar bot">
+    <span>Sessão criptografada</span>
+    <span class="lit">Nexural &middot; Sage Ideas</span>
+  </div>
+</main>
+<script type="module">
+  import { signUp, getSession, sendAuthEmail } from '/assets/auth.mjs';
+  if (getSession()) location.replace('dashboard.html');
+  const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.className = 'auth-msg'; msg.textContent = '';
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (password.length < 8) { msg.className = 'auth-msg err'; msg.textContent = '// use pelo menos 8 caracteres.'; return; }
+    btn.disabled = true; lbl.textContent = 'Criando…';
+    const r = await signUp(email, password, `${location.origin}/pt/login.html`);
+    if (r.ok && r.data.access_token) { location.replace('dashboard.html'); return; }
+    if (r.ok) {
+      sendAuthEmail(email, 'signup');
+      msg.className = 'auth-msg ok'; msg.textContent = '// conta criada — confira seu e-mail para confirmar e depois entre.'; lbl.textContent = 'Conta criada'; return;
+    }
+    btn.disabled = false; lbl.textContent = 'Criar conta';
+    msg.className = 'auth-msg err';
+    msg.textContent = /registered|exists/i.test(JSON.stringify(r.data)) ? '// esse e-mail já tem uma conta — tente entrar.' : ('// ' + (r.data.msg || r.data.error_description || 'não foi possível criar sua conta. tente de novo.'));
+  });
+</script>
+</body>
+</html>

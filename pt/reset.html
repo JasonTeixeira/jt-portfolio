@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Redefinir senha · Jason Teixeira</title>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260901b">
+<link rel="stylesheet" href="/assets/auth.css?v=20260907b">
+</head>
+<body>
+<main class="auth-shell">
+  <div class="auth-bar top">
+    <a href="/pt/index.html" style="color:inherit;text-decoration:none">&larr; JASON.TEIXEIRA<span style="color:var(--a-acc)">()</span></a>
+    <span class="stat">Seguro</span>
+  </div>
+
+  <div class="auth-main">
+    <aside class="auth-rail">
+      <div class="auth-index">03 / Recuperação</div>
+      <div class="auth-slug">De volta em <em>um instante</em>.</div>
+      <div class="auth-meta"><b>Sage Ideas LLC</b><br>Chicago · Est. 2024<br>agency.sageideas.dev</div>
+    </aside>
+
+    <section class="auth-formcol">
+      <div class="inner" id="card"></div>
+    </section>
+  </div>
+
+  <div class="auth-bar bot">
+    <span>Sessão criptografada</span>
+    <span class="lit">Nexural &middot; Sage Ideas</span>
+  </div>
+</main>
+<script type="module">
+  import { sendAuthEmail, updatePassword } from '/assets/auth.mjs';
+  const card = document.getElementById('card');
+  const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+  const recoveryToken = hash.get('type') === 'recovery' ? hash.get('access_token') : null;
+  // STATIC HTML ONLY — never interpolate user/URL-derived data into these template
+  // strings (recoveryToken, Supabase error text, query params). This is an innerHTML sink.
+  function el(html) { const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
+
+  if (recoveryToken) {
+    card.appendChild(el(`
+      <div>
+        <h1 class="auth-h">Defina uma nova senha</h1>
+        <p class="auth-lede">Escolha uma nova senha para sua conta.</p>
+        <form id="f" novalidate>
+          <label class="auth-field"><span>Nova senha <span class="idx">01</span></span><input class="auth-cell" type="password" id="pw" autocomplete="new-password" minlength="8" placeholder="Pelo menos 8 caracteres" required></label>
+          <button type="submit" class="auth-submit" id="btn"><span id="lbl">Atualizar senha</span><span class="arw">&rarr;</span></button>
+          <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
+        </form>
+      </div>`));
+    const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = document.getElementById('pw').value;
+      if (pw.length < 8) { msg.className = 'auth-msg err'; msg.textContent = '// use pelo menos 8 caracteres.'; return; }
+      btn.disabled = true; lbl.textContent = 'Atualizando…';
+      const r = await updatePassword(recoveryToken, pw);
+      if (r.ok) { msg.className = 'auth-msg ok'; msg.textContent = '// senha atualizada. redirecionando para o login…'; setTimeout(() => location.replace('login.html'), 1400); return; }
+      btn.disabled = false; lbl.textContent = 'Atualizar senha';
+      msg.className = 'auth-msg err'; msg.textContent = '// ' + (r.data.msg || 'esse link de redefinição expirou. solicite um novo.');
+    });
+  } else {
+    card.appendChild(el(`
+      <div>
+        <h1 class="auth-h">Redefinir senha</h1>
+        <p class="auth-lede">Informe seu e-mail e enviaremos um link seguro de redefinição.</p>
+        <form id="f" novalidate>
+          <label class="auth-field"><span>E-mail <span class="idx">01</span></span><input class="auth-cell" type="email" id="email" autocomplete="email" placeholder="voce@empresa.com" required></label>
+          <button type="submit" class="auth-submit" id="btn"><span id="lbl">Enviar link</span><span class="arw">&rarr;</span></button>
+          <div class="auth-msg" id="msg" role="status" aria-live="polite"></div>
+        </form>
+        <div class="auth-foot"><a href="/pt/login.html">Voltar para <span class="mk">entrar</span></a></div>
+      </div>`));
+    const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true; lbl.textContent = 'Enviando…';
+      await sendAuthEmail(document.getElementById('email').value.trim(), 'recovery');
+      msg.className = 'auth-msg ok';
+      msg.textContent = '// se esse e-mail tiver uma conta, o link de redefinição está a caminho.';
+      lbl.textContent = 'Enviado';
+    });
+  }
+</script>
+</body>
+</html>
