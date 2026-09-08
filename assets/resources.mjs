@@ -29,6 +29,8 @@ function selectTab(name, push = true) {
     t.tabIndex = on ? 0 : -1;
   });
   panels.forEach((p, key) => { p.hidden = key !== name; });
+  const active = panels.get(name);
+  if (active) { active.classList.remove('rc-in'); void active.offsetWidth; active.classList.add('rc-in'); } // retrigger reveal
   if (push && location.hash.slice(1) !== name) history.replaceState(null, '', `#${name}`);
 }
 tabs.forEach((t) => t.addEventListener('click', () => selectTab(t.dataset.panel)));
@@ -62,6 +64,17 @@ function wireDisclosure(header) {
 }
 // wire every disclosure across all panels (tracks, phases, and any .rc-acc — incl. FAQs)
 $$('.rc-track .rc-track-h, #rc-phases .rc-phase-h, .rc-acc-h').forEach(wireDisclosure);
+
+/* how-we-work flow rail → opens + scrolls to the matching phase */
+const rcPhases = $$('#rc-phases .rc-phase');
+$$('.rc-fr').forEach((fr, i) => fr.addEventListener('click', () => {
+  $$('.rc-fr').forEach((x) => x.removeAttribute('data-ac'));
+  fr.setAttribute('data-ac', 'green');
+  const ph = rcPhases[i];
+  if (!ph) return;
+  setOpen(ph, ph.querySelector('.rc-phase-h'), ph.querySelector('.rc-phase-body'), true);
+  ph.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+}));
 
 /* ── capabilities: need highlighter ── */
 const tracks = $$('.rc-track');

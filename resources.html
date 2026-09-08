@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css?v=20260901b">
 <link rel="stylesheet" href="assets/client.css?v=20260908">
-<link rel="stylesheet" href="assets/resources.css?v=20260908c">
+<link rel="stylesheet" href="assets/resources.css?v=20260908d">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -37,7 +37,8 @@
 </defs></svg>
 
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
-<div style="min-height:100vh;background:var(--bg)">
+<div class="rc-atmos" aria-hidden="true"><span class="glow g1"></span><span class="glow g2"></span><span class="glow g3"></span><span class="grain"></span></div>
+<div style="min-height:100vh;background:transparent">
   <nav class="site-nav">
     <a href="index.html" class="site-nav-brand" aria-label="Jason Teixeira — home">
       <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
@@ -87,9 +88,9 @@
       </div>
       <div class="rc-thesis">
         <div class="rc-node build"><span class="k">build</span>The AI feature</div>
-        <span class="rc-arrow">→</span>
+        <span class="rc-arrow" aria-hidden="true"></span>
         <div class="rc-node prove"><span class="k">prove</span>The evidence</div>
-        <span class="rc-arrow">→</span>
+        <span class="rc-arrow" aria-hidden="true"></span>
         <div class="rc-gate">✓ shipped &amp; proven</div>
       </div>
       <div class="rc-rule"><span class="lbl">two live products · open the front door</span><span class="line"></span></div>
@@ -174,7 +175,13 @@
 
     <!-- HOW WE WORK -->
     <section class="rc-panel" id="panel-how" role="tabpanel" hidden>
-      <p class="rc-intro">Every engagement is scoped and quoted <b>in writing</b> after a short call — fixed scope, never open-ended hours. There's no fixed price list by design: the work is priced to the problem. Tap a phase to see what happens, what you get, and the proof it produces.</p>
+      <p class="rc-intro">Every engagement is scoped and quoted <b>in writing</b> after a short call — fixed scope, never open-ended hours. There's no fixed price list by design: the work is priced to the problem. Tap a phase on the rail (or below) to see what happens, what you get, and the proof it produces.</p>
+      <div class="rc-flowrail" role="group" aria-label="Engagement phases">
+        <button type="button" class="rc-fr" data-ac="green" data-jump="0"><span class="knob">01</span><span class="nm">Audit</span><span class="wn">~1 week</span></button>
+        <button type="button" class="rc-fr" data-jump="1"><span class="knob">02</span><span class="nm">Sprint</span><span class="wn">~2 weeks</span></button>
+        <button type="button" class="rc-fr" data-jump="2"><span class="knob">03</span><span class="nm">Build</span><span class="wn">~4–8 weeks</span></button>
+        <button type="button" class="rc-fr" data-jump="3"><span class="knob">04</span><span class="nm">Operate</span><span class="wn">ongoing</span></button>
+      </div>
       <div id="rc-phases">
         <div class="rc-phase open" data-phase>
           <div class="rc-phase-h"><span class="num">01</span><span class="nm">Audit</span><span class="when">~1 week · start here</span><svg class="chev"><use href="#r-chev"/></svg></div>
@@ -294,7 +301,7 @@
   </footer>
 </div>
 <script defer src="assets/nav.js"></script>
-<script type="module" src="assets/resources.mjs?v=20260908d"></script>
+<script type="module" src="assets/resources.mjs?v=20260908e"></script>
 <script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
 </body>
 </html>
