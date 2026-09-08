@@ -121,6 +121,28 @@
     <div style="position:relative;margin-top:28px">
       <span class="avail-chip"><span class="pulse"></span>one engagement at a time — <!-- TODO(jason): update capacity -->currently booking Q4 2026</span>
     </div>
+    <div style="position:relative;margin-top:24px">
+      <button type="button" id="watch-intro" class="watch-pill" data-evt="watch-intro" aria-haspopup="dialog">
+        <span class="wp-play" aria-hidden="true">▶</span>
+        <span class="wp-text"><b>Watch here</b><span>90-second intro — who I am &amp; what I do</span></span>
+      </button>
+    </div>
+    <div class="intro-lb" id="intro-lb" role="dialog" aria-modal="true" aria-label="Sage Ideas intro video" hidden>
+      <div class="intro-lb-backdrop" data-close></div>
+      <div class="intro-lb-frame"><iframe id="intro-frame" title="Welcome to Sage Ideas" loading="lazy" allow="autoplay"></iframe></div>
+    </div>
+    <script>
+      (function () {
+        var lb = document.getElementById('intro-lb'), frame = document.getElementById('intro-frame'), btn = document.getElementById('watch-intro');
+        if (!lb || !frame || !btn) return;
+        function open() { if (!frame.getAttribute('src')) frame.setAttribute('src', 'intro.html'); lb.hidden = false; document.body.style.overflow = 'hidden'; }
+        function close() { lb.hidden = true; document.body.style.overflow = ''; frame.setAttribute('src', 'about:blank'); frame.removeAttribute('src'); }
+        btn.addEventListener('click', open);
+        lb.addEventListener('click', function (e) { if (e.target.hasAttribute('data-close')) close(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) close(); });
+        window.addEventListener('message', function (e) { if (e.data && e.data.type === 'sage-intro-close') close(); });
+      })();
+    </script>
     <div style="position:relative;display:flex;gap:14px;margin-top:24px;flex-wrap:wrap">
       <span class="only-client" style="display:contents">
         <a href="book.html" class="btn-solid green" data-evt="book-call">Book a call →</a>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Welcome to Sage Ideas — 90-second intro</title>
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="stylesheet" href="assets/intro-video.css?v=20260908">
+</head>
+<body class="intro-body">
+  <div class="vstage" id="vstage" role="group" aria-label="Sage Ideas intro video">
+    <!-- ambient background -->
+    <div class="vbg" aria-hidden="true"><span class="vglow g1"></span><span class="vglow g2"></span><span class="vgrain"></span></div>
+
+    <!-- SCENE 1 — HOOK -->
+    <section class="scene" data-scene="hook" aria-hidden="true">
+      <div class="s-center">
+        <svg class="jtmark" viewBox="0 0 120 120" width="118" height="118" aria-hidden="true">
+          <rect class="jt-box" x="6" y="6" width="108" height="108" rx="22"/>
+          <path class="jt-j" d="M46 34 V74 a14 14 0 0 1 -28 0" />
+          <path class="jt-t" d="M62 34 H102 M82 34 V86" />
+        </svg>
+        <div class="s-wordmark">Sage Ideas</div>
+        <div class="s-tag">AI features <span class="amp">— and the proof they work.</span><span class="cursor"></span></div>
+      </div>
+    </section>
+
+    <!-- SCENE 2 — PROBLEM -->
+    <section class="scene" data-scene="problem" aria-hidden="true">
+      <div class="s-stack">
+        <div class="feature-card" aria-hidden="true">
+          <span class="fc-dot"></span><span class="fc-dot"></span><span class="fc-dot"></span>
+          <div class="fc-title">Your AI feature</div>
+          <div class="fc-bar"></div><div class="fc-bar short"></div>
+          <span class="sparkle">✦</span>
+          <span class="crack"></span>
+          <span class="poke"></span>
+        </div>
+        <div class="s-line">It ships on a <em>demo and a prayer</em>.</div>
+        <div class="s-sub">Looks great on stage — then a real customer finds the one thing it gets wrong.</div>
+      </div>
+    </section>
+
+    <!-- SCENE 3 — WHAT WE DO -->
+    <section class="scene" data-scene="do" aria-hidden="true">
+      <div class="s-stack">
+        <div class="pipeline">
+          <div class="pnode build"><span class="pk">build</span>The AI feature</div>
+          <div class="prail"><span class="ppacket"></span></div>
+          <div class="pnode prove"><span class="pk">prove</span>The evidence</div>
+          <div class="prail short"><span class="ppacket p2"></span></div>
+          <div class="pgate" aria-hidden="true"><span class="gate-face">✓ 37/37</span></div>
+        </div>
+        <div class="s-line">We build <em>both halves</em>. Ship it, then prove it.</div>
+        <div class="s-sub">Evaluations, tests, and gates that turn "trust me" into a number you can see.</div>
+      </div>
+    </section>
+
+    <!-- SCENE 4 — WHO -->
+    <section class="scene" data-scene="who" aria-hidden="true">
+      <div class="s-stack">
+        <div class="tl">
+          <div class="tl-stop"><span class="d"></span>The Home Depot</div>
+          <div class="tl-line"></div>
+          <div class="tl-stop"><span class="d"></span>fintech</div>
+          <div class="tl-line"></div>
+          <div class="tl-stop now"><span class="d"></span>Sage Ideas</div>
+        </div>
+        <div class="tiles">
+          <div class="tile"><span class="live">live</span><b>Nexural</b><span class="tstat">~800 routes · 244 tables</span></div>
+          <div class="tile"><span class="live">live</span><b>Academy</b><span class="tstat">26 courses · 347 lessons</span></div>
+        </div>
+        <div class="s-line small">13 years proving software works — now shipping two live products, <em>solo</em>.</div>
+      </div>
+    </section>
+
+    <!-- SCENE 5 — THE WORK -->
+    <section class="scene" data-scene="work" aria-hidden="true">
+      <div class="s-stack">
+        <div class="wcards">
+          <div class="wcard c1"><span class="wk">01</span>LLM &amp; RAG evaluation</div>
+          <div class="wcard c2"><span class="wk">02</span>Test automation &amp; CI</div>
+          <div class="wcard c3"><span class="wk">03</span>Workflow automation</div>
+        </div>
+        <div class="rail4">
+          <span class="r4 on">Audit<i>start here</i></span><span class="r4x">→</span>
+          <span class="r4">Sprint</span><span class="r4x">→</span>
+          <span class="r4">Build</span><span class="r4x">→</span>
+          <span class="r4">Operate</span>
+        </div>
+        <div class="s-sub">Start with a one-week audit — you leave with a plan either way.</div>
+      </div>
+    </section>
+
+    <!-- SCENE 6 — CTA -->
+    <section class="scene" data-scene="cta" aria-hidden="true">
+      <div class="s-center">
+        <div class="s-wordmark small">Sage Ideas</div>
+        <div class="cta-line">Bring the AI feature you're not sure about.</div>
+        <a class="cta-btn" href="book.html" target="_top">Book a free call &rarr;</a>
+        <div class="cta-url">agency.sageideas.dev</div>
+      </div>
+    </section>
+
+    <!-- caption track -->
+    <div class="vcaption" id="vcaption" aria-live="polite"></div>
+
+    <!-- poster / start overlay -->
+    <button class="vposter" id="vposter" type="button" aria-label="Play the Sage Ideas intro">
+      <span class="vp-play">▶</span>
+      <span class="vp-label">Welcome to Sage Ideas</span>
+      <span class="vp-sub">90-second intro · press play</span>
+    </button>
+
+    <!-- controls -->
+    <div class="vcontrols" id="vcontrols" aria-hidden="true">
+      <button type="button" id="vplay" class="vc-btn" aria-label="Play or pause">❚❚</button>
+      <button type="button" id="vreplay" class="vc-btn" aria-label="Replay">↺</button>
+      <div class="vprogress" id="vprogress"><span class="vbar" id="vbar"></span></div>
+      <span class="vtime" id="vtime">0:00</span>
+      <button type="button" id="vmute" class="vc-btn" aria-label="Mute" hidden>🔊</button>
+      <button type="button" id="vclose" class="vc-btn" aria-label="Close">✕</button>
+    </div>
+  </div>
+  <audio id="vaudio" preload="auto"></audio>
+<script type="module" src="assets/intro-video.mjs"></script>
+</body>
+</html>
