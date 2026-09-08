@@ -141,7 +141,9 @@
 .scene[data-scene="work"].active .rail4 .r4:nth-of-type(3) { animation-delay:1.2s; }
 .scene[data-scene="work"].active .rail4 .r4:nth-of-type(5) { animation-delay:1.4s; }
 .scene[data-scene="work"].active .rail4 .r4:nth-of-type(7) { animation-delay:1.6s; }
-.scene[data-scene="work"].active .r4.on { animation:glowpulse 2s 1.6s ease-in-out infinite; }
+/* the "Audit · start here" pill must fade IN and then glow — a lone glowpulse
+   animation would override the fade and leave it stuck at opacity 0 */
+.scene[data-scene="work"].active .r4.on { animation:fade .4s .9s ease forwards, glowpulse 2s 1.9s ease-in-out infinite; }
 @keyframes glowpulse { 0%,100%{box-shadow:0 0 0 0 color-mix(in oklab,var(--v-green) 22%,transparent);} 50%{box-shadow:0 0 0 6px color-mix(in oklab,var(--v-green) 12%,transparent);} }
 
 /* ── S6 CTA ── */
