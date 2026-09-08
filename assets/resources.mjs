@@ -230,5 +230,6 @@ async function initAuthed(user) {
 
 // boot: default to public/local; upgrade to authed if a valid session resolves
 selectTab(location.hash.slice(1) || 'overview', false);
+window.addEventListener('hashchange', () => selectTab(location.hash.slice(1) || 'overview', false));
 if (checklist) wireLocalChecklist();
 currentUser().then((u) => { if (u) initAuthed(u); }).catch(() => { /* stay public */ });
