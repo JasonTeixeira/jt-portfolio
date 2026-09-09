@@ -249,6 +249,55 @@ function buildMessagesCard(view, portalToken) {
 }
 
 /* ── project progress stepper (Kickoff → Building → Delivered → Complete) ── */
+/* ── project assistant: grounded, read-only Q&A about THIS project ── */
+function buildAssistantCard(portalToken) {
+  const card = h('div', { class: 'portal-card' });
+  card.appendChild(h('h2', { class: 'portal-card-title' }, t('asst.title')));
+  card.appendChild(h('p', { class: 'subtle', style: 'margin:-4px 0 12px;font-size:13px' }, t('asst.intro')));
+
+  const thread = h('div', { style: 'display:flex;flex-direction:column;gap:10px;margin-bottom:12px' });
+  const status = h('span', { class: 'subtle', style: 'font-size:12px' }, '');
+  const ASSISTANT = 'Assistant';
+  function bubble(who, text, mine) {
+    thread.appendChild(h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:88%;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:${mine ? 'rgba(34,211,238,0.08)' : 'var(--card)'}` },
+      h('div', { style: 'font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-bottom:4px' }, who),
+      h('div', { style: 'font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-wrap' }, text)));
+  }
+
+  const input = h('input', { type: 'text', placeholder: t('asst.placeholder'), style: 'width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px' });
+  const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:9px 18px;font-size:13px' }, t('asst.send'));
+  let busy = false;
+  async function ask(preset) {
+    const question = String(preset || input.value || '').trim();
+    if (!question || busy) return;
+    busy = true; btn.disabled = true; input.value = '';
+    bubble(t('asst.you'), question, true);
+    clear(status); status.appendChild(document.createTextNode(t('asst.sending')));
+    try {
+      const r = await fetch('/api/portal-assistant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ portalToken, question }) });
+      const d = await r.json().catch(() => null);
+      clear(status);
+      if (d && d.ok && d.answer) bubble(ASSISTANT, d.answer, false);
+      else if (d && d.skipped) bubble(ASSISTANT, t('asst.offline'), false);
+      else bubble(ASSISTANT, t('asst.error'), false);
+    } catch { clear(status); bubble(ASSISTANT, t('asst.error'), false); }
+    busy = false; btn.disabled = false;
+  }
+  btn.addEventListener('click', () => ask());
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); ask(); } });
+
+  const chips = h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px' });
+  [t('asst.q1'), t('asst.q2'), t('asst.q3')].forEach((q) => {
+    const chip = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:6px 12px;font-size:12px' }, q);
+    chip.addEventListener('click', () => ask(q));
+    chips.appendChild(chip);
+  });
+  card.appendChild(chips);
+  card.appendChild(thread);
+  card.appendChild(h('div', {}, input, h('div', { style: 'display:flex;align-items:center;gap:10px' }, btn, status)));
+  return card;
+}
+
 function buildStepper(view, plan) {
   const STAGES = [t('step.kickoff'), t('step.building'), t('step.delivered'), t('step.complete')];
   const raw = String((view.project && view.project.status) || 'kickoff').toLowerCase();
@@ -375,6 +424,9 @@ function renderPortal(root, view, portalToken, opts = {}) {
     payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, t('billing.balance')), h('span', { class: 'val' }, money(plan.balance_cents))));
   }
   root.appendChild(payCard);
+
+  // Project assistant — grounded, read-only Q&A about this project.
+  root.appendChild(buildAssistantCard(portalToken));
 
   // Messages — two-way thread with Jason.
   root.appendChild(buildMessagesCard(view, portalToken));
