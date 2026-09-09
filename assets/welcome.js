@@ -1,14 +1,14 @@
 /* welcome.js — "Atlas concierge": a proactive, NON-blocking first-visit greeter on the home page.
-   Slides in after the splash settles, greets, and either runs a guided TOUR (animated section
-   spotlight + typed narration + optional natural voice) or routes to the right action. Hands off
-   to the existing systems (funnel mode, Atlas chat, real pages). Once-only, skippable, a11y + i18n.
-   Home pages only (index.html, es/index.html, pt/index.html) — the only place this script is loaded.
+   Slides in after the splash settles, greets, offers a language choice, and either runs a guided
+   TOUR (animated section spotlight + typed narration + optional natural voice) or routes to the
+   right action. Hands off to the existing systems (funnel mode, Atlas chat, real pages). Once-only,
+   skippable, a11y + i18n. Home pages only (index.html, es/index.html, pt/index.html).
 
-   VOICE (optional, drop-in): each greeting/tour line looks for an audio clip at
-   /assets/greeter/<loc>/<key>.mp3 (keys: s1..s6, one per tour step). If the file exists it plays in sync with
-   the step (started by the user's tour click — a real gesture, so no autoplay block); if not, the
-   step is text-only. Generate the clips from docs/GREETER-VOICE-SCRIPT.md and drop them in — nothing
-   else changes. A mute toggle appears only when at least one clip is present. */
+   VOICE (optional, drop-in): each tour line looks for an audio clip at
+   /assets/greeter/<loc>/s<N>.mp3 (s1..s6, one per step). If present it plays in sync with the step
+   (started by the user's tour click — a real gesture, so no autoplay block); if not, the step is
+   text-only. Generate the clips from docs/GREETER-VOICE-SCRIPT.md and drop them in. A Sound toggle
+   appears only when clips are present. */
 (function () {
   'use strict';
   var d = document, path = location.pathname;
@@ -18,8 +18,7 @@
   var SEEN = 'jt-welcome-v2';
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   try { if (!force && localStorage.getItem(SEEN)) return; } catch (e) {}
-  // Don't auto-fire under automation — E2E runs aren't first-time visitors and the overlay
-  // was intercepting unrelated assertions. ?welcome=1 still forces it, so it stays testable.
+  // Don't auto-fire under automation — E2E runs aren't first-time visitors. ?welcome=1 forces it.
   try { if (!force && navigator.webdriver) return; } catch (e) {}
 
   var T = {
@@ -30,6 +29,7 @@
       dismiss: "I'm here bottom-right whenever you need me.", hired: "Switched to the hiring view — résumé's up top.",
       online: "online", close: "Close", next: "Next", back: "Back", skip: "Skip tour", sound: "Sound", mute: "Mute",
       book: "Book a 15-min intro", explore: "I'll explore on my own",
+      labels: ["The idea", "In 30 seconds", "Proof", "The work", "Who", "Start here"],
       steps: [
         "Here's the whole idea: Jason builds your AI feature — then proves it actually works.",
         "The short version lives right here: what he does, why him, and how to start.",
@@ -46,6 +46,7 @@
       dismiss: "Estoy abajo a la derecha cuando me necesites.", hired: "Cambié a la vista de contratación — el CV está arriba.",
       online: "en línea", close: "Cerrar", next: "Siguiente", back: "Atrás", skip: "Omitir", sound: "Sonido", mute: "Silenciar",
       book: "Agenda 15 min", explore: "Prefiero explorar solo",
+      labels: ["La idea", "En 30 segundos", "Prueba", "El trabajo", "Quién", "Empezar"],
       steps: [
         "La idea es esta: Jason construye tu función de IA — y luego prueba que realmente funciona.",
         "La versión corta está aquí mismo: qué hace, por qué él y cómo empezar.",
@@ -62,6 +63,7 @@
       dismiss: "Estou no canto inferior direito quando precisar.", hired: "Mudei para a visão de contratação — o CV está no topo.",
       online: "online", close: "Fechar", next: "Próximo", back: "Voltar", skip: "Pular", sound: "Som", mute: "Silenciar",
       book: "Agende 15 min", explore: "Prefiro explorar sozinho",
+      labels: ["A ideia", "Em 30 segundos", "Prova", "O trabalho", "Quem", "Começar"],
       steps: [
         "A ideia é esta: o Jason constrói o seu recurso de IA — e depois prova que ele realmente funciona.",
         "A versão curta está aqui: o que ele faz, por que ele e como começar.",
@@ -73,7 +75,10 @@
     }
   }[loc];
 
-  // Tour steps: a section selector + the audio-clip key. Steps whose section is absent are skipped
+  // Language choices offered in the greeter (navigate to the localized home, forcing the greeter).
+  var LANGS = [['en', 'EN', '/index.html?welcome=1'], ['es', 'ES', '/es/index.html?welcome=1'], ['pt', 'PT', '/pt/index.html?welcome=1']];
+
+  // Tour steps: section selector + audio-clip key. Steps whose section is absent are skipped
   // (keeps es/pt robust even if a section like #tldr isn't mirrored yet).
   var STEP_DEFS = [
     { sel: '#top', key: 's1' }, { sel: '#tldr', key: 's2' }, { sel: '#proof', key: 's3' },
@@ -89,7 +94,7 @@
   function stopAudio() { if (curAudio) { try { curAudio.pause(); } catch (e) {} curAudio = null; } }
   function playClip(key, onEnd) {
     stopAudio();
-    if (muted) { return; }
+    if (muted) return;
     try {
       var a = new window.Audio(AUDIO_BASE + key + '.mp3');
       a.onended = function () { if (onEnd) onEnd(); };
@@ -126,6 +131,9 @@
 
   function build() {
     injectCss();
+    var langs = LANGS.map(function (l) {
+      return l[0] === loc ? '<b>' + l[1] + '</b>' : '<a href="' + l[2] + '">' + l[1] + '</a>';
+    }).join('<span aria-hidden="true">·</span>');
     card = d.createElement('div'); card.id = 'jt-welcome'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', 'Atlas'); card.setAttribute('lang', loc);
     card.innerHTML =
       '<button class="jt-w-x" aria-label="' + T.close + '">&times;</button>' +
@@ -135,7 +143,7 @@
       '<p class="jt-w-q">' + T.q + '</p>' +
       '<button class="jt-w-tour"><span class="jt-w-tour-ic" aria-hidden="true">&#9654;</span> ' + T.tour + '</button>' +
       '<div class="jt-w-chips">' + CHIPS.map(function (c, i) { return '<button class="jt-w-chip" data-k="' + c.k + '" style="--i:' + i + '"><span>' + c.label + '</span><i class="jt-w-arw" aria-hidden="true">&rarr;</i></button>'; }).join('') + '</div>' +
-      '<div class="jt-w-foot"><button class="jt-w-watch"><span aria-hidden="true">&#9654;</span> ' + T.watch + '</button></div>' +
+      '<div class="jt-w-foot"><button class="jt-w-watch"><span aria-hidden="true">&#9654;</span> ' + T.watch + '</button><nav class="jt-w-langs" aria-label="Language">' + langs + '</nav></div>' +
       '</div>';
     d.body.appendChild(card);
     card.querySelector('.jt-w-x').addEventListener('click', function () { close(false); });
@@ -163,6 +171,7 @@
       '<div class="jt-tour-row">' +
       '<span class="jt-tour-orb" aria-hidden="true"></span>' +
       '<span class="jt-tour-name">Atlas</span>' +
+      '<span class="jt-tour-label"></span>' +
       '<span class="jt-tour-dots" aria-hidden="true"></span>' +
       '<button class="jt-tour-sound" hidden aria-pressed="false"></button>' +
       '<button class="jt-tour-skip">' + T.skip + '</button>' +
@@ -175,16 +184,13 @@
       '</div>';
     d.body.appendChild(tour);
 
-    var dots = tour.querySelector('.jt-tour-dots');
-    dots.innerHTML = steps.map(function () { return '<i></i>'; }).join('');
-
-    tour.querySelector('.jt-tour-skip').addEventListener('click', endTour);
+    tour.querySelector('.jt-tour-dots').innerHTML = steps.map(function () { return '<i></i>'; }).join('');
+    tour.querySelector('.jt-tour-skip').addEventListener('click', function () { endTour(); });
     tour.querySelector('.jt-tour-next').addEventListener('click', function () { step(si + 1); });
     tour.querySelector('.jt-tour-back').addEventListener('click', function () { step(si - 1); });
 
-    // sound toggle only if a clip is actually present (probe the first one)
     probeAudio(function (present) {
-      if (!present) return;
+      if (!present || !tour) return;
       var sb = tour.querySelector('.jt-tour-sound');
       sb.hidden = false; renderSound(sb);
       sb.addEventListener('click', function () {
@@ -204,8 +210,8 @@
   function probeAudio(cb) {
     try {
       var a = new window.Audio(); var done = false;
-      a.oncanplaythrough = function () { if (!done) { done = true; cb(true); } };
-      a.onloadedmetadata = function () { if (!done) { done = true; cb(true); } };
+      function ok() { if (!done) { done = true; cb(true); } }
+      a.oncanplaythrough = ok; a.onloadedmetadata = ok;
       a.onerror = function () { if (!done) { done = true; cb(false); } };
       a.src = AUDIO_BASE + 's1.mp3'; a.load();
       setTimeout(function () { if (!done) { done = true; cb(false); } }, 2500);
@@ -218,15 +224,27 @@
     else if (e.key === 'ArrowLeft') step(si - 1);
   }
 
+  // Frame the TOP of the active section (capped to ~62% of the viewport) so the highlight is always
+  // fully on screen and clearly points at one thing, with the panel sitting below it.
   function positionSpot() {
     if (!tour || !steps[si]) return;
     var el = d.querySelector(steps[si].sel); if (!el) return;
-    var r = el.getBoundingClientRect(); var pad = 10;
+    var r = el.getBoundingClientRect(), vh = window.innerHeight, pad = 12;
+    var top = Math.max(10, r.top - pad);
+    var bottom = Math.min(r.bottom + pad, top + vh * 0.62);
+    var h = Math.max(64, bottom - top);
+    var left = Math.max(10, r.left - pad);
+    var w = Math.min(window.innerWidth - 20, r.width + pad * 2);
     var spot = tour.querySelector('.jt-tour-spot');
-    var top = Math.max(6, r.top - pad), left = Math.max(6, r.left - pad);
-    var w = Math.min(window.innerWidth - 12, r.width + pad * 2);
-    var h = r.height + pad * 2;
     spot.style.top = top + 'px'; spot.style.left = left + 'px'; spot.style.width = w + 'px'; spot.style.height = h + 'px';
+  }
+
+  function scrollToStep(el, cb) {
+    var vh = window.innerHeight;
+    var y = window.scrollY + el.getBoundingClientRect().top - vh * 0.10; // section top near the top, clear of the panel
+    try { window.scrollTo({ top: Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' }); }
+    catch (e) { window.scrollTo(0, Math.max(0, y)); }
+    setTimeout(cb, reduce ? 20 : 500);
   }
 
   function typeText(node, text) {
@@ -247,19 +265,19 @@
     var s = steps[si], el = d.querySelector(s.sel);
     var back = tour.querySelector('.jt-tour-back'), next = tour.querySelector('.jt-tour-next');
     back.hidden = si === 0;
-    next.innerHTML = (si === steps.length - 1) ? (T.book + ' &rarr;') : (T.next + ' &rarr;');
-    next.classList.toggle('is-final', si === steps.length - 1);
+    var final = si === steps.length - 1;
+    next.innerHTML = final ? (T.book + ' &rarr;') : (T.next + ' &rarr;');
+    next.classList.toggle('is-final', final);
+    var lbl = tour.querySelector('.jt-tour-label'); if (lbl) lbl.textContent = (T.labels && T.labels[si]) || '';
     Array.prototype.forEach.call(tour.querySelectorAll('.jt-tour-dots i'), function (dot, i) { dot.classList.toggle('on', i === si); });
     var orb = tour.querySelector('.jt-tour-orb'); orb.classList.add('speaking');
-    if (el) {
-      try { el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); } catch (e) { el.scrollIntoView(); }
-    }
-    setTimeout(function () {
+    var reveal = function () {
       positionSpot();
       typeText(tour.querySelector('.jt-tour-text'), (T.steps[si] || ''));
       playClip(s.key);
-      setTimeout(function () { orb.classList.remove('speaking'); }, 1200);
-    }, reduce ? 0 : 460);
+      setTimeout(function () { orb.classList.remove('speaking'); }, 1300);
+    };
+    if (el) scrollToStep(el, reveal); else reveal();
     va('tour-step', { i: si });
   }
 
@@ -292,7 +310,7 @@
     if (v && v.play) v.play().catch(function () {});
   }
 
-  // Tour-only CSS injected once (the card's .jt-w-* styles live in site.css).
+  // Tour-only CSS injected once (the card's .jt-w-* base styles live in site.css).
   function injectCss() {
     if (d.getElementById('jt-tour-css')) return;
     var css = [
@@ -300,30 +318,35 @@
       '.jt-w-tour{display:flex;align-items:center;gap:9px;width:100%;margin:4px 0 12px;padding:12px 16px;border-radius:11px;border:1px solid rgba(34,211,238,.35);background:linear-gradient(180deg,rgba(34,211,238,.14),rgba(16,185,129,.10));color:#F4F2EF;font:600 13.5px/1 "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s}',
       '.jt-w-tour:hover{border-color:#22d3ee;transform:translateY(-1px);box-shadow:0 10px 30px -12px rgba(34,211,238,.5)}',
       '.jt-w-tour-ic{color:#22d3ee}',
+      '.jt-w-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}',
+      '.jt-w-langs{display:flex;gap:5px;align-items:center;margin-left:auto;font:600 11px/1 "JetBrains Mono",monospace}',
+      '.jt-w-langs b{color:#10b981}.jt-w-langs a{color:#8E8882;text-decoration:none;padding:3px 6px;border-radius:5px;transition:color .18s,background .18s}',
+      '.jt-w-langs a:hover{color:#F4F2EF;background:rgba(255,255,255,.07)}.jt-w-langs span{color:#3D3A37}',
       '#jt-tour{position:fixed;inset:0;z-index:2147483000;pointer-events:none;opacity:0;transition:opacity .3s ease}',
       '#jt-tour.in{opacity:1}#jt-tour.out{opacity:0}',
-      '.jt-tour-spot{position:fixed;border-radius:16px;box-shadow:0 0 0 9999px rgba(6,6,9,.74),0 0 0 1px rgba(34,211,238,.7),0 0 40px rgba(34,211,238,.35) inset;transition:top .5s cubic-bezier(.16,1,.3,1),left .5s cubic-bezier(.16,1,.3,1),width .5s cubic-bezier(.16,1,.3,1),height .5s cubic-bezier(.16,1,.3,1);pointer-events:none}',
-      '.jt-tour-panel{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);width:min(560px,calc(100vw - 32px));background:rgba(12,12,15,.96);backdrop-filter:blur(16px);border:1px solid #2A2826;border-radius:16px;padding:18px 20px;box-shadow:0 30px 80px rgba(0,0,0,.6);pointer-events:auto;opacity:0;transition:opacity .3s ease,transform .3s ease}',
+      '.jt-tour-spot{position:fixed;border-radius:16px;box-shadow:0 0 0 9999px rgba(6,6,9,.74),0 0 0 2px rgba(34,211,238,.9),0 0 44px rgba(34,211,238,.4) inset;transition:top .5s cubic-bezier(.16,1,.3,1),left .5s cubic-bezier(.16,1,.3,1),width .5s cubic-bezier(.16,1,.3,1),height .5s cubic-bezier(.16,1,.3,1);animation:jt-spot 2.4s ease-in-out infinite;pointer-events:none}',
+      '@keyframes jt-spot{0%,100%{box-shadow:0 0 0 9999px rgba(6,6,9,.74),0 0 0 2px rgba(34,211,238,.85),0 0 30px rgba(34,211,238,.32) inset}50%{box-shadow:0 0 0 9999px rgba(6,6,9,.74),0 0 0 2px rgba(34,211,238,1),0 0 58px rgba(34,211,238,.6) inset}}',
+      '.jt-tour-panel{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(10px);width:min(580px,calc(100vw - 32px));background:rgba(12,12,15,.97);backdrop-filter:blur(16px);border:1px solid #2A2826;border-radius:16px;padding:18px 20px 16px;box-shadow:0 30px 80px rgba(0,0,0,.6);pointer-events:auto;opacity:0;transition:opacity .3s ease,transform .3s ease}',
       '#jt-tour.in .jt-tour-panel{opacity:1;transform:translateX(-50%) translateY(0)}',
-      '.jt-tour-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}',
+      '.jt-tour-row{display:flex;align-items:center;gap:9px;margin-bottom:13px}',
       '.jt-tour-orb{width:26px;height:26px;border-radius:50%;flex:0 0 auto;background:radial-gradient(circle at 35% 30%,#22d3ee,#065f46);box-shadow:0 0 14px rgba(34,211,238,.55)}',
       '.jt-tour-orb.speaking{animation:jt-orb 1s ease-in-out infinite}',
-      '@keyframes jt-orb{0%,100%{transform:scale(1);box-shadow:0 0 14px rgba(34,211,238,.55)}50%{transform:scale(1.12);box-shadow:0 0 22px rgba(34,211,238,.85)}}',
-      '.jt-tour-name{font:700 12px/1 "JetBrains Mono",monospace;letter-spacing:.08em;color:#F4F2EF}',
-      '.jt-tour-dots{display:flex;gap:5px;margin-left:6px}.jt-tour-dots i{width:6px;height:6px;border-radius:50%;background:#3D3A37;transition:background .3s,width .3s}.jt-tour-dots i.on{background:#22d3ee;width:16px;border-radius:3px}',
-      '.jt-tour-sound{margin-left:auto;font:600 11px/1 "JetBrains Mono",monospace;color:#8E8882;background:transparent;border:1px solid #2A2826;border-radius:7px;padding:6px 9px;cursor:pointer}',
+      '@keyframes jt-orb{0%,100%{transform:scale(1);box-shadow:0 0 14px rgba(34,211,238,.55)}50%{transform:scale(1.14);box-shadow:0 0 24px rgba(34,211,238,.9)}}',
+      '.jt-tour-name{font:700 12px/1 "JetBrains Mono",monospace;letter-spacing:.06em;color:#F4F2EF}',
+      '.jt-tour-label{font:600 10px/1 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.28);border-radius:6px;padding:5px 8px}',
+      '.jt-tour-dots{display:flex;gap:5px;margin-left:auto}.jt-tour-dots i{width:6px;height:6px;border-radius:50%;background:#3D3A37;transition:background .3s,width .3s}.jt-tour-dots i.on{background:#22d3ee;width:17px;border-radius:3px}',
+      '.jt-tour-sound{font:600 11px/1 "JetBrains Mono",monospace;color:#8E8882;background:transparent;border:1px solid #2A2826;border-radius:7px;padding:6px 9px;cursor:pointer;margin-left:8px}',
       '.jt-tour-sound.is-muted{color:#F59E0B;border-color:rgba(245,158,11,.4)}',
-      '.jt-tour-skip{font:600 11px/1 "JetBrains Mono",monospace;color:#8E8882;background:transparent;border:1px solid #2A2826;border-radius:7px;padding:6px 10px;cursor:pointer;transition:color .2s,border-color .2s}',
-      '.jt-tour-sound:not([hidden])~.jt-tour-skip{margin-left:8px}.jt-tour-row .jt-tour-skip{margin-left:auto}.jt-tour-row .jt-tour-sound:not([hidden])+.jt-tour-skip{margin-left:8px}',
+      '.jt-tour-skip{font:600 11px/1 "JetBrains Mono",monospace;color:#8E8882;background:transparent;border:1px solid #2A2826;border-radius:7px;padding:6px 10px;cursor:pointer;margin-left:8px;transition:color .2s,border-color .2s}',
       '.jt-tour-skip:hover{color:#F4F2EF;border-color:#3D3A37}',
-      '.jt-tour-text{margin:0;font-family:"Instrument Serif",Georgia,serif;font-size:clamp(1.15rem,2.4vw,1.5rem);line-height:1.35;color:#F4F2EF;min-height:2.6em}',
-      '.jt-tour-nav{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}',
+      '.jt-tour-text{margin:0;font-family:"Instrument Serif",Georgia,serif;font-size:clamp(1.2rem,2.4vw,1.55rem);line-height:1.32;color:#F4F2EF;min-height:2.7em}',
+      '.jt-tour-nav{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}',
       '.jt-tour-back,.jt-tour-next{font:600 13px/1 "Plus Jakarta Sans",system-ui,sans-serif;border-radius:9px;padding:11px 18px;cursor:pointer;border:1px solid #2A2826;background:transparent;color:#C9C5C0;transition:all .18s}',
       '.jt-tour-back:hover{border-color:#3D3A37;color:#F4F2EF}',
       '.jt-tour-next{background:#10b981;border-color:#10b981;color:#04120d}.jt-tour-next:hover{box-shadow:0 8px 24px -8px rgba(16,185,129,.6)}',
       '.jt-tour-next.is-final{background:#22d3ee;border-color:#22d3ee}',
-      '@media (max-width:520px){.jt-tour-panel{left:12px;right:12px;bottom:12px;transform:translateY(8px);width:auto}#jt-tour.in .jt-tour-panel{transform:translateY(0)}}',
-      '@media (prefers-reduced-motion:reduce){.jt-tour-spot{transition:none}.jt-tour-orb.speaking{animation:none}}'
+      '@media (max-width:560px){.jt-tour-panel{left:12px;right:12px;bottom:12px;transform:translateY(10px);width:auto;padding:15px 16px 14px}#jt-tour.in .jt-tour-panel{transform:translateY(0)}.jt-tour-name{display:none}.jt-tour-back,.jt-tour-next{flex:1}}',
+      '@media (prefers-reduced-motion:reduce){.jt-tour-spot{transition:none;animation:none}.jt-tour-orb.speaking{animation:none}}'
     ].join('');
     var st = d.createElement('style'); st.id = 'jt-tour-css'; st.textContent = css; d.head.appendChild(st);
   }
