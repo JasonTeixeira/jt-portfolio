@@ -1,0 +1,24 @@
+SAGE IDEAS — HOMEPAGE INTRO VOICEOVER
+Voice: Jason (ElevenLabs). Tone: warm, confident, unhurried — a founder talking
+to one person. ~150 seconds. Record/generate as ONE continuous take.
+Pause ~1s at each paragraph break.
+
+---
+
+Hi — I'm Jason. Welcome to Sage Ideas.
+
+AI is showing up in everything right now. The trouble is, a lot of it ships on a
+demo and a prayer — and a customer finds the one thing it gets wrong.
+
+So we build both halves: the AI feature you actually want… and the proof it
+works — evals, tests, and gates that turn "trust me" into a number you can see.
+
+I've spent thirteen years in software quality, at The Home Depot and in fintech.
+Today I build and run two live products entirely on my own.
+
+Teams bring me three kinds of work: LLM and RAG evaluation, test automation and
+CI, and workflow automation. We start with a one-week audit — you leave with a
+plan either way.
+
+If there's an AI feature you're not sure about, let's talk. Book a free call.
+I'm Jason — thanks for watching, and welcome to Sage Ideas.
