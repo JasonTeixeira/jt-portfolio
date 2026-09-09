@@ -1,0 +1,144 @@
+{
+  "TOTAL": 49.804,
+  "scenes": [
+    {
+      "id": "hook",
+      "t0": 0,
+      "t1": 3.126
+    },
+    {
+      "id": "problem",
+      "t0": 3.126,
+      "t1": 11.706
+    },
+    {
+      "id": "do",
+      "t0": 11.706,
+      "t1": 21.494
+    },
+    {
+      "id": "who",
+      "t0": 21.494,
+      "t1": 30.213
+    },
+    {
+      "id": "work",
+      "t0": 30.213,
+      "t1": 41.766
+    },
+    {
+      "id": "cta",
+      "t0": 41.766,
+      "t1": 49.804
+    }
+  ],
+  "cues": [
+    {
+      "id": "01",
+      "scene": "hook",
+      "t0": 0,
+      "t1": 3.126,
+      "text": "Hi — I’m Jason. Welcome to Sage Ideas."
+    },
+    {
+      "id": "02",
+      "scene": "problem",
+      "t0": 3.126,
+      "t1": 5.423,
+      "text": "AI is showing up in everything right now."
+    },
+    {
+      "id": "03",
+      "scene": "problem",
+      "t0": 5.422,
+      "t1": 11.705,
+      "text": "The trouble is, a lot of it ships on a demo and a prayer — and a customer finds the one thing it gets wrong."
+    },
+    {
+      "id": "04",
+      "scene": "do",
+      "t0": 11.706,
+      "t1": 15.303,
+      "text": "So we build both halves: the AI feature you actually want…"
+    },
+    {
+      "id": "05",
+      "scene": "do",
+      "t0": 15.303,
+      "t1": 21.494,
+      "text": "…and the proof it works — evals, tests, and gates that turn “trust me” into a number you can see."
+    },
+    {
+      "id": "06",
+      "scene": "who",
+      "t0": 21.494,
+      "t1": 26.252,
+      "text": "I’ve spent thirteen years in software quality, at The Home Depot and in fintech."
+    },
+    {
+      "id": "07",
+      "scene": "who",
+      "t0": 26.252,
+      "t1": 30.213,
+      "text": "Today I build and run two live products entirely on my own."
+    },
+    {
+      "id": "08",
+      "scene": "work",
+      "t0": 30.213,
+      "t1": 37.618,
+      "text": "Teams bring me three kinds of work: LLM & RAG evaluation, test automation & CI, and workflow automation."
+    },
+    {
+      "id": "09",
+      "scene": "work",
+      "t0": 37.619,
+      "t1": 41.766,
+      "text": "We start with a one-week audit — you leave with a plan either way."
+    },
+    {
+      "id": "10",
+      "scene": "cta",
+      "t0": 41.766,
+      "t1": 45.085,
+      "text": "If there’s an AI feature you’re not sure about, let’s talk."
+    },
+    {
+      "id": "11",
+      "scene": "cta",
+      "t0": 45.085,
+      "t1": 49.804,
+      "text": "Book a free call. I’m Jason — thanks for watching, and welcome to Sage Ideas."
+    }
+  ],
+  "soundCues": [
+    {
+      "t": 0.3,
+      "fn": "rise"
+    },
+    {
+      "t": 3.13,
+      "fn": "whoosh"
+    },
+    {
+      "t": 11.71,
+      "fn": "whoosh"
+    },
+    {
+      "t": 12.91,
+      "fn": "snap"
+    },
+    {
+      "t": 21.49,
+      "fn": "whoosh"
+    },
+    {
+      "t": 30.21,
+      "fn": "whoosh"
+    },
+    {
+      "t": 41.77,
+      "fn": "ctaChord"
+    }
+  ]
+}

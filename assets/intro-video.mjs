@@ -4,32 +4,33 @@
 // the piece plays as a captioned motion sequence today. To add narration: record the
 // ~150s VO, save it as assets/intro-vo.mp3, and set VO_SRC below — everything else
 // (scene timings, captions, controls, progress) already syncs to it.
-const VO_SRC = ''; // e.g. 'assets/intro-vo.mp3' — leave '' for the captioned silent cut
+const VO_SRC = 'assets/intro-vo.mp3'; // real Jason ElevenLabs narration; '' falls back to the captioned silent cut
 
-// Scene time ranges (seconds). Keep in sync with the recorded VO if one is added.
+// Scene time ranges (seconds) — synced to assets/intro-vo.mp3 (generated line-by-line; see
+// scripts/gen-intro-vo.mjs + assets/intro-timings.json). Each scene starts exactly when its line does.
 const SCENES = [
-  { id: 'hook', t0: 0, t1: 8 },
-  { id: 'problem', t0: 8, t1: 30 },
-  { id: 'do', t0: 30, t1: 62 },
-  { id: 'who', t0: 62, t1: 92 },
-  { id: 'work', t0: 92, t1: 120 },
-  { id: 'cta', t0: 120, t1: 150 },
+  { id: 'hook', t0: 0, t1: 3.126 },
+  { id: 'problem', t0: 3.126, t1: 11.706 },
+  { id: 'do', t0: 11.706, t1: 21.494 },
+  { id: 'who', t0: 21.494, t1: 30.213 },
+  { id: 'work', t0: 30.213, t1: 41.766 },
+  { id: 'cta', t0: 41.766, t1: 49.804 },
 ];
-const TOTAL = 150;
+const TOTAL = 49.804;
 
-// Caption cues — the narration, chunked for readability.
+// Caption cues — each t0 is the exact moment the voice begins that line; t1 = next line's start.
 const CUES = [
-  { t0: 0, t1: 8, text: 'Hi — I’m Jason. Welcome to Sage Ideas.' },
-  { t0: 8, t1: 18, text: 'AI is showing up in everything right now.' },
-  { t0: 18, t1: 30, text: 'The trouble is, a lot of it ships on a demo and a prayer — and a customer finds the one thing it gets wrong.' },
-  { t0: 30, t1: 44, text: 'So we build both halves: the AI feature you actually want…' },
-  { t0: 44, t1: 62, text: '…and the proof it works — evals, tests, and gates that turn “trust me” into a number you can see.' },
-  { t0: 62, t1: 78, text: 'I’ve spent thirteen years in software quality, at The Home Depot and in fintech.' },
-  { t0: 78, t1: 92, text: 'Today I build and run two live products entirely on my own.' },
-  { t0: 92, t1: 106, text: 'Teams bring me three kinds of work: LLM & RAG evaluation, test automation & CI, and workflow automation.' },
-  { t0: 106, t1: 120, text: 'We start with a one-week audit — you leave with a plan either way.' },
-  { t0: 120, t1: 134, text: 'If there’s an AI feature you’re not sure about, let’s talk.' },
-  { t0: 134, t1: 150, text: 'Book a free call. I’m Jason — thanks for watching, and welcome to Sage Ideas.' },
+  { t0: 0, t1: 3.126, text: 'Hi — I’m Jason. Welcome to Sage Ideas.' },
+  { t0: 3.126, t1: 5.422, text: 'AI is showing up in everything right now.' },
+  { t0: 5.422, t1: 11.706, text: 'The trouble is, a lot of it ships on a demo and a prayer — and a customer finds the one thing it gets wrong.' },
+  { t0: 11.706, t1: 15.303, text: 'So we build both halves: the AI feature you actually want…' },
+  { t0: 15.303, t1: 21.494, text: '…and the proof it works — evals, tests, and gates that turn “trust me” into a number you can see.' },
+  { t0: 21.494, t1: 26.252, text: 'I’ve spent thirteen years in software quality, at The Home Depot and in fintech.' },
+  { t0: 26.252, t1: 30.213, text: 'Today I build and run two live products entirely on my own.' },
+  { t0: 30.213, t1: 37.619, text: 'Teams bring me three kinds of work: LLM & RAG evaluation, test automation & CI, and workflow automation.' },
+  { t0: 37.619, t1: 41.766, text: 'We start with a one-week audit — you leave with a plan either way.' },
+  { t0: 41.766, t1: 45.085, text: 'If there’s an AI feature you’re not sure about, let’s talk.' },
+  { t0: 45.085, t1: 49.804, text: 'Book a free call. I’m Jason — thanks for watching, and welcome to Sage Ideas.' },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -119,21 +120,20 @@ function speak(text) {
 }
 function stopSpeech() { if (hasTTS) { try { window.speechSynthesis.cancel(); } catch { /* ignore */ } } }
 function maybeSpeak(text) { if (playing && !muted && text && text !== lastSpoken) { lastSpoken = text; speak(text); } }
+// Synced to assets/intro-vo.mp3 (49.8s). Whoosh on each scene transition, a crack when the
+// feature-card shakes under "demo and a prayer", a snap when the gate flips green, pops as the
+// work cards fan in, a chord on the CTA. Kept low so the narration sits on top.
 const SOUND_CUES = [
   { t: 0.3, fn: rise },
-  { t: 8, fn: () => whoosh() },
-  { t: 9.1, fn: () => pop(880) },
-  { t: 9.9, fn: crack },
-  { t: 30, fn: () => whoosh() },
-  { t: 30.2, fn: () => pop(523) }, { t: 30.6, fn: () => pop(659) },
-  { t: 31.9, fn: snap },
-  { t: 62, fn: () => whoosh() },
-  { t: 63.7, fn: () => pop(587) }, { t: 63.95, fn: () => pop(740) },
-  { t: 92, fn: () => whoosh() },
-  { t: 92.2, fn: () => pop(494) }, { t: 92.4, fn: () => pop(587) }, { t: 92.6, fn: () => pop(698) },
-  { t: 93.7, fn: () => chord([440, 554, 659], 0.1) },
-  { t: 120, fn: () => whoosh({ dur: 0.7 }) },
-  { t: 120.9, fn: () => chord([523.25, 659.25, 783.99, 1046.5], 0.16) },
+  { t: 3.126, fn: () => whoosh() },
+  { t: 5.0, fn: crack },                                   // feature-card cracks under the "prayer"
+  { t: 11.706, fn: () => whoosh() },
+  { t: 13.6, fn: snap },                                   // gate flips → ✓ 37/37
+  { t: 21.494, fn: () => whoosh() },
+  { t: 30.213, fn: () => whoosh() },
+  { t: 30.9, fn: () => pop(587) }, { t: 31.1, fn: () => pop(740) }, // work cards fan in
+  { t: 41.766, fn: () => whoosh({ dur: 0.7 }) },
+  { t: 42.6, fn: () => chord([523.25, 659.25, 783.99, 1046.5], 0.16) }, // CTA
 ];
 let soundPtr = 0;
 function fireSound(t) {
@@ -231,14 +231,18 @@ $('vclose').addEventListener('click', () => {
   try { window.parent.postMessage({ type: 'sage-intro-close' }, '*'); } catch { /* ignore */ }
   if (window.top === window.self) { if (history.length > 1) history.back(); else location.href = 'index.html'; }
 });
-// Sound toggle (controls the synthesized sound design)
+// Sound toggle (controls the synthesized sound design + narration)
+const SPK_BASE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">';
+const SPK_ON = SPK_BASE + '<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>';
+const SPK_OFF = SPK_BASE + '<path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16" y1="9.5" x2="21" y2="14.5"/><line x1="21" y1="9.5" x2="16" y2="14.5"/></svg>';
 muteBtn.hidden = false;
-muteBtn.textContent = '🔊';
+muteBtn.innerHTML = SPK_ON;
 muteBtn.setAttribute('aria-label', 'Mute sound');
 muteBtn.addEventListener('click', () => {
   muted = !muted;
   if (master) master.gain.value = muted ? 0 : 0.85;
-  muteBtn.textContent = muted ? '🔇' : '🔊';
+  muteBtn.innerHTML = muted ? SPK_OFF : SPK_ON;
+  muteBtn.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound');
   if (muted) stopSpeech(); else lastSpoken = '';
 });
 if (useAudio) {

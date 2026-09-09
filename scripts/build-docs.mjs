@@ -30,7 +30,7 @@ function renderBlock(b) {
     // ['note', html] (default) OR ['note', kind, html] where kind = 'warn' | 'security'
     const kind = b.length >= 3 ? b[1] : 'note';
     const html = b.length >= 3 ? b[2] : b[1];
-    const mark = kind === 'warn' ? '!' : kind === 'security' ? '⚿' : '▸';
+    const mark = kind === 'warn' ? '!' : kind === 'security' ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>' : '▸';
     return `<div class="d-note d-note-${kind}"><span class="d-note-i">${mark}</span><div>${html}</div></div>`;
   }
   if (t === 'table') {
@@ -237,7 +237,8 @@ ${ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script
     .d-badge { display:none; }
     .d-search { min-width:0; padding:8px; }
     .d-search .d-search-lbl, .d-search kbd { display:none; }
-    .d-top-cta .dim-link { display:none; }
+    .d-top-cta { display:none; } /* was overflowing the header ≤384px; Book CTAs remain in the drawer + content */
+    .d-navitem { padding-top:11px; padding-bottom:11px; } /* ≥44px touch target */
     .d-sidebar { position:fixed; top:48px; left:0; width:min(300px,84vw); height:calc(100vh - 48px); background:var(--bg); z-index:70; transform:translateX(-102%); transition:transform .25s ease; border-right:1px solid var(--line); }
     body.d-navopen .d-sidebar { transform:none; box-shadow:0 30px 80px rgba(0,0,0,0.6); }
     body.d-navopen::after { content:''; position:fixed; inset:48px 0 0; background:rgba(0,0,0,0.5); z-index:65; }

@@ -162,7 +162,9 @@ if (root) {
     muted = next;
     if (muteBtn) {
       muteBtn.setAttribute('aria-pressed', String(muted));
-      muteBtn.textContent = muted ? '🔇 Sound off' : '🔊 Sound on';
+      // Toggle only the label span so the static speaker icon survives (textContent, not innerHTML).
+      const lbl = muteBtn.querySelector('#vr-mute-lbl') || muteBtn;
+      lbl.textContent = muted ? 'Sound off' : 'Sound on';
     }
     if (muted && canSpeak) {
       try {
