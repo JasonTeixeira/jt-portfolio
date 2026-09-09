@@ -33,12 +33,13 @@ const CUES = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sound design — synthesized with the Web Audio API (no files, no cost). Cues fire
-// on the timeline synced to the visual beats; a soft ambient pad plays underneath.
+// Sound design — subtle synthesized accents (Web Audio, no files) that fire on the
+// timeline synced to the visual beats: whooshes on transitions, a snap on the gate,
+// pops as things enter, a chord on the CTA. Kept low so the narration sits on top.
 // The AudioContext is created on the play click (a user gesture), so autoplay policy
 // is satisfied. Everything is guarded — if audio fails, the video plays silently.
 // ─────────────────────────────────────────────────────────────────────────────
-let actx = null, master = null, noiseBuf = null, pad = null, muted = false;
+let actx = null, master = null, noiseBuf = null, muted = false;
 function ensureAudio() {
   if (actx) return;
   try {
@@ -65,10 +66,10 @@ function tone(freq, { type = 'sine', gain = 0.2, a = 0.005, hold = 0.05, r = 0.1
   g.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + r);
   o.start(t); o.stop(t + a + hold + r + 0.05);
 }
-function pop(freq = 660) { tone(freq, { type: 'sine', gain: 0.16, a: 0.003, hold: 0.02, r: 0.12 }); }
+function pop(freq = 660) { tone(freq, { type: 'sine', gain: 0.1, a: 0.003, hold: 0.02, r: 0.12 }); }
 function chord(freqs, gain = 0.12) { freqs.forEach((f, i) => tone(f, { type: 'sine', gain: gain / freqs.length + 0.03, a: 0.01, hold: 0.28, r: 0.6, detune: i * 3 })); }
 function rise() { [392, 523.25, 659.25].forEach((f, i) => setTimeout(() => pop(f), i * 95)); }
-function whoosh({ gain = 0.16, dur = 0.5, from = 320, to = 2600 } = {}) {
+function whoosh({ gain = 0.09, dur = 0.5, from = 320, to = 2600 } = {}) {
   if (!actx || !noiseBuf) return;
   const src = actx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
   const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
@@ -86,26 +87,38 @@ function crack() {
   const g = actx.createGain();
   src.connect(hp); hp.connect(g); g.connect(master);
   const t = actx.currentTime;
-  g.gain.setValueAtTime(0.22, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+  g.gain.setValueAtTime(0.13, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
   src.start(t); src.stop(t + 0.16);
 }
 function snap() { crack(); tone(440, { type: 'triangle', gain: 0.2, a: 0.004, hold: 0.02, r: 0.18 }); setTimeout(() => chord([523.25, 659.25, 783.99], 0.15), 55); }
-function startPad() {
-  if (!actx || pad) return;
-  const g = actx.createGain(); g.gain.value = 0.0001; g.connect(master);
-  const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 680; lp.connect(g);
-  const o1 = actx.createOscillator(), o2 = actx.createOscillator();
-  o1.type = 'sine'; o1.frequency.value = 110; o2.type = 'sine'; o2.frequency.value = 165; o2.detune.value = 4;
-  o1.connect(lp); o2.connect(lp);
-  const t = actx.currentTime; g.gain.exponentialRampToValueAtTime(0.05, t + 1.6);
-  o1.start(t); o2.start(t);
-  pad = { g, o1, o2 };
+// ── voice narration (browser Speech Synthesis — free, no files) ──
+// Reads each caption line as its scene comes up. Robotic vs a real recording, but it's
+// an actual voice now. To swap for a premium voice, drop assets/intro-vo.mp3 + set VO_SRC.
+let ttsVoice = null, lastSpoken = '';
+const hasTTS = typeof window !== 'undefined' && 'speechSynthesis' in window;
+function pickVoice() {
+  if (!hasTTS) return;
+  try {
+    const vs = window.speechSynthesis.getVoices();
+    const pref = ['Google US English', 'Samantha', 'Google UK English Male', 'Daniel', 'Alex', 'Microsoft Aria', 'Microsoft Guy'];
+    ttsVoice = vs.find((v) => /^en/i.test(v.lang) && pref.some((p) => v.name.includes(p)))
+      || vs.find((v) => /en-US/i.test(v.lang)) || vs.find((v) => /^en/i.test(v.lang)) || null;
+  } catch { /* ignore */ }
 }
-function stopPad() {
-  if (!pad || !actx) return; const t = actx.currentTime;
-  try { pad.g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6); pad.o1.stop(t + 0.7); pad.o2.stop(t + 0.7); } catch { /* ignore */ }
-  pad = null;
+if (hasTTS) { pickVoice(); window.speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text) {
+  if (!hasTTS || muted || useAudio || !text) return;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new window.SpeechSynthesisUtterance(text.replace(/[—…]/g, ' '));
+    if (!ttsVoice) pickVoice();
+    if (ttsVoice) u.voice = ttsVoice;
+    u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+    window.speechSynthesis.speak(u);
+  } catch { /* ignore */ }
 }
+function stopSpeech() { if (hasTTS) { try { window.speechSynthesis.cancel(); } catch { /* ignore */ } } }
+function maybeSpeak(text) { if (playing && !muted && text && text !== lastSpoken) { lastSpoken = text; speak(text); } }
 const SOUND_CUES = [
   { t: 0.3, fn: rise },
   { t: 8, fn: () => whoosh() },
@@ -160,7 +173,7 @@ function render(t) {
     }
   }
   const cue = CUES.find((c) => t >= c.t0 && t < c.t1);
-  if (cue) { if (caption.textContent !== cue.text) caption.textContent = cue.text; caption.classList.add('show'); }
+  if (cue) { if (caption.textContent !== cue.text) caption.textContent = cue.text; caption.classList.add('show'); maybeSpeak(cue.text); }
   else caption.classList.remove('show');
   const dur = duration();
   bar.style.width = `${Math.min(100, (t / dur) * 100)}%`;
@@ -184,7 +197,7 @@ function play() {
   if (!useAudio && vclock >= TOTAL) { vclock = 0; seekSound(0); } // replay from end
   ensureAudio();
   if (actx && actx.state === 'suspended') actx.resume().catch(() => {});
-  startPad();
+  lastSpoken = '';
   playing = true;
   stage.classList.add('started');
   playBtn.textContent = '❚❚';
@@ -195,11 +208,11 @@ function play() {
 function pause() {
   playing = false;
   playBtn.textContent = '▶';
-  stopPad();
+  stopSpeech();
   if (useAudio) audio.pause();
 }
 function toggle() { playing ? pause() : play(); }
-function replay() { if (useAudio) { audio.currentTime = 0; } else { vclock = 0; } seekSound(0); render(0); play(); }
+function replay() { stopSpeech(); lastSpoken = ''; if (useAudio) { audio.currentTime = 0; } else { vclock = 0; } seekSound(0); render(0); play(); }
 
 // wiring
 $('vposter').addEventListener('click', play);
@@ -210,7 +223,7 @@ $('vprogress').addEventListener('click', (e) => {
   const p = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
   const t = p * duration();
   if (useAudio) audio.currentTime = t; else vclock = t;
-  seekSound(t);
+  seekSound(t); stopSpeech(); lastSpoken = '';
   render(t);
 });
 $('vclose').addEventListener('click', () => {
@@ -226,6 +239,7 @@ muteBtn.addEventListener('click', () => {
   muted = !muted;
   if (master) master.gain.value = muted ? 0 : 0.85;
   muteBtn.textContent = muted ? '🔇' : '🔊';
+  if (muted) stopSpeech(); else lastSpoken = '';
 });
 if (useAudio) {
   audio.addEventListener('ended', pause);
