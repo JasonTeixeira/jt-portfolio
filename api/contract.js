@@ -48,7 +48,7 @@ async function handler(req, res) {
   // Report it honestly so the client sees "something went wrong", not "not switched on".
   if (!acc.ok) { console.error('[contract] accept failed', acc.error || ''); return res.status(200).json({ ok: false, reason: 'write_failed' }); }
   if (acc.accepted) {
-    sendOperator({ subject: 'Contract signed by client', text: `${body.name.trim()} just signed the ${row.kind === 'msa' ? 'MSA' : 'SOW'}.\nContract: ${row.public_id || publicId}` })
+    sendOperator({ subject: 'Contract signed by client', text: `${body.name.trim()} just signed the ${row.kind === 'msa' ? 'MSA' : 'SOW'}.\nContract: ${body.publicId.trim()}` })
       .catch((e) => console.error('[contract] accept notify failed', (e && e.message) || e));
   }
   return res.status(200).json({ ok: true, accepted: Boolean(acc.accepted) });
