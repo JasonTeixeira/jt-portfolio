@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Lead-Leak Audit — what slow response is costing you · Sage Ideas</title>
+<meta name="description" content="See exactly how much revenue you're losing to slow lead response — and hear the AI front desk that fixes it, live. Free 72-hour audit on your own numbers.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/lead-audit.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free Lead-Leak Audit — Sage Ideas">
+<meta property="og:description" content="How much revenue are you losing to slow lead response? Find out in 60 seconds, and hear the AI that fixes it.">
+<meta property="og:url" content="https://agency.sageideas.dev/lead-audit.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=20260909a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.3rem,6vw,4rem); line-height:1.04; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.3rem); letter-spacing:-0.015em; margin:0; }
+  .subtle { color:var(--dim); font-size:15.5px; line-height:1.75; }
+  section { padding:clamp(38px,6vw,64px) 0; border-top:1px solid var(--line); }
+  .lead { max-width:60ch; }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#04120d; border:none; border-radius:26px; padding:15px 28px; font-size:15px; font-weight:700; font-family:inherit; cursor:pointer; }
+  .cta:hover { box-shadow:0 0 28px rgba(16,185,129,0.35); }
+  .cta:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+  .grid2 { display:grid; grid-template-columns:1.05fr 0.95fr; gap:20px; margin-top:30px; align-items:start; }
+  @media (max-width:820px){ .grid2 { grid-template-columns:1fr; } }
+  .panel { border:1px solid var(--line); border-radius:16px; background:var(--card); padding:clamp(20px,3vw,28px); }
+  label.fld { display:block; margin-bottom:18px; }
+  label.fld > span { display:flex; justify-content:space-between; font-size:13px; color:var(--dim); margin-bottom:8px; }
+  label.fld b { color:var(--ink); font-family:var(--mono); }
+  input[type=range] { width:100%; -webkit-appearance:none; appearance:none; height:5px; border-radius:3px; background:#1c1a17; outline:none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--green); cursor:pointer; box-shadow:0 0 0 4px rgba(16,185,129,0.15); }
+  input[type=range]::-moz-range-thumb { width:18px; height:18px; border:none; border-radius:50%; background:var(--green); cursor:pointer; }
+  .bignum { font-family:var(--serif); font-size:clamp(2.6rem,7vw,4rem); line-height:1; color:var(--rose); letter-spacing:-0.02em; }
+  .txt-in { width:100%; background:#111114; border:1px solid var(--line); border-radius:10px; color:var(--ink); font:inherit; font-size:14px; padding:12px 14px; }
+  .txt-in:focus { outline:none; border-color:var(--cyan); }
+  .bubble { border-radius:14px; padding:13px 16px; font-size:14px; line-height:1.55; max-width:85%; }
+  .bubble.me { background:#14243a; color:#dbeafe; margin-left:auto; border-bottom-right-radius:4px; }
+  .bubble.ai { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:#eafaf3; border-bottom-left-radius:4px; }
+  .typing span { display:inline-block; width:6px; height:6px; margin:0 1px; border-radius:50%; background:var(--green); animation:jt-bounce 1s infinite; }
+  .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+  @keyframes jt-bounce { 0%,60%,100%{transform:translateY(0);opacity:.5} 30%{transform:translateY(-5px);opacity:1} }
+  .vtabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; }
+  .vtab { font-family:var(--mono); font-size:12px; padding:9px 16px; border-radius:20px; border:1px solid var(--line); color:var(--dim); background:transparent; cursor:pointer; }
+  .vtab.on { color:var(--bg); background:var(--green); border-color:transparent; font-weight:700; }
+  @media (prefers-reduced-motion:reduce){ .typing span{animation:none} }
+</style>
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><span aria-current="true" style="color:#10b981;font-weight:600">EN</span></div>
+<div style="min-height:100vh">
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand" aria-label="Sage Ideas — home">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel"><span></span><span></span><span></span></button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="services.html" class="site-nav-link">Services</a>
+      <a href="case-studies.html" class="site-nav-link">Work</a>
+      <a href="proof.html" class="site-nav-link">Proof</a>
+      <a href="build.html" class="site-nav-link">Scope a project</a>
+      <a href="book.html" class="btn-solid green site-nav-cta">Book a call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(48px,7vw,84px);padding-bottom:clamp(8px,2vw,16px)">
+    <div class="kick" style="color:var(--green)">Free Lead-Leak Audit &middot; 72 hours &middot; 5&times; or it's free</div>
+    <h1 id="hero-h" style="margin-top:20px;max-width:20ch">The leads you're losing while you're busy.</h1>
+    <p class="subtle lead" id="hero-p" style="margin-top:20px">When someone reaches out and doesn't hear back in minutes, they go to whoever answered first. Below: see roughly what that's costing you — then hear the AI front desk that answers every lead instantly, live.</p>
+    <div class="vtabs" role="tablist" aria-label="Your industry">
+      <button class="vtab on" data-v="trades" role="tab">Home &amp; trades</button>
+      <button class="vtab" data-v="health" role="tab">Health &amp; wellness</button>
+      <button class="vtab" data-v="pro" role="tab">Professional services</button>
+    </div>
+  </header>
+
+  <main id="content">
+  <!-- CALCULATOR -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--cyan)">01 &middot; your leak, in 60 seconds</div>
+    <h2 style="margin-top:12px">What slow response is costing you.</h2>
+    <div class="grid2">
+      <div class="panel">
+        <label class="fld"><span>New leads a week <b id="v-leads">40</b></span><input type="range" id="i-leads" min="5" max="200" step="5" value="40"></label>
+        <label class="fld"><span>Avg value of a job / client <b id="v-val">$500</b></span><input type="range" id="i-val" min="100" max="10000" step="100" value="500"></label>
+        <label class="fld"><span>Your current avg response time <b id="v-resp">4 hrs</b></span><input type="range" id="i-resp" min="0" max="48" step="1" value="4"></label>
+        <label class="fld" style="margin-bottom:0"><span>Rate you close a lead you reach <b id="v-close">30%</b></span><input type="range" id="i-close" min="5" max="60" step="1" value="30"></label>
+      </div>
+      <div class="panel" style="border-color:rgba(244,63,94,0.35);background:linear-gradient(180deg,rgba(244,63,94,0.06),var(--card))">
+        <div class="kick" style="color:var(--rose)">Revenue leaking to slow response</div>
+        <div class="bignum" id="out-mo" style="margin-top:12px">$0</div>
+        <div class="mono" style="font-size:12px;color:var(--faint);margin-top:6px">per month &middot; <span id="out-yr">$0</span>/yr</div>
+        <p class="subtle" style="font-size:13px;margin-top:16px" id="out-line">Leads that go cold before you respond, at your close rate and job value.</p>
+        <div class="mono" style="font-size:10.5px;color:var(--faint);margin-top:14px">illustrative — the free audit uses your real numbers</div>
+        <a href="#capture" class="cta" style="margin-top:18px">Get my real number &rarr;</a>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- LIVE DEMO -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--purple)">02 &middot; hear it answer &mdash; live</div>
+    <h2 style="margin-top:12px">This is what every lead would get, instantly.</h2>
+    <p class="subtle" style="margin-top:12px;max-width:56ch">Type a message like a new customer would. The AI front desk replies in seconds — warm, qualifies them, and moves to book. No forms, no waiting.</p>
+    <div class="panel" style="margin-top:24px;max-width:640px">
+      <div id="chat" style="display:flex;flex-direction:column;gap:12px;min-height:80px;margin-bottom:16px"></div>
+      <form id="demo-form" style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+        <input class="txt-in" id="demo-msg" style="flex:1;min-width:min(240px,100%)" placeholder="e.g. My AC just died and it's 95 out — can someone come today?" maxlength="600">
+        <button type="submit" class="cta" id="demo-send">Send &rarr;</button>
+      </form>
+    </div>
+  </div></section>
+
+  <!-- CAPTURE -->
+  <section id="capture"><div class="wrap">
+    <div class="kick" style="color:var(--green)">03 &middot; your free 72-hour audit</div>
+    <h2 style="margin-top:12px">Want the real number for your business?</h2>
+    <p class="subtle" style="margin-top:12px;max-width:56ch">I'll pull your actual lead volume and response times and send you a one-page breakdown of what's leaking and the fastest fix — in 72 hours. If I can't find at least 5&times; what a fix costs, it's free.</p>
+    <form id="audit-form" class="panel" style="margin-top:24px;max-width:560px;display:flex;flex-direction:column;gap:14px">
+      <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+      <input class="txt-in" id="a-name" placeholder="Your name" autocomplete="name" required>
+      <input class="txt-in" id="a-email" type="email" placeholder="Work email" autocomplete="email" required>
+      <input class="txt-in" id="a-biz" placeholder="Business name / website" autocomplete="organization">
+      <button type="submit" class="cta" id="a-send">Send me my free audit &rarr;</button>
+      <p id="a-status" class="subtle" style="font-size:13px;margin:0" aria-live="polite"></p>
+      <p class="subtle" style="font-size:12px;margin:0;color:var(--faint)">No spam, no obligation. A real person (me) replies within one business day.</p>
+    </form>
+  </div></section>
+  </main>
+
+  <footer style="border-top:1px solid var(--line);padding:32px 0;margin-top:24px">
+    <div class="wrap" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--faint)">
+      <span>Sage Ideas LLC &middot; Orlando, FL</span>
+      <span><a href="index.html" style="color:var(--cyan)">agency.sageideas.dev</a></span>
+    </div>
+  </footer>
+</div>
+
+<script defer src="assets/nav.js"></script>
+<script>
+(function () {
+  var VMETA = {
+    trades: { h: "The jobs you're losing while you're on a job.", p: "When a customer calls or messages and doesn't hear back fast, they call the next guy. See what that's costing you — then hear the AI front desk that answers every one instantly.", val: 500, ph: "e.g. My AC just died and it's 95 out — can someone come today?", line: "Jobs that go to a competitor because the lead went cold before you called back." },
+    health: { h: "The new patients booking somewhere else.", p: "New-patient inquiries come in while your team is with patients — and sit. See what those lost bookings are worth, then hear the AI that answers and books every one instantly.", val: 1200, ph: "e.g. Do you have any new-patient openings this week? My tooth is killing me.", line: "New patients — worth thousands in lifetime value — who booked with whoever answered first." },
+    pro: { h: "The clients hiring whoever answered first.", p: "The firm that responds first wins the client. See what slow intake is costing you, then hear the AI that answers and qualifies every lead the second it arrives.", val: 3000, ph: "e.g. I was in an accident last week and need to talk to someone about a claim.", line: "High-value cases lost because a competitor followed up faster." }
+  };
+  var vertical = 'trades';
+  var q = new URLSearchParams(location.search).get('v');
+  if (q && VMETA[q]) vertical = q;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var iLeads = $('i-leads'), iVal = $('i-val'), iResp = $('i-resp'), iClose = $('i-close');
+  function money(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+  function calc() {
+    var leadsWk = +iLeads.value, val = +iVal.value, respH = +iResp.value, close = +iClose.value / 100;
+    $('v-leads').textContent = leadsWk; $('v-val').textContent = money(val);
+    $('v-resp').textContent = respH === 0 ? 'instant' : respH + ' hr' + (respH > 1 ? 's' : ''); $('v-close').textContent = (close * 100).toFixed(0) + '%';
+    // fraction of leads that go cold, rising with response time (capped ~40%)
+    var coldFrac = Math.min(0.4, respH / 24 * 0.35);
+    var leadsMo = leadsWk * 4.3;
+    var lostRevMo = leadsMo * coldFrac * close * val;
+    $('out-mo').textContent = money(lostRevMo);
+    $('out-yr').textContent = money(lostRevMo * 12);
+  }
+  [iLeads, iVal, iResp, iClose].forEach(function (el) { el.addEventListener('input', calc); });
+
+  function applyVertical(v) {
+    vertical = v;
+    document.querySelectorAll('.vtab').forEach(function (t) { t.classList.toggle('on', t.dataset.v === v); });
+    var m = VMETA[v];
+    $('hero-h').textContent = m.h; $('hero-p').textContent = m.p;
+    $('out-line').textContent = m.line; $('demo-msg').setAttribute('placeholder', m.ph);
+    iVal.value = m.val; calc();
+  }
+  document.querySelectorAll('.vtab').forEach(function (t) { t.addEventListener('click', function () { applyVertical(t.dataset.v); }); });
+  applyVertical(vertical);
+
+  // ── live AI responder demo ──
+  var chat = $('chat'), demoForm = $('demo-form'), demoMsg = $('demo-msg'), demoSend = $('demo-send');
+  function bubble(cls, text) { var b = document.createElement('div'); b.className = 'bubble ' + cls; b.textContent = text; chat.appendChild(b); chat.scrollTop = chat.scrollHeight; return b; }
+  demoForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var msg = demoMsg.value.trim(); if (!msg) return;
+    bubble('me', msg); demoMsg.value = ''; demoSend.disabled = true;
+    var typing = document.createElement('div'); typing.className = 'bubble ai typing'; typing.innerHTML = '<span></span><span></span><span></span>'; chat.appendChild(typing); chat.scrollTop = chat.scrollHeight;
+    fetch('/api/lead-demo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vertical: vertical, message: msg }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { typing.remove(); bubble('ai', (d && d.reply) || "Thanks for reaching out! What's the best number to reach you, and how soon do you need this?"); })
+      .catch(function () { typing.remove(); bubble('ai', "Thanks for reaching out! What's the best number to reach you, and how soon do you need this?"); })
+      .then(function () { demoSend.disabled = false; demoMsg.focus(); });
+  });
+
+  // ── audit request capture ──
+  var af = $('audit-form'), aStatus = $('a-status');
+  af.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (af.querySelector('[name=website]').value) return; // honeypot
+    var name = $('a-name').value.trim(), email = $('a-email').value.trim(), biz = $('a-biz').value.trim();
+    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { aStatus.style.color = 'var(--rose)'; aStatus.textContent = 'Please add your name and a valid email.'; return; }
+    $('a-send').disabled = true; aStatus.style.color = 'var(--dim)'; aStatus.textContent = 'Sending…';
+    var msg = 'Free Lead-Leak Audit request (' + vertical + '). Numbers from calculator: ' + iLeads.value + ' leads/wk, ' + money(+iVal.value) + ' avg value, ' + iResp.value + 'hr response, ' + iClose.value + '% close. Estimated leak: ' + $('out-mo').textContent + '/mo.';
+    fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, company: biz, message: msg, source: 'lead-audit' }) })
+      .then(function (r) {
+        if (r.ok) { aStatus.style.color = 'var(--green)'; aStatus.textContent = "Got it — I'll send your audit within one business day. Check your inbox."; af.reset(); }
+        else { throw new Error('x'); }
+      })
+      .catch(function () {
+        aStatus.style.color = 'var(--dim)';
+        aStatus.innerHTML = "Couldn't send just now — email me directly at <a href='mailto:hello@sageideas.dev' style='color:var(--cyan)'>hello@sageideas.dev</a>.";
+      })
+      .then(function () { $('a-send').disabled = false; });
+  });
+})();
+</script>
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+</body>
+</html>
