@@ -32,6 +32,103 @@ const CUES = [
   { t0: 134, t1: 150, text: 'Book a free call. I’m Jason — thanks for watching, and welcome to Sage Ideas.' },
 ];
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sound design — synthesized with the Web Audio API (no files, no cost). Cues fire
+// on the timeline synced to the visual beats; a soft ambient pad plays underneath.
+// The AudioContext is created on the play click (a user gesture), so autoplay policy
+// is satisfied. Everything is guarded — if audio fails, the video plays silently.
+// ─────────────────────────────────────────────────────────────────────────────
+let actx = null, master = null, noiseBuf = null, pad = null, muted = false;
+function ensureAudio() {
+  if (actx) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    actx = new AC();
+    master = actx.createGain();
+    master.gain.value = muted ? 0 : 0.85;
+    master.connect(actx.destination);
+    const len = Math.floor(actx.sampleRate);
+    noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  } catch { actx = null; }
+}
+function tone(freq, { type = 'sine', gain = 0.2, a = 0.005, hold = 0.05, r = 0.15, detune = 0 } = {}) {
+  if (!actx) return;
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; o.frequency.value = freq; o.detune.value = detune;
+  o.connect(g); g.connect(master);
+  const t = actx.currentTime;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(gain, t + a);
+  g.gain.setValueAtTime(gain, t + a + hold);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + r);
+  o.start(t); o.stop(t + a + hold + r + 0.05);
+}
+function pop(freq = 660) { tone(freq, { type: 'sine', gain: 0.16, a: 0.003, hold: 0.02, r: 0.12 }); }
+function chord(freqs, gain = 0.12) { freqs.forEach((f, i) => tone(f, { type: 'sine', gain: gain / freqs.length + 0.03, a: 0.01, hold: 0.28, r: 0.6, detune: i * 3 })); }
+function rise() { [392, 523.25, 659.25].forEach((f, i) => setTimeout(() => pop(f), i * 95)); }
+function whoosh({ gain = 0.16, dur = 0.5, from = 320, to = 2600 } = {}) {
+  if (!actx || !noiseBuf) return;
+  const src = actx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+  const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+  const g = actx.createGain();
+  src.connect(bp); bp.connect(g); g.connect(master);
+  const t = actx.currentTime;
+  bp.frequency.setValueAtTime(from, t); bp.frequency.exponentialRampToValueAtTime(to, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + dur * 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.start(t); src.stop(t + dur + 0.05);
+}
+function crack() {
+  if (!actx || !noiseBuf) return;
+  const src = actx.createBufferSource(); src.buffer = noiseBuf;
+  const hp = actx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400;
+  const g = actx.createGain();
+  src.connect(hp); hp.connect(g); g.connect(master);
+  const t = actx.currentTime;
+  g.gain.setValueAtTime(0.22, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+  src.start(t); src.stop(t + 0.16);
+}
+function snap() { crack(); tone(440, { type: 'triangle', gain: 0.2, a: 0.004, hold: 0.02, r: 0.18 }); setTimeout(() => chord([523.25, 659.25, 783.99], 0.15), 55); }
+function startPad() {
+  if (!actx || pad) return;
+  const g = actx.createGain(); g.gain.value = 0.0001; g.connect(master);
+  const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 680; lp.connect(g);
+  const o1 = actx.createOscillator(), o2 = actx.createOscillator();
+  o1.type = 'sine'; o1.frequency.value = 110; o2.type = 'sine'; o2.frequency.value = 165; o2.detune.value = 4;
+  o1.connect(lp); o2.connect(lp);
+  const t = actx.currentTime; g.gain.exponentialRampToValueAtTime(0.05, t + 1.6);
+  o1.start(t); o2.start(t);
+  pad = { g, o1, o2 };
+}
+function stopPad() {
+  if (!pad || !actx) return; const t = actx.currentTime;
+  try { pad.g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6); pad.o1.stop(t + 0.7); pad.o2.stop(t + 0.7); } catch { /* ignore */ }
+  pad = null;
+}
+const SOUND_CUES = [
+  { t: 0.3, fn: rise },
+  { t: 8, fn: () => whoosh() },
+  { t: 9.1, fn: () => pop(880) },
+  { t: 9.9, fn: crack },
+  { t: 30, fn: () => whoosh() },
+  { t: 30.2, fn: () => pop(523) }, { t: 30.6, fn: () => pop(659) },
+  { t: 31.9, fn: snap },
+  { t: 62, fn: () => whoosh() },
+  { t: 63.7, fn: () => pop(587) }, { t: 63.95, fn: () => pop(740) },
+  { t: 92, fn: () => whoosh() },
+  { t: 92.2, fn: () => pop(494) }, { t: 92.4, fn: () => pop(587) }, { t: 92.6, fn: () => pop(698) },
+  { t: 93.7, fn: () => chord([440, 554, 659], 0.1) },
+  { t: 120, fn: () => whoosh({ dur: 0.7 }) },
+  { t: 120.9, fn: () => chord([523.25, 659.25, 783.99, 1046.5], 0.16) },
+];
+let soundPtr = 0;
+function fireSound(t) {
+  if (!actx || muted) return;
+  while (soundPtr < SOUND_CUES.length && SOUND_CUES[soundPtr].t <= t) { try { SOUND_CUES[soundPtr].fn(); } catch { /* ignore */ } soundPtr++; }
+}
+function seekSound(t) { soundPtr = 0; while (soundPtr < SOUND_CUES.length && SOUND_CUES[soundPtr].t <= t) soundPtr++; }
+
 const $ = (id) => document.getElementById(id);
 const stage = $('vstage');
 const audio = $('vaudio');
@@ -78,12 +175,16 @@ function tick(ts) {
     if (vclock >= TOTAL) { vclock = TOTAL; render(TOTAL); pause(); return; }
   }
   render(now());
+  fireSound(now());
   requestAnimationFrame(tick);
 }
 
 function play() {
   if (playing) return;
-  if (!useAudio && vclock >= TOTAL) vclock = 0; // replay from end
+  if (!useAudio && vclock >= TOTAL) { vclock = 0; seekSound(0); } // replay from end
+  ensureAudio();
+  if (actx && actx.state === 'suspended') actx.resume().catch(() => {});
+  startPad();
   playing = true;
   stage.classList.add('started');
   playBtn.textContent = '❚❚';
@@ -94,10 +195,11 @@ function play() {
 function pause() {
   playing = false;
   playBtn.textContent = '▶';
+  stopPad();
   if (useAudio) audio.pause();
 }
 function toggle() { playing ? pause() : play(); }
-function replay() { if (useAudio) { audio.currentTime = 0; } else { vclock = 0; } render(0); play(); }
+function replay() { if (useAudio) { audio.currentTime = 0; } else { vclock = 0; } seekSound(0); render(0); play(); }
 
 // wiring
 $('vposter').addEventListener('click', play);
@@ -108,6 +210,7 @@ $('vprogress').addEventListener('click', (e) => {
   const p = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
   const t = p * duration();
   if (useAudio) audio.currentTime = t; else vclock = t;
+  seekSound(t);
   render(t);
 });
 $('vclose').addEventListener('click', () => {
@@ -115,9 +218,16 @@ $('vclose').addEventListener('click', () => {
   try { window.parent.postMessage({ type: 'sage-intro-close' }, '*'); } catch { /* ignore */ }
   if (window.top === window.self) { if (history.length > 1) history.back(); else location.href = 'index.html'; }
 });
+// Sound toggle (controls the synthesized sound design)
+muteBtn.hidden = false;
+muteBtn.textContent = '🔊';
+muteBtn.setAttribute('aria-label', 'Mute sound');
+muteBtn.addEventListener('click', () => {
+  muted = !muted;
+  if (master) master.gain.value = muted ? 0 : 0.85;
+  muteBtn.textContent = muted ? '🔇' : '🔊';
+});
 if (useAudio) {
-  muteBtn.hidden = false;
-  muteBtn.addEventListener('click', () => { audio.muted = !audio.muted; muteBtn.textContent = audio.muted ? '🔇' : '🔊'; });
   audio.addEventListener('ended', pause);
   audio.addEventListener('timeupdate', () => { if (playing) render(now()); });
 }
