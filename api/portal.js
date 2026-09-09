@@ -119,8 +119,13 @@ async function handler(req, res) {
     const sent = await addMessage(pR.data.id, 'client', body.body.trim());
     if (!sent.ok) { console.error('[portal] addMessage failed', sent.error || ''); return res.status(200).json({ ok: false, reason: 'write_failed' }); }
     try {
+      // Carry the client's address as reply-to so the operator can answer straight
+      // from their mailbox (best-effort; a missing email just omits reply-to).
+      const propR = await getProposalById(pR.data.proposal_id);
+      const clientEmail = propR && propR.ok && propR.data ? propR.data.client_email : undefined;
       await sendOperator({ subject: 'New message from a client — project portal',
-        text: `A client sent you a message in their project portal:\n\n"${body.body.trim().slice(0, 800)}"\n\nReply in the admin: ${SITE}/proposal-admin.html\n` });
+        text: `A client sent you a message in their project portal:\n\n"${body.body.trim().slice(0, 800)}"\n\nReply directly to this email to answer the client, or in the admin: ${SITE}/proposal-admin.html\n`,
+        replyTo: clientEmail || undefined });
     } catch (e) { console.error('[portal] notify send failed', (e && e.message) || e); }
     return res.status(200).json({ ok: true, sent: true });
   }
