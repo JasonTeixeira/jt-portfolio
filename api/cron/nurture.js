@@ -8,6 +8,7 @@ import {
 } from '../../assets/nurture-core.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 const CRON = process.env.CRON_SECRET;
+const ADMIN = process.env.SCOPE_ADMIN_TOKEN || '';
 
 export function authorized(req) {
   if (!CRON) return false; // fail closed
@@ -79,7 +80,7 @@ async function handler(req, res) {
     const stale = await db.staleDrafts(now);
     const drafts = stale.data || [];
     if (drafts.length || sent || errors) {
-      const lines = drafts.map((d) => `• ${d.client_email || '(no email)'} — proposal ${d.id} — stop: ${SITE}/api/suppress?key=YOUR_TOKEN&prospect=${d.prospect_id}`);
+      const lines = drafts.map((d) => `• ${d.client_email || '(no email)'} — proposal ${d.id} — stop: ${SITE}/api/suppress?key=${ADMIN}&prospect=${d.prospect_id}`);
       await sendOperator({ subject: `Nurture ran: ${sent} sent, ${drafts.length} drafts waiting`,
         text: `Nurture tick complete.\nSent: ${sent}\nDue: ${due}\nErrors: ${errors}\n\nProposals waiting for your approval (>24h):\n${lines.join('\n') || '(none)'}\n` });
     }
