@@ -74,6 +74,23 @@ body { background:var(--bg,#09090B); }
 .cx-card .go { font-family:var(--mono,monospace); font-size:12px; color:var(--cyan,#22d3ee); margin-top:16px; display:inline-block; }
 .cx-empty { border:1px dashed var(--line,#2A2826); border-radius:16px; padding:40px 28px; text-align:center; color:var(--dim,#A8A29E); }
 
+/* ── dashboard search + unified documents ── */
+.cx-search { width:100%; box-sizing:border-box; background:var(--card,#0C0C0E); border:1px solid var(--line,#2A2826); border-radius:12px; color:var(--ink,#F4F2EF); font:inherit; font-size:14px; padding:12px 16px; margin-bottom:18px; }
+.cx-search::placeholder { color:var(--faint,#8E8882); }
+.cx-search:focus { outline:none; border-color:color-mix(in oklab,var(--cyan,#22d3ee) 45%,var(--line,#2A2826)); }
+.cx-docs { margin-top:38px; }
+.cx-docs-h { font-family:var(--serif,'Instrument Serif',Georgia,serif); font-weight:400; font-size:1.6rem; margin:0 0 4px; }
+.cx-doclist { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+.cx-docrow { display:flex; align-items:center; gap:14px; border:1px solid var(--line,#2A2826); background:var(--card,#0C0C0E); border-radius:12px; padding:12px 16px; transition:border-color .18s ease; }
+.cx-docrow:hover { border-color:color-mix(in oklab,var(--cyan,#22d3ee) 35%,var(--line,#2A2826)); }
+.cx-docico { flex:none; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:var(--mono,monospace); font-size:15px; border:1px solid var(--line,#2A2826); background:var(--bg,#09090B); }
+.cx-docico.a { color:var(--purple,#a78bfa); } .cx-docico.f { color:var(--cyan,#22d3ee); }
+.cx-docmeta { flex:1; min-width:0; }
+.cx-docmeta .nm { font-size:14px; color:var(--ink,#F4F2EF); word-break:break-word; }
+.cx-docmeta .meta { font-family:var(--mono,monospace); font-size:11px; color:var(--faint,#8E8882); margin-top:2px; }
+.cx-docbtn { flex:none; font-family:var(--mono,monospace); font-size:12px; color:var(--cyan,#22d3ee); text-decoration:none; border:1px solid var(--line,#2A2826); border-radius:8px; padding:6px 12px; }
+.cx-docbtn:hover { border-color:var(--cyan,#22d3ee); }
+
 @media (prefers-reduced-motion: reduce) {
   .cx-card:hover { transform:none; }
   .cx-atmos .glow, .portal-stage.current .knob, .portal-card, .cx-card { animation:none !important; }
