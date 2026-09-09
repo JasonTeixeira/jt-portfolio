@@ -207,14 +207,13 @@
   }
 
   function renderSound(sb) { sb.textContent = muted ? T.sound : T.mute; sb.setAttribute('aria-pressed', String(!muted)); sb.classList.toggle('is-muted', muted); }
+  // Deterministic presence check (same-origin static asset): a HEAD 200 means the clip exists,
+  // so the Sound toggle appears. Doesn't depend on audio autoplay/metadata, which browsers gate.
   function probeAudio(cb) {
     try {
-      var a = new window.Audio(); var done = false;
-      function ok() { if (!done) { done = true; cb(true); } }
-      a.oncanplaythrough = ok; a.onloadedmetadata = ok;
-      a.onerror = function () { if (!done) { done = true; cb(false); } };
-      a.src = AUDIO_BASE + 's1.mp3'; a.load();
-      setTimeout(function () { if (!done) { done = true; cb(false); } }, 2500);
+      fetch(AUDIO_BASE + 's1.mp3', { method: 'HEAD' })
+        .then(function (r) { cb(!!(r && r.ok)); })
+        .catch(function () { cb(false); });
     } catch (e) { cb(false); }
   }
 
