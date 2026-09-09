@@ -34,7 +34,7 @@ async function handler(req, res) {
   let captured = false;
   if (dbEnabled()) {
     const cap = await withTimeout(
-      captureInboundLead({ email: clean, source: 'newsletter', note: 'field-notes subscribe', stage: 'subscriber' }),
+      captureInboundLead({ email: clean, source: 'newsletter', note: 'field-notes subscribe', stage: 'new' }),
       4000
     );
     captured = Boolean(cap && cap.ok);
