@@ -10,6 +10,45 @@ const STATUS = { kickoff: 'st.kickoff', active: 'st.active', in_progress: 'st.in
 function el(tag, cls, txt) { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
 const fmtDate = (iso) => { if (!iso) return ''; const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(LOCALE, { month: 'short', day: 'numeric', year: 'numeric' }); };
 
+function fmtBytes(n) { if (!n && n !== 0) return ''; if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(0) + ' KB'; return (n / 1048576).toFixed(1) + ' MB'; }
+
+// Unified documents & agreements across all the client's projects.
+function renderDocs(wrap, docs) {
+  wrap.innerHTML = '';
+  wrap.appendChild(el('div', 'cx-docs-h', t('dash.docs')));
+  wrap.appendChild(el('p', 'cx-sub', t('dash.docsIntro')));
+  if (!docs.length) { wrap.appendChild(el('div', 'cx-empty', t('dash.noDocs'))); return; }
+  const list = el('div', 'cx-doclist');
+  for (const d of docs) {
+    const row = el('div', 'cx-docrow');
+    row.dataset.search = `${d.name || ''} ${d.project || ''} ${d.kind || ''}`.toLowerCase();
+    const meta = el('div', 'cx-docmeta');
+    meta.appendChild(el('div', 'nm', d.name || 'Document'));
+    meta.appendChild(el('div', 'meta', `${d.project || ''}${d.size ? ' · ' + fmtBytes(d.size) : ''}`));
+    row.appendChild(el('span', `cx-docico ${d.kind === 'agreement' ? 'a' : 'f'}`, d.kind === 'agreement' ? '§' : '↓'));
+    row.appendChild(meta);
+    if (d.href) {
+      const a = el('a', 'cx-docbtn', d.kind === 'agreement' ? t('dash.openDoc') : t('dash.download'));
+      a.href = d.href; a.target = '_blank'; a.rel = 'noopener';
+      if (d.kind === 'file') a.setAttribute('download', '');
+      row.appendChild(a);
+    }
+    list.appendChild(row);
+  }
+  wrap.appendChild(list);
+}
+
+function wireSearch(search, grid, docsWrap, noResults) {
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    let anyProj = false, anyDoc = false;
+    [...grid.children].forEach((card) => { const m = !q || card.textContent.toLowerCase().includes(q); card.style.display = m ? '' : 'none'; if (m) anyProj = true; });
+    grid.style.display = anyProj ? '' : 'none';
+    docsWrap.querySelectorAll('.cx-docrow').forEach((row) => { const m = !q || (row.dataset.search || '').includes(q); row.style.display = m ? '' : 'none'; if (m) anyDoc = true; });
+    if (noResults) noResults.style.display = (q && !anyProj && !anyDoc) ? '' : 'none';
+  });
+}
+
 export function initDashboard() {
   const root = document.getElementById('root');
   if (!root) return;
@@ -83,6 +122,18 @@ export function initDashboard() {
       grid.appendChild(card);
     }
     root.appendChild(grid);
+
+    // Search + a unified documents view across all their projects.
+    const search = el('input'); search.type = 'search'; search.placeholder = t('dash.search'); search.className = 'cx-search';
+    root.insertBefore(search, grid);
+    const docsWrap = el('div', 'cx-docs'); root.appendChild(docsWrap);
+    const noResults = el('p', 'cx-sub', t('dash.noResults')); noResults.style.display = 'none'; root.appendChild(noResults);
+    (async () => {
+      let docs = [];
+      try { const r = await fetch('/api/my-documents', { headers: { Authorization: `Bearer ${s.access_token}` } }); if (r.ok) { const j = await r.json(); if (j.ok) docs = Array.isArray(j.documents) ? j.documents : []; } } catch { /* leave empty */ }
+      renderDocs(docsWrap, docs);
+      wireSearch(search, grid, docsWrap, noResults);
+    })();
   })();
 }
 
