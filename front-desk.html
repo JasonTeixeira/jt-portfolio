@@ -15,7 +15,7 @@
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/site.css?v=20260901b">
+<link rel="stylesheet" href="assets/site.css?v=20260909a">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Will it sound robotic?","acceptedAnswer":{"@type":"Answer","text":"No. It's built on the same voice models behind modern phone assistants, tuned to your business and how you actually talk to customers. Most callers don't realize it's not a person until you tell them."}},{"@type":"Question","name":"What if it can't answer something?","acceptedAnswer":{"@type":"Answer","text":"It hands off cleanly: takes a message, texts you the details, and tells the caller you'll follow up. It never guesses at something it doesn't know, and it never quotes a price it isn't sure of."}},{"@type":"Question","name":"Does it work with my calendar or booking tool?","acceptedAnswer":{"@type":"Answer","text":"Yes. It connects to Google Calendar, Calendly, Housecall Pro, Jobber, and most common scheduling tools. If you use something else, I'll check on the call."}},{"@type":"Question","name":"What does setup involve for me?","acceptedAnswer":{"@type":"Answer","text":"About 30 minutes of your time: what to ask, what counts as a good lead, how you want it to sound. I build it, test it against real conversations, and you approve it before it goes live."}},{"@type":"Question","name":"Can I turn it off?","acceptedAnswer":{"@type":"Answer","text":"Any time. It's your number and your calendar. If it's not working for you, we turn it off or fix it — no long lock-in."}}]}</script>
 <style>
@@ -174,7 +174,7 @@
           <span class="vr-status-dot" aria-hidden="true"></span>
           <span id="vr-status-text">Idle</span>
         </div>
-        <button type="button" id="vr-mute" class="vr-mute-btn" aria-pressed="false">🔊 Sound on</button>
+        <button type="button" id="vr-mute" class="vr-mute-btn" aria-pressed="false" style="display:inline-flex;align-items:center;gap:7px"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg><span id="vr-mute-lbl">Sound on</span></button>
       </div>
 
       <div id="vr-offline" class="scope-chat-offline" role="status" hidden></div>
@@ -183,7 +183,7 @@
 
       <div class="vr-controls">
         <button type="button" id="vr-mic" class="vr-mic-btn" data-listening="false" aria-pressed="false">
-          <span class="vr-mic-ico" aria-hidden="true">🎙</span>
+          <span class="vr-mic-ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg></span>
           <span id="vr-mic-label">Talk to it</span>
         </button>
         <p id="vr-voice-note" class="vr-voice-note" hidden></p>

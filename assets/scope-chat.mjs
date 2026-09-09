@@ -370,7 +370,8 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     voiceMuted = next;
     if (voiceMuteBtn) {
       voiceMuteBtn.setAttribute('aria-pressed', String(voiceMuted));
-      voiceMuteBtn.textContent = voiceMuted ? '🔇 Sound off' : '🔊 Sound on';
+      const lbl = voiceMuteBtn.querySelector('#scope-voice-mute-lbl') || voiceMuteBtn;
+      lbl.textContent = voiceMuted ? 'Sound off' : 'Sound on';
     }
     if (voiceMuted && canSpeak) { try { synth.cancel(); } catch { /* best-effort */ } }
   }

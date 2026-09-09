@@ -62,7 +62,7 @@ export function renderContent(mount, key, deps) {
         h('span', { title: it.channel, style: `font-family:var(--mono,monospace);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:${color};margin-top:2px;flex:none` }, it.channel),
         h('div', { style: 'flex:1;font-size:13px;line-height:1.3' }, it.title)));
       const meta = h('div', { style: 'display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap' });
-      if (it.scheduled_for) meta.appendChild(h('span', { class: 'mono', style: 'font-size:10px;color:var(--faint)' }, '📅 ' + fmtWhen(it.scheduled_for)));
+      if (it.scheduled_for) meta.appendChild(h('span', { class: 'mono', style: 'font-size:10px;color:var(--faint)' }, 'scheduled · ' + fmtWhen(it.scheduled_for)));
       if (it.url) meta.appendChild(h('a', { href: it.url, target: '_blank', rel: 'noopener noreferrer', style: 'font-size:10px;color:#22d3ee' }, 'link ↗'));
       const sel = h('select', { style: 'font-size:11px;background:#0d0d11;border:1px solid #23232b;border-radius:5px;color:#e5e5ea;padding:2px 4px;margin-left:auto' },
         ...STATUS_COLS.map((s) => h('option', { value: s.key, selected: s.key === it.status ? 'selected' : false }, s.label)));

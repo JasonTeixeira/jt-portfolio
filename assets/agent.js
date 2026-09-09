@@ -88,19 +88,29 @@
       .catch(function () { return null; });
   }
 
+  // small inline stroke-icon for chip labels (inherits the chip's text color)
+  function chipIco(inner) { return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:7px">' + inner + '</svg>'; }
+  var CHIP_IC = {
+    cost: chipIco('<path d="M12 4v17"/><path d="M7 21h10"/><path d="M12 4l-6 2m6-2l6 2"/><path d="M6 6l-3 6a3 3 0 0 0 6 0z"/><path d="M18 6l-3 6a3 3 0 0 0 6 0z"/>'),
+    eval: chipIco('<path d="M13 2 4 14h7l-1 8 10-13h-7z"/>'),
+    cases: chipIco('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>'),
+    live: chipIco('<circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>'),
+    book: chipIco('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>'),
+    all: chipIco('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M6.5 10v4a3 3 0 0 0 3 3H14"/>')
+  };
   // contextual action chips based on the running conversation
   function actionsFor(text) {
     var t = (text || '').toLowerCase(), acts = [];
     if (/price|cost|budget|roi|worth|expensive|value/.test(t))
-      acts.push({ label: '💰 Cost calculator', nav: 'roi.html' });
+      acts.push({ label: CHIP_IC.cost + 'Cost calculator', nav: 'roi.html' });
     if (/eval|test|prove|check|feature|bot|assistant|chatbot|agent|rag|hallucinat|safety|injection|price|cost/.test(t))
-      acts.push({ label: '⚡ Free mini-eval', act: 'minieval' });
+      acts.push({ label: CHIP_IC.eval + 'Free mini-eval', act: 'minieval' });
     if (/proof|case|experience|result|metric|client|track record|done before/.test(t))
-      acts.push({ label: '📁 Case studies', nav: 'case-studies.html' });
+      acts.push({ label: CHIP_IC.cases + 'Case studies', nav: 'case-studies.html' });
     if (/demo|see|show|live|watch|example/.test(t))
-      acts.push({ label: '▶ See it live', nav: 'eval.html' });
-    acts.push({ label: '📅 Book a call', nav: 'book.html' });
-    if (acts.length < 3) acts.push({ label: '◆ All services', nav: 'services.html' });
+      acts.push({ label: CHIP_IC.live + 'See it live', nav: 'eval.html' });
+    acts.push({ label: CHIP_IC.book + 'Book a call', nav: 'book.html' });
+    if (acts.length < 3) acts.push({ label: CHIP_IC.all + 'All services', nav: 'services.html' });
     // de-dupe by label, cap 3
     var seen = {}, out = [];
     acts.forEach(function (a) { if (!seen[a.label] && out.length < 3) { seen[a.label] = 1; out.push(a); } });
@@ -254,7 +264,7 @@
     input.onfocus = function () { input.style.borderColor = 'rgba(34,211,238,0.5)'; };
     input.onblur = function () { input.style.borderColor = C.line; };
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send(input.value); });
-    var mic = el('button', { background: 'transparent', border: '1px solid ' + C.line, color: C.faint, borderRadius: '11px', width: '38px', height: '38px', fontSize: '15px', cursor: 'pointer', flexShrink: '0' }, '🎙');
+    var mic = el('button', { background: 'transparent', border: '1px solid ' + C.line, color: C.faint, borderRadius: '11px', width: '38px', height: '38px', cursor: 'pointer', flexShrink: '0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }, '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>');
     mic.setAttribute('aria-label', 'Talk to Atlas');
     var sendBtn = el('button', { background: 'linear-gradient(135deg,#10b981,#0ea5b7)', color: '#03231b', border: 'none', borderRadius: '11px', width: '40px', height: '38px', fontSize: '15px', fontWeight: '700', cursor: 'pointer', flexShrink: '0' }, '→');
     sendBtn.setAttribute('aria-label', 'Send'); sendBtn.onclick = function () { send(input.value); };

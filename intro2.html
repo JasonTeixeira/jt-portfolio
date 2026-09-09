@@ -1,0 +1,225 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Sage Ideas — intro v2</title>
+<style>
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:'JetBrains Mono';src:url('/assets/fonts/jetbrains-mono-var.woff2') format('woff2');font-weight:400 700;font-display:block}
+@font-face{font-family:'Plus Jakarta Sans';src:url('/assets/fonts/plus-jakarta-var.woff2') format('woff2');font-weight:300 800;font-display:block}
+:root{--bg:#09090B;--ink:#F4F2EF;--mut:#A8A29E;--faint:#8E8882;--line:#2A2826;--card:#0C0C0E;
+  --green:#10b981;--cyan:#22d3ee;--purple:#a78bfa;--rose:#f43f5e;
+  --serif:'Instrument Serif',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Plus Jakarta Sans',system-ui,sans-serif}
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000;font-family:var(--sans);color:var(--ink)}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;
+  background:radial-gradient(1300px 800px at 18% -5%,rgba(16,185,129,.07),transparent 60%),radial-gradient(1000px 800px at 105% 108%,rgba(34,211,238,.06),transparent 60%),var(--bg)}
+.grain{position:absolute;inset:0;opacity:.045;background-image:radial-gradient(#fff .5px,transparent .6px);background-size:3px 3px;pointer-events:none;z-index:50}
+.bloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 52%,rgba(16,185,129,.55),transparent 52%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.ptrack{position:absolute;left:140px;right:140px;bottom:60px;height:2px;background:#17161a;z-index:6;pointer-events:none}
+.pfill{position:absolute;left:0;top:0;height:100%;width:0;background:#22d3ee;color:#22d3ee;box-shadow:0 0 12px currentColor}
+.pdot{position:absolute;top:-5px;left:0;width:12px;height:12px;border-radius:50%;background:#22d3ee;color:#22d3ee;box-shadow:0 0 18px 5px currentColor;transform:translateX(-6px)}
+.plabel{position:absolute;bottom:74px;font-family:var(--mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);transform:translateX(-50%)}
+.rail{position:absolute;right:54px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:var(--mono);font-size:17px;letter-spacing:.42em;color:#211f1d;text-transform:uppercase;z-index:2}
+.hud{position:absolute;top:60px;left:140px;right:140px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:22px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);z-index:3}
+.hud .dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 16px 2px rgba(16,185,129,.7);display:inline-block;margin-right:12px;vertical-align:middle}
+.hud .qa{color:var(--purple)}.hud .llm{color:var(--cyan)}
+.hud .clock{color:#3D3A37}
+/* scenes */
+.scene{position:absolute;inset:0;padding:150px 140px 130px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden}
+.scene.on{opacity:1;visibility:visible}
+.eyebrow{font-family:var(--mono);font-size:24px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:34px;opacity:0}
+.eyebrow .g{color:var(--green)}.eyebrow .c{color:var(--cyan)}.eyebrow .p{color:var(--purple)}
+h1{font-family:var(--serif);font-weight:400;font-size:150px;line-height:.94;letter-spacing:-.005em}
+h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
+.hollow{-webkit-text-stroke:1.6px #C8C4BE;color:transparent}
+.green{color:var(--green)} .greeni{color:var(--green);font-style:italic} .cyan{color:var(--cyan)} .rose{color:var(--rose)}
+.sub{font-family:var(--serif);font-size:44px;color:#C8C4BE;margin-top:40px;max-width:24ch;line-height:1.16;opacity:0}
+.mono{font-family:var(--mono)}
+/* proof strip / counters */
+.proof{display:flex;gap:30px;align-items:center;font-family:var(--mono);font-size:32px;margin-top:54px;opacity:0}
+.proof b{color:var(--green);font-weight:700}.proof .sep{color:#3D3A37}
+.chip{font-family:var(--mono);font-size:26px;border:1px solid rgba(16,185,129,.4);border-radius:999px;padding:8px 22px;color:var(--green);background:rgba(16,185,129,.06)}
+.chip .r{color:var(--rose)}
+/* brand mark */
+.brand{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:30px;color:var(--mut);opacity:0}
+.brand .box{width:60px;height:60px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;background:var(--card);color:var(--ink);
+  background-image:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.wordmark{font-family:var(--serif);font-size:132px;opacity:0}
+/* code / terminal */
+.term{width:940px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0d0d10,#0a0a0c);overflow:hidden;opacity:0;transform:translateY(24px);box-shadow:0 40px 120px -40px rgba(0,0,0,.8)}
+.term .bar{display:flex;gap:10px;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.term .bar i{width:13px;height:13px;border-radius:50%;background:#26242200;border:1px solid #33302c;display:block}
+.term .bar i.r{background:var(--rose)}.term .bar i.y{background:#f4b63f}.term .bar i.g{background:var(--green)}
+.term .bar .fn{margin-left:14px;font-family:var(--mono);font-size:20px;color:var(--faint)}
+.term pre{margin:0;padding:26px 30px;font-family:var(--mono);font-size:25px;line-height:1.5;color:#cdd6cf}
+.term .cm{color:var(--faint)} .term .kw{color:var(--purple)} .term .st{color:var(--cyan)} .term .ok{color:var(--green)} .term .er{color:var(--rose)}
+.term .ln{opacity:0}
+/* gate */
+.gate{display:inline-flex;align-items:center;gap:18px;border:2px solid var(--rose);border-radius:20px;padding:20px 34px;background:rgba(244,63,94,.10);font-family:var(--mono);font-size:44px;font-weight:700;color:var(--rose);opacity:0;transform:scale(.94)}
+.gate.pass{border-color:var(--green);background:rgba(16,185,129,.12);color:var(--green);box-shadow:0 0 0 8px rgba(16,185,129,.10)}
+/* tool chips */
+.tools{display:flex;gap:16px;flex-wrap:wrap;margin-top:40px}
+.tool{font-family:var(--mono);font-size:26px;color:var(--mut);border:1px solid var(--line);border-radius:12px;padding:12px 22px;background:var(--card);opacity:0;transform:translateY(16px)}
+/* timeline */
+.tl{display:flex;align-items:center;gap:22px;font-family:var(--mono);font-size:34px;color:var(--mut)}
+.tl .stop{display:inline-flex;align-items:center;gap:16px;opacity:0;transform:translateY(18px)}
+.tl .stop .d{width:20px;height:20px;border-radius:50%;background:#3D3A37}
+.tl .stop.now{color:var(--ink)}.tl .stop.now .d{background:var(--green);box-shadow:0 0 0 6px rgba(16,185,129,.22)}
+.tl .seg{width:80px;height:2px;background:var(--line);opacity:0}
+.tiles{display:flex;gap:34px;margin-top:56px}
+.tile{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:34px 44px;opacity:0;transform:scale(.92);position:relative;min-width:360px}
+.tile b{display:block;font-family:var(--serif);font-size:58px;font-weight:400}
+.tile .st{font-family:var(--mono);font-size:22px;color:var(--faint);margin-top:8px}
+.tile .live{position:absolute;top:22px;right:24px;font-family:var(--mono);font-size:18px;text-transform:uppercase;color:var(--green);letter-spacing:.1em}
+.tile .live::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--green);margin-right:8px;vertical-align:middle}
+/* work cards */
+.wcards{display:flex;gap:28px}
+.wcard{flex:1;border:1px solid var(--line);border-radius:20px;background:var(--card);padding:40px;opacity:0;transform:translateY(30px)}
+.wcard .k{font-family:var(--mono);font-size:24px;margin-bottom:18px}
+.wcard .t{font-family:var(--serif);font-size:52px;line-height:1.02}
+.wcard.c1 .k{color:var(--cyan)}.wcard.c1{box-shadow:inset 0 0 0 1px rgba(34,211,238,.22)}
+.wcard.c2 .k{color:var(--green)}.wcard.c2{box-shadow:inset 0 0 0 1px rgba(16,185,129,.22)}
+.wcard.c3 .k{color:var(--purple)}.wcard.c3{box-shadow:inset 0 0 0 1px rgba(167,139,250,.22)}
+.rail4{display:flex;align-items:center;gap:18px;font-family:var(--mono);font-size:30px;color:var(--mut);margin-top:52px}
+.rail4 .s{border:1px solid var(--line);border-radius:12px;padding:14px 26px;opacity:0}
+.rail4 .s.on{color:var(--green);border-color:rgba(16,185,129,.5)}
+.rail4 .s i{display:block;font-size:18px;color:var(--faint);font-style:normal}
+.rail4 .ar{color:var(--faint);opacity:0}
+/* cta */
+.ctabtn{display:inline-flex;align-items:center;gap:14px;background:var(--green);color:#062018;font-weight:800;font-size:44px;font-family:var(--sans);padding:26px 52px;border-radius:18px;margin-top:44px;opacity:0;transform:scale(.94)}
+.cta-url{font-family:var(--mono);font-size:30px;color:var(--faint);margin-top:34px;opacity:0}
+.cta-line{font-family:var(--serif);font-size:72px;line-height:1.05;margin-top:14px;opacity:0}
+</style></head>
+<body>
+<div class="stage" id="stage">
+  <div class="grain"></div>
+  <div class="bloom" id="bloom"></div>
+  <div class="ptrack"><span class="pfill" id="pfill"></span><span class="pdot" id="pdot"></span><span class="plabel" id="plabel" style="left:0"></span></div>
+  <div class="rail">PORTFOLIO · 2026 · BUILT &amp; PROVEN</div>
+  <div class="hud"><div><span class="dot"></span>AI AUTOMATION &nbsp;×&nbsp; <span class="qa">QA</span> / <span class="llm">LLM EVAL</span> ENGINEER</div><div class="clock" id="clock">N 28.5384° W 81.3789°</div></div>
+
+  <!-- S1 HOOK -->
+  <section class="scene" data-s="hook">
+    <div class="brand" id="b1"><span class="box">JT</span>jason.teixeira()</div>
+    <div class="wordmark" id="wm1" style="margin-top:20px">Sage Ideas</div>
+    <div class="eyebrow" id="ey1" style="margin-top:26px">The AI feature — <span class="g">and the proof it works.</span></div>
+  </section>
+
+  <!-- S2 PROBLEM -->
+  <section class="scene" data-s="problem">
+    <div class="eyebrow" id="ey2">the trouble with shipping AI</div>
+    <h1 id="h2">It ships on a <span class="w hollow">demo</span> <span class="w">and a</span> <span class="w greeni">prayer.</span></h1>
+    <div class="term" id="term2" style="margin-top:48px;width:1120px">
+      <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span class="fn">customer_session.log</span></div>
+      <pre><span class="ln" id="t2a"><span class="cm"># looks perfect in the demo…</span></span>
+<span class="ln" id="t2b"><span class="kw">assistant</span> › <span class="st">"Sure — your refund is approved."</span></span>
+<span class="ln" id="t2c"><span class="er">✕ hallucinated policy · no such rule · customer sees it first</span></span></pre>
+    </div>
+  </section>
+
+  <!-- S3 DO -->
+  <section class="scene" data-s="do">
+    <div class="eyebrow" id="ey3">build both halves</div>
+    <h1 id="h3" style="font-size:120px"><span class="w">Ship the feature.</span> <span class="w green">Prove</span> <span class="w">it holds.</span></h1>
+    <div style="display:flex;align-items:center;gap:40px;margin-top:52px">
+      <div class="gate" id="gate3"><span id="gx">✕</span> <span id="gt">7 / 13 gates</span></div>
+      <div class="proof" id="proof3" style="margin-top:0;opacity:1"><span><b id="c_tests">0</b> tests passing</span><span class="sep">·</span><span><b id="c_cov">0</b>% coverage</span></div>
+    </div>
+    <div class="tools">
+      <span class="tool" id="tl0">Playwright</span><span class="tool" id="tl1">Pytest</span><span class="tool" id="tl2">Promptfoo</span><span class="tool" id="tl3">DeepEval</span><span class="tool" id="tl4">n8n · Make</span><span class="tool" id="tl5">LLM-as-judge</span>
+    </div>
+  </section>
+
+  <!-- S4 WHO -->
+  <section class="scene" data-s="who">
+    <div class="eyebrow" id="ey4">thirteen years proving software works</div>
+    <div class="tl" id="tl">
+      <span class="stop" id="s_hd"><span class="d"></span>The Home Depot</span>
+      <span class="seg" id="seg1"></span>
+      <span class="stop" id="s_fin"><span class="d"></span>fintech</span>
+      <span class="seg" id="seg2"></span>
+      <span class="stop now" id="s_now"><span class="d"></span>Sage Ideas</span>
+    </div>
+    <div class="sub" id="sub4" style="opacity:0;font-size:40px">Now I build and run two live products — <span class="green">entirely solo.</span></div>
+    <div class="tiles">
+      <div class="tile" id="ti1"><span class="live">live</span><b>Nexural</b><span class="st">~800 routes · 244 tables</span></div>
+      <div class="tile" id="ti2"><span class="live">live</span><b>Academy</b><span class="st">26 courses · 347 lessons</span></div>
+    </div>
+  </section>
+
+  <!-- S5 WORK -->
+  <section class="scene" data-s="work">
+    <div class="eyebrow" id="ey5">three kinds of work</div>
+    <div class="wcards">
+      <div class="wcard c1" id="w1"><div class="k">01</div><div class="t">LLM &amp; RAG evaluation</div></div>
+      <div class="wcard c2" id="w2"><div class="k">02</div><div class="t">Test automation &amp; CI</div></div>
+      <div class="wcard c3" id="w3"><div class="k">03</div><div class="t">Workflow automation</div></div>
+    </div>
+    <div class="rail4" id="r4">
+      <span class="s on" id="r4a">Audit<i>start here</i></span><span class="ar" id="ar1">→</span>
+      <span class="s" id="r4b">Sprint</span><span class="ar" id="ar2">→</span>
+      <span class="s" id="r4c">Build</span><span class="ar" id="ar3">→</span>
+      <span class="s" id="r4d">Operate</span>
+    </div>
+  </section>
+
+  <!-- S6 CTA -->
+  <section class="scene" data-s="cta" style="align-items:flex-start">
+    <div class="brand" id="b6" style="opacity:1"><span class="box">JT</span>jason.teixeira()</div>
+    <div class="cta-line" id="cta1">Bring the AI feature<br>you're <span class="greeni">not sure about.</span></div>
+    <div class="ctabtn" id="ctab">Book a free call →</div>
+    <div class="cta-url" id="ctau">agency.sageideas.dev</div>
+  </section>
+</div>
+<audio id="au" preload="auto" src="/assets/intro-vo.mp3"></audio>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const au=$('#au'), stage=$('#stage');
+const SC=[['hook',0,3.126],['problem',3.126,11.706],['do',11.706,21.494],['who',21.494,30.213],['work',30.213,41.766],['cta',41.766,49.804]];
+const TOTAL=49.804;
+const secEls=$$('.scene');
+// per-element reveal helper: set opacity/transform based on local time window
+function rise(el,lt,at,dur=0.6,dy=26){if(!el)return;let p=Math.max(0,Math.min(1,(lt-at)/dur));const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*dy}px)`;}
+function fade(el,lt,at,dur=0.5){if(!el)return;let p=Math.max(0,Math.min(1,(lt-at)/dur));el.style.opacity=1-Math.pow(1-p,3);}
+function pop(el,lt,at,dur=0.55){if(!el)return;let p=Math.max(0,Math.min(1,(lt-at)/dur));const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`scale(${0.92+0.08*e})`;}
+const words=id=>$$('#'+id+' .w');
+function seq(els,lt,at,step=0.12,dur=0.5){els.forEach((el,i)=>rise(el,lt,at+i*step,dur));}
+function num(el,lt,at,dur,to,suffix=''){if(!el)return;let p=Math.max(0,Math.min(1,(lt-at)/dur));const e=1-Math.pow(1-p,3);el.textContent=Math.round(e*to).toLocaleString()+suffix;}
+
+function render(t){
+  const cur=SC.find(s=>t>=s[1]&&t<s[2])||SC[SC.length-1];
+  const lt=t-cur[1], dur=cur[2]-cur[1];
+  secEls.forEach(el=>{ const on=el.dataset.s===cur[0]; el.classList.toggle('on',on);
+    if(on){ const ent=Math.min(1,lt/0.55), e=1-Math.pow(1-ent,3);
+      el.style.opacity=e; el.style.transform=`translateY(${((1-e)*44).toFixed(1)}px) scale(${(1+0.016*(lt/dur)).toFixed(4)})`; }
+    else { el.style.opacity=''; el.style.transform=''; } });
+  // signature proof-particle: a proof-line filling cyan → rose (drift) → green (proven)
+  const prog=Math.max(0,Math.min(1,t/TOTAL))*100;
+  const col = t<5.4?'#22d3ee' : t<16.9?'#f43f5e' : '#10b981';
+  const lab = t<5.4?'building' : t<16.9?'drift detected' : 'proven · green';
+  const pf=document.getElementById('pfill'),pd=document.getElementById('pdot'),pl=document.getElementById('plabel');
+  pf.style.width=prog+'%'; pf.style.background=col; pf.style.color=col;
+  pd.style.left=prog+'%'; pd.style.background=col; pd.style.color=col;
+  pl.style.left=prog+'%'; pl.style.color=col; if(pl.textContent!==lab)pl.textContent=lab;
+  // green bloom on the gate-flip money-shot (~16.95s)
+  const bp=Math.max(0,1-Math.abs(t-16.95)/0.6); document.getElementById('bloom').style.opacity=(bp*bp*0.9).toFixed(3);
+  if(cur[0]==='hook'){fade($('#b1'),lt,0.1);rise($('#wm1'),lt,0.5,.8,30);fade($('#ey1'),lt,1.3);}
+  else if(cur[0]==='problem'){fade($('#ey2'),lt,0.1);seq(words('h2'),lt,0.4,.16);rise($('#term2'),lt,1.6,.7);fade($('#t2a'),lt,2.2);fade($('#t2b'),lt,2.7);fade($('#t2c'),lt,4.2,.4);}
+  else if(cur[0]==='do'){fade($('#ey3'),lt,0.1);seq(words('h3'),lt,0.4,.16);
+    // gate + counters, flip to pass at ~5.2s
+    pop($('#gate3'),lt,1.4);const pass=lt>=5.2;const g=$('#gate3');g.classList.toggle('pass',pass);$('#gx').textContent=pass?'✓':'✕';$('#gt').textContent=pass?'13 / 13 gates':'7 / 13 gates';
+    num($('#c_tests'),lt,1.8,3.2,3759);num($('#c_cov'),lt,1.8,3.2,91);
+    ['tl0','tl1','tl2','tl3','tl4','tl5'].forEach((id,i)=>rise($('#'+id),lt,3.4+i*0.12,.5,16));}
+  else if(cur[0]==='who'){fade($('#ey4'),lt,0.1);rise($('#s_hd'),lt,0.4);fade($('#seg1'),lt,0.8);rise($('#s_fin'),lt,1.0);fade($('#seg2'),lt,1.4);rise($('#s_now'),lt,1.6);fade($('#sub4'),lt,2.4);pop($('#ti1'),lt,4.9);pop($('#ti2'),lt,5.15);}
+  else if(cur[0]==='work'){fade($('#ey5'),lt,0.1);rise($('#w1'),lt,0.3,.6,30);rise($('#w2'),lt,0.5,.6,30);rise($('#w3'),lt,0.7,.6,30);
+    [['r4a',1.2],['ar1',1.4],['r4b',1.5],['ar2',1.7],['r4c',1.8],['ar3',2.0],['r4d',2.1]].forEach(([id,at])=>fade($('#'+id),lt,at,.4));}
+  else if(cur[0]==='cta'){fade($('#cta1'),lt,0.3,.6);pop($('#ctab'),lt,1.1);fade($('#ctau'),lt,1.6);}
+}
+let playing=false,raf=0;
+function tick(){if(!playing)return;render(au.currentTime||0);raf=requestAnimationFrame(tick);}
+window.__play=()=>{if(playing)return;playing=true;au.play().catch(()=>{});tick();};
+au.addEventListener('ended',()=>{playing=false;render(TOTAL);});
+window.__seek=(t)=>{try{au.currentTime=t;}catch(e){}render(t);};
+render(0);
+document.addEventListener('click',()=>window.__play(),{once:true});
+</script>
+</body></html>

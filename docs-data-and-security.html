@@ -140,7 +140,8 @@
     .d-badge { display:none; }
     .d-search { min-width:0; padding:8px; }
     .d-search .d-search-lbl, .d-search kbd { display:none; }
-    .d-top-cta .dim-link { display:none; }
+    .d-top-cta { display:none; } /* was overflowing the header ≤384px; Book CTAs remain in the drawer + content */
+    .d-navitem { padding-top:11px; padding-bottom:11px; } /* ≥44px touch target */
     .d-sidebar { position:fixed; top:48px; left:0; width:min(300px,84vw); height:calc(100vh - 48px); background:var(--bg); z-index:70; transform:translateX(-102%); transition:transform .25s ease; border-right:1px solid var(--line); }
     body.d-navopen .d-sidebar { transform:none; box-shadow:0 30px 80px rgba(0,0,0,0.6); }
     body.d-navopen::after { content:''; position:fixed; inset:48px 0 0; background:rgba(0,0,0,0.5); z-index:65; }
@@ -181,7 +182,7 @@
 <h2 id="where-your-data-actually-lives" class="d-h2"><a href="#where-your-data-actually-lives" class="d-anchor" aria-label="Link to this section">#</a>Where your data actually lives</h2>
 <p class="d-p">The design goal is that sensitive material never leaves systems you control. Concretely, by asset class:</p>
 <div class="d-tablewrap" tabindex="0" role="region" aria-label="Table — scroll horizontally"><table class="d-table"><thead><tr><th>Asset</th><th>Where it lives</th><th>My access</th></tr></thead><tbody><tr><td class="d-th"><b>Source code</b></td><td>Your Git host</td><td>Least-privilege collaborator, revoked at handoff</td></tr><tr><td class="d-th"><b>Secrets / credentials</b></td><td>Your secret manager (Vault, Doppler, cloud KMS)</td><td>Never copied locally; referenced, not held</td></tr><tr><td class="d-th"><b>Production data</b></td><td>Your infrastructure</td><td>Scoped, read-where-possible; no bulk export</td></tr><tr><td class="d-th"><b>Eval / golden sets</b></td><td>Your repo, versioned</td><td>You own them — they ship with the code</td></tr><tr><td class="d-th"><b>LLM prompt data</b></td><td>Your chosen provider</td><td>Provider chosen for a no-train data policy; documented per engagement</td></tr></tbody></table></div>
-<div class="d-note d-note-security"><span class="d-note-i">⚿</span><div>On LLM providers specifically: the model vendor is selected so that your prompt and completion data is <b>not used to train anyone’s model</b>, and the exact provider + data-processing terms are named in the engagement’s SOW — not left vague.</div></div>
+<div class="d-note d-note-security"><span class="d-note-i"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div>On LLM providers specifically: the model vendor is selected so that your prompt and completion data is <b>not used to train anyone’s model</b>, and the exact provider + data-processing terms are named in the engagement’s SOW — not left vague.</div></div>
 <h2 id="retention-amp-deletion" class="d-h2"><a href="#retention-amp-deletion" class="d-anchor" aria-label="Link to this section">#</a>Retention &amp; deletion</h2>
 <p class="d-p">After handoff I remove local clones, revoke every access grant, and delete any transient working copies. What remains is entirely in your systems: the code in your repo, the runbook in your docs, and the eval fixtures versioned next to your tests. There is no Sage-Ideas-side copy of your data to breach.</p>
 <div class="d-proof"><a href="msa-sample.html" class="d-plink">The MSA + data terms are written down (sample) <span>→</span></a><a href="docs-how-engagements-work.html" class="d-plink">How engagements run <span>→</span></a></div>

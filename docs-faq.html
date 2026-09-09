@@ -140,7 +140,8 @@
     .d-badge { display:none; }
     .d-search { min-width:0; padding:8px; }
     .d-search .d-search-lbl, .d-search kbd { display:none; }
-    .d-top-cta .dim-link { display:none; }
+    .d-top-cta { display:none; } /* was overflowing the header ≤384px; Book CTAs remain in the drawer + content */
+    .d-navitem { padding-top:11px; padding-bottom:11px; } /* ≥44px touch target */
     .d-sidebar { position:fixed; top:48px; left:0; width:min(300px,84vw); height:calc(100vh - 48px); background:var(--bg); z-index:70; transform:translateX(-102%); transition:transform .25s ease; border-right:1px solid var(--line); }
     body.d-navopen .d-sidebar { transform:none; box-shadow:0 30px 80px rgba(0,0,0,0.6); }
     body.d-navopen::after { content:''; position:fixed; inset:48px 0 0; background:rgba(0,0,0,0.5); z-index:65; }
