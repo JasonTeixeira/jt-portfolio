@@ -31,7 +31,7 @@
       book: "Book a 15-min intro", explore: "I'll explore on my own",
       labels: ["The idea", "In 30 seconds", "Proof", "The work", "Who", "Start here"],
       steps: [
-        "Here's the whole idea: Jason builds your AI feature — then proves it actually works.",
+        "Hey — welcome to Sage Ideas! Here's the whole idea: Jason builds your AI feature, then proves it actually works.",
         "The short version lives right here: what he does, why him, and how to start.",
         "This is the part most shops skip — the site runs its own quality checks, in public. No fake green, not even his.",
         "The work comes in three shapes: LLM and RAG evaluation, test automation, and workflow automation.",
@@ -48,7 +48,7 @@
       book: "Agenda 15 min", explore: "Prefiero explorar solo",
       labels: ["La idea", "En 30 segundos", "Prueba", "El trabajo", "Quién", "Empezar"],
       steps: [
-        "La idea es esta: Jason construye tu función de IA — y luego prueba que realmente funciona.",
+        "¡Hola — bienvenido a Sage Ideas! La idea es esta: Jason construye tu función de IA y luego prueba que realmente funciona.",
         "La versión corta está aquí mismo: qué hace, por qué él y cómo empezar.",
         "Esta es la parte que casi todos omiten: el sitio ejecuta sus propias pruebas de calidad, en público. Nada de verde falso.",
         "El trabajo viene en tres formas: evaluación de LLM y RAG, automatización de pruebas y automatización de flujos.",
@@ -65,7 +65,7 @@
       book: "Agende 15 min", explore: "Prefiro explorar sozinho",
       labels: ["A ideia", "Em 30 segundos", "Prova", "O trabalho", "Quem", "Começar"],
       steps: [
-        "A ideia é esta: o Jason constrói o seu recurso de IA — e depois prova que ele realmente funciona.",
+        "Olá — bem-vindo à Sage Ideas! A ideia é esta: o Jason constrói o seu recurso de IA e depois prova que ele realmente funciona.",
         "A versão curta está aqui: o que ele faz, por que ele e como começar.",
         "Esta é a parte que quase todos pulam — o site roda os próprios testes de qualidade, em público. Nada de verde falso.",
         "O trabalho vem em três formas: avaliação de LLM e RAG, automação de testes e automação de fluxos.",
@@ -88,21 +88,70 @@
   function va(name, data) { if (typeof window.va === 'function') try { window.va('event', { name: name, data: data || {} }); } catch (e) {} }
   function seen() { try { localStorage.setItem(SEEN, '1'); } catch (e) {} }
 
-  // ── voice (optional, drop-in) ──────────────────────────────────────────────
+  // ── voice + live "Jarvis" visualizer ───────────────────────────────────────
+  // Narration plays through a Web Audio graph so an AnalyserNode can drive the orb + waveform in
+  // real time — the actual voice signal, not a fake loop. Degrades to plain playback if Web Audio
+  // is unavailable, and to text-only if the clip is missing.
   var AUDIO_BASE = base + '/assets/greeter/' + loc + '/';
-  var muted = false, curAudio = null;
-  function stopAudio() { if (curAudio) { try { curAudio.pause(); } catch (e) {} curAudio = null; } }
-  function playClip(key, onEnd) {
-    stopAudio();
-    if (muted) return;
+  var muted = false, narAudio = null, actx = null, analyser = null, freq = null, vizRAF = 0;
+  function ensureGraph() {
+    if (narAudio) return true;
     try {
-      var a = new window.Audio(AUDIO_BASE + key + '.mp3');
-      a.onended = function () { if (onEnd) onEnd(); };
-      a.onerror = function () { curAudio = null; }; // no clip yet → text-only, silent
-      curAudio = a;
-      var p = a.play();
-      if (p && p.catch) p.catch(function () { curAudio = null; });
-    } catch (e) { curAudio = null; }
+      narAudio = new window.Audio(); narAudio.crossOrigin = 'anonymous';
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        actx = new AC();
+        var src = actx.createMediaElementSource(narAudio);
+        analyser = actx.createAnalyser(); analyser.fftSize = 128; analyser.smoothingTimeConstant = 0.8;
+        freq = new Uint8Array(analyser.frequencyBinCount);
+        src.connect(analyser); analyser.connect(actx.destination);
+      }
+      return true;
+    } catch (e) { if (!narAudio) { try { narAudio = new window.Audio(); } catch (e2) { narAudio = null; } } return !!narAudio; }
+  }
+  function stopAudio() { if (narAudio) { try { narAudio.pause(); } catch (e) {} } stopViz(); }
+  function playClip(key, onEnd) {
+    if (muted) return;
+    if (!ensureGraph()) return;
+    try {
+      if (actx && actx.state === 'suspended') actx.resume();
+      narAudio.onended = function () { stopViz(); if (onEnd) onEnd(); };
+      narAudio.onerror = function () { stopViz(); }; // no clip → text-only, silent
+      narAudio.src = AUDIO_BASE + key + '.mp3';
+      var p = narAudio.play();
+      if (p && p.catch) p.catch(function () { stopViz(); });
+      startViz();
+    } catch (e) { stopViz(); }
+  }
+  function startViz() {
+    if (reduce || !analyser || !tour) return;
+    var orb = tour.querySelector('.jt-tour-orb'), cv = tour.querySelector('.jt-tour-viz');
+    var cx = cv && cv.getContext ? cv.getContext('2d') : null;
+    var n = freq.length;
+    function frame() {
+      if (!analyser) return;
+      analyser.getByteFrequencyData(freq);
+      var sum = 0; for (var i = 0; i < n; i++) sum += freq[i];
+      var amp = sum / (n * 255);
+      if (orb) { orb.style.transform = 'scale(' + (1 + amp * 0.55).toFixed(3) + ')'; orb.style.boxShadow = '0 0 ' + (14 + amp * 34) + 'px rgba(34,211,238,' + (0.5 + amp * 0.45).toFixed(2) + ')'; }
+      if (cx) {
+        var W = cv.width, H = cv.height, bars = 22, bw = W / bars;
+        cx.clearRect(0, 0, W, H);
+        for (var b = 0; b < bars; b++) {
+          var v = freq[Math.floor(b / bars * n)] / 255, bh = Math.max(2, v * H);
+          cx.fillStyle = 'rgba(34,211,238,' + (0.3 + v * 0.7).toFixed(2) + ')';
+          cx.fillRect(b * bw + 1, (H - bh) / 2, bw - 2, bh);
+        }
+      }
+      vizRAF = requestAnimationFrame(frame);
+    }
+    cancelAnimationFrame(vizRAF); frame();
+  }
+  function stopViz() {
+    if (vizRAF) { cancelAnimationFrame(vizRAF); vizRAF = 0; }
+    if (!tour) return;
+    var orb = tour.querySelector('.jt-tour-orb'); if (orb) { orb.style.transform = ''; orb.style.boxShadow = ''; }
+    var cv = tour.querySelector('.jt-tour-viz'); if (cv && cv.getContext) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
   }
 
   function go(href) {
@@ -156,7 +205,7 @@
   }
 
   // ── guided tour ─────────────────────────────────────────────────────────────
-  var tour = null, steps = [], si = 0, typeTimer = null;
+  var tour = null, steps = [], si = 0, typeTimer = null, playToken = 0;
   function startTour() {
     steps = STEP_DEFS.filter(function (s) { return d.querySelector(s.sel); });
     if (!steps.length) { close(true); return; }
@@ -171,6 +220,7 @@
       '<div class="jt-tour-row">' +
       '<span class="jt-tour-orb" aria-hidden="true"></span>' +
       '<span class="jt-tour-name">Atlas</span>' +
+      '<canvas class="jt-tour-viz" width="120" height="24" aria-hidden="true"></canvas>' +
       '<span class="jt-tour-label"></span>' +
       '<span class="jt-tour-dots" aria-hidden="true"></span>' +
       '<button class="jt-tour-sound" hidden aria-pressed="false"></button>' +
@@ -269,11 +319,15 @@
     next.classList.toggle('is-final', final);
     var lbl = tour.querySelector('.jt-tour-label'); if (lbl) lbl.textContent = (T.labels && T.labels[si]) || '';
     Array.prototype.forEach.call(tour.querySelectorAll('.jt-tour-dots i'), function (dot, i) { dot.classList.toggle('on', i === si); });
+    playToken++;
+    var myToken = playToken;
     var orb = tour.querySelector('.jt-tour-orb'); orb.classList.add('speaking');
     var reveal = function () {
       positionSpot();
       typeText(tour.querySelector('.jt-tour-text'), (T.steps[si] || ''));
-      playClip(s.key);
+      // Voice-guided: when the narration clip finishes, advance to the next step on its own —
+      // only if we're still on this step, sound is on, and it isn't the last step (you choose to book).
+      playClip(s.key, function () { if (myToken === playToken && !muted && si < steps.length - 1) step(si + 1); });
       setTimeout(function () { orb.classList.remove('speaking'); }, 1300);
     };
     if (el) scrollToStep(el, reveal); else reveal();
@@ -332,6 +386,7 @@
       '.jt-tour-orb.speaking{animation:jt-orb 1s ease-in-out infinite}',
       '@keyframes jt-orb{0%,100%{transform:scale(1);box-shadow:0 0 14px rgba(34,211,238,.55)}50%{transform:scale(1.14);box-shadow:0 0 24px rgba(34,211,238,.9)}}',
       '.jt-tour-name{font:700 12px/1 "JetBrains Mono",monospace;letter-spacing:.06em;color:#F4F2EF}',
+      '.jt-tour-viz{width:120px;height:24px;flex:0 0 auto;opacity:.92}',
       '.jt-tour-label{font:600 10px/1 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.28);border-radius:6px;padding:5px 8px}',
       '.jt-tour-dots{display:flex;gap:5px;margin-left:auto}.jt-tour-dots i{width:6px;height:6px;border-radius:50%;background:#3D3A37;transition:background .3s,width .3s}.jt-tour-dots i.on{background:#22d3ee;width:17px;border-radius:3px}',
       '.jt-tour-sound{font:600 11px/1 "JetBrains Mono",monospace;color:#8E8882;background:transparent;border:1px solid #2A2826;border-radius:7px;padding:6px 9px;cursor:pointer;margin-left:8px}',
@@ -344,7 +399,7 @@
       '.jt-tour-back:hover{border-color:#3D3A37;color:#F4F2EF}',
       '.jt-tour-next{background:#10b981;border-color:#10b981;color:#04120d}.jt-tour-next:hover{box-shadow:0 8px 24px -8px rgba(16,185,129,.6)}',
       '.jt-tour-next.is-final{background:#22d3ee;border-color:#22d3ee}',
-      '@media (max-width:560px){.jt-tour-panel{left:12px;right:12px;bottom:12px;transform:translateY(10px);width:auto;padding:15px 16px 14px}#jt-tour.in .jt-tour-panel{transform:translateY(0)}.jt-tour-name{display:none}.jt-tour-back,.jt-tour-next{flex:1}}',
+      '@media (max-width:560px){.jt-tour-panel{left:12px;right:12px;bottom:12px;transform:translateY(10px);width:auto;padding:15px 16px 14px}#jt-tour.in .jt-tour-panel{transform:translateY(0)}.jt-tour-name{display:none}.jt-tour-viz{width:64px}.jt-tour-back,.jt-tour-next{flex:1}}',
       '@media (prefers-reduced-motion:reduce){.jt-tour-spot{transition:none;animation:none}.jt-tour-orb.speaking{animation:none}}'
     ].join('');
     var st = d.createElement('style'); st.id = 'jt-tour-css'; st.textContent = css; d.head.appendChild(st);
