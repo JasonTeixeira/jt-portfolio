@@ -93,6 +93,7 @@
   // real time — the actual voice signal, not a fake loop. Degrades to plain playback if Web Audio
   // is unavailable, and to text-only if the clip is missing.
   var AUDIO_BASE = base + '/assets/greeter/' + loc + '/';
+  var AUDIO_V = '?v=nadine2'; // cache-buster — bump when clips are re-generated
   var muted = false, narAudio = null, actx = null, analyser = null, freq = null, vizRAF = 0;
   function ensureGraph() {
     if (narAudio) return true;
@@ -117,7 +118,7 @@
       if (actx && actx.state === 'suspended') actx.resume();
       narAudio.onended = function () { stopViz(); if (onEnd) onEnd(); };
       narAudio.onerror = function () { stopViz(); }; // no clip → text-only, silent
-      narAudio.src = AUDIO_BASE + key + '.mp3';
+      narAudio.src = AUDIO_BASE + key + '.mp3' + AUDIO_V;
       var p = narAudio.play();
       if (p && p.catch) p.catch(function () { stopViz(); });
       startViz();
@@ -261,7 +262,7 @@
   // so the Sound toggle appears. Doesn't depend on audio autoplay/metadata, which browsers gate.
   function probeAudio(cb) {
     try {
-      fetch(AUDIO_BASE + 's1.mp3', { method: 'HEAD' })
+      fetch(AUDIO_BASE + 's1.mp3' + AUDIO_V, { method: 'HEAD' })
         .then(function (r) { cb(!!(r && r.ok)); })
         .catch(function () { cb(false); });
     } catch (e) { cb(false); }
