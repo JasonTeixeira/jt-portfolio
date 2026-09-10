@@ -19,7 +19,7 @@ import { isEnabled, upsertProspect, appendEvent, insertPlan } from '../lib/scope
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
 
-const EVENT_TYPES = new Set(['started', 'questioned', 'plan_built', 'lead_captured', 'handoff_clicked']);
+const EVENT_TYPES = new Set(['started', 'questioned', 'plan_built', 'proposal_written', 'lead_captured', 'handoff_clicked']);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**

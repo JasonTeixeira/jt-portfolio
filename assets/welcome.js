@@ -17,9 +17,13 @@
   var force = /[?&]welcome=1/.test(location.search);
   var SEEN = 'jt-welcome-v2';
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  try { if (!force && localStorage.getItem(SEEN)) return; } catch (e) {}
-  // Don't auto-fire under automation — E2E runs aren't first-time visitors. ?welcome=1 forces it.
-  try { if (!force && navigator.webdriver) return; } catch (e) {}
+  // AUTO-show only for a genuine first-time human visitor (or ?welcome=1). We deliberately
+  // no longer bail the whole script once it's been seen — the greeter/voiced tour must stay
+  // re-launchable on demand (window.jtTour / window.jtTourStart, wired to the hero "60-sec
+  // tour" button), so it's never "lost" after the first dismissal.
+  var hasSeen = false; try { hasSeen = !!localStorage.getItem(SEEN); } catch (e) {}
+  var isBot = false; try { isBot = !!navigator.webdriver; } catch (e) {}
+  var autoShow = force || (!hasSeen && !isBot);
 
   var T = {
     en: {
@@ -407,6 +411,19 @@
   }
 
   var delay = reduce ? 600 : 1600;
-  if (d.readyState === 'complete') setTimeout(build, delay);
-  else window.addEventListener('load', function () { setTimeout(build, delay); });
+  if (autoShow) {
+    if (d.readyState === 'complete') setTimeout(build, delay);
+    else window.addEventListener('load', function () { setTimeout(build, delay); });
+  }
+
+  // Persistent, on-demand replay — works even for returning visitors who already dismissed it,
+  // so the voiced guided tour is never a one-shot that disappears. Wired to the hero button.
+  function reopen(intoTour) {
+    closed = false;
+    var g = d.getElementById('jt-welcome'); if (g) g.remove();
+    var tr = d.getElementById('jt-tour'); if (tr) tr.remove();
+    if (intoTour) startTour(); else build();
+  }
+  window.jtTour = function () { reopen(false); };      // open the Atlas greeter (with the tour button)
+  window.jtTourStart = function () { reopen(true); };  // jump straight into the voiced 60-second tour
 })();
