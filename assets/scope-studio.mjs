@@ -227,7 +227,7 @@ if (root && qMount && planMount && disc) {
     const head = document.createElement('div'); head.className = 'scope-prop-head';
     head.innerHTML = '<span>Your proposal</span><button class="ra-btn" type="button" data-read-target="#scope-prop-text" data-stop-label="Stop reading">Read it to me</button>';
     const txt = document.createElement('div'); txt.id = 'scope-prop-text'; txt.className = 'scope-prop-text';
-    String(text).split(/\n\n+/).forEach((para) => {
+    String(text).replace(/\*\*/g, '').replace(/^#+\s*/gm, '').split(/\n\n+/).forEach((para) => {
       const p = document.createElement('p');
       const m = para.match(/^([^:\n]{3,42}:)\s*([\s\S]*)$/);
       if (m) { const b = document.createElement('b'); b.textContent = m[1]; p.appendChild(b); p.appendChild(document.createTextNode(m[2])); }
@@ -331,7 +331,7 @@ if (root && qMount && planMount && disc) {
     window.__renderScopePlan(plan);
     curKeys = keys; curSegment = segment; curPlan = plan;
     const propWrap = document.getElementById('scope-proposal');
-    if (propWrap) propWrap.hidden = !keys.length;
+    if (propWrap) propWrap.hidden = !plan.count;
     const propBody = document.getElementById('scope-proposal-body');
     if (propBody) propBody.innerHTML = ''; // clear a stale narrative when the plan changes
     syncUrl();
