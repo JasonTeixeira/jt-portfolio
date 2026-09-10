@@ -237,7 +237,17 @@ async function handler(req, res) {
   }
 
   const body = req.body ?? {};
-  const basePersona = PROMPTS[body.mode] || SYSTEM_PROMPT;
+  // Normalize mode to a string up front, then validate. A missing mode defaults to
+  // the receptionist demo (intended). A non-string (e.g. ["scope"]) or an UNKNOWN
+  // mode is a client bug or a probe — reject it. This MUST be strict: `isScope` below
+  // uses `=== 'scope'`, but an array like ["scope"] coerces to "scope" in a property
+  // lookup (PROMPTS[...] / hasOwnProperty) while failing ===, which would otherwise run
+  // the scope persona through the non-scope branch and skip server-side price redaction.
+  const mode = body.mode == null ? undefined : (typeof body.mode === 'string' ? body.mode : null);
+  if (mode === null || (mode !== undefined && !Object.prototype.hasOwnProperty.call(PROMPTS, mode))) {
+    return res.status(400).json({ ok: false, error: 'invalid mode' });
+  }
+  const basePersona = PROMPTS[mode] || SYSTEM_PROMPT;
   // Optional visitor context (e.g. niche) — sanitized + capped, appended to the
   // system prompt so the agent can personalize ("I see you run a law firm").
   const ctx = typeof body.context === 'string'
@@ -254,13 +264,13 @@ async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'bad_request' });
   }
 
-  const isScope = body.mode === 'scope';
+  const isScope = mode === 'scope';
 
   try {
     const reqBody = JSON.stringify({
       model,
       messages: [{ role: 'system', content: persona }, ...(isScope ? scopeModelMessages(messages) : messages)],
-      max_tokens: MAX_OUT[body.mode] || 160,
+      max_tokens: MAX_OUT[mode] || 160,
       // Scope mode is a structured, price-safe discovery flow: lower
       // temperature for consistency, and ask the provider's JSON mode for
       // a parseable turn.
@@ -298,7 +308,16 @@ async function handler(req, res) {
       const data = await r.json();
       raw = (data?.choices?.[0]?.message?.content || '').trim();
     }
-    if (!raw) return res.status(502).json({ ok: false, error: 'empty_reply' });
+    if (!raw) {
+      // Empty completion — seen on adversarial turns where the model refuses in
+      // JSON mode and returns nothing. Never surface a 502 to a visitor: degrade
+      // to an in-character refusal, the same way associate mode already handles
+      // the identical prompt-injection attempt with a clean, non-leaking reply.
+      if (isScope) {
+        return res.status(200).json({ ok: true, reply: "I can't help with that one — I'm just here to figure out what you're trying to build. What's the project?", done: false, selection: [], segment: null, flags: [], qualification: null });
+      }
+      return res.status(200).json({ ok: true, reply: "I didn't quite catch that — mind saying it another way? I'm here to help with Jason's work and how to get started." });
+    }
 
     if (!isScope) {
       return res.status(200).json({ ok: true, reply: raw });
