@@ -14,7 +14,7 @@
 (function () {
   var C = { bg: '#0B0B0D', panel: '#0C0C0E', line: '#26241F', ink: '#F4F2EF', dim: '#A8A29E', faint: '#8E8882', green: '#10b981', cyan: '#22d3ee', purple: '#a78bfa' };
   var MONO = "'JetBrains Mono',monospace";
-  var GREET = "Hey — I'm Atlas, Jason's AI associate. I can show you exactly what he builds, get your AI feature checked for free, or set up a call. What are you working on?";
+  var GREET = "Hi — I'm Atlas, Jason's assistant. You can type, or tap the mic and just talk to me. Tell me what you're working on and I'll line up the right next step — see it live, get your AI feature checked for free, or book a call. What brings you in?";
   var START = [
     { label: 'What does Jason do?', q: 'What does Jason actually do?' },
     { label: 'Check my AI feature (free)', act: 'minieval' },
@@ -142,7 +142,7 @@
     var intro = kind === 'minieval'
       ? "Perfect. Drop your work email and the URL of your live AI feature — Jason runs a real mini-eval and sends you the findings. No call needed."
       : "Great — leave your email and Jason will personally follow up, usually same day.";
-    var b = bubble('bot'); b.textContent = intro; hist.push({ role: 'assistant', content: intro });
+    var b = bubble('bot'); b.textContent = intro; speak(intro); hist.push({ role: 'assistant', content: intro });
 
     var wrap = el('div', { alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px 2px' });
     var email = el('input'); email.type = 'email'; email.placeholder = 'you@company.com';
@@ -170,6 +170,7 @@
           ok.textContent = kind === 'minieval'
             ? "You're in — Jason will run the eval and email your findings. Anything else I can line up while you're here?"
             : "Done — Jason has it and will reach out shortly. Anything else I can help with?";
+          speak(ok.textContent);
           hist.push({ role: 'assistant', content: ok.textContent });
           renderChips(actionsFor('proof demo services'));
         });
@@ -178,12 +179,14 @@
 
   function send(v) {
     v = (v || '').trim(); if (!v) return;
+    stopSpeak(); // never talk over the visitor
     bubble('me').textContent = v; input.value = ''; hist.push({ role: 'user', content: v });
     chipsEl.innerHTML = ''; track('atlas-msg');
     showTyping();
     function finish(txt) {
       hideTyping();
       var b = bubble('bot');
+      speak(txt); // spoken reply reveals in sync with the typewriter
       typeInto(b, txt, function () { hist.push({ role: 'assistant', content: txt }); renderChips(actionsFor(v + ' ' + txt)); });
     }
     if (mode === 'script') { setTimeout(function () { finish(scripted(v)); }, 420); return; }
@@ -194,12 +197,40 @@
     });
   }
 
+  // ── voice OUTPUT — the concierge speaks her replies aloud (warm, female, language-aware),
+  // so the whole thing feels like talking to a real assistant, not typing at a bot. Free
+  // (browser speech engine), gesture-gated (first speak is after the open click), degrades
+  // silently where unsupported. On/off persists per visitor.
+  var VLANG = (function () { var p = location.pathname; return /^\/pt(\/|$)/.test(p) ? 'pt' : /^\/es(\/|$)/.test(p) ? 'es' : 'en'; })();
+  var speakOn = true; try { speakOn = localStorage.getItem('atlas-voice') !== 'off'; } catch (e) {}
+  var FEMALE = /nadine|samantha|victoria|karen|moira|tessa|serena|allison|ava|susan|zira|hazel|fiona|amelie|amélie|aur|luciana|joana|catarina|paulina|monica|mónica|marisol|female|femme|mujer|feminina/i;
+  var haveSpeech = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  function pickVoice() {
+    if (!haveSpeech) return null;
+    var vs = window.speechSynthesis.getVoices() || [];
+    var byLang = vs.filter(function (v) { return v.lang && v.lang.toLowerCase().slice(0, 2) === VLANG; });
+    return byLang.filter(function (v) { return FEMALE.test(v.name); })[0] || byLang[0]
+      || vs.filter(function (v) { return FEMALE.test(v.name); })[0]
+      || vs.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
+  }
+  function stopSpeak() { try { if (haveSpeech) window.speechSynthesis.cancel(); } catch (e) {} }
+  function speak(text) {
+    if (!speakOn || !haveSpeech || !text) return;
+    stopSpeak();
+    var u = new window.SpeechSynthesisUtterance(String(text).replace(/[—–…]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 600));
+    var v = pickVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = VLANG === 'es' ? 'es-ES' : VLANG === 'pt' ? 'pt-BR' : 'en-US'; }
+    u.rate = 1.02; u.pitch = 1.06;
+    try { window.speechSynthesis.speak(u); } catch (e) {}
+  }
+  if (haveSpeech && window.speechSynthesis.onvoiceschanged === null) { window.speechSynthesis.onvoiceschanged = function () { pickVoice(); }; }
+
   // ── voice input (Web Speech, feature-detected) ──
   var recog = null, listening = false;
   function setupVoice(micBtn) {
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { micBtn.style.display = 'none'; return; }
-    recog = new SR(); recog.lang = 'en-US'; recog.interimResults = false; recog.maxAlternatives = 1;
+    recog = new SR(); recog.lang = VLANG === 'es' ? 'es-ES' : VLANG === 'pt' ? 'pt-BR' : 'en-US'; recog.interimResults = false; recog.maxAlternatives = 1;
     recog.onresult = function (e) { var t = e.results[0][0].transcript; input.value = t; send(t); };
     recog.onend = function () { listening = false; micBtn.style.color = C.faint; micBtn.style.background = 'transparent'; };
     micBtn.onclick = function () {
@@ -212,12 +243,12 @@
     open = true; panel.style.display = 'flex';
     requestAnimationFrame(function () { panel.style.opacity = '1'; panel.style.transform = 'none'; });
     if (!msgsEl.children.length) {
-      var g = bubble('bot'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); });
+      var g = bubble('bot'); speak(GREET); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); });
       track('atlas-open');
     }
     setTimeout(function () { input && input.focus(); }, 300);
   }
-  function closePanel() { open = false; panel.style.opacity = '0'; panel.style.transform = 'translateY(10px) scale(0.98)'; setTimeout(function () { panel.style.display = 'none'; }, 200); }
+  function closePanel() { open = false; stopSpeak(); panel.style.opacity = '0'; panel.style.transform = 'translateY(10px) scale(0.98)'; setTimeout(function () { panel.style.display = 'none'; }, 200); }
   function toggle() { open ? closePanel() : openPanel(); }
   window.openAtlas = openPanel;
 
@@ -250,9 +281,23 @@
     var pulseDot = el('span', { position: 'absolute', right: '-2px', bottom: '-2px', width: '11px', height: '11px', borderRadius: '50%', background: C.green, border: '2px solid ' + C.panel });
     av.appendChild(pulseDot);
     var htext = el('div', { flex: '1', minWidth: '0' }, '<div style="font-size:14px;font-weight:700;color:' + C.ink + '">Atlas</div><div style="font-family:' + MONO + ';font-size:9.5px;color:' + C.green + '">● Jason’s AI associate · online</div>');
-    var x = el('button', { marginLeft: 'auto', background: 'none', border: 'none', color: C.faint, fontSize: '20px', cursor: 'pointer', lineHeight: '1' }, '×');
+    // Voice on/off — the concierge speaks by default; this mutes/unmutes her (persists).
+    var vbtn = el('button', { background: 'none', border: '1px solid ' + C.line, borderRadius: '9px', width: '31px', height: '31px', cursor: 'pointer', fontSize: '14px', lineHeight: '1', flexShrink: '0', color: speakOn ? C.cyan : C.faint }, speakOn ? '🔊' : '🔇');
+    vbtn.setAttribute('aria-label', speakOn ? 'Voice on — click to mute' : 'Voice off — click to unmute');
+    vbtn.setAttribute('title', vbtn.getAttribute('aria-label'));
+    vbtn.onclick = function () {
+      speakOn = !speakOn;
+      try { localStorage.setItem('atlas-voice', speakOn ? 'on' : 'off'); } catch (e) {}
+      if (!speakOn) stopSpeak();
+      vbtn.textContent = speakOn ? '🔊' : '🔇';
+      vbtn.style.color = speakOn ? C.cyan : C.faint;
+      var lbl = speakOn ? 'Voice on — click to mute' : 'Voice off — click to unmute';
+      vbtn.setAttribute('aria-label', lbl); vbtn.setAttribute('title', lbl);
+      track('atlas-voice-toggle');
+    };
+    var x = el('button', { background: 'none', border: 'none', color: C.faint, fontSize: '20px', cursor: 'pointer', lineHeight: '1', flexShrink: '0' }, '×');
     x.setAttribute('aria-label', 'Close'); x.onclick = closePanel;
-    head.appendChild(av); head.appendChild(htext); head.appendChild(x);
+    head.appendChild(av); head.appendChild(htext); head.appendChild(vbtn); head.appendChild(x);
 
     msgsEl = el('div', { flex: '1', overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' });
 
