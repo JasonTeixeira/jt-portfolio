@@ -1,6 +1,9 @@
 // Operator marketing/outreach cockpit (module ④), backed by /api/marketing.
 // Manual-assist: surfaces who needs a touch + a copy-ready opener; the operator
 // sends and logs the touch (via /api/prospects). No auto cold-emailing.
+import { rankLeads } from './lead-score.mjs';
+
+const TIER = { hot: { c: '#f43f5e', t: '🔥 HOT' }, warm: { c: '#F59E0B', t: 'WARM' }, cool: { c: '#8E8882', t: 'cool' } };
 
 const STAGE_COLOR = { new: '#22d3ee', scoped: '#a78bfa', engaged: '#10b981' };
 const TOUCH_KINDS = ['email', 'dm', 'call', 'meeting', 'note', 'follow_up'];
@@ -147,10 +150,10 @@ export function renderMarketing(mount, key, deps) {
           : 'Automated nurture drip: OFF — set NURTURE_ENABLED=true to auto-send warm follow-ups.'));
 
       clear(listMount);
-      listMount.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'who to reach out to'), h('span', { class: 'line' })));
+      listMount.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'hottest to close — chase these first'), h('span', { class: 'line' })));
       if (!leads.length) { listMount.appendChild(h('p', { class: 'subtle' }, 'No open leads yet — they appear here as prospects come in and go stale.')); return; }
-      // needs-action first (already sorted stalest-first by the API within that)
-      const ordered = [...leads].sort((a, b) => (b.needsAction === a.needsAction ? b.daysSinceActivity - a.daysSinceActivity : (b.needsAction ? 1 : -1)));
+      // ranked by close-intent (engagement + recency), hottest first
+      const ordered = rankLeads(leads);
       for (const lead of ordered) listMount.appendChild(leadRow(lead));
     });
 
@@ -158,8 +161,11 @@ export function renderMarketing(mount, key, deps) {
       const color = STAGE_COLOR[lead.stage] || '#8E8882';
       const stale = lead.needsAction;
       const wrap = h('div', { class: 'admin-card', style: `margin-bottom:10px;border-left:3px solid ${stale ? '#F59E0B' : 'transparent'}` });
+      const sc = lead._score || { score: 0, tier: 'cool' };
+      const tinfo = TIER[sc.tier] || TIER.cool;
       const head = h('div', { style: 'display:flex;align-items:center;gap:14px;flex-wrap:wrap' },
-        h('div', { style: 'flex:1;min-width:180px' },
+        h('span', { title: 'close-intent score (engagement + recency)', style: `font-family:var(--mono,monospace);font-size:10px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:5px;color:${tinfo.c};border:1px solid ${tinfo.c}55;background:${tinfo.c}12` }, `${tinfo.t} ${sc.score}`),
+        h('div', { style: 'flex:1;min-width:160px' },
           h('div', { style: 'font-size:14px' }, lead.name || lead.email || 'Unknown'),
           h('div', { class: 'mono', style: 'font-size:11px;color:var(--faint)' }, `${lead.company ? lead.company + ' · ' : ''}${lead.email || ''}`)),
         h('span', { style: `font-family:var(--mono,monospace);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:${color}` }, lead.stage),
