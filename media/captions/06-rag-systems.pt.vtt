@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.924
+Você faz uma pergunta pra sua IA e ela responde com total confiança — citando uma política que não existe. Isso não é um bug do modelo. É retrieval mal feito.
+
+00:09.924 --> 00:20.873
+Eu construo a camada de retrieval que alimenta sua IA com a verdade: seus documentos, seus dados — fatiados, embedados, buscados e reordenados, pra o modelo responder a partir do que é real.
+
+00:20.873 --> 00:31.218
+A parte difícil é a relevância. O documento certo, não qualquer documento. Eu ajusto o fatiamento, o recall e a atualização, e faço cada resposta citar a fonte, pra você poder conferir.
+
+00:31.218 --> 00:41.146
+E aí eu meço. Precisão de retrieval, acurácia da resposta, cobertura de citações — avaliado contra perguntas reais e com gates, pra qualidade não apodrecer em silêncio.
+
+00:41.146 --> 00:46.236
+Respostas em que seus clientes podem confiar — com recibos. Vamos construir seu retrieval direito.
+

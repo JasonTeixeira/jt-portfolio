@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.924
+Ask your AI a question and it answers with total confidence — citing a policy that doesn't exist. That's not a bug in the model. That's retrieval, done wrong.
+
+00:09.924 --> 00:20.873
+I build the retrieval layer that feeds your AI the truth: your docs, your data — chunked, embedded, searched, and reranked, so the model answers from what's actually real.
+
+00:20.873 --> 00:31.218
+The hard part is relevance. The right document, not just a document. I tune chunking, recall, and freshness, and I make every answer cite its source, so you can check it.
+
+00:31.218 --> 00:41.146
+Then I measure it. Retrieval precision, answer accuracy, citation coverage — scored against real questions and gated, so quality can't silently rot.
+
+00:41.146 --> 00:46.236
+Answers your customers can trust — with receipts. Let's build your retrieval right.
+

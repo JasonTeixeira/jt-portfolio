@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:06.998
+Todo fornecedor de IA diz a mesma coisa: confia em mim, funciona. Em produção, confiança não é estratégia. Um número é.
+
+00:06.998 --> 00:16.508
+Eu construo a camada de prova que fica embaixo de tudo: avaliações reais, testes reais e gates conectados ao seu pipeline — o harness que mantém sua IA honesta.
+
+00:16.508 --> 00:28.664
+A parte difícil é o drift. Modelos mudam, dados mudam e a qualidade apodrece em silêncio. Por isso eu construo detecção de regressão que transforma uma falha silenciosa num build vermelho, antes do seu cliente encontrar.
+
+00:28.664 --> 00:37.430
+Essa é a diferença: cada build vai pro ar com evidência. Testes passando, cobertura, gates verdes, drift pego — um número que dá pra ver, não uma promessa.
+
+00:37.430 --> 00:41.453
+Pare de lançar na fé. Lance com prova. Vamos construir o seu gate.
+

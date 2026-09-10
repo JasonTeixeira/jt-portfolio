@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.949
+Can't you just look at the AI's outputs and see if they're good? For ten outputs, sure. For the ten thousand your feature produces every day — not a chance.
+
+00:08.949 --> 00:18.783
+Eyeballing doesn't scale, it isn't repeatable, and it misses the slow drift — the quality that erodes a little each week until a customer notices it before you do.
+
+00:18.783 --> 00:27.039
+So I make it systematic: a scored rubric, run automatically, on every change. The same standard, every time, at any volume.
+
+00:27.039 --> 00:32.647
+Human judgment sets the standard. The system enforces it — at a scale no human can.
+
+00:32.647 --> 00:35.787
+Stop spot-checking. Start measuring. Let's talk.
+

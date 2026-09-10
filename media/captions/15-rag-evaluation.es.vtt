@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.599
+Tu IA cita un documento. Con seguridad, específico, y equivocado. El modelo no mintió — la recuperación le dio la página incorrecta. Y la mayoría de equipos nunca lo mide.
+
+00:09.599 --> 00:19.619
+La evaluación RAG puntúa la recuperación en sí, separada del modelo. ¿Trajo los documentos correctos? ¿La respuesta los usó de verdad? ¿La cita siquiera es real?
+
+00:19.619 --> 00:31.032
+Lo mides con preguntas reales: precisión de recuperación, fidelidad de la respuesta y exactitud de las citas. Ahora una mala respuesta te dice qué parte se rompió — la búsqueda o el modelo.
+
+00:31.032 --> 00:36.223
+Sin eso, adivinas. Con eso, sabes: arregla la recuperación, o arregla el prompt.
+
+00:36.223 --> 00:39.781
+Mide tu recuperación, no tus corazonadas. Hablemos.
+

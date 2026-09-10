@@ -1,0 +1,20 @@
+WEBVTT
+
+00:00.000 --> 00:06.216
+Antes de passar três meses construindo um recurso de IA, passe uma semana descobrindo se ele realmente aguenta.
+
+00:06.216 --> 00:15.164
+Isso é a auditoria. Uma semana — eu entro fundo no seu recurso ou agente: os prompts, a recuperação e os casos extremos onde ele quebra em silêncio.
+
+00:15.164 --> 00:25.742
+Eu construo um harness de avaliação real contra seus casos de uso, rodo e dou uma nota. Nada de achismo — números.
+
+00:25.742 --> 00:36.040
+No final, você sai com um plano de qualquer jeito: as falhas ranqueadas por risco, e exatamente o que falta pra deixar seguro em produção.
+
+00:36.040 --> 00:41.645
+E se o seu recurso já estiver sólido, eu também te digo. De qualquer forma, você para de adivinhar.
+
+00:41.645 --> 00:47.339
+Uma semana. Uma resposta clara. Agende a auditoria — e descubra o que a sua IA faz de verdade.
+

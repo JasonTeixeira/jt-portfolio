@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:07.973
+You tweak one prompt to fix one thing. It works. What you don't see: it just quietly broke five things that used to work fine.
+
+00:07.973 --> 00:17.529
+That's prompt regression. Language models are entangled — one change ripples everywhere. The only way to catch it is to re-run every case, every time you touch a prompt.
+
+00:17.529 --> 00:27.085
+So I keep a suite of real cases and score them on every change. Green means your fix didn't break anything else. Red means it did — before it ships, not after.
+
+00:27.085 --> 00:33.761
+A one-line prompt change can tank your quality ten percent. Without regression testing, you find out from a customer.
+
+00:33.761 --> 00:37.226
+Change prompts with confidence, not hope. Let's talk.
+

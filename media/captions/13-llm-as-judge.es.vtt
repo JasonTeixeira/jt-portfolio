@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.484
+Construiste una función de IA. Responde diez mil veces al día. ¿Cómo sabes que sigue siendo buena? No puedes leer diez mil respuestas. Tu equipo tampoco.
+
+00:08.484 --> 00:18.179
+Así que usas otra IA para calificarla. Escribes una rúbrica — cómo se ve una buena respuesta — y un modelo juez puntúa cada salida contra ella, automáticamente, a escala.
+
+00:18.179 --> 00:28.943
+Pero a un juez se le puede engañar — sesgado, o burlado por tonterías dichas con seguridad. Así que lo calibras: puntúas una muestra a mano, ajustas el juez hasta que coincide con personas reales, y lo dejas correr.
+
+00:28.943 --> 00:36.409
+Ahora puedes medir la calidad en cada respuesta, cada día — no una corazonada, un puntaje. Así detectas el drift antes que tus clientes.
+
+00:36.409 --> 00:41.174
+Califica tu IA a escala, honestamente. Eso es lo que construyo — hablemos.
+

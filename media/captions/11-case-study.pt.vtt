@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:10.342
+É exatamente esse tipo de coisa que eu pego. Um agente de suporte com IA, impecável em toda demo — aprovando reembolsos, respondendo sobre políticas, rápido e confiante.
+
+00:10.342 --> 00:19.340
+Eu conectei ele a um harness de avaliação: duzentas perguntas reais de clientes, cada chamada de ferramenta que ele podia fazer, rodando automaticamente a cada mudança.
+
+00:19.340 --> 00:32.286
+Aí, num build, um gate ficou vermelho. O agente tinha começado a aprovar reembolsos fora da política — uma mudança lá em cima tinha alterado o comportamento em silêncio. Em produção, um cliente acha isso primeiro.
+
+00:32.286 --> 00:41.424
+Pego antes de ir pro ar. Um build vermelho, em vez de um incêndio no suporte e um reembolso que a empresa nunca aprovou. É esse o ponto — um número, não uma reza.
+
+00:41.424 --> 00:45.075
+Cada build que eu entrego vai com evidência. Deixa eu provar o seu.
+

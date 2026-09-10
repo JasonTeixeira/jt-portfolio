@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.902
+There's one number that tells you whether your AI feature is safe to ship. It is not accuracy. Accuracy hides the failures that actually hurt you.
+
+00:08.902 --> 00:18.736
+It's the failure rate on the cases that matter — the customer-facing, high-stakes ones. Not how often it's right, but how often it's wrong in a way that costs you.
+
+00:18.736 --> 00:30.661
+A feature can be ninety-five percent accurate and still be unshippable, if the five percent it gets wrong are refunds, medical advice, or legal claims. So I measure the failures that matter, not the average.
+
+00:30.661 --> 00:34.969
+Ship when that number is low enough to sleep at night. Not a moment before.
+
+00:34.969 --> 00:37.273
+Know your real number. Let's talk.
+
