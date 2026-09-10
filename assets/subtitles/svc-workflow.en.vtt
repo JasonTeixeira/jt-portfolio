@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:10.249
+Somewhere in your company, a person is copying data between five tools by hand, every single day. That's not a job. That's a script that hasn't been written yet.
+
+00:10.249 --> 00:20.733
+I build the automation that does it for you — triggers, steps, and integrations across n8n, Make, and LangGraph, wired into the tools you already use.
+
+00:20.733 --> 00:34.794
+The hard part is reliability. Real automations fail: an API times out, a record goes missing. So I build retries, error handling, and monitoring — it runs while you sleep, and tells you the moment it doesn't.
+
+00:34.794 --> 00:43.142
+Then I prove it holds: runs executed, hours saved, error rate, and alerts on every failure — tested before it ever touches production.
+
+00:43.142 --> 00:47.536
+The busywork runs itself. Bring me the process eating your team's day.
+

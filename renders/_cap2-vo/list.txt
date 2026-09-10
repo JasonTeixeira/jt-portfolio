@@ -1,0 +1,7 @@
+file '/Users/Sage/code/active/jt-portfolio/renders/_cap2-vo/01-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_cap2-vo/02-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_cap2-vo/03-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_cap2-vo/04-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_cap2-vo/05-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_cap2-vo/06-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_cap2-vo/07-held.mp3'

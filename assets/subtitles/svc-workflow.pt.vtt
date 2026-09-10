@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:10.249
+Em algum lugar da sua empresa, uma pessoa copia dados entre cinco ferramentas na mão, todo santo dia. Isso não é um trabalho. É um script que ainda não foi escrito.
+
+00:10.249 --> 00:20.733
+Eu construo a automação que faz isso por você — gatilhos, etapas e integrações com n8n, Make e LangGraph, conectada às ferramentas que você já usa.
+
+00:20.733 --> 00:34.794
+A parte difícil é a confiabilidade. Automações reais falham: uma API dá timeout, um registro some. Por isso eu construo retries, tratamento de erro e monitoramento — roda enquanto você dorme e te avisa no instante em que não roda.
+
+00:34.794 --> 00:43.142
+E aí eu provo que aguenta: execuções, horas economizadas, taxa de erro e alertas em cada falha — testado antes de tocar produção.
+
+00:43.142 --> 00:47.536
+A burocracia se resolve sozinha. Me traga o processo que come o dia da sua equipe.
+

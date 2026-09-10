@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.949
+¿No puedes solo mirar las salidas de la IA y ver si son buenas? Para diez salidas, claro. Para las diez mil que tu función produce cada día — ni de casualidad.
+
+00:08.949 --> 00:18.783
+Mirar a ojo no escala, no es repetible, y se pierde el drift lento — la calidad que se erosiona un poco cada semana hasta que un cliente lo nota antes que tú.
+
+00:18.783 --> 00:27.039
+Por eso lo hago sistemático: una rúbrica puntuada, ejecutada automáticamente, en cada cambio. El mismo estándar, siempre, a cualquier volumen.
+
+00:27.039 --> 00:32.647
+El juicio humano fija el estándar. El sistema lo hace cumplir — a una escala que ningún humano puede.
+
+00:32.647 --> 00:35.787
+Deja de revisar al azar. Empieza a medir. Hablemos.
+

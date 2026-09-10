@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:07.973
+Você ajusta um prompt pra consertar uma coisa. Funciona. O que você não vê: acabou de quebrar em silêncio cinco coisas que funcionavam.
+
+00:07.973 --> 00:17.529
+Isso é regressão de prompt. Modelos de linguagem são entrelaçados — uma mudança repercute em tudo. O único jeito de pegar é re-rodar cada caso, toda vez que você mexe num prompt.
+
+00:17.529 --> 00:27.085
+Por isso eu mantenho uma suíte de casos reais e pontuo a cada mudança. Verde: seu ajuste não quebrou nada. Vermelho: quebrou — antes de ir pro ar, não depois.
+
+00:27.085 --> 00:33.761
+Uma mudança de uma linha pode derrubar sua qualidade em dez por cento. Sem teste de regressão, você descobre por um cliente.
+
+00:33.761 --> 00:37.226
+Mude prompts com confiança, não com esperança. Vamos conversar.
+

@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.809
+Una función de IA es fácil de demostrar — y brutal de lanzar. Esa brecha, entre «funciona en la demo» y «funciona para un cliente real», es donde mueren casi todas.
+
+00:08.809 --> 00:19.433
+Construyo la función que de verdad quieres. Un asistente de chat. Un agente que toma acciones reales. Un copiloto dentro de tu producto — conectado a tus datos, tus herramientas, tus sistemas.
+
+00:19.433 --> 00:33.540
+Los agentes son la parte difícil. Todo lo que puede actuar puede actuar mal — llamar a la herramienta equivocada, quedarse en bucle, filtrar un secreto. Por eso construyo los guardarraíles: herramientas acotadas, reintentos, timeouts y un humano en el bucle cuando importa.
+
+00:33.540 --> 00:44.257
+Y luego lo pruebo. Cada prompt, cada llamada a herramienta, cada camino del usuario — probado contra casos reales y con gates en tu pipeline, para que no se rompa en silencio en producción.
+
+00:44.257 --> 00:50.834
+El resultado es una función de IA que se lanza — y sigue funcionando. Tráeme la que te genera dudas.
+

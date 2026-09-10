@@ -1,0 +1,5 @@
+file '/Users/Sage/code/active/jt-portfolio/renders/_howwework-vo/0-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_howwework-vo/1-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_howwework-vo/2-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_howwework-vo/3-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_howwework-vo/4-h.mp3'

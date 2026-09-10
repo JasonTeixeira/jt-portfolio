@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:11.038
+Every AI demo works. That's the problem. A demo is a magic trick — the same inputs, the same happy path, every time. Your customers never use the happy path.
+
+00:11.038 --> 00:24.031
+Here's why. A demo shows maybe five hand-picked cases. Production throws thousands of real ones at it — typos, edge cases, weird phrasings, angry users. The demo never saw any of them.
+
+00:24.031 --> 00:37.255
+So the failure is guaranteed. Not because the model is bad, but because the thing that breaks it was never in the demo. The gap between five cases and ten thousand is where every AI feature dies.
+
+00:37.255 --> 00:43.467
+The fix isn't a better demo. It's testing every path — before your customer finds the one that breaks.
+
+00:43.467 --> 00:48.000
+Stop trusting demos. Test everything. That's what I do — let's talk.
+

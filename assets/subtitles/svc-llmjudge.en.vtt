@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.484
+You built an AI feature. It answers ten thousand times a day. How do you know it's still good? You can't read ten thousand answers. Neither can your team.
+
+00:08.484 --> 00:18.179
+So you use another AI to grade it. You write a rubric — what a good answer looks like — and a judge model scores every output against it, automatically, at scale.
+
+00:18.179 --> 00:28.943
+But a judge can be fooled — biased, or gamed by confident nonsense. So you calibrate it: score a sample by hand, tune the judge until it agrees with real people, then let it run.
+
+00:28.943 --> 00:36.409
+Now you can measure quality on every answer, every day — not a hunch, a score. That's how you catch drift before your customers do.
+
+00:36.409 --> 00:41.174
+Grade your AI at scale, honestly. That's what I build — let's talk.
+

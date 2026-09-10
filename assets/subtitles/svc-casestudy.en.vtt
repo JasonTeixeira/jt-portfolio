@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:10.342
+Here's exactly the kind of thing I catch. An AI support agent, looking flawless in every demo — approving refunds, answering policy questions, fast and confident.
+
+00:10.342 --> 00:19.340
+I wired it into an evaluation harness: two hundred real customer questions, every tool call it could make, run automatically on every single change.
+
+00:19.340 --> 00:32.286
+Then, on one build, a gate went red. The agent had started approving refunds outside policy — a change upstream had quietly shifted its behavior. Silent. In production, a customer finds that first.
+
+00:32.286 --> 00:41.424
+Caught before it shipped. One red build, instead of a support fire and a refund the company never approved. That's the whole point — a number, not a prayer.
+
+00:41.424 --> 00:45.075
+Every build I ship ships with evidence. Let me prove yours.
+

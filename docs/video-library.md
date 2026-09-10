@@ -16,13 +16,20 @@ cyan #22d3ee / rose #f43f5e / purple #a78bfa. Thesis = PROOF (real numbers, real
 | **The intro** ✅ done (v4) | 50s | Who I am, why I'm different | Home hero |
 | **What I actually do in 30s** | 30s | Ultra-short version for impatient buyers | Home, above fold alt |
 
-## B · SERVICES (how it works) — one per offering
+## A2 · CAPABILITIES OVERVIEW (breadth) — "everything I build"
 | Video | ~len | Job | Placement |
 |---|---|---|---|
-| **LLM & RAG evaluation** | 40s | Catch hallucinations/drift before the customer does | Services page |
-| **Test automation & CI** | 40s | The gate that catches regressions the moment they happen | Services page |
+| **What I build** (full stack) | 45s | Show the whole range — AI features, RAG, automations, websites, content — proven. Fixes the "he's just a QA guy" pigeonhole. | Home / Services top |
+
+## B · SERVICES (full senior-AI-automation-engineer scope) — one per offering
+| Video | ~len | Job | Placement |
+|---|---|---|---|
+| **AI features & agents** | 40s | Build LLM apps and agents that actually ship | Services |
+| **RAG systems** | 40s | Retrieval that returns the right thing, measured | Services |
 | **Workflow automation** (n8n/Make/LangGraph) | 40s | Builds that run themselves, monitored | Services / Automations |
-| **The eval + regression harness** | 45s | The reusable harness that keeps AI honest in prod | Services / Docs |
+| **Websites & web apps** | 40s | Full products, front to back (this site, Nexural, Academy) | Services / Work |
+| **Content systems** | 40s | Content engines & generation at scale, on-brand | Services |
+| **The proof layer** (eval · CI · harness) | 45s | The differentiator — every build ships with evidence | Services / Proof |
 
 ## C · THE OFFER / PROCESS — convert to a booking
 | Video | ~len | Job | Placement |

@@ -1,0 +1,206 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>AI Features & Agents — Sage Ideas</title>
+<style>
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:'JetBrains Mono';src:url('/assets/fonts/jetbrains-mono-var.woff2') format('woff2');font-weight:400 700;font-display:block}
+@font-face{font-family:'Plus Jakarta Sans';src:url('/assets/fonts/plus-jakarta-var.woff2') format('woff2');font-weight:300 800;font-display:block}
+:root{--bg:#09090B;--ink:#F4F2EF;--mut:#A8A29E;--faint:#8E8882;--line:#2A2826;--card:#0C0C0E;
+  --green:#10b981;--cyan:#22d3ee;--purple:#a78bfa;--rose:#f43f5e;--amber:#F59E0B;
+  --serif:'Instrument Serif',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Plus Jakarta Sans',system-ui,sans-serif}
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000;font-family:var(--sans);color:var(--ink)}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:radial-gradient(1300px 800px at 18% -5%,rgba(16,185,129,.07),transparent 60%),radial-gradient(1000px 800px at 105% 108%,rgba(34,211,238,.06),transparent 60%),var(--bg)}
+.grain{position:absolute;inset:0;opacity:.045;background-image:radial-gradient(#fff .5px,transparent .6px);background-size:3px 3px;pointer-events:none;z-index:50}
+.bloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(16,185,129,.6),transparent 55%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.rbloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(244,63,94,.5),transparent 50%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.ptrack{position:absolute;left:140px;right:140px;bottom:60px;height:2px;background:#17161a;z-index:6;pointer-events:none}
+.pfill{position:absolute;left:0;top:0;height:100%;width:0;background:#22d3ee;color:#22d3ee;box-shadow:0 0 12px currentColor}
+.pdot{position:absolute;top:-5px;left:0;width:12px;height:12px;border-radius:50%;background:#22d3ee;color:#22d3ee;box-shadow:0 0 18px 5px currentColor;transform:translateX(-6px)}
+.plabel{position:absolute;bottom:74px;font-family:var(--mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);transform:translateX(-50%)}
+.rail{position:absolute;right:54px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:var(--mono);font-size:17px;letter-spacing:.42em;color:#211f1d;text-transform:uppercase;z-index:2}
+.hud{position:absolute;top:60px;left:140px;right:140px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:22px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);z-index:3}
+.hud .dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 16px 2px rgba(16,185,129,.7);display:inline-block;margin-right:12px;vertical-align:middle}
+.hud .qa{color:var(--purple)}.hud .llm{color:var(--cyan)}.hud .clock{color:#3D3A37}
+.scene{position:absolute;inset:0;padding:150px 140px 130px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden}
+.scene.on{opacity:1;visibility:visible}
+.eyebrow{font-family:var(--mono);font-size:24px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:30px;opacity:0}
+.eyebrow .g{color:var(--green)}.eyebrow .r{color:var(--rose)}.eyebrow .a{color:var(--amber)}
+h1{font-family:var(--serif);font-weight:400;font-size:132px;line-height:.94;letter-spacing:-.005em}
+h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
+.green{color:var(--green)}.greeni{color:var(--green);font-style:italic}.cyan{color:var(--cyan)}.rose{color:var(--rose)}.amber{color:var(--amber)}
+.sub{font-family:var(--serif);font-size:44px;color:#C8C4BE;margin-top:34px;max-width:28ch;line-height:1.14;opacity:0}
+.brand{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:30px;color:var(--mut);opacity:0}
+.brand .box{width:60px;height:60px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;background:var(--card);background-image:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* agent panel */
+.panel{width:960px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#0e0e12,#0a0a0c);overflow:hidden;position:relative;box-shadow:0 40px 120px -40px rgba(0,0,0,.85)}
+.panel .bar{display:flex;gap:10px;align-items:center;padding:16px 22px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:19px;color:var(--faint)}
+.panel .bar i{width:12px;height:12px;border-radius:50%;background:#33302c}
+.panel .body{padding:26px 30px;font-family:var(--mono);font-size:27px;line-height:1.6}
+.panel .u{color:var(--ink)}.panel .step{color:var(--mut)}.panel .ok{color:var(--green)}.panel .bad{color:var(--rose)}
+.ln{opacity:0}
+.slice{position:absolute;inset:0;border-radius:18px;background:linear-gradient(100deg,transparent 44%,var(--rose) 45%,transparent 46%),linear-gradient(-70deg,transparent 62%,var(--cyan) 63%,transparent 64%);mix-blend-mode:screen;opacity:0}
+/* agent flow */
+.aflow{width:100%;margin-top:20px}
+.aflow svg{width:100%;height:300px}
+/* guardrails */
+.guards{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap}
+.guard{font-family:var(--mono);font-size:28px;color:var(--ink);border:1px solid rgba(16,185,129,.4);border-radius:14px;padding:18px 26px;background:rgba(16,185,129,.06);opacity:0;transform:translateY(18px);display:flex;align-items:center;gap:14px}
+.guard .c{color:var(--green);font-weight:700}
+.blocked{margin-top:30px;font-family:var(--mono);font-size:30px;display:flex;align-items:center;gap:20px;opacity:0}
+.blocked .act{color:var(--rose);text-decoration:line-through}
+.blocked .stop{color:var(--amber)}
+/* money */
+.money{display:flex;flex-direction:column;align-items:center;text-align:center;width:100%}
+.stamp{font-family:var(--mono);font-weight:700;font-size:40px;letter-spacing:.08em;color:var(--green);border:2px solid var(--green);border-radius:16px;padding:16px 38px;opacity:0;transform:scale(.8)}
+.bignums{display:flex;gap:64px;margin-top:48px}
+.bn{display:flex;flex-direction:column;align-items:center;opacity:0}
+.bn .v{font-family:var(--mono);font-weight:700;font-size:104px;line-height:1;color:var(--green)}
+.bn .l{font-family:var(--mono);font-size:23px;color:var(--mut);margin-top:12px;letter-spacing:.04em;max-width:12ch}
+.mtag{font-family:var(--serif);font-size:50px;color:#C8C4BE;margin-top:48px;opacity:0}.mtag b{color:var(--green);font-style:italic;font-weight:400}
+.ctabtn{display:inline-flex;align-items:center;gap:14px;background:var(--green);color:#062018;font-weight:800;font-size:46px;font-family:var(--sans);padding:26px 54px;border-radius:18px;margin-top:44px;opacity:0;transform:scale(.94)}
+.cta-url{font-family:var(--mono);font-size:30px;color:var(--faint);margin-top:34px;opacity:0}
+</style></head>
+<body>
+<div class="stage" id="stage">
+  <div class="grain"></div><div class="bloom" id="bloom"></div><div class="rbloom" id="rbloom"></div>
+  <div class="ptrack"><span class="pfill" id="pfill"></span><span class="pdot" id="pdot"></span><span class="plabel" id="plabel" style="left:0"></span></div>
+  <div class="rail">AI FEATURES &amp; AGENTS · SAGE IDEAS</div>
+  <div class="hud"><div><span class="dot"></span>AI AUTOMATION &nbsp;×&nbsp; <span class="qa">QA</span> / <span class="llm">LLM EVAL</span> ENGINEER</div><div class="clock">N 28.5384° W 81.3789°</div></div>
+
+  <!-- S1 hook: an agent acts wrong -->
+  <section class="scene" data-s="hook" style="align-items:center;justify-content:center">
+    <div id="hwrap" style="position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:28px">
+      <div class="panel" id="panel">
+        <div class="bar"><i></i><i></i><i></i>&nbsp; support-agent · live</div>
+        <div class="body">
+          <div class="ln u" id="l1">▸ "cancel my plan and refund me"</div>
+          <div class="ln step" id="l2">agent → billing.cancel() <span class="ok">✓</span></div>
+          <div class="ln step" id="l3">agent → refund.issue($480) <span class="ok">✓</span></div>
+          <div class="ln bad" id="l4">✕ no eligibility check — $480 gone, no approval</div>
+        </div>
+        <div class="slice" id="slice"></div>
+      </div>
+      <div class="sub" id="hsub" style="text-align:center;max-width:none;margin:0">Easy to demo. <span class="rose">Brutal to ship.</span></div>
+    </div>
+    <div id="hhead" style="position:absolute;left:140px;right:140px;text-align:center;opacity:0">
+      <h1 style="font-size:112px" id="hh"><span class="w">Anything that can</span> <span class="w rose">act</span> <span class="w">can act wrong.</span></h1>
+      <div class="sub" style="text-align:center;max-width:none;margin:34px auto 0" id="hhsub">That gap is where most AI features die. I close it.</div>
+    </div>
+  </section>
+
+  <!-- S2 build -->
+  <section class="scene" data-s="build">
+    <div class="eyebrow" id="ey2">what I build</div>
+    <h1 id="h2" style="font-size:104px"><span class="w">Assistants. Agents.</span> <span class="w cyan">Copilots.</span></h1>
+    <div class="aflow"><svg id="flow" viewBox="0 0 1640 300"></svg></div>
+    <div class="sub" id="sub2" style="font-size:36px;max-width:none">Wired into <span class="cyan">your data, your tools, your systems</span> — taking real actions, not fake ones.</div>
+  </section>
+
+  <!-- S3 guardrails -->
+  <section class="scene" data-s="guard">
+    <div class="eyebrow" id="ey3"><span class="a">the hard part</span> — making an agent safe to trust</div>
+    <h1 id="h3" style="font-size:96px"><span class="w">Guardrails,</span> <span class="w amber">not hope.</span></h1>
+    <div class="guards">
+      <div class="guard" id="g1"><span class="c">▪</span>Scoped tools</div>
+      <div class="guard" id="g2"><span class="c">▪</span>Retries + timeouts</div>
+      <div class="guard" id="g3"><span class="c">▪</span>Human in the loop</div>
+      <div class="guard" id="g4"><span class="c">▪</span>No secrets leaked</div>
+    </div>
+    <div class="blocked" id="blk"><span class="act">agent → delete_all_users()</span> <span class="stop">🛑 blocked before it ran</span></div>
+  </section>
+
+  <!-- S4 proof money-shot -->
+  <section class="scene" data-s="proof" style="align-items:center;justify-content:center">
+    <div class="money">
+      <div class="stamp" id="stamp">✓ EVERY PATH — TESTED &amp; GATED</div>
+      <div class="bignums">
+        <div class="bn" id="bn1"><span class="v" id="bv1">0</span><span class="l">prompts tested</span></div>
+        <div class="bn" id="bn2"><span class="v" id="bv2">0</span><span class="l">tool calls verified</span></div>
+        <div class="bn" id="bn3"><span class="v" id="bv3">0</span><span class="l">user paths covered</span></div>
+        <div class="bn" id="bn4"><span class="v" id="bv4">0</span><span class="l">gates in CI</span></div>
+      </div>
+      <div class="mtag" id="mtag">So it can't <b>quietly break</b> in production.</div>
+    </div>
+  </section>
+
+  <!-- S5 cta -->
+  <section class="scene" data-s="cta" style="align-items:flex-start">
+    <div class="brand" id="b5" style="opacity:1"><span class="box">JT</span>jason.teixeira()</div>
+    <h1 id="h5" style="font-size:112px;margin-top:12px"><span class="w">Ships —</span> <span class="w green">and stays shipped.</span></h1>
+    <div class="ctabtn" id="ctab">Bring me your AI feature →</div>
+    <div class="cta-url" id="ctau">agency.sageideas.dev</div>
+  </section>
+</div>
+<audio id="au" preload="auto" src="/assets/svc-aifeatures-vo.mp3"></audio>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const au=$('#au');
+const SC=[['hook',0,8.809],['build',8.809,19.433],['guard',19.433,33.54],['proof',33.54,44.257],['cta',44.257,50.834]];
+const TOTAL=50.834, secEls=$$('.scene');
+function cl(x,a,b){return Math.max(a,Math.min(b,x));}
+function rise(el,lt,at,dur=0.6,dy=26){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*dy}px)`;}
+function fade(el,lt,at,dur=0.5){if(!el)return;let p=cl((lt-at)/dur,0,1);el.style.opacity=1-Math.pow(1-p,3);}
+function pop(el,lt,at,dur=0.55){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`scale(${0.92+0.08*e})`;}
+function popn(el,lt,at,dur=0.5){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*30}px) scale(${0.9+0.1*e})`;}
+const words=id=>$$('#'+id+' .w');
+function seq(els,lt,at,step=0.13,dur=0.5){els.forEach((el,i)=>rise(el,lt,at+i*step,dur));}
+function num(el,lt,at,dur,to){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.textContent=(Math.round(e*to)).toLocaleString();}
+function drawFlow(t,p){const s=$('#flow');if(!s)return;const c='#22d3ee',g='#10b981';
+  const node=(x,y,r,lab,col,op)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${col}" stroke-width="2.5" opacity="${op}"/><text x="${x}" y="${y+8}" fill="${col}" font-size="22" text-anchor="middle" font-family="'JetBrains Mono',monospace" opacity="${op}">${lab}</text>`;
+  const px=200+((t*90)%1240);
+  let h='';
+  h+=`<path d="M200 150 H760" stroke="${c}" stroke-width="2" opacity="0.4"/>`;
+  h+=`<path d="M900 150 H1240 M900 150 C1050 150 1120 60 1300 60 M900 150 C1050 150 1120 240 1300 240" stroke="${g}" stroke-width="2" opacity="0.35" fill="none"/>`;
+  h+=`<circle cx="${px.toFixed(0)}" cy="150" r="5" fill="${c}"/>`;
+  h+=node(200,150,60,'USER',c,cl(p*2,0,1));
+  h+=node(830,150,70,'AGENT','#a78bfa',cl(p*2-.3,0,1));
+  h+=node(1330,60,52,'DATA',g,cl(p*2-.8,0,1));
+  h+=node(1330,150,52,'TOOLS',g,cl(p*2-1,0,1));
+  h+=node(1330,240,52,'SYSTEMS',g,cl(p*2-1.2,0,1));
+  s.innerHTML=h;
+}
+function render(t){
+  const cur=SC.find(s=>t>=s[1]&&t<s[2])||SC[SC.length-1];
+  const lt=t-cur[1],dur=cur[2]-cur[1];
+  secEls.forEach(el=>{const on=el.dataset.s===cur[0];el.classList.toggle('on',on);
+    if(on){const ent=Math.min(1,lt/0.5),e=1-Math.pow(1-ent,3);el.style.opacity=e;el.style.transform=`translateY(${((1-e)*40).toFixed(1)}px) scale(${(1+0.012*(lt/dur)).toFixed(4)})`;}
+    else{el.style.opacity='';el.style.transform='';}});
+  let rbl=0,grn=0;
+  if(cur[0]==='hook'){
+    pop($('#panel'),lt,0.2);fade($('#l1'),lt,0.6);fade($('#l2'),lt,1.4);fade($('#l3'),lt,2.2);fade($('#hsub'),lt,0.8);
+    fade($('#l4'),lt,3.4,0.3);
+    const gw=(lt>=3.3&&lt<=4.5)?cl(1-Math.abs(lt-3.8)/0.7,0,1):0;
+    $('#slice').style.opacity=(gw*(0.55+0.45*Math.sin(lt*70))).toFixed(2);
+    $('#panel').style.transform=`translateX(${(gw*Math.sin(lt*85)*6).toFixed(1)}px)`;rbl=gw*0.7;
+    const wo=cl(1-(lt-5.0)/0.5,0,1);$('#hwrap').style.opacity=wo.toFixed(3);
+    fade($('#hhead'),lt,5.2,0.4);seq(words('hh'),lt,5.35);fade($('#hhsub'),lt,7.0);
+  }
+  else if(cur[0]==='build'){fade($('#ey2'),lt,0.05);seq(words('h2'),lt,0.4);
+    const p=cl((lt-1.2)/2.0,0,1);drawFlow(t,p);$('#flow').parentElement.style.opacity=cl((lt-1.0)/0.6,0,1);
+    fade($('#sub2'),lt,6.0);}
+  else if(cur[0]==='guard'){fade($('#ey3'),lt,0.05);seq(words('h3'),lt,0.4);
+    ['g1','g2','g3','g4'].forEach((id,i)=>rise($('#'+id),lt,1.4+i*0.35,.5,18));
+    const bw=(lt>=8.5&&lt<=10.5)?cl(1-Math.abs(lt-9.3)/0.9,0,1):0;rbl=bw*0.4;
+    fade($('#blk'),lt,8.4,0.4);}
+  else if(cur[0]==='proof'){grn=Math.max(0,1-Math.abs(lt-0.6)/0.7);pop($('#stamp'),lt,0.3);
+    popn($('#bn1'),lt,0.9);popn($('#bn2'),lt,1.1);popn($('#bn3'),lt,1.3);popn($('#bn4'),lt,1.5);
+    num($('#bv1'),lt,0.9,1.6,1840);num($('#bv2'),lt,1.1,1.6,612);num($('#bv3'),lt,1.3,1.6,240);num($('#bv4'),lt,1.5,1.4,9);
+    fade($('#mtag'),lt,2.8);}
+  else if(cur[0]==='cta'){fade($('#b5'),lt,0.1);seq(words('h5'),lt,0.4);pop($('#ctab'),lt,1.3);fade($('#ctau'),lt,1.8);}
+  $('#rbloom').style.opacity=rbl.toFixed(3);$('#bloom').style.opacity=grn.toFixed(3);
+  const prog=cl(t/TOTAL,0,1)*100;
+  const col=t<19.433?'#22d3ee':t<33.54?'#F59E0B':'#10b981';
+  const lab=t<8.809?'the demo':t<19.433?'building':t<33.54?'guardrails':'proven · green';
+  const pf=$('#pfill'),pd=$('#pdot'),pl=$('#plabel');
+  pf.style.width=prog+'%';pf.style.background=col;pf.style.color=col;
+  pd.style.left=prog+'%';pd.style.background=col;pd.style.color=col;
+  pl.style.left=prog+'%';pl.style.color=col;if(pl.textContent!==lab)pl.textContent=lab;
+}
+window.__seek=(t)=>{try{au.currentTime=t;}catch(e){}render(t);};
+let playing=false;function tick(){if(!playing)return;render(au.currentTime||0);requestAnimationFrame(tick);}
+window.__play=()=>{if(playing)return;playing=true;au.play().catch(()=>{});tick();};
+au.addEventListener('ended',()=>{playing=false;render(TOTAL);});
+render(0);document.addEventListener('click',()=>window.__play(),{once:true});
+</script><script defer src="/assets/ga.js?v=1"></script>
+</body></html>

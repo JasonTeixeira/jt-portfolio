@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.809
+An AI feature is easy to demo — and brutal to ship. That gap, between "works in the demo" and "works for a real customer," is where most of them die.
+
+00:08.809 --> 00:19.433
+I build the feature you actually want. A chat assistant. An agent that takes real actions. A copilot inside your product — wired into your data, your tools, your systems.
+
+00:19.433 --> 00:33.540
+Agents are the hard part. Anything that can act can act wrong — call the wrong tool, loop forever, leak a secret. So I build the guardrails: scoped tools, retries, timeouts, and a human in the loop where it counts.
+
+00:33.540 --> 00:44.257
+Then I prove it. Every prompt, every tool call, every path a user can take — tested against real cases and gated in your pipeline, so it can't quietly break in production.
+
+00:44.257 --> 00:50.834
+The result is an AI feature that ships — and stays shipped. Bring me the one you're not sure about.
+

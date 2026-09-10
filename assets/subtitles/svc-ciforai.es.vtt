@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.506
+Tu código tiene un pipeline: cada cambio corre pruebas antes de lanzarse. ¿Tu función de IA? Para la mayoría, se lanza con una persona haciendo clic y diciendo, se ve bien.
+
+00:09.506 --> 00:20.223
+CI para IA es la misma idea, aplicada a las partes que de verdad se rompen: prompts, recuperación y agentes. Cada cambio dispara las evaluaciones y las pruebas, automáticamente.
+
+00:20.223 --> 00:28.385
+Si la calidad baja, el build se pone rojo y se detiene — igual que un unit test que falla. Ningún humano tiene que acordarse de revisar. El pipeline se acuerda por ti.
+
+00:28.385 --> 00:34.504
+Esta es la diferencia entre esperar que tu IA siga bien, y saberlo — en cada cambio.
+
+00:34.504 --> 00:37.319
+Pon tu IA en un pipeline. Hablemos.
+

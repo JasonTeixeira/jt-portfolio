@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.599
+Your AI cites a document. Confident, specific, and wrong. The model didn't lie — the retrieval handed it the wrong page. And most teams never measure that.
+
+00:09.599 --> 00:19.619
+RAG evaluation scores the retrieval itself, separate from the model. Did it fetch the right documents? Did the answer actually use them? Is the citation even real?
+
+00:19.619 --> 00:31.032
+You measure it on real questions: retrieval precision, answer faithfulness, and citation accuracy. Now a bad answer tells you exactly which part broke — the search, or the model.
+
+00:31.032 --> 00:36.223
+Without it, you're guessing. With it, you know: fix the retrieval, or fix the prompt.
+
+00:36.223 --> 00:39.781
+Measure your retrieval, not your vibes. Let's talk.
+

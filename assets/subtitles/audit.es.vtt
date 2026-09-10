@@ -1,0 +1,20 @@
+WEBVTT
+
+00:00.000 --> 00:06.216
+Antes de pasar tres meses construyendo una función de IA, pasa una semana averiguando si de verdad aguanta.
+
+00:06.216 --> 00:15.164
+Eso es la auditoría. Una semana — entro a fondo en tu función o agente: los prompts, la recuperación y los casos límite donde falla en silencio.
+
+00:15.164 --> 00:25.742
+Construyo un harness de evaluación real contra tus casos de uso, lo ejecuto y lo puntúo. Nada de intuiciones — números.
+
+00:25.742 --> 00:36.040
+Al final te llevas un plan igual: los fallos ordenados por riesgo, y exactamente qué hace falta para que sea seguro en producción.
+
+00:36.040 --> 00:41.645
+Y si tu función ya está sólida, también te lo diré. De cualquier forma, dejas de adivinar.
+
+00:41.645 --> 00:47.339
+Una semana. Una respuesta clara. Reserva la auditoría — y descubre qué hace realmente tu IA.
+
