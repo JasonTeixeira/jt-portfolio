@@ -19,6 +19,12 @@ test('accepts an event with no plan', () => {
   assert.equal(validate({ prospectId: 'a1b2', type: 'started' }).ok, true);
 });
 
+// Regression: the client fires track('proposal_written') from scope-studio.mjs when the
+// visitor generates a proposal. It MUST be an accepted type or that conversion event 400s.
+test('accepts proposal_written (the "Write my proposal" funnel event)', () => {
+  assert.equal(validate({ prospectId: 'a1b2', type: 'proposal_written' }).ok, true);
+});
+
 test('rejects a non-object plan', () => {
   assert.equal(validate({ prospectId: 'a1b2', type: 'plan_built', plan: 'nope' }).ok, false);
 });
