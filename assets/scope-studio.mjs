@@ -179,6 +179,7 @@ if (root && qMount && planMount && disc) {
   // same computePlan → __renderScopePlan blueprint, whichever was touched last.
   let chatKeys = null;
   let chatSegment = null;
+  let curKeys = [], curSegment = null, curPlan = null; // latest computed plan, for the AI proposal
   track('started');
   renderQuestions();
   rehydrateFromUrl();
@@ -194,6 +195,52 @@ if (root && qMount && planMount && disc) {
 
   const leadForm = document.getElementById('scope-lead');
   if (leadForm) leadForm.addEventListener('submit', onLeadSubmit);
+
+  const propBtn = document.getElementById('scope-proposal-btn');
+  if (propBtn) propBtn.addEventListener('click', generateProposal);
+
+  async function generateProposal() {
+    if (!curPlan || !curPlan.count) return;
+    const btn = document.getElementById('scope-proposal-btn');
+    const body = document.getElementById('scope-proposal-body');
+    if (!body) return;
+    const orig = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Writing your proposal…'; }
+    track('proposal_written', { count: curPlan.count });
+    let text = '';
+    try {
+      const r = await fetch('/api/proposal-narrative', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ segment: curSegment, items: curPlan.items.map((i) => i.name), totalBand: curPlan.totalBand, timelineWeeks: curPlan.timelineWeeks }),
+      });
+      const d = await r.json();
+      text = (d && d.proposal) || '';
+    } catch { text = ''; }
+    if (btn) { btn.disabled = false; btn.textContent = orig; }
+    if (text) renderProposal(text);
+  }
+
+  function renderProposal(text) {
+    const body = document.getElementById('scope-proposal-body');
+    if (!body) return;
+    const card = document.createElement('div'); card.className = 'scope-prop-card';
+    const head = document.createElement('div'); head.className = 'scope-prop-head';
+    head.innerHTML = '<span>Your proposal</span><button class="ra-btn" type="button" data-read-target="#scope-prop-text" data-stop-label="Stop reading">Read it to me</button>';
+    const txt = document.createElement('div'); txt.id = 'scope-prop-text'; txt.className = 'scope-prop-text';
+    String(text).split(/\n\n+/).forEach((para) => {
+      const p = document.createElement('p');
+      const m = para.match(/^([^:\n]{3,42}:)\s*([\s\S]*)$/);
+      if (m) { const b = document.createElement('b'); b.textContent = m[1]; p.appendChild(b); p.appendChild(document.createTextNode(m[2])); }
+      else p.textContent = para;
+      txt.appendChild(p);
+    });
+    const cta = document.createElement('div'); cta.className = 'scope-prop-cta';
+    cta.innerHTML = '<a href="#scope-lead" class="btn-solid green" id="scope-prop-accept">Accept &amp; get it in writing &rarr;</a><a href="book.html" class="btn-ghost" data-evt="prop-book">Book a 15-min call</a>';
+    card.appendChild(head); card.appendChild(txt); card.appendChild(cta);
+    body.innerHTML = ''; body.appendChild(card);
+    const acc = document.getElementById('scope-prop-accept');
+    if (acc) acc.addEventListener('click', () => { const inp = document.getElementById('scope-email-input'); if (inp) setTimeout(() => { try { inp.focus(); } catch (e) { /* ignore */ } }, 450); });
+  }
 
   async function onLeadSubmit(e) {
     e.preventDefault();
@@ -282,6 +329,11 @@ if (root && qMount && planMount && disc) {
     const segment = chatKeys !== null ? (chatSegment || segmentFromAnswers()) : segmentFromAnswers();
     const plan = computePlan(keys, segment);
     window.__renderScopePlan(plan);
+    curKeys = keys; curSegment = segment; curPlan = plan;
+    const propWrap = document.getElementById('scope-proposal');
+    if (propWrap) propWrap.hidden = !keys.length;
+    const propBody = document.getElementById('scope-proposal-body');
+    if (propBody) propBody.innerHTML = ''; // clear a stale narrative when the plan changes
     syncUrl();
     root.setAttribute('data-state', keys.length ? 'plan' : 'discovery');
     updateHandoff(plan);
