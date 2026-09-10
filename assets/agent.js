@@ -16,11 +16,22 @@
   var MONO = "'JetBrains Mono',monospace";
   var GREET = "Hi — I'm Atlas, Jason's assistant. You can type, or tap the mic and just talk to me. Tell me what you're working on and I'll line up the right next step — see it live, get your AI feature checked for free, or book a call. What brings you in?";
   var START = [
-    { label: 'What does Jason do?', q: 'What does Jason actually do?' },
-    { label: 'Check my AI feature (free)', act: 'minieval' },
-    { label: 'What can he build?', nav: 'services.html' },
-    { label: 'Book a call', nav: 'book.html' }
+    { label: 'What does Jason do?', guide: 'build' },
+    { label: 'Check my AI feature (free)', guide: 'eval' },
+    { label: 'How much does it cost?', guide: 'cost' },
+    { label: 'Book a call', guide: 'book' }
   ];
+
+  // Guided, Nadine-VOICED answer paths: fixed copy + a real recorded clip (assets/concierge/en/<clip>.mp3).
+  // These are the tap-through journey. Free-text questions still hit the live AI (text only).
+  var GUIDED = {
+    build: { clip: 'build', text: "Jason builds AI features and then proves they actually work — chatbots, RAG assistants, automations — with the evaluation and testing that keeps them honest in production. Want to see it live, or have your own feature checked for free?", next: ['eval', 'proof', 'book'] },
+    eval: { clip: 'eval', text: "Here's the easiest first step, and it's free. Jason points his evaluation engine at your live AI feature, runs real adversarial probes, and sends you the findings. No call needed — just drop your email and the link.", act: 'minieval' },
+    proof: { clip: 'proof', text: "Everything is public and clickable. Two live products, open-source code, real run captures, and this very site runs its own quality checks on every deploy. Want me to open the case studies?", next: ['cases', 'eval', 'book'] },
+    cost: { clip: 'cost', text: "There's no fixed price list. Every engagement is scoped and quoted after a short call, so you only pay for your actual problem. The lowest-risk start is that free mini-evaluation. Want it?", next: ['eval', 'book'] },
+    book: { clip: 'book', text: "Easiest is a quick fifteen-minute call. You tell Jason the problem, and he tells you honestly what it takes and what it costs. I can open his calendar for you right now.", cta: 'book.html' }
+  };
+  var GUIDE_LABEL = { build: 'What does Jason do?', eval: 'Check my AI feature (free)', proof: 'See the proof', cost: 'How much does it cost?', book: 'Book a call' };
 
   // Scripted fallback brain — quote-first, used only when /api/chat is offline.
   var FALLBACK = [
@@ -127,6 +138,7 @@
       b.onmouseenter = function () { b.style.borderColor = C.cyan; b.style.color = C.cyan; };
       b.onmouseleave = function () { b.style.borderColor = C.line; b.style.color = C.ink; };
       b.onclick = function () {
+        if (c.guide) { showGuided(c.guide); return; }
         if (c.nav) { track('atlas-nav'); location.href = c.nav; return; }
         if (c.act === 'minieval') { captureFlow('minieval'); return; }
         if (c.act === 'followup') { captureFlow('followup'); return; }
@@ -142,7 +154,7 @@
     var intro = kind === 'minieval'
       ? "Perfect. Drop your work email and the URL of your live AI feature — Jason runs a real mini-eval and sends you the findings. No call needed."
       : "Great — leave your email and Jason will personally follow up, usually same day.";
-    var b = bubble('bot'); b.textContent = intro; speak(intro); hist.push({ role: 'assistant', content: intro });
+    var b = bubble('bot'); b.textContent = intro; speak(kind === 'minieval' ? 'captureIntro' : null); hist.push({ role: 'assistant', content: intro });
 
     var wrap = el('div', { alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px 2px' });
     var email = el('input'); email.type = 'email'; email.placeholder = 'you@company.com';
@@ -170,11 +182,37 @@
           ok.textContent = kind === 'minieval'
             ? "You're in — Jason will run the eval and email your findings. Anything else I can line up while you're here?"
             : "Done — Jason has it and will reach out shortly. Anything else I can help with?";
-          speak(ok.textContent);
+          speak(kind === 'minieval' ? 'captureOk' : null);
           hist.push({ role: 'assistant', content: ok.textContent });
           renderChips(actionsFor('proof demo services'));
         });
     };
+  }
+
+  // Build the next-step chips after a guided answer (always keep a path to the booking).
+  function guideChips(keys) {
+    var list = (keys || []).map(function (k) {
+      if (k === 'cases') return { label: 'Case studies', nav: 'case-studies.html' };
+      if (k === 'live') return { label: 'See it live', nav: 'eval.html' };
+      return { label: GUIDE_LABEL[k] || k, guide: k };
+    });
+    if (!list.some(function (c) { return c.guide === 'book'; })) list.push({ label: 'Book a call', guide: 'book' });
+    return list;
+  }
+  // A tapped guided intent: show the fixed answer, speak it in Nadine's real voice, then
+  // offer the next steps — always frictionless toward the mini-eval or the booking.
+  function showGuided(key) {
+    var g = GUIDED[key]; if (!g) { send(GUIDE_LABEL[key] || key); return; }
+    chipsEl.innerHTML = ''; stopSpeak();
+    var b = bubble('bot'); speak(g.clip);
+    typeInto(b, g.text, function () {
+      hist.push({ role: 'assistant', content: g.text });
+      track('atlas-guide-' + key);
+      if (g.act) { captureFlow(g.act); return; }
+      var chips = guideChips(g.next);
+      if (g.cta) chips.unshift({ label: 'Open the calendar →', nav: g.cta });
+      renderChips(chips);
+    });
   }
 
   function send(v) {
@@ -186,7 +224,7 @@
     function finish(txt) {
       hideTyping();
       var b = bubble('bot');
-      speak(txt); // spoken reply reveals in sync with the typewriter
+      // Free-text answers are generated live — text only, never a robotic synth voice.
       typeInto(b, txt, function () { hist.push({ role: 'assistant', content: txt }); renderChips(actionsFor(v + ' ' + txt)); });
     }
     if (mode === 'script') { setTimeout(function () { finish(scripted(v)); }, 420); return; }
@@ -197,33 +235,22 @@
     });
   }
 
-  // ── voice OUTPUT — the concierge speaks her replies aloud (warm, female, language-aware),
-  // so the whole thing feels like talking to a real assistant, not typing at a bot. Free
-  // (browser speech engine), gesture-gated (first speak is after the open click), degrades
-  // silently where unsupported. On/off persists per visitor.
+  // ── voice OUTPUT — the REAL Nadine voice (pre-rendered clips), NOT a robotic browser
+  // synth. The guided journey — the greeting, the fixed answer paths, and the capture
+  // prompts — is voiced in Nadine so it feels like a real assistant. Free-text answers are
+  // generated live and can't be pre-recorded, so those stay text (no robot voice, ever).
+  // speak(key) plays /assets/concierge/en/<key>.mp3. On/off persists per visitor.
   var VLANG = (function () { var p = location.pathname; return /^\/pt(\/|$)/.test(p) ? 'pt' : /^\/es(\/|$)/.test(p) ? 'es' : 'en'; })();
   var speakOn = true; try { speakOn = localStorage.getItem('atlas-voice') !== 'off'; } catch (e) {}
-  var FEMALE = /nadine|samantha|victoria|karen|moira|tessa|serena|allison|ava|susan|zira|hazel|fiona|amelie|amélie|aur|luciana|joana|catarina|paulina|monica|mónica|marisol|female|femme|mujer|feminina/i;
-  var haveSpeech = typeof window !== 'undefined' && 'speechSynthesis' in window;
-  function pickVoice() {
-    if (!haveSpeech) return null;
-    var vs = window.speechSynthesis.getVoices() || [];
-    var byLang = vs.filter(function (v) { return v.lang && v.lang.toLowerCase().slice(0, 2) === VLANG; });
-    return byLang.filter(function (v) { return FEMALE.test(v.name); })[0] || byLang[0]
-      || vs.filter(function (v) { return FEMALE.test(v.name); })[0]
-      || vs.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
-  }
-  function stopSpeak() { try { if (haveSpeech) window.speechSynthesis.cancel(); } catch (e) {} }
-  function speak(text) {
-    if (!speakOn || !haveSpeech || !text) return;
+  var CLIP_BASE = '/assets/concierge/en/', CLIP_V = '?v=1';
+  var canVoice = (VLANG === 'en'); // Nadine clips are EN for now (es/pt fall back to text)
+  var curAudio = null;
+  function stopSpeak() { try { if (curAudio) { curAudio.pause(); curAudio = null; } } catch (e) {} }
+  function speak(key) {
+    if (!speakOn || !canVoice || !key) return;
     stopSpeak();
-    var u = new window.SpeechSynthesisUtterance(String(text).replace(/[—–…]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 600));
-    var v = pickVoice();
-    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = VLANG === 'es' ? 'es-ES' : VLANG === 'pt' ? 'pt-BR' : 'en-US'; }
-    u.rate = 1.02; u.pitch = 1.06;
-    try { window.speechSynthesis.speak(u); } catch (e) {}
+    try { var a = new window.Audio(CLIP_BASE + key + '.mp3' + CLIP_V); curAudio = a; a.play().catch(function () {}); } catch (e) {}
   }
-  if (haveSpeech && window.speechSynthesis.onvoiceschanged === null) { window.speechSynthesis.onvoiceschanged = function () { pickVoice(); }; }
 
   // ── voice input (Web Speech, feature-detected) ──
   var recog = null, listening = false;
@@ -243,7 +270,7 @@
     open = true; panel.style.display = 'flex';
     requestAnimationFrame(function () { panel.style.opacity = '1'; panel.style.transform = 'none'; });
     if (!msgsEl.children.length) {
-      var g = bubble('bot'); speak(GREET); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); });
+      var g = bubble('bot'); speak('greet'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); });
       track('atlas-open');
     }
     setTimeout(function () { input && input.focus(); }, 300);
