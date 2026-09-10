@@ -1,0 +1,225 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>What I Build — Sage Ideas</title>
+<style>
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:'JetBrains Mono';src:url('/assets/fonts/jetbrains-mono-var.woff2') format('woff2');font-weight:400 700;font-display:block}
+@font-face{font-family:'Plus Jakarta Sans';src:url('/assets/fonts/plus-jakarta-var.woff2') format('woff2');font-weight:300 800;font-display:block}
+:root{--bg:#09090B;--ink:#F4F2EF;--mut:#A8A29E;--faint:#8E8882;--line:#2A2826;--card:#0C0C0E;
+  --green:#10b981;--cyan:#22d3ee;--purple:#a78bfa;--rose:#f43f5e;--amber:#F59E0B;
+  --serif:'Instrument Serif',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Plus Jakarta Sans',system-ui,sans-serif}
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000;font-family:var(--sans);color:var(--ink)}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;
+  background:radial-gradient(1300px 800px at 18% -5%,rgba(16,185,129,.07),transparent 60%),radial-gradient(1000px 800px at 105% 108%,rgba(34,211,238,.06),transparent 60%),var(--bg)}
+.grain{position:absolute;inset:0;opacity:.045;background-image:radial-gradient(#fff .5px,transparent .6px);background-size:3px 3px;pointer-events:none;z-index:50}
+.bloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(16,185,129,.6),transparent 55%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.rbloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(244,63,94,.5),transparent 50%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.ptrack{position:absolute;left:140px;right:140px;bottom:60px;height:2px;background:#17161a;z-index:6;pointer-events:none}
+.pfill{position:absolute;left:0;top:0;height:100%;width:0;background:#22d3ee;color:#22d3ee;box-shadow:0 0 12px currentColor}
+.pdot{position:absolute;top:-5px;left:0;width:12px;height:12px;border-radius:50%;background:#22d3ee;color:#22d3ee;box-shadow:0 0 18px 5px currentColor;transform:translateX(-6px)}
+.plabel{position:absolute;bottom:74px;font-family:var(--mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);transform:translateX(-50%)}
+.rail{position:absolute;right:54px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:var(--mono);font-size:17px;letter-spacing:.42em;color:#211f1d;text-transform:uppercase;z-index:2}
+.hud{position:absolute;top:60px;left:140px;right:140px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:22px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);z-index:3}
+.hud .dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 16px 2px rgba(16,185,129,.7);display:inline-block;margin-right:12px;vertical-align:middle}
+.hud .qa{color:var(--purple)}.hud .llm{color:var(--cyan)}.hud .clock{color:#3D3A37}
+.scene{position:absolute;inset:0;padding:150px 140px 130px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden}
+.scene.on{opacity:1;visibility:visible}
+.eyebrow{font-family:var(--mono);font-size:24px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:30px;opacity:0}
+.eyebrow .g{color:var(--green)}.eyebrow .r{color:var(--rose)}
+h1{font-family:var(--serif);font-weight:400;font-size:150px;line-height:.94;letter-spacing:-.005em}
+h1.mid{font-size:118px}
+h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
+.hollow{-webkit-text-stroke:1.6px #C8C4BE;color:transparent}
+.green{color:var(--green)}.greeni{color:var(--green);font-style:italic}.cyan{color:var(--cyan)}.rose{color:var(--rose)}.rosei{color:var(--rose);font-style:italic}
+.sub{font-family:var(--serif);font-size:46px;color:#C8C4BE;margin-top:36px;max-width:28ch;line-height:1.14;opacity:0}
+.brand{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:30px;color:var(--mut);opacity:0}
+.brand .box{width:60px;height:60px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;background:var(--card);background-image:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* hook chat card */
+.chatwrap{display:flex;justify-content:center;margin-top:20px}
+.chat{width:820px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#0e0e12,#0a0a0c);padding:34px 38px;box-shadow:0 40px 120px -40px rgba(0,0,0,.85);position:relative}
+.chat .cbar{display:flex;gap:10px;margin-bottom:24px}.chat .cbar i{width:12px;height:12px;border-radius:50%;background:#33302c}
+.chat .q{font-family:var(--mono);font-size:26px;color:var(--mut);margin-bottom:18px}
+.chat .a{font-family:var(--mono);font-size:30px;color:var(--cyan)}
+.chat .ok{font-family:var(--mono);font-size:24px;color:var(--green);margin-top:20px}
+.chat .err{position:absolute;left:38px;right:38px;bottom:26px;font-family:var(--mono);font-size:24px;color:var(--rose);opacity:0}
+.chat .slice{position:absolute;inset:0;border-radius:20px;background:linear-gradient(100deg,transparent 44%,var(--rose) 45%,transparent 46%),linear-gradient(-70deg,transparent 62%,var(--cyan) 63%,transparent 64%);mix-blend-mode:screen;opacity:0}
+/* capability rail */
+.caprow{display:flex;gap:16px;margin-top:34px;width:100%}
+.cap{flex:1;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:24px 22px;opacity:0;transform:translateY(30px);min-height:230px;display:flex;flex-direction:column;gap:16px}
+.cap svg{width:100%;height:66px}
+.cap .ck{font-family:var(--mono);font-size:18px;letter-spacing:.06em}
+.cap .ct{font-family:var(--serif);font-size:38px;line-height:1.0;margin-top:auto}
+.cap.k1{box-shadow:inset 0 0 0 1px rgba(34,211,238,.22)}.cap.k1 .ck{color:var(--cyan)}
+.cap.k2{box-shadow:inset 0 0 0 1px rgba(167,139,250,.22)}.cap.k2 .ck{color:var(--purple)}
+.cap.k3{box-shadow:inset 0 0 0 1px rgba(16,185,129,.22)}.cap.k3 .ck{color:var(--green)}
+.cap.k4{box-shadow:inset 0 0 0 1px rgba(245,158,11,.22)}.cap.k4 .ck{color:var(--amber)}
+.cap.k5{box-shadow:inset 0 0 0 1px rgba(34,211,238,.22)}.cap.k5 .ck{color:var(--cyan)}
+/* proof money-shot */
+.money{display:flex;flex-direction:column;align-items:center;text-align:center;width:100%}
+.stamp{font-family:var(--mono);font-weight:700;font-size:44px;letter-spacing:.1em;color:var(--green);border:2px solid var(--green);border-radius:16px;padding:16px 40px;opacity:0;transform:scale(.8)}
+.bignums{display:flex;gap:80px;margin-top:50px}
+.bn{display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateY(30px)}
+.bn .v{font-family:var(--mono);font-weight:700;font-size:132px;line-height:1;color:var(--green)}
+.bn .l{font-family:var(--mono);font-size:26px;color:var(--mut);margin-top:14px;letter-spacing:.06em}
+.mtag{font-family:var(--serif);font-size:52px;color:#C8C4BE;margin-top:56px;opacity:0}
+.mtag b{color:var(--green);font-style:italic;font-weight:400}
+/* who */
+.tl{display:flex;align-items:center;gap:22px;font-family:var(--mono);font-size:34px;color:var(--mut)}
+.tl .stop{display:inline-flex;align-items:center;gap:16px;opacity:0;transform:translateY(18px)}
+.tl .stop .d{width:20px;height:20px;border-radius:50%;background:#3D3A37}
+.tl .stop.now{color:var(--ink)}.tl .stop.now .d{background:var(--green);box-shadow:0 0 0 6px rgba(16,185,129,.22)}
+.tl .seg{width:80px;height:2px;background:var(--line);opacity:0}
+.tiles{display:flex;gap:34px;margin-top:52px}
+.tile{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:34px 44px;opacity:0;transform:scale(.92);position:relative;min-width:360px}
+.tile b{display:block;font-family:var(--serif);font-size:58px;font-weight:400}
+.tile .st{font-family:var(--mono);font-size:22px;color:var(--faint);margin-top:8px}
+.tile .live{position:absolute;top:22px;right:24px;font-family:var(--mono);font-size:18px;text-transform:uppercase;color:var(--green);letter-spacing:.1em}
+.tile .live::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--green);margin-right:8px;vertical-align:middle}
+.ctabtn{display:inline-flex;align-items:center;gap:14px;background:var(--green);color:#062018;font-weight:800;font-size:46px;font-family:var(--sans);padding:26px 54px;border-radius:18px;margin-top:44px;opacity:0;transform:scale(.94)}
+.cta-url{font-family:var(--mono);font-size:30px;color:var(--faint);margin-top:34px;opacity:0}
+</style></head>
+<body>
+<div class="stage" id="stage">
+  <div class="grain"></div><div class="bloom" id="bloom"></div><div class="rbloom" id="rbloom"></div>
+  <div class="ptrack"><span class="pfill" id="pfill"></span><span class="pdot" id="pdot"></span><span class="plabel" id="plabel" style="left:0"></span></div>
+  <div class="rail">WHAT I BUILD · SAGE IDEAS</div>
+  <div class="hud"><div><span class="dot"></span>AI AUTOMATION &nbsp;×&nbsp; <span class="qa">QA</span> / <span class="llm">LLM EVAL</span> ENGINEER</div><div class="clock">N 28.5384° W 81.3789°</div></div>
+
+  <!-- S1 hook: perfect demo → it breaks → the real question -->
+  <section class="scene" data-s="hook" style="align-items:center;justify-content:center">
+    <div id="chatwrap" style="position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:30px">
+      <div class="chat" id="chat">
+        <div class="cbar"><i></i><i></i><i></i></div>
+        <div class="q">› refund for order #4471?</div>
+        <div class="a" id="chatA">Sure — your refund is approved.</div>
+        <div class="ok" id="chatOk">✓ looks perfect in the demo</div>
+        <div class="err" id="chatErr">✕ no such policy — the customer finds it first</div>
+        <div class="slice" id="chatSlice"></div>
+      </div>
+      <div class="sub" id="sub1" style="text-align:center;max-width:none;margin:0">Anybody can build an AI demo.</div>
+    </div>
+    <div id="hookhead" style="position:absolute;left:140px;right:140px;text-align:center;opacity:0">
+      <h1 id="h2" style="font-size:118px"><span class="w">Can you prove it</span><br><span class="w greeni">survives</span> <span class="w">a real customer?</span></h1>
+      <div class="sub" id="sub2" style="text-align:center;max-width:none;margin:34px auto 0">That's the whole game. It's why teams bring me in.</div>
+    </div>
+  </section>
+
+  <!-- S3+S4 the stack builds -->
+  <section class="scene" data-s="build">
+    <div class="eyebrow" id="ey3">everything I build</div>
+    <div class="caprow">
+      <div class="cap k1" id="c1"><svg id="v1" viewBox="0 0 200 66"></svg><div class="ck">01</div><div class="ct">AI features<br>&amp; agents</div></div>
+      <div class="cap k2" id="c2"><svg id="v2" viewBox="0 0 200 66"></svg><div class="ck">02</div><div class="ct">RAG<br>systems</div></div>
+      <div class="cap k3" id="c3"><svg id="v3" viewBox="0 0 200 66"></svg><div class="ck">03</div><div class="ct">Workflow<br>automation</div></div>
+      <div class="cap k4" id="c4"><svg id="v4" viewBox="0 0 200 66"></svg><div class="ck">04</div><div class="ct">Websites<br>&amp; web apps</div></div>
+      <div class="cap k5" id="c5"><svg id="v5" viewBox="0 0 200 66"></svg><div class="ck">05</div><div class="ct">Content<br>systems</div></div>
+    </div>
+    <div class="sub" id="subB" style="font-size:38px;max-width:none">The AI, the automations — <span class="cyan">and the website and content most forget one engineer can do.</span></div>
+  </section>
+
+  <!-- S5 proof money-shot -->
+  <section class="scene" data-s="proof" style="align-items:center;justify-content:center">
+    <div class="money">
+      <div class="stamp" id="stamp">✓ EVERY BUILD — PROVEN</div>
+      <div class="bignums">
+        <div class="bn" id="bn1"><span class="v" id="bv1">0</span><span class="l">tests passing</span></div>
+        <div class="bn" id="bn2"><span class="v" id="bv2">0</span><span class="l">coverage</span></div>
+        <div class="bn" id="bn3"><span class="v" id="bv3">0</span><span class="l">proof gates</span></div>
+      </div>
+      <div class="mtag" id="mtag">Not "trust me." <b>A number you can see.</b></div>
+    </div>
+  </section>
+
+  <!-- S6 who -->
+  <section class="scene" data-s="who">
+    <div class="eyebrow" id="ey6">not theory — it ships</div>
+    <div class="tl" id="tl">
+      <span class="stop" id="s1"><span class="d"></span>The Home Depot</span><span class="seg" id="sg1"></span>
+      <span class="stop" id="s2"><span class="d"></span>fintech</span><span class="seg" id="sg2"></span>
+      <span class="stop now" id="s3"><span class="d"></span>Sage Ideas</span>
+    </div>
+    <div class="sub" id="sub6" style="font-size:40px">13 years in software quality. Two live products I run <span class="green">entirely on my own.</span></div>
+    <div class="tiles">
+      <div class="tile" id="ti1"><span class="live">live</span><b>Nexural</b><span class="st">~800 routes · 244 tables</span></div>
+      <div class="tile" id="ti2"><span class="live">live</span><b>Academy</b><span class="st">26 courses · 347 lessons</span></div>
+    </div>
+  </section>
+
+  <!-- S7 cta -->
+  <section class="scene" data-s="cta" style="align-items:flex-start">
+    <div class="brand" id="b7" style="opacity:1"><span class="box">JT</span>jason.teixeira()</div>
+    <h1 id="h7" style="font-size:112px;margin-top:12px"><span class="w">One engineer.</span><br><span class="w">The entire stack.</span> <span class="w green">Proven.</span></h1>
+    <div class="ctabtn" id="ctab">Bring me your AI feature →</div>
+    <div class="cta-url" id="ctau">agency.sageideas.dev</div>
+  </section>
+</div>
+<audio id="au" preload="auto" src="/assets/cap-vo.mp3"></audio>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const au=$('#au');
+const SC=[['hook',0,8.791],['build',8.791,23.441],['proof',23.441,32.115],['who',32.115,39.349],['cta',39.349,46.436]];
+const TOTAL=46.436, secEls=$$('.scene');
+function cl(x,a,b){return Math.max(a,Math.min(b,x));}
+function rise(el,lt,at,dur=0.6,dy=26){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*dy}px)`;}
+function fade(el,lt,at,dur=0.5){if(!el)return;let p=cl((lt-at)/dur,0,1);el.style.opacity=1-Math.pow(1-p,3);}
+function pop(el,lt,at,dur=0.55){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`scale(${0.92+0.08*e})`;}
+function popn(el,lt,at,dur=0.5){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*30}px) scale(${0.9+0.1*e})`;}
+const words=id=>$$('#'+id+' .w');
+function seq(els,lt,at,step=0.13,dur=0.5){els.forEach((el,i)=>rise(el,lt,at+i*step,dur));}
+function num(el,lt,at,dur,to,suf){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.textContent=(Math.round(e*to)).toLocaleString()+(suf||'');}
+// mini live visuals per capability, drawn from card-local progress p and global t
+function viz(id,kind,p,t){const s=$('#'+id);if(!s)return;const C={k1:'#22d3ee',rag:'#a78bfa',flow:'#10b981',web:'#F59E0B',con:'#22d3ee'};
+  let h='';const dash=(len)=>`stroke-dasharray:${len};stroke-dashoffset:${(len*(1-cl(p,0,1))).toFixed(1)}`;
+  if(kind==='chat'){const c='#22d3ee';const n=Math.floor(cl(p,0,1)*3.99);h=`<rect x="8" y="10" width="120" height="16" rx="8" fill="#1a1a20"/>`;for(let i=0;i<3;i++)h+=`<circle cx="${150+i*16}" cy="18" r="5" fill="${i<n?c:'#26242a'}"/>`;h+=`<rect x="8" y="40" width="${(20+cl(p,0,1)*150).toFixed(0)}" height="14" rx="7" fill="${c}" opacity="0.8"/>`;}
+  else if(kind==='rag'){const c='#a78bfa';h=`<rect x="8" y="12" width="34" height="42" rx="4" fill="none" stroke="${c}" stroke-width="2" opacity="${cl(p*2,0,1)}"/><rect x="46" y="12" width="34" height="42" rx="4" fill="none" stroke="${c}" stroke-width="2" opacity="${cl(p*2-.3,0,1)}"/><path d="M84 33 H150" stroke="${c}" stroke-width="2" style="${dash(66)}"/><circle cx="168" cy="33" r="16" fill="none" stroke="${c}" stroke-width="2"/><circle cx="168" cy="33" r="6" fill="${c}" opacity="${cl(p*2-1,0,1)}"/>`;}
+  else if(kind==='flow'){const c='#10b981';const px=8+((t*70)%184);h=`<circle cx="24" cy="33" r="12" fill="none" stroke="${c}" stroke-width="2"/><circle cx="100" cy="33" r="12" fill="none" stroke="${c}" stroke-width="2"/><circle cx="176" cy="33" r="12" fill="none" stroke="${c}" stroke-width="2"/><path d="M36 33 H88 M112 33 H164" stroke="${c}" stroke-width="2" opacity="0.5"/><circle cx="${px.toFixed(0)}" cy="33" r="4" fill="${c}"/>`;}
+  else if(kind==='web'){const c='#F59E0B';h=`<rect x="8" y="8" width="184" height="50" rx="6" fill="none" stroke="${c}" stroke-width="2"/><rect x="8" y="8" width="184" height="12" rx="6" fill="${c}" opacity="0.25"/><rect x="16" y="28" width="${(60*cl(p*2,0,1)).toFixed(0)}" height="8" rx="4" fill="${c}" opacity="0.8"/><rect x="16" y="42" width="${(120*cl(p*2-.3,0,1)).toFixed(0)}" height="8" rx="4" fill="#3a352c"/><rect x="150" y="28" width="34" height="22" rx="4" fill="${c}" opacity="${cl(p*2-.6,0,1)*0.5}"/>`;}
+  else if(kind==='con'){const c='#22d3ee';h='';for(let i=0;i<6;i++){const x=8+(i%3)*64,y=12+Math.floor(i/3)*26;h+=`<rect x="${x}" y="${y}" width="56" height="18" rx="4" fill="${c}" opacity="${cl(p*3-i*0.25,0,1)*0.7}"/>`;}}
+  s.innerHTML=h;
+}
+function render(t){
+  const cur=SC.find(s=>t>=s[1]&&t<s[2])||SC[SC.length-1];
+  const lt=t-cur[1],dur=cur[2]-cur[1];
+  secEls.forEach(el=>{const on=el.dataset.s===cur[0];el.classList.toggle('on',on);
+    if(on){const ent=Math.min(1,lt/0.5),e=1-Math.pow(1-ent,3);el.style.opacity=e;el.style.transform=`translateY(${((1-e)*40).toFixed(1)}px) scale(${(1+0.012*(lt/dur)).toFixed(4)})`;}
+    else{el.style.opacity='';el.style.transform='';}});
+  let rbl=0, grn=0;
+  if(cur[0]==='hook'){
+    pop($('#chat'),lt,0.15);fade($('#chatOk'),lt,0.7);fade($('#sub1'),lt,0.6);
+    const gw=(lt>=1.9&&lt<=3.0)?cl(1-Math.abs(lt-2.2)/0.8,0,1):0;
+    $('#chatSlice').style.opacity=(gw*(0.55+0.45*Math.sin(lt*70))).toFixed(2);
+    $('#chat').style.transform=`translateX(${(gw*Math.sin(lt*85)*6).toFixed(1)}px) scale(${(1-gw*0.01).toFixed(3)})`;
+    fade($('#chatErr'),lt,2.05,0.3);rbl=gw*0.7;
+    const wo=cl(1-(lt-3.2)/0.5,0,1);$('#chatwrap').style.opacity=wo.toFixed(3);
+    fade($('#hookhead'),lt,3.35,0.4);seq(words('h2'),lt,3.5);fade($('#sub2'),lt,5.4);
+  }
+  else if(cur[0]==='build'){fade($('#ey3'),lt,0.05);
+    const cd=[['c1','v1','chat'],['c2','v2','rag'],['c3','v3','flow'],['c4','v4','web'],['c5','v5','con']];
+    cd.forEach(([cid,vid,kind],i)=>{const at=0.4+i*0.55;popn($('#'+cid),lt,at,.5);viz(vid,kind,(lt-at-0.2)/1.0,t);});
+    fade($('#subB'),lt,5.2);}
+  else if(cur[0]==='proof'){grn=Math.max(0,1-Math.abs(lt-0.6)/0.7);pop($('#stamp'),lt,0.3);
+    popn($('#bn1'),lt,0.9);popn($('#bn2'),lt,1.15);popn($('#bn3'),lt,1.4);
+    num($('#bv1'),lt,0.9,1.6,3759);num($('#bv2'),lt,1.15,1.6,91,'%');num($('#bv3'),lt,1.4,1.4,13);
+    if(lt>=1.4)$('#bv3').textContent='13/13';
+    fade($('#mtag'),lt,2.6);}
+  else if(cur[0]==='who'){fade($('#ey6'),lt,0.05);rise($('#s1'),lt,0.3);fade($('#sg1'),lt,0.7);rise($('#s2'),lt,0.9);fade($('#sg2'),lt,1.3);rise($('#s3'),lt,1.5);fade($('#sub6'),lt,2.3);pop($('#ti1'),lt,3.6);pop($('#ti2'),lt,3.85);}
+  else if(cur[0]==='cta'){fade($('#b7'),lt,0.1);seq(words('h7'),lt,0.4);pop($('#ctab'),lt,1.5);fade($('#ctau'),lt,2.0);}
+  $('#rbloom').style.opacity=rbl.toFixed(3);
+  $('#bloom').style.opacity=grn.toFixed(3);
+  // proof-particle: cyan (build) → green (proven) at the money-shot
+  const prog=cl(t/TOTAL,0,1)*100;
+  const col=t<23.441?'#22d3ee':'#10b981';
+  const lab=t<8.791?'the demo':t<23.441?'the whole stack':'built + proven';
+  const pf=$('#pfill'),pd=$('#pdot'),pl=$('#plabel');
+  pf.style.width=prog+'%';pf.style.background=col;pf.style.color=col;
+  pd.style.left=prog+'%';pd.style.background=col;pd.style.color=col;
+  pl.style.left=prog+'%';pl.style.color=col;if(pl.textContent!==lab)pl.textContent=lab;
+}
+window.__seek=(t)=>{try{au.currentTime=t;}catch(e){}render(t);};
+let playing=false;function tick(){if(!playing)return;render(au.currentTime||0);requestAnimationFrame(tick);}
+window.__play=()=>{if(playing)return;playing=true;au.play().catch(()=>{});tick();};
+au.addEventListener('ended',()=>{playing=false;render(TOTAL);});
+render(0);document.addEventListener('click',()=>window.__play(),{once:true});
+</script><script defer src="/assets/ga.js?v=1"></script>
+</body></html>

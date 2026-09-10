@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:11.038
+Toda demo de IA funciona. Ese es el problema. Una demo es un truco de magia — las mismas entradas, el mismo camino feliz, siempre. Tus clientes nunca usan el camino feliz.
+
+00:11.038 --> 00:24.031
+Aquí está el porqué. Una demo muestra quizás cinco casos elegidos a mano. Producción le lanza miles de casos reales — erratas, casos límite, frases raras, usuarios enojados. La demo nunca vio ninguno.
+
+00:24.031 --> 00:37.255
+Así que el fallo está garantizado. No porque el modelo sea malo, sino porque lo que lo rompe nunca estuvo en la demo. La brecha entre cinco casos y diez mil es donde muere cada función de IA.
+
+00:37.255 --> 00:43.467
+El arreglo no es una mejor demo. Es probar cada camino — antes de que tu cliente encuentre el que se rompe.
+
+00:43.467 --> 00:48.000
+Deja de confiar en las demos. Prueba todo. Eso es lo que hago — hablemos.
+

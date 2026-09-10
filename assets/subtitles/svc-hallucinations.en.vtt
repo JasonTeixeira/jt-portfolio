@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.738
+An AI hallucination isn't a glitch. It's the model doing exactly what it was built to do — produce a fluent, confident answer, whether or not it happens to be true.
+
+00:09.738 --> 00:19.154
+You can't delete them. You can catch them. Ground the model in real sources, then check every answer against those sources — does the claim actually appear in the data?
+
+00:19.154 --> 00:30.707
+The dangerous ones are confident and specific: a fake policy, a wrong number, a made-up citation. So I test for exactly those, on real inputs, and flag them before they reach a user.
+
+00:30.707 --> 00:35.387
+The goal isn't zero hallucinations. It's zero that ever reach your customer.
+
+00:35.387 --> 00:38.341
+Catch them before they cost you. Let's talk.
+

@@ -1,0 +1,6 @@
+file '/Users/Sage/code/active/jt-portfolio/renders/_audit-vo/01-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_audit-vo/02-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_audit-vo/03-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_audit-vo/04-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_audit-vo/05-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_audit-vo/06-held.mp3'

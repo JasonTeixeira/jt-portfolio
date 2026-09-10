@@ -1,0 +1,5 @@
+file '/Users/Sage/code/active/jt-portfolio/renders/_onemetric-vo/0-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_onemetric-vo/1-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_onemetric-vo/2-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_onemetric-vo/3-h.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_onemetric-vo/4-h.mp3'

@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.484
+Você construiu um recurso de IA. Ele responde dez mil vezes por dia. Como você sabe que ainda está bom? Você não consegue ler dez mil respostas. Sua equipe também não.
+
+00:08.484 --> 00:18.179
+Então você usa outra IA pra avaliar. Você escreve uma rubrica — como é uma boa resposta — e um modelo juiz pontua cada saída contra ela, automaticamente, em escala.
+
+00:18.179 --> 00:28.943
+Mas um juiz pode ser enganado — enviesado, ou ludibriado por besteira dita com confiança. Então você calibra: pontua uma amostra na mão, ajusta o juiz até ele concordar com pessoas reais, e deixa rodar.
+
+00:28.943 --> 00:36.409
+Agora você mede qualidade em cada resposta, todo dia — não um palpite, uma nota. É assim que você pega o drift antes dos seus clientes.
+
+00:36.409 --> 00:41.174
+Avalie sua IA em escala, com honestidade. É isso que eu construo — vamos conversar.
+

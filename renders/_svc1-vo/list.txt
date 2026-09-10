@@ -1,0 +1,5 @@
+file '/Users/Sage/code/active/jt-portfolio/renders/_svc1-vo/01-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_svc1-vo/02-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_svc1-vo/03-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_svc1-vo/04-held.mp3'
+file '/Users/Sage/code/active/jt-portfolio/renders/_svc1-vo/05-held.mp3'

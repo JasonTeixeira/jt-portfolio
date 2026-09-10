@@ -1,0 +1,169 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The One-Week Audit — Sage Ideas</title>
+<style>
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:'JetBrains Mono';src:url('/assets/fonts/jetbrains-mono-var.woff2') format('woff2');font-weight:400 700;font-display:block}
+@font-face{font-family:'Plus Jakarta Sans';src:url('/assets/fonts/plus-jakarta-var.woff2') format('woff2');font-weight:300 800;font-display:block}
+:root{--bg:#09090B;--ink:#F4F2EF;--mut:#A8A29E;--faint:#8E8882;--line:#2A2826;--card:#0C0C0E;
+  --green:#10b981;--cyan:#22d3ee;--purple:#a78bfa;--rose:#f43f5e;--amber:#F59E0B;
+  --serif:'Instrument Serif',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Plus Jakarta Sans',system-ui,sans-serif}
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000;font-family:var(--sans);color:var(--ink)}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;
+  background:radial-gradient(1300px 800px at 18% -5%,rgba(16,185,129,.07),transparent 60%),radial-gradient(1000px 800px at 105% 108%,rgba(34,211,238,.06),transparent 60%),var(--bg)}
+.grain{position:absolute;inset:0;opacity:.045;background-image:radial-gradient(#fff .5px,transparent .6px);background-size:3px 3px;pointer-events:none;z-index:50}
+.bloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 52%,rgba(16,185,129,.5),transparent 52%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.ptrack{position:absolute;left:140px;right:140px;bottom:60px;height:2px;background:#17161a;z-index:6;pointer-events:none}
+.pfill{position:absolute;left:0;top:0;height:100%;width:0;background:#22d3ee;color:#22d3ee;box-shadow:0 0 12px currentColor}
+.pdot{position:absolute;top:-5px;left:0;width:12px;height:12px;border-radius:50%;background:#22d3ee;color:#22d3ee;box-shadow:0 0 18px 5px currentColor;transform:translateX(-6px)}
+.plabel{position:absolute;bottom:74px;font-family:var(--mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);transform:translateX(-50%)}
+.rail{position:absolute;right:54px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:var(--mono);font-size:17px;letter-spacing:.42em;color:#211f1d;text-transform:uppercase;z-index:2}
+.hud{position:absolute;top:60px;left:140px;right:140px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:22px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);z-index:3}
+.hud .dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 16px 2px rgba(16,185,129,.7);display:inline-block;margin-right:12px;vertical-align:middle}
+.hud .qa{color:var(--purple)}.hud .llm{color:var(--cyan)}.hud .clock{color:#3D3A37}
+.scene{position:absolute;inset:0;padding:150px 140px 130px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden}
+.scene.on{opacity:1;visibility:visible}
+.eyebrow{font-family:var(--mono);font-size:24px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:34px;opacity:0}
+.eyebrow .g{color:var(--green)}.eyebrow .c{color:var(--cyan)}
+h1{font-family:var(--serif);font-weight:400;font-size:132px;line-height:.96;letter-spacing:-.005em}
+h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
+.hollow{-webkit-text-stroke:1.6px #C8C4BE;color:transparent}
+.green{color:var(--green)}.greeni{color:var(--green);font-style:italic}.cyan{color:var(--cyan)}.rose{color:var(--rose)}
+.sub{font-family:var(--serif);font-size:44px;color:#C8C4BE;margin-top:40px;max-width:26ch;line-height:1.16;opacity:0}
+.brand{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:30px;color:var(--mut);opacity:0}
+.brand .box{width:60px;height:60px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;background:var(--card);background-image:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* week strip */
+.week{display:flex;gap:20px;margin-top:52px}
+.day{flex:1;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:28px 26px;opacity:0;transform:translateY(26px)}
+.day .dk{font-family:var(--mono);font-size:20px;color:var(--cyan);letter-spacing:.1em}
+.day.fri .dk{color:var(--green)}
+.day .dt{font-family:var(--serif);font-size:38px;line-height:1.05;margin-top:12px}
+/* scorecard */
+.score{width:1000px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0d0d10,#0a0a0c);overflow:hidden;margin-top:44px}
+.score .bar{display:flex;gap:10px;align-items:center;padding:16px 24px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:20px;color:var(--faint)}
+.score .bar i{width:12px;height:12px;border-radius:50%;background:#33302c}.score .bar i.r{background:var(--rose)}.score .bar i.y{background:var(--amber)}.score .bar i.g{background:var(--green)}
+.mrow{display:flex;align-items:center;justify-content:space-between;padding:20px 30px;font-family:var(--mono);font-size:28px;border-bottom:1px solid #16151a;opacity:0}
+.mrow:last-child{border-bottom:0}
+.mrow .k{color:var(--mut)}.mrow .v{font-weight:700}
+.flag{font-family:var(--mono);font-size:20px;padding:6px 16px;border-radius:999px;margin-left:18px}
+.flag.rose{color:var(--rose);border:1px solid rgba(244,63,94,.4);background:rgba(244,63,94,.08)}
+.flag.amber{color:var(--amber);border:1px solid rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
+/* findings / deliverable */
+.deliv{display:flex;gap:40px;align-items:flex-start;margin-top:44px}
+.findings{width:960px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+.frow{display:flex;align-items:center;gap:20px;padding:22px 30px;border-bottom:1px solid #16151a;font-family:var(--mono);font-size:26px;opacity:0}
+.frow:last-child{border-bottom:0}
+.sev{font-size:18px;padding:6px 14px;border-radius:8px;font-weight:700;letter-spacing:.05em}
+.sev.crit{color:var(--rose);background:rgba(244,63,94,.12)}.sev.high{color:var(--amber);background:rgba(245,158,11,.12)}.sev.med{color:var(--cyan);background:rgba(34,211,238,.12)}
+.frow .fx{color:var(--ink)}
+.artifacts{font-family:var(--mono);font-size:24px;color:var(--faint);margin-top:26px;opacity:0}
+.artifacts b{color:var(--green)}
+/* cta */
+.ctabtn{display:inline-flex;align-items:center;gap:14px;background:var(--green);color:#062018;font-weight:800;font-size:46px;font-family:var(--sans);padding:26px 54px;border-radius:18px;margin-top:44px;opacity:0;transform:scale(.94)}
+.cta-url{font-family:var(--mono);font-size:30px;color:var(--faint);margin-top:34px;opacity:0}
+</style></head>
+<body>
+<div class="stage" id="stage">
+  <div class="grain"></div><div class="bloom" id="bloom"></div>
+  <div class="ptrack"><span class="pfill" id="pfill"></span><span class="pdot" id="pdot"></span><span class="plabel" id="plabel" style="left:0"></span></div>
+  <div class="rail">THE ONE-WEEK AUDIT · SAGE IDEAS</div>
+  <div class="hud"><div><span class="dot"></span>AI AUTOMATION &nbsp;×&nbsp; <span class="qa">QA</span> / <span class="llm">LLM EVAL</span> ENGINEER</div><div class="clock">N 28.5384° W 81.3789°</div></div>
+
+  <section class="scene" data-s="hook">
+    <div class="eyebrow" id="ey1">the one-week audit</div>
+    <h1 id="h1"><span class="w">Before you build it,</span><br><span class="w">find out if it</span> <span class="w greeni">holds.</span></h1>
+    <div class="sub" id="sub1">One week. One clear answer — before you spend a quarter on it.</div>
+  </section>
+
+  <section class="scene" data-s="what">
+    <div class="eyebrow" id="ey2">one week · deep on your AI</div>
+    <h1 id="h2" style="font-size:104px"><span class="w">I go where it</span> <span class="w rose">quietly breaks.</span></h1>
+    <div class="week">
+      <div class="day" id="d1"><div class="dk">MON</div><div class="dt">Prompts</div></div>
+      <div class="day" id="d2"><div class="dk">TUE</div><div class="dt">Retrieval</div></div>
+      <div class="day" id="d3"><div class="dk">WED</div><div class="dt">Edge cases</div></div>
+      <div class="day" id="d4"><div class="dk">THU</div><div class="dt">Eval harness</div></div>
+      <div class="day fri" id="d5"><div class="dk">FRI</div><div class="dt">The plan</div></div>
+    </div>
+  </section>
+
+  <section class="scene" data-s="do">
+    <div class="eyebrow" id="ey3">not vibes — numbers</div>
+    <h1 id="h3" style="font-size:96px"><span class="w">I score it</span> <span class="w cyan">against reality.</span></h1>
+    <div class="score" id="score">
+      <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i>&nbsp; eval-harness · your_use_cases.jsonl</div>
+      <div class="mrow" id="m1"><span class="k">hallucination rate</span><span><span class="v rose">4.2%</span><span class="flag rose">above threshold</span></span></div>
+      <div class="mrow" id="m2"><span class="k">answer drift (7d)</span><span><span class="v amber">↑ 11%</span><span class="flag amber">watch</span></span></div>
+      <div class="mrow" id="m3"><span class="k">cost / call</span><span><span class="v rose">$0.031</span><span class="flag rose">2.4× target</span></span></div>
+      <div class="mrow" id="m4"><span class="k">retrieval precision</span><span><span class="v" style="color:var(--green)">0.78</span></span></div>
+    </div>
+  </section>
+
+  <section class="scene" data-s="deliver">
+    <div class="eyebrow" id="ey4">friday · you leave with a plan</div>
+    <div id="planstamp" style="font-family:var(--mono);font-weight:700;font-size:28px;letter-spacing:.06em;color:var(--green);border:2px solid var(--green);border-radius:14px;padding:14px 28px;background:rgba(16,185,129,.08);opacity:0;transform:scale(.8);align-self:flex-start;margin-bottom:26px">✓ YOUR PLAN — READY FRIDAY</div>
+    <div class="deliv">
+      <div class="findings" id="findings">
+        <div class="frow" id="f1"><span class="sev crit">CRIT</span><span class="fx">Refund policy hallucination — customer-facing</span></div>
+        <div class="frow" id="f2"><span class="sev high">HIGH</span><span class="fx">No regression gate — drift ships silently</span></div>
+        <div class="frow" id="f3"><span class="sev high">HIGH</span><span class="fx">Retrieval misses on long-tail queries</span></div>
+        <div class="frow" id="f4"><span class="sev med">MED</span><span class="fx">Token cost 2.4× — cache + route</span></div>
+      </div>
+    </div>
+    <div class="artifacts" id="arts">Failure modes ranked by risk · the exact fix · <b>artifacts, not opinions.</b></div>
+  </section>
+
+  <section class="scene" data-s="honest">
+    <div class="eyebrow" id="ey5">the honest part</div>
+    <h1 id="h5" style="font-size:108px"><span class="w">Already solid?</span><br><span class="w green">I'll tell you that too.</span></h1>
+    <div class="sub" id="sub5">Either way — you stop guessing.</div>
+  </section>
+
+  <section class="scene" data-s="cta" style="align-items:flex-start">
+    <div class="brand" id="b6" style="opacity:1"><span class="box">JT</span>jason.teixeira()</div>
+    <h1 id="h6" style="font-size:120px;margin-top:14px"><span class="w">One week.</span> <span class="w green">One answer.</span></h1>
+    <div class="ctabtn" id="ctab">Book the audit →</div>
+    <div class="cta-url" id="ctau">agency.sageideas.dev</div>
+  </section>
+</div>
+<audio id="au" preload="auto" src="/assets/audit-vo.mp3"></audio>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const au=$('#au');
+const SC=[['hook',0,6.216],['what',6.216,15.164],['do',15.164,25.742],['deliver',25.742,36.04],['honest',36.04,41.645],['cta',41.645,47.339]];
+const TOTAL=47.339, secEls=$$('.scene');
+function rise(el,lt,at,dur=0.6,dy=26){if(!el)return;let p=Math.max(0,Math.min(1,(lt-at)/dur));const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*dy}px)`;}
+function fade(el,lt,at,dur=0.5){if(!el)return;let p=Math.max(0,Math.min(1,(lt-at)/dur));el.style.opacity=1-Math.pow(1-p,3);}
+function pop(el,lt,at,dur=0.55){if(!el)return;let p=Math.max(0,Math.min(1,(lt-at)/dur));const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`scale(${0.92+0.08*e})`;}
+const words=id=>$$('#'+id+' .w');
+function seq(els,lt,at,step=0.14,dur=0.5){els.forEach((el,i)=>rise(el,lt,at+i*step,dur));}
+function render(t){
+  const cur=SC.find(s=>t>=s[1]&&t<s[2])||SC[SC.length-1];
+  const lt=t-cur[1], dur=cur[2]-cur[1];
+  secEls.forEach(el=>{const on=el.dataset.s===cur[0];el.classList.toggle('on',on);
+    if(on){const ent=Math.min(1,lt/0.55),e=1-Math.pow(1-ent,3);el.style.opacity=e;el.style.transform=`translateY(${((1-e)*44).toFixed(1)}px) scale(${(1+0.016*(lt/dur)).toFixed(4)})`;}
+    else{el.style.opacity='';el.style.transform='';}});
+  if(cur[0]==='hook'){fade($('#ey1'),lt,0.1);seq(words('h1'),lt,0.4);fade($('#sub1'),lt,1.6);}
+  else if(cur[0]==='what'){fade($('#ey2'),lt,0.1);seq(words('h2'),lt,0.4);['d1','d2','d3','d4','d5'].forEach((id,i)=>rise($('#'+id),lt,1.8+i*0.18,.5));}
+  else if(cur[0]==='do'){fade($('#ey3'),lt,0.1);seq(words('h3'),lt,0.4);['m1','m2','m3','m4'].forEach((id,i)=>rise($('#'+id),lt,1.8+i*0.35,.5,14));}
+  else if(cur[0]==='deliver'){fade($('#ey4'),lt,0.1);pop($('#planstamp'),lt,0.3,0.5);['f1','f2','f3','f4'].forEach((id,i)=>rise($('#'+id),lt,0.7+i*0.3,.5,14));fade($('#arts'),lt,2.8);}
+  else if(cur[0]==='honest'){fade($('#ey5'),lt,0.1);seq(words('h5'),lt,0.4);fade($('#sub5'),lt,1.8);}
+  else if(cur[0]==='cta'){fade($('#b6'),lt,0.1);seq(words('h6'),lt,0.4);pop($('#ctab'),lt,1.3);fade($('#ctau'),lt,1.9);}
+  // proof-particle: cyan auditing → rose findings → green the plan
+  const prog=Math.max(0,Math.min(1,t/TOTAL))*100;
+  const col=t<15.164?'#22d3ee':t<25.742?'#f43f5e':'#10b981';
+  const lab=t<15.164?'auditing':t<25.742?'findings':'the plan';
+  const pf=$('#pfill'),pd=$('#pdot'),pl=$('#plabel');
+  pf.style.width=prog+'%';pf.style.background=col;pf.style.color=col;
+  pd.style.left=prog+'%';pd.style.background=col;pd.style.color=col;
+  pl.style.left=prog+'%';pl.style.color=col;if(pl.textContent!==lab)pl.textContent=lab;
+  const bp=Math.max(0,1-Math.abs(t-25.742)/0.8);$('#bloom').style.opacity=(bp*bp*1.0).toFixed(3);
+}
+window.__seek=(t)=>{try{au.currentTime=t;}catch(e){}render(t);};
+let playing=false;function tick(){if(!playing)return;render(au.currentTime||0);requestAnimationFrame(tick);}
+window.__play=()=>{if(playing)return;playing=true;au.play().catch(()=>{});tick();};
+au.addEventListener('ended',()=>{playing=false;render(TOTAL);});
+render(0);document.addEventListener('click',()=>window.__play(),{once:true});
+</script><script defer src="/assets/ga.js?v=1"></script>
+</body></html>

@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:06.998
+Every AI vendor says the same thing: trust me, it works. In production, trust is not a strategy. A number is.
+
+00:06.998 --> 00:16.508
+I build the proof layer that sits under everything: real evaluations, real tests, and gates wired into your pipeline — the harness that keeps your AI honest.
+
+00:16.508 --> 00:28.664
+The hard part is drift. Models change, data changes, and quality rots quietly. So I build regression detection that turns a silent failure into a red build, before your customer finds it.
+
+00:28.664 --> 00:37.430
+This is the difference: every build ships with evidence. Tests passing, coverage, gates green, drift caught — a number you can see, not a promise.
+
+00:37.430 --> 00:41.453
+Stop shipping on faith. Ship with proof. Let's build your gate.
+

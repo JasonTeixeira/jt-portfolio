@@ -1,0 +1,360 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Service — Sage Ideas</title>
+<style>
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:'Instrument Serif';src:url('/assets/fonts/instrument-serif-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:'JetBrains Mono';src:url('/assets/fonts/jetbrains-mono-var.woff2') format('woff2');font-weight:400 700;font-display:block}
+@font-face{font-family:'Plus Jakarta Sans';src:url('/assets/fonts/plus-jakarta-var.woff2') format('woff2');font-weight:300 800;font-display:block}
+:root{--bg:#09090B;--ink:#F4F2EF;--mut:#A8A29E;--faint:#8E8882;--line:#2A2826;--card:#0C0C0E;
+  --green:#10b981;--cyan:#22d3ee;--purple:#a78bfa;--rose:#f43f5e;--amber:#F59E0B;
+  --serif:'Instrument Serif',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Plus Jakarta Sans',system-ui,sans-serif}
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000;font-family:var(--sans);color:var(--ink)}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:radial-gradient(1300px 800px at 18% -5%,rgba(16,185,129,.07),transparent 60%),radial-gradient(1000px 800px at 105% 108%,rgba(34,211,238,.06),transparent 60%),var(--bg)}
+.grain{position:absolute;inset:0;opacity:.045;background-image:radial-gradient(#fff .5px,transparent .6px);background-size:3px 3px;pointer-events:none;z-index:50}
+.bloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(16,185,129,.6),transparent 55%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.rbloom{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(244,63,94,.5),transparent 50%);opacity:0;z-index:40;pointer-events:none;mix-blend-mode:screen}
+.ptrack{position:absolute;left:140px;right:140px;bottom:60px;height:2px;background:#17161a;z-index:6}
+.pfill{position:absolute;left:0;top:0;height:100%;width:0;background:#22d3ee;color:#22d3ee;box-shadow:0 0 12px currentColor}
+.pdot{position:absolute;top:-5px;left:0;width:12px;height:12px;border-radius:50%;background:#22d3ee;color:#22d3ee;box-shadow:0 0 18px 5px currentColor;transform:translateX(-6px)}
+.plabel{position:absolute;bottom:74px;font-family:var(--mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);transform:translateX(-50%)}
+.rail{position:absolute;right:54px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:var(--mono);font-size:17px;letter-spacing:.42em;color:#211f1d;text-transform:uppercase;z-index:2}
+.hud{position:absolute;top:60px;left:140px;right:140px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:22px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);z-index:3}
+.hud .dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 16px 2px rgba(16,185,129,.7);display:inline-block;margin-right:12px;vertical-align:middle}
+.hud .qa{color:var(--purple)}.hud .llm{color:var(--cyan)}.hud .clock{color:#3D3A37}
+.scene{position:absolute;inset:0;padding:150px 140px 130px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden}
+.scene.on{opacity:1;visibility:visible}
+.eyebrow{font-family:var(--mono);font-size:24px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:30px;opacity:0}
+.eyebrow .a{color:var(--amber)}
+h1{font-family:var(--serif);font-weight:400;font-size:120px;line-height:.96;letter-spacing:-.005em}
+h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
+.green{color:var(--green)}.greeni{color:var(--green);font-style:italic}.cyan{color:var(--cyan)}.rose{color:var(--rose)}.amber{color:var(--amber)}
+.sub{font-family:var(--serif);font-size:42px;color:#C8C4BE;margin-top:32px;max-width:30ch;line-height:1.14;opacity:0}
+.brand{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:30px;color:var(--mut)}
+.brand .box{width:60px;height:60px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;background:var(--card);background-image:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.panel{width:1000px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#0e0e12,#0a0a0c);overflow:hidden;position:relative;box-shadow:0 40px 120px -40px rgba(0,0,0,.85)}
+.panel .bar{display:flex;gap:10px;align-items:center;padding:16px 22px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:19px;color:var(--faint)}
+.panel .bar i{width:12px;height:12px;border-radius:50%;background:#33302c}
+.panel .body{padding:26px 30px;font-family:var(--mono);font-size:26px;line-height:1.65}
+.panel .u{color:var(--ink)}.panel .step{color:var(--mut)}.panel .ok{color:var(--green)}.panel .bad{color:var(--rose)}
+.ln{opacity:0}
+.slice{position:absolute;inset:0;border-radius:18px;background:linear-gradient(100deg,transparent 44%,var(--rose) 45%,transparent 46%),linear-gradient(-70deg,transparent 62%,var(--cyan) 63%,transparent 64%);mix-blend-mode:screen;opacity:0}
+.pipe{display:flex;align-items:center;gap:12px;margin-top:38px;position:relative;flex-wrap:wrap}
+.pnode{font-family:var(--mono);font-size:25px;color:var(--ink);border:1px solid rgba(34,211,238,.3);border-radius:12px;padding:16px 22px;background:rgba(34,211,238,.05);opacity:0;transform:translateY(18px)}
+.parrow{color:var(--faint);font-family:var(--mono);font-size:24px;opacity:0}
+.guards{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap}
+.guard{font-family:var(--mono);font-size:27px;color:var(--ink);border:1px solid rgba(16,185,129,.4);border-radius:14px;padding:18px 26px;background:rgba(16,185,129,.06);opacity:0;transform:translateY(18px);display:flex;align-items:center;gap:14px}
+.guard .c{color:var(--green);font-weight:700}
+.blocked{margin-top:30px;font-family:var(--mono);font-size:29px;display:flex;align-items:center;gap:20px;opacity:0}
+.blocked .act{color:var(--rose)}.blocked .stop{color:var(--amber)}
+.money{display:flex;flex-direction:column;align-items:center;text-align:center;width:100%}
+.stamp{font-family:var(--mono);font-weight:700;font-size:38px;letter-spacing:.06em;color:var(--green);border:2px solid var(--green);border-radius:16px;padding:16px 36px;opacity:0;transform:scale(.8)}
+.bignums{display:flex;gap:60px;margin-top:46px}
+.bn{display:flex;flex-direction:column;align-items:center;opacity:0}
+.bn .v{font-family:var(--mono);font-weight:700;font-size:100px;line-height:1;color:var(--green)}
+.bn .l{font-family:var(--mono);font-size:22px;color:var(--mut);margin-top:12px;letter-spacing:.03em;max-width:12ch}
+.mtag{font-family:var(--serif);font-size:48px;color:#C8C4BE;margin-top:46px;opacity:0}.mtag b{color:var(--green);font-style:italic;font-weight:400}
+.ctabtn{display:inline-flex;align-items:center;gap:14px;background:var(--green);color:#062018;font-weight:800;font-size:44px;font-family:var(--sans);padding:26px 52px;border-radius:18px;margin-top:44px;opacity:0;transform:scale(.94)}
+.cta-url{font-family:var(--mono);font-size:30px;color:var(--faint);margin-top:34px;opacity:0}
+</style></head>
+<body>
+<div class="stage" id="stage">
+  <div class="grain"></div><div class="bloom" id="bloom"></div><div class="rbloom" id="rbloom"></div>
+  <div class="ptrack"><span class="pfill" id="pfill"></span><span class="pdot" id="pdot"></span><span class="plabel" id="plabel" style="left:0"></span></div>
+  <div class="rail" id="rail"></div>
+  <div class="hud"><div><span class="dot"></span>AI AUTOMATION &nbsp;×&nbsp; <span class="qa">QA</span> / <span class="llm">LLM EVAL</span> ENGINEER</div><div class="clock">N 28.5384° W 81.3789°</div></div>
+  <div id="scenes"></div>
+</div>
+<audio id="au" preload="auto"></audio>
+<script>
+const wrap=w=>w.map(x=>`<span class="w">${x}</span>`).join(' ');
+const CONFIGS={
+ rag:{ vo:'assets/svc-rag-vo.mp3', rail:'RAG SYSTEMS · SAGE IDEAS',
+  scenes:[['hook',0,9.924],['build',9.924,20.873],['hard',20.873,31.218],['proof',31.218,41.146],['cta',41.146,46.236]],
+  hook:{bar:'support-agent · retrieval',lines:['<div class="ln u">▸ "what\'s your refund window?"</div>','<div class="ln step">agent → "90 days, per policy §4.2" <span class="ok">✓</span></div>','<div class="ln bad">✕ policy §4.2 does not exist — confident, and wrong</div>'],
+   sub:'Confident. Cited. <span class="rose">Fabricated.</span>',head:['Your AI is','<span class="rose">making it up.</span>'],headSub:"That's retrieval done wrong — I fix it."},
+  build:{eyebrow:'what I build',head:['Retrieval that returns','<span class="cyan">the truth.</span>'],pipe:['Your docs','Chunk','Embed','Search','Rerank','Answer'],sub:'So the model answers from what is <span class="cyan">actually real.</span>'},
+  hard:{eyebrow:'the hard part — relevance',head:['The right doc.','<span class="amber">Not just a doc.</span>'],chips:['Smart chunking','Recall + precision','Freshness','Cites its source'],blocked:['answer with no source','✕ withheld']},
+  proof:{stamp:'✓ SCORED AGAINST REAL QUESTIONS',metrics:[[94,'%','retrieval precision'],[91,'%','answer accuracy'],[100,'%','citation coverage'],[6,'','gates in CI']],tag:'Quality that can\'t <b>silently rot.</b>'},
+  cta:{head:['Answers you can','<span class="green">trust</span> — with receipts.'],btn:'Build my retrieval →'},
+  pLabels:['fabricated','building','relevance','proven · green']},
+
+ workflow:{ vo:'assets/svc-workflow-vo.mp3', rail:'WORKFLOW AUTOMATION · SAGE IDEAS',
+  scenes:[['hook',0,10.249],['build',10.249,20.733],['hard',20.733,34.794],['proof',34.794,43.142],['cta',43.142,47.536]],
+  hook:{bar:'you · 9:00am → 5:00pm',lines:['<div class="ln u">▸ export CSV → clean → paste → email → repeat</div>','<div class="ln step">tool 1 → tool 2 → tool 3 → tool 4 → tool 5</div>','<div class="ln bad">✕ 3 hours a day, every day, done by a human</div>'],
+   sub:'That\'s not a job. <span class="rose">It\'s an unwritten script.</span>',head:['Stop doing','<span class="rose">the robot\'s job.</span>'],headSub:'I write the script that does it for you.'},
+  build:{eyebrow:'what I build',head:['Automations that','<span class="cyan">run themselves.</span>'],pipe:['Trigger','Steps','n8n / Make','LangGraph','Your tools'],sub:'Wired into the tools <span class="cyan">you already use.</span>'},
+  hard:{eyebrow:'the hard part — reliability',head:['It runs','<span class="amber">while you sleep.</span>'],chips:['Retries','Timeouts','Error handling','Monitoring + alerts'],blocked:['API timed out at 3am','✓ retried → recovered → you slept']},
+  proof:{stamp:'✓ TESTED BEFORE PRODUCTION',metrics:[[12480,'','runs executed'],[640,'','hours saved / yr'],[0,'%','silent failures'],[100,'%','failures alerted']],tag:'It runs — <b>and tells you when it doesn\'t.</b>'},
+  cta:{head:['The busywork','<span class="green">runs itself.</span>'],btn:'Automate my process →'},
+  pLabels:['manual','building','reliability','proven · green']},
+
+ websites:{ vo:'assets/svc-websites-vo.mp3', rail:'WEBSITES & WEB APPS · SAGE IDEAS',
+  scenes:[['hook',0,6.58],['build',6.58,14.371],['hard',14.371,24.206],['proof',24.206,32.415],['cta',32.415,36.483]],
+  hook:{bar:'customer · first visit',lines:['<div class="ln u">▸ loading your site…</div>','<div class="ln step">LCP 6.2s · layout shifting · still spinning</div>','<div class="ln bad">✕ customer bounced — and you paid for that click</div>'],
+   sub:'Slow is <span class="rose">invisible.</span>',head:['Six seconds.','<span class="rose">Already gone.</span>'],headSub:'I build sites that don\'t lose the click.'},
+  build:{eyebrow:'what I build',head:['The whole product,','<span class="cyan">front to back.</span>'],pipe:['Design','Frontend','Backend','Database','Deploy'],sub:'One engineer, <span class="cyan">one coherent build.</span>'},
+  hard:{eyebrow:'the hard part — production quality',head:['Not just','<span class="amber">pretty in a screenshot.</span>'],chips:['Fast','Accessible','Secure','SEO-ready'],blocked:['built for real users','✓ on real devices']},
+  proof:{stamp:'✓ GATED IN CI',metrics:[[98,'','Lighthouse'],[100,'%','accessible'],[1,'s','LCP'],[100,'%','tests pass']],tag:'A good site <b>stays good.</b>'},
+  cta:{head:['Sites that ship','<span class="green">— and perform.</span>'],btn:'Build my site →'},
+  pLabels:['bounced','building','quality','proven · green']},
+
+ content:{ vo:'assets/svc-content-vo.mp3', rail:'CONTENT SYSTEMS · SAGE IDEAS',
+  scenes:[['hook',0,8.716],['build',8.716,18.922],['hard',18.922,28.757],['proof',28.757,36.501],['cta',36.501,40.942]],
+  hook:{bar:'generic-ai · 1,000 articles',lines:['<div class="ln u">▸ generate 1,000 articles</div>','<div class="ln step">"In today\'s fast-paced world, leveraging synergy…"</div>','<div class="ln bad">✕ slop — generic, off-brand, forgettable</div>'],
+   sub:'Volume is easy. <span class="rose">Voice is hard.</span>',head:['Scale without','<span class="rose">the slop.</span>'],headSub:'I build the engine that sounds like you.'},
+  build:{eyebrow:'what I build',head:['A brief in.','<span class="cyan">On-brand out.</span>'],pipe:['Brief','Your facts','Your voice','Your style','Publish'],sub:'At the scale <span class="cyan">you actually need.</span>'},
+  hard:{eyebrow:'the hard part — quality at volume',head:['Guardrails that','<span class="amber">kill the slop.</span>'],chips:['Brand voice locked','Facts checked','Review gate','No hallucinated claims'],blocked:['off-brand draft','✕ blocked before publish']},
+  proof:{stamp:'✓ EVERY PIECE, MEASURED',metrics:[[96,'%','on-brand score'],[100,'%','facts checked'],[3200,'','pieces shipped'],[0,'','slop published']],tag:'Scale never costs you <b>your reputation.</b>'},
+  cta:{head:['Content at scale','<span class="green">that sounds like you.</span>'],btn:'Build my content engine →'},
+  pLabels:['slop','building','quality','proven · green']},
+
+ proof:{ vo:'assets/svc-proof-vo.mp3', rail:'THE PROOF LAYER · SAGE IDEAS',
+  scenes:[['hook',0,6.998],['build',6.998,16.508],['hard',16.508,28.664],['proof',28.664,37.43],['cta',37.43,41.453]],
+  hook:{bar:'every AI vendor',lines:['<div class="ln u">▸ is it production-ready?</div>','<div class="ln step">vendor → "trust me, it works" <span class="ok">✓</span></div>','<div class="ln bad">✕ trust is not a strategy — a number is</div>'],
+   sub:'"Trust me" is <span class="rose">not proof.</span>',head:['Stop shipping','<span class="rose">on faith.</span>'],headSub:'I build the number you can see.'},
+  build:{eyebrow:'what I build',head:['The proof layer','<span class="cyan">under everything.</span>'],pipe:['Evals','Tests','Gates','CI pipeline','Every build'],sub:'The harness that keeps your AI <span class="cyan">honest.</span>'},
+  hard:{eyebrow:'the hard part — drift',head:['Silent failure','<span class="amber">→ red build.</span>'],chips:['Regression detection','Red → green gates','Drift alarms','Before the customer'],blocked:['quality drifted −8%','🛑 build blocked red']},
+  proof:{stamp:'✓ EVERY BUILD SHIPS WITH EVIDENCE',metrics:[[3759,'','tests passing'],[91,'%','coverage'],[13,'','of 13 gates'],[1,'','drift caught']],tag:'A number you can see — <b>not a promise.</b>'},
+  cta:{head:['Ship with','<span class="green">proof.</span>'],btn:'Build my gate →'},
+  pLabels:['on faith','building','drift','proven · green']},
+
+ howwework:{ vo:'assets/svc-howwework-vo.mp3', rail:'HOW WE WORK · SAGE IDEAS',
+  scenes:[['hook',0,8.484],['build',8.484,17.529],['hard',17.529,28.942],['proof',28.942,35.712],['cta',35.712,40.291]],
+  hook:{bar:'you · after you sign',lines:['<div class="ln u">▸ ok… what happens now?</div>','<div class="ln step">…silence. no plan, no demos, no idea.</div>','<div class="ln bad">✕ the black box most agencies sell</div>'],
+   sub:'No mystery. <span class="rose">Here is exactly how I work.</span>',head:['After you sign,','<span class="rose">no black box.</span>'],headSub:'Four stages. Fixed scope. You own it all.'},
+  build:{eyebrow:'the four stages',head:['One week in.','<span class="cyan">Working the whole way.</span>'],pipe:['Audit','Sprint','Build','Operate'],sub:'A working demo <span class="cyan">every single week.</span>'},
+  hard:{eyebrow:'what makes it safe',head:['No surprises.','<span class="amber">Ever.</span>'],chips:['Fixed scope','Weekly demo','You own the code','No lock-in'],blocked:['surprise invoice','✕ never happens']},
+  proof:{stamp:'✓ PREDICTABLE · VISIBLE · YOURS',metrics:[[100,'%','on time'],[1,'/wk','working demo'],[100,'%','yours, day one'],[0,'','lock-in']],tag:'Shipped on time. <b>Proven before it ships.</b>'},
+  cta:{head:['Know what you get','<span class="green">before you commit.</span>'],btn:'Start with the audit →'},
+  pLabels:['black box','four stages','no surprises','proven · green']},
+
+ casestudy:{ vo:'assets/svc-casestudy-vo.mp3', rail:'ANATOMY OF A CATCH · SAGE IDEAS',
+  scenes:[['hook',0,10.342],['build',10.342,19.34],['hard',19.34,32.286],['proof',32.286,41.424],['cta',41.424,45.075]],
+  hook:{bar:'support-agent · looked flawless',lines:['<div class="ln u">▸ refunds approved · policy answered</div>','<div class="ln step">agent → fast, confident, demo-perfect <span class="ok">✓</span></div>','<div class="ln bad">✕ flawless in the demo means nothing</div>'],
+   sub:'Every demo looked <span class="rose">perfect.</span>',head:['Perfect in the demo.','<span class="rose">That is the trap.</span>'],headSub:"So I don't trust demos — I test everything."},
+  build:{eyebrow:'what I did',head:['Wired to an','<span class="cyan">eval harness.</span>'],pipe:['200 real Qs','Every tool call','On every change','Scored','Gated'],sub:'Run automatically <span class="cyan">on every single change.</span>'},
+  hard:{eyebrow:'the catch',head:['One build','<span class="amber">went red.</span>'],chips:['Refunds outside policy','Upstream change','Behavior drifted','Totally silent'],blocked:['approve refund $1,200','🛑 gate blocked the build']},
+  proof:{stamp:'✓ CAUGHT BEFORE IT SHIPPED',metrics:[[1,'','red build'],[0,'','customers hit'],[200,'','cases tested'],[100,'%','before prod']],tag:'A number — <b>not a prayer.</b>'},
+  cta:{head:['Every build ships','<span class="green">with evidence.</span>'],btn:'Let me prove yours →'},
+  pLabels:['looked flawless','testing','the catch','caught · green']},
+
+ demoslie:{ vo:'assets/svc-demoslie-vo.mp3', rail:'WHY AI DEMOS LIE · SAGE IDEAS',
+  scenes:[['hook',0,11.038],['build',11.038,24.031],['hard',24.031,37.255],['proof',37.255,43.467],['cta',43.467,48]],
+  hook:{bar:'the demo · flawless',lines:['<div class="ln u">▸ run the demo</div>','<div class="ln step">5 hand-picked inputs → perfect answers <span class="ok">✓</span></div>','<div class="ln bad">✕ your customers never use the happy path</div>'],
+   sub:'Every demo works. <span class="rose">That is the trick.</span>',head:['A demo is','<span class="rose">a magic trick.</span>'],headSub:'Same inputs. Same happy path. Every time.'},
+  build:{eyebrow:'why they lie',head:['Five cases.','<span class="cyan">Ten thousand realities.</span>'],pipe:['Typos','Edge cases','Weird phrasing','Angry users','Never in the demo'],sub:'Production throws <span class="cyan">what the demo never saw.</span>'},
+  hard:{eyebrow:'so failure is guaranteed',head:['The gap is','<span class="amber">where they die.</span>'],chips:['Cherry-picked inputs','No edge cases','No adversarial','No drift'],blocked:['the one case you skipped','🛑 the customer finds it first']},
+  proof:{stamp:'THE DEMO GAP',metrics:[[5,'','in the demo'],[10000,'','in production'],[1,'','ships the bug'],[100,'%','I test']],tag:'The demo is a trick. <b>Proof isn\'t.</b>'},
+  cta:{head:['Stop trusting demos.','<span class="green">Test everything.</span>'],btn:"Let's talk →"},
+  pLabels:['the trick','the gap','guaranteed','tested · green']},
+
+ llmjudge:{ vo:'assets/svc-llmjudge-vo.mp3', rail:'LLM-AS-JUDGE · SAGE IDEAS',
+  scenes:[['hook',0,8.484],['build',8.484,18.179],['hard',18.179,28.943],['proof',28.943,36.409],['cta',36.409,41.174]],
+  hook:{bar:'your AI · 10,000 answers/day',lines:['<div class="ln u">▸ is it still good today?</div>','<div class="ln step">10,000 answers · nobody read them</div>','<div class="ln bad">✕ you can\'t grade what you can\'t see</div>'],
+   sub:'You can\'t read <span class="rose">ten thousand answers.</span>',head:['Grade','<span class="cyan">ten thousand answers?</span>'],headSub:"A human can't. A judge can."},
+  build:{eyebrow:'the idea',head:['An AI that','<span class="cyan">grades your AI.</span>'],pipe:['Output','Rubric','Judge model','Score','Every answer'],sub:'Automatically, <span class="cyan">at scale.</span>'},
+  hard:{eyebrow:'the catch — a judge can be fooled',head:['So you','<span class="amber">calibrate it.</span>'],chips:['Score a sample by hand','Tune to agree with people','Bias controls','Spot-checks'],blocked:['confident nonsense','✓ caught by calibration']},
+  proof:{stamp:'QUALITY, SCORED AT SCALE',metrics:[[10000,'','answers graded / day'],[95,'%','agrees with humans'],[0,'','read by hand'],[1,'','score, every day']],tag:'Not a hunch — <b>a score.</b>'},
+  cta:{head:['Grade your AI','<span class="green">at scale.</span>'],btn:"Let's talk →"},
+  pLabels:['unseen','the idea','calibrate','scored · green']},
+
+ evalsvstests:{ vo:'assets/svc-evalsvstests-vo.mp3', rail:'EVALS vs TESTS vs GATES · SAGE IDEAS',
+  scenes:[['hook',0,7.648],['build',7.648,22.359],['hard',22.359,33.076],['proof',33.076,41.842],['cta',41.842,45.911]],
+  hook:{bar:'three words · used wrong',lines:['<div class="ln u">▸ "we tested it"</div>','<div class="ln step">…but tested ≠ evaluated ≠ gated</div>','<div class="ln bad">✕ confusing them ships AI broken</div>'],
+   sub:'Three words. <span class="rose">Not the same thing.</span>',head:['Test. Eval.','<span class="rose">Gate.</span>'],headSub:'Confuse them, and it ships broken.'},
+  build:{eyebrow:'what each one does',head:['Three jobs.','<span class="cyan">One pipeline.</span>'],pipe:['Test: known case','Eval: quality score','Gate: blocks the build'],sub:'You need <span class="cyan">all three.</span>'},
+  hard:{eyebrow:'miss one and it leaks',head:['Each catches','<span class="amber">what the others miss.</span>'],chips:['No tests → silent bugs','No evals → silent drops','No gate → ships anyway'],blocked:['skip the gate','🛑 bad build reaches the customer']},
+  proof:{stamp:'ALL THREE — WIRED TOGETHER',metrics:[[1,'','test: pass/fail'],[1,'','eval: 0-100'],[1,'','gate: blocks red'],[0,'','leaks']],tag:'Tests, evals, and gates. <b>Together.</b>'},
+  cta:{head:['All three,','<span class="green">wired together.</span>'],btn:"Let's talk →"},
+  pLabels:['confused','three jobs','the leak','wired · green']},
+
+ rageval:{ vo:'assets/svc-rageval-vo.mp3', rail:'RAG EVALUATION · SAGE IDEAS',
+  scenes:[['hook',0,9.599],['build',9.599,19.619],['hard',19.619,31.032],['proof',31.032,36.223],['cta',36.223,39.781]],
+  hook:{bar:'your AI · citing a doc',lines:['<div class="ln u">▸ "per document 4.2, yes"</div>','<div class="ln step">confident · specific · sourced <span class="ok">✓</span></div>','<div class="ln bad">✕ retrieval fetched the wrong page</div>'],
+   sub:'Confident, specific — <span class="rose">and wrong.</span>',head:['The model didn\'t lie.','<span class="rose">Retrieval did.</span>'],headSub:'And most teams never measure it.'},
+  build:{eyebrow:'what RAG eval scores',head:['Grade the','<span class="cyan">retrieval itself.</span>'],pipe:['Right docs fetched?','Answer used them?','Citation real?'],sub:'Separate from <span class="cyan">the model.</span>'},
+  hard:{eyebrow:'measured on real questions',head:['Now you know','<span class="amber">which part broke.</span>'],chips:['Retrieval precision','Answer faithfulness','Citation accuracy'],blocked:['a bad answer','✓ the search, or the prompt?']},
+  proof:{stamp:'RETRIEVAL, MEASURED',metrics:[[94,'%','retrieval precision'],[91,'%','answer faithfulness'],[100,'%','citations checked'],[0,'','guessing']],tag:'Fix the retrieval — <b>or fix the prompt.</b>'},
+  cta:{head:['Measure retrieval,','<span class="green">not vibes.</span>'],btn:"Let's talk →"},
+  pLabels:['wrong page','scoring','the break','measured · green']},
+
+ promptreg:{ vo:'assets/svc-promptreg-vo.mp3', rail:'PROMPT REGRESSION · SAGE IDEAS',
+  scenes:[['hook',0,7.973],['build',7.973,17.529],['hard',17.529,27.085],['proof',27.085,33.761],['cta',33.761,37.226]],
+  hook:{bar:'one prompt tweak',lines:['<div class="ln u">▸ fixed the one thing <span class="ok">✓</span></div>','<div class="ln step">…and quietly broke five others</div>','<div class="ln bad">✕ you won\'t see it until a customer does</div>'],
+   sub:'One fix. <span class="rose">Five silent breaks.</span>',head:['Fix one thing.','<span class="rose">Break five.</span>'],headSub:'That is prompt regression.'},
+  build:{eyebrow:'why it happens',head:['LLMs are','<span class="cyan">entangled.</span>'],pipe:['One prompt change','Ripples everywhere','Re-run every case','Every time'],sub:'The only way to catch it: <span class="cyan">test all of it.</span>'},
+  hard:{eyebrow:'so I score every change',head:['Green,','<span class="amber">or it didn\'t ship.</span>'],chips:['Suite of real cases','Scored on every change','Red = you broke something','Before prod, not after'],blocked:['one-line prompt change','🛑 −10% quality, caught']},
+  proof:{stamp:'CAUGHT BEFORE IT SHIPPED',metrics:[[10,'%','a tweak can cost'],[100,'%','cases re-run'],[0,'','silent breaks'],[1,'','red build']],tag:'Change prompts with <b>confidence.</b>'},
+  cta:{head:['Change prompts,','<span class="green">not your luck.</span>'],btn:"Let's talk →"},
+  pLabels:['silent break','entangled','the catch','caught · green']},
+
+ hallucinations:{ vo:'assets/svc-hallucinations-vo.mp3', rail:'HALLUCINATIONS · SAGE IDEAS',
+  scenes:[['hook',0,9.738],['build',9.738,19.154],['hard',19.154,30.707],['proof',30.707,35.387],['cta',35.387,38.341]],
+  hook:{bar:'the model · confident',lines:['<div class="ln u">▸ "your policy allows this"</div>','<div class="ln step">fluent · confident · specific <span class="ok">✓</span></div>','<div class="ln bad">✕ the policy does not exist</div>'],
+   sub:'Fluent, confident — <span class="rose">and made up.</span>',head:['Not a glitch.','<span class="rose">A feature.</span>'],headSub:'The model does exactly what it was built to.'},
+  build:{eyebrow:'you can\'t delete them — you can catch them',head:['Ground it.','<span class="cyan">Then check it.</span>'],pipe:['Ground in real sources','Check every claim','Is it in the data?'],sub:'Does the claim <span class="cyan">actually appear?</span>'},
+  hard:{eyebrow:'the dangerous ones are confident',head:['Fake policy.','<span class="amber">Made-up number.</span>'],chips:['Confident + specific','Fake citations','Wrong figures','Flagged before a user'],blocked:['made-up refund policy','🛑 flagged, not shipped']},
+  proof:{stamp:'ZERO THAT REACH THE CUSTOMER',metrics:[[100,'%','answers checked'],[0,'','fake claims shipped'],[1,'','source per claim'],[0,'','trust required']],tag:'Not zero hallucinations — <b>zero that reach them.</b>'},
+  cta:{head:['Catch them','<span class="green">before they cost you.</span>'],btn:"Let's talk →"},
+  pLabels:['made up','grounding','the danger','caught · green']},
+
+ ciforai:{ vo:'assets/svc-ciforai-vo.mp3', rail:'CI FOR AI · SAGE IDEAS',
+  scenes:[['hook',0,9.506],['build',9.506,20.223],['hard',20.223,28.385],['proof',28.385,34.504],['cta',34.504,37.319]],
+  hook:{bar:'your AI · shipping',lines:['<div class="ln u">▸ ship the change</div>','<div class="ln step">someone clicks around → "looks fine" <span class="ok">✓</span></div>','<div class="ln bad">✕ no pipeline · no gate · just hope</div>'],
+   sub:'Your code has CI. <span class="rose">Your AI has "looks fine."</span>',head:['Your AI ships','<span class="rose">on a vibe.</span>'],headSub:'Your code never would.'},
+  build:{eyebrow:'same idea, applied to AI',head:['Every change','<span class="cyan">runs the checks.</span>'],pipe:['Prompt / retrieval / agent','evals + tests','automatically','every change'],sub:'The parts that <span class="cyan">actually break.</span>'},
+  hard:{eyebrow:'quality drops → red build',head:['The pipeline','<span class="amber">remembers for you.</span>'],chips:['Auto-triggered','Red on quality drop','Stops the build','No human to forget'],blocked:['quality dropped','🛑 build red — like a failed test']},
+  proof:{stamp:'KNOWING, NOT HOPING',metrics:[[100,'%','changes checked'],[0,'','manual clicking'],[1,'','red on regression'],[24,'/7','watching']],tag:'Hoping it\'s good vs <b>knowing it is.</b>'},
+  cta:{head:['Put your AI','<span class="green">on a pipeline.</span>'],btn:"Let's talk →"},
+  pLabels:['looks fine','the pipeline','red build','knowing · green']},
+
+ onemetric:{ vo:'assets/svc-onemetric-vo.mp3', rail:'THE ONE METRIC · SAGE IDEAS',
+  scenes:[['hook',0,8.902],['build',8.902,18.736],['hard',18.736,30.661],['proof',30.661,34.969],['cta',34.969,37.273]],
+  hook:{bar:'the dashboard · 95% accurate',lines:['<div class="ln u">▸ accuracy: 95% <span class="ok">✓</span></div>','<div class="ln step">looks great on the slide</div>','<div class="ln bad">✕ the 5% it fails are the refunds</div>'],
+   sub:'95% accurate. <span class="rose">Still unshippable.</span>',head:['Accuracy','<span class="rose">hides the failures.</span>'],headSub:'The ones that actually hurt you.'},
+  build:{eyebrow:'the number that matters',head:['Not "how often right."','<span class="cyan">"How often costly."</span>'],pipe:['High-stakes cases','Customer-facing','Wrong = it costs you','Measure those'],sub:'The failures <span class="cyan">that matter.</span>'},
+  hard:{eyebrow:'why the average lies',head:['5% wrong','<span class="amber">on refunds ends you.</span>'],chips:['Refunds','Medical advice','Legal claims','Measured directly'],blocked:['95% average','🛑 says nothing about the 5%']},
+  proof:{stamp:'THE FAILURES THAT MATTER',metrics:[[95,'%','accuracy (a lie)'],[5,'%','wrong on what counts'],[1,'','number to watch'],[0,'','sleepless nights']],tag:'Ship when it\'s low enough to <b>sleep.</b>'},
+  cta:{head:['Know your','<span class="green">real number.</span>'],btn:"Let's talk →"},
+  pLabels:['the average','what matters','the 5%','known · green']},
+
+ haveqa:{ vo:'assets/svc-haveqa-vo.mp3', rail:'I ALREADY HAVE QA · SAGE IDEAS',
+  scenes:[['hook',0,6.812],['build',6.812,19.572],['hard',19.572,30.846],['proof',30.846,35.526],['cta',35.526,38.805]],
+  hook:{bar:'your QA team · great',lines:['<div class="ln u">▸ "we have QA covered"</div>','<div class="ln step">…for deterministic software <span class="ok">✓</span></div>','<div class="ln bad">✕ AI isn\'t deterministic</div>'],
+   sub:'Great QA team. <span class="rose">Different animal.</span>',head:['Testing AI','<span class="rose">is different.</span>'],headSub:"I don't replace them — I extend them."},
+  build:{eyebrow:'why traditional QA can\'t',head:['Same prompt,','<span class="cyan">different answer tomorrow.</span>'],pipe:['Deterministic tests','can\'t catch','non-deterministic AI','it needs a new layer'],sub:'Traditional test cases <span class="cyan">miss it.</span>'},
+  hard:{eyebrow:'the layer I add',head:['The tools','<span class="amber">they don\'t have.</span>'],chips:['Evaluations','Judge models','Drift detection','Retrieval scoring'],blocked:['not another headcount','✓ the missing layer']},
+  proof:{stamp:'YOUR TEAM + THE AI LAYER',metrics:[[0,'','headcount added'],[1,'','missing layer'],[100,'%','they still own it'],[100,'%','AI now measurable']],tag:'They own quality. I make the AI <b>measurable.</b>'},
+  cta:{head:['Add the layer,','<span class="green">not a headcount.</span>'],btn:"Let's talk →"},
+  pLabels:['covered?','different','the layer','extended · green']},
+
+ eyeball:{ vo:'assets/svc-eyeball-vo.mp3', rail:'CAN\'T I JUST EYEBALL IT? · SAGE IDEAS',
+  scenes:[['hook',0,8.949],['build',8.949,18.783],['hard',18.783,27.039],['proof',27.039,32.647],['cta',32.647,35.787]],
+  hook:{bar:'you · reviewing outputs',lines:['<div class="ln u">▸ read 10 outputs → "looks good" <span class="ok">✓</span></div>','<div class="ln step">…now do that 10,000× a day</div>','<div class="ln bad">✕ eyeballing doesn\'t scale</div>'],
+   sub:'Fine for ten. <span class="rose">Not ten thousand.</span>',head:['Eyeballing','<span class="rose">doesn\'t scale.</span>'],headSub:'And it misses the slow drift.'},
+  build:{eyebrow:'why it fails',head:['Make it','<span class="cyan">systematic.</span>'],pipe:['A scored rubric','Run automatically','On every change','Same standard'],sub:'Every time, <span class="cyan">at any volume.</span>'},
+  hard:{eyebrow:'human sets it · system enforces it',head:['A standard','<span class="amber">no human can hold.</span>'],chips:['Repeatable','At scale','Catches slow drift','Every single output'],blocked:['spot-checking','✓ replaced by measuring']},
+  proof:{stamp:'JUDGMENT, ENFORCED AT SCALE',metrics:[[10000,'','outputs / day'],[100,'%','scored'],[1,'','standard, always'],[0,'','missed drift']],tag:'You set the standard. The system <b>enforces it.</b>'},
+  cta:{head:['Stop spot-checking.','<span class="green">Start measuring.</span>'],btn:"Let's talk →"},
+  pLabels:['looks good','systematic','the drift','measured · green']},
+
+ fastcost:{ vo:'assets/svc-fastcost-vo.mp3', rail:'HOW FAST, HOW MUCH? · SAGE IDEAS',
+  scenes:[['hook',0,7.091],['build',7.091,17.483],['hard',17.483,26.574],['proof',26.574,30.65],['cta',30.65,34.115]],
+  hook:{bar:'the two first questions',lines:['<div class="ln u">▸ how fast can you start?</div>','<div class="ln step">▸ what does it cost?</div>','<div class="ln bad" style="color:var(--green)">✓ fair — here\'s the honest answer</div>'],
+   sub:'Fair questions. <span class="cyan">Honest answers.</span>',head:['Start in','<span class="cyan">a week.</span>'],headSub:'Fixed scope. Fixed price. No mystery.'},
+  build:{eyebrow:'the on-ramp',head:['One-week audit.','<span class="cyan">A plan either way.</span>'],pipe:['Fixed scope','Fixed price','Leave with a plan','No big commitment'],sub:'Find out if I can help — <span class="cyan">cheaply.</span>'},
+  hard:{eyebrow:'then, scoped in sprints',head:['See it work','<span class="amber">every week.</span>'],chips:['Weekly result','Stop whenever','No retainer','No surprise invoices'],blocked:['open-ended contract','✕ never here']},
+  proof:{stamp:'KNOW THE COST — BEFORE YOU COMMIT',metrics:[[1,'wk','to start'],[1,'','fixed price'],[0,'','surprise invoices'],[100,'%','you own']],tag:'Start small. See it work. <b>Then decide.</b>'},
+  cta:{head:['Start small.','<span class="green">Then decide.</span>'],btn:'Book the audit →'},
+  pLabels:['two questions','the on-ramp','no surprises','clear · green']},
+
+ datasafe:{ vo:'assets/svc-datasafe-vo.mp3', rail:'IS MY DATA SAFE? · SAGE IDEAS',
+  scenes:[['hook',0,7.927],['build',7.927,19.247],['hard',19.247,28.524],['proof',28.524,32.368],['cta',32.368,34.904]],
+  hook:{bar:'before you hand over access',lines:['<div class="ln u">▸ is my data safe?</div>','<div class="ln step">…it should be your first question</div>','<div class="ln bad" style="color:var(--green)">✓ here\'s exactly how I work</div>'],
+   sub:'Your first question. <span class="cyan">The right one.</span>',head:['Your data','<span class="cyan">stays yours.</span>'],headSub:'Provably — not just as a promise.'},
+  build:{eyebrow:'how I work',head:['Your environment.','<span class="cyan">Your keys. Your rules.</span>'],pipe:['Least privilege','Only what\'s needed','Nothing leaves','Without your say-so'],sub:'Access scoped to <span class="cyan">the work itself.</span>'},
+  hard:{eyebrow:'what never happens',head:['No copies.','<span class="amber">No surprises.</span>'],chips:['No training on your data','No shadow copies','No un-approved services','Logged + revocable'],blocked:['third-party you didn\'t approve','🛑 never happens']},
+  proof:{stamp:'YOURS — PROVABLY',metrics:[[0,'','data trained on'],[0,'','shadow copies'],[100,'%','logged'],[100,'%','revocable']],tag:'Provably yours — <b>not just a promise.</b>'},
+  cta:{head:['Security','<span class="green">first, always.</span>'],btn:"Let's talk →"},
+  pLabels:['first question','your rules','never','provable · green']},
+};
+const cfg=CONFIGS[new URLSearchParams(location.search).get('svc')||(location.hash.slice(1))||'rag'];
+const SC=cfg.scenes, TOTAL=SC[SC.length-1][2];
+document.getElementById('rail').textContent=cfg.rail;
+const au=document.getElementById('au'); au.src='/'+cfg.vo;
+// build scenes DOM
+const sd=document.getElementById('scenes');
+sd.innerHTML=`
+<section class="scene" data-s="hook" style="align-items:center;justify-content:center">
+  <div id="hwrap" style="position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:26px">
+    <div class="panel" id="panel"><div class="bar"><i></i><i></i><i></i>&nbsp; ${cfg.hook.bar}</div><div class="body">${cfg.hook.lines.map((l,i)=>l.replace('class="ln','id="l'+i+'" class="ln')).join('')}</div><div class="slice" id="slice"></div></div>
+    <div class="sub" id="hsub" style="text-align:center;max-width:none;margin:0">${cfg.hook.sub}</div>
+  </div>
+  <div id="hhead" style="position:absolute;left:140px;right:140px;text-align:center;opacity:0">
+    <h1 id="hh">${wrap(cfg.hook.head)}</h1>
+    <div class="sub" style="text-align:center;max-width:none;margin:34px auto 0" id="hhsub">${cfg.hook.headSub}</div>
+  </div>
+</section>
+<section class="scene" data-s="build">
+  <div class="eyebrow" id="ey2">${cfg.build.eyebrow}</div>
+  <h1 id="h2">${wrap(cfg.build.head)}</h1>
+  <div class="pipe" id="pipe">${cfg.build.pipe.map((n,i)=>`${i?`<span class="parrow" id="pa${i}">→</span>`:''}<span class="pnode" id="pn${i}">${n}</span>`).join('')}</div>
+  <div class="sub" id="sub2" style="font-size:36px;max-width:none">${cfg.build.sub}</div>
+</section>
+<section class="scene" data-s="hard">
+  <div class="eyebrow" id="ey3">${cfg.hard.eyebrow}</div>
+  <h1 id="h3" style="font-size:104px">${wrap(cfg.hard.head)}</h1>
+  <div class="guards">${cfg.hard.chips.map((c,i)=>`<div class="guard" id="g${i}"><span class="c">▪</span>${c}</div>`).join('')}</div>
+  <div class="blocked" id="blk"><span class="act">${cfg.hard.blocked[0]}</span> <span class="stop">${cfg.hard.blocked[1]}</span></div>
+</section>
+<section class="scene" data-s="proof" style="align-items:center;justify-content:center">
+  <div class="money">
+    <div class="stamp" id="stamp">${cfg.proof.stamp}</div>
+    <div class="bignums">${cfg.proof.metrics.map((m,i)=>`<div class="bn" id="bn${i}"><span class="v" id="bv${i}">0</span><span class="l">${m[2]}</span></div>`).join('')}</div>
+    <div class="mtag" id="mtag">${cfg.proof.tag}</div>
+  </div>
+</section>
+<section class="scene" data-s="cta" style="align-items:flex-start">
+  <div class="brand" id="b5" style="opacity:1"><span class="box">JT</span>jason.teixeira()</div>
+  <h1 id="h5" style="font-size:112px;margin-top:12px">${wrap(cfg.cta.head)}</h1>
+  <div class="ctabtn" id="ctab">${cfg.cta.btn}</div>
+  <div class="cta-url" id="ctau">agency.sageideas.dev</div>
+</section>`;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const secEls=$$('.scene');
+function cl(x,a,b){return Math.max(a,Math.min(b,x));}
+function rise(el,lt,at,dur=0.6,dy=26){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*dy}px)`;}
+function fade(el,lt,at,dur=0.5){if(!el)return;let p=cl((lt-at)/dur,0,1);el.style.opacity=1-Math.pow(1-p,3);}
+function pop(el,lt,at,dur=0.55){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`scale(${0.92+0.08*e})`;}
+function popn(el,lt,at,dur=0.5){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.style.opacity=e;el.style.transform=`translateY(${(1-e)*30}px) scale(${0.9+0.1*e})`;}
+const words=id=>$$('#'+id+' .w');
+function seq(els,lt,at,step=0.13,dur=0.5){els.forEach((el,i)=>rise(el,lt,at+i*step,dur));}
+function num(el,lt,at,dur,to,suf){if(!el)return;let p=cl((lt-at)/dur,0,1);const e=1-Math.pow(1-p,3);el.textContent=(Math.round(e*to)).toLocaleString()+(suf||'');}
+const HK=SC[0][2]; // hook duration
+function render(t){
+  const cur=SC.find(s=>t>=s[1]&&t<s[2])||SC[SC.length-1];
+  const lt=t-cur[1],dur=cur[2]-cur[1];
+  secEls.forEach(el=>{const on=el.dataset.s===cur[0];el.classList.toggle('on',on);
+    if(on){const ent=Math.min(1,lt/0.5),e=1-Math.pow(1-ent,3);el.style.opacity=e;el.style.transform=`translateY(${((1-e)*40).toFixed(1)}px) scale(${(1+0.012*(lt/dur)).toFixed(4)})`;}
+    else{el.style.opacity='';el.style.transform='';}});
+  let rbl=0,grn=0;
+  if(cur[0]==='hook'){
+    pop($('#panel'),lt,0.2);fade($('#hsub'),lt,0.8);
+    const nL=cfg.hook.lines.length;
+    for(let i=0;i<nL;i++)fade($('#l'+i),lt,0.6+i*(HK*0.13));
+    const gAt=HK*0.42, gw=(lt>=gAt-0.1&&lt<=gAt+1.1)?cl(1-Math.abs(lt-(gAt+0.4))/0.7,0,1):0;
+    $('#slice').style.opacity=(gw*(0.55+0.45*Math.sin(lt*70))).toFixed(2);
+    $('#panel').style.transform=`translateX(${(gw*Math.sin(lt*85)*6).toFixed(1)}px)`;rbl=gw*0.7;
+    const co=HK*0.60;const wo=cl(1-(lt-co)/0.5,0,1);$('#hwrap').style.opacity=wo.toFixed(3);
+    fade($('#hhead'),lt,co+0.15,0.4);seq(words('hh'),lt,co+0.3);fade($('#hhsub'),lt,HK*0.85);
+  }
+  else if(cur[0]==='build'){fade($('#ey2'),lt,0.05);seq(words('h2'),lt,0.4);
+    const P=cfg.build.pipe.length;for(let i=0;i<P;i++){rise($('#pn'+i),lt,1.2+i*0.4,.5,18);if(i)fade($('#pa'+i),lt,1.35+i*0.4,.3);}
+    fade($('#sub2'),lt,1.2+P*0.4+0.3);}
+  else if(cur[0]==='hard'){fade($('#ey3'),lt,0.05);seq(words('h3'),lt,0.4);
+    cfg.hard.chips.forEach((c,i)=>rise($('#g'+i),lt,1.4+i*0.32,.5,18));
+    const bAt=Math.min(dur-1.6,1.4+cfg.hard.chips.length*0.32+0.6);
+    const bw=(lt>=bAt+0.4&&lt<=bAt+2.2)?cl(1-Math.abs(lt-(bAt+1.2))/0.9,0,1):0;rbl=bw*0.35;
+    fade($('#blk'),lt,bAt,0.4);}
+  else if(cur[0]==='proof'){grn=Math.max(0,1-Math.abs(lt-0.6)/0.7);pop($('#stamp'),lt,0.3);
+    cfg.proof.metrics.forEach((m,i)=>{popn($('#bn'+i),lt,0.9+i*0.2);num($('#bv'+i),lt,0.9+i*0.2,1.5,m[0],m[1]);});
+    fade($('#mtag'),lt,2.7);}
+  else if(cur[0]==='cta'){fade($('#b5'),lt,0.1);seq(words('h5'),lt,0.4);pop($('#ctab'),lt,1.3);fade($('#ctau'),lt,1.8);}
+  $('#rbloom').style.opacity=rbl.toFixed(3);$('#bloom').style.opacity=grn.toFixed(3);
+  const prog=cl(t/TOTAL,0,1)*100;
+  const b=SC[1][1],hd=SC[2][1],pr=SC[3][1];
+  const col=t<hd?'#22d3ee':t<pr?'#F59E0B':'#10b981';
+  const lab=t<b?cfg.pLabels[0]:t<hd?cfg.pLabels[1]:t<pr?cfg.pLabels[2]:cfg.pLabels[3];
+  const pf=$('#pfill'),pd=$('#pdot'),pl=$('#plabel');
+  pf.style.width=prog+'%';pf.style.background=col;pf.style.color=col;
+  pd.style.left=prog+'%';pd.style.background=col;pd.style.color=col;
+  pl.style.left=prog+'%';pl.style.color=col;if(pl.textContent!==lab)pl.textContent=lab;
+}
+window.__seek=(t)=>{try{au.currentTime=t;}catch(e){}render(t);};
+let playing=false;function tick(){if(!playing)return;render(au.currentTime||0);requestAnimationFrame(tick);}
+window.__play=()=>{if(playing)return;playing=true;au.play().catch(()=>{});tick();};
+au.addEventListener('ended',()=>{playing=false;render(TOTAL);});
+render(0);document.addEventListener('click',()=>window.__play(),{once:true});
+</script><script defer src="/assets/ga.js?v=1"></script>
+</body></html>

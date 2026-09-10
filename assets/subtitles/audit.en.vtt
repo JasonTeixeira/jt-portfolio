@@ -1,0 +1,20 @@
+WEBVTT
+
+00:00.000 --> 00:06.216
+Before you spend three months building an AI feature, spend one week finding out if it'll actually hold up.
+
+00:06.216 --> 00:15.164
+That's the audit. One week — I go deep on your feature or agent: the prompts, the retrieval, and the edge cases where it quietly breaks.
+
+00:15.164 --> 00:25.742
+I build a real evaluation harness against your actual use cases, run it, and score it. Not vibes — numbers.
+
+00:25.742 --> 00:36.040
+At the end, you get a plan either way: failure modes ranked by risk, and exactly what it takes to make it production-safe.
+
+00:36.040 --> 00:41.645
+And if your feature is already solid, I'll tell you that too. Either way, you stop guessing.
+
+00:41.645 --> 00:47.339
+One week. One clear answer. Book the audit — and find out what your AI actually does.
+
