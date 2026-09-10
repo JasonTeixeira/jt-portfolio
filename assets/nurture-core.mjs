@@ -1,7 +1,7 @@
 // Pure nurture rules + email templates. Shared browser+node. No I/O.
-export const DUE = { LEAD_HOURS: 48, UNPAID_1_DAYS: 3, UNPAID_2_DAYS: 8, EXPIRING_WITHIN_DAYS: 3, DRAFT_STALE_HOURS: 24 };
+export const DUE = { LEAD_HOURS: 48, LEAD2_HOURS: 144, UNPAID_1_DAYS: 3, UNPAID_2_DAYS: 8, EXPIRING_WITHIN_DAYS: 3, DRAFT_STALE_HOURS: 24 };
 export const SEND_CAP = 200;
-export const STEP = { LEAD: 'lead_no_proposal', UNPAID_1: 'proposal_unpaid_1', UNPAID_2: 'proposal_unpaid_2', EXPIRING: 'proposal_expiring' };
+export const STEP = { LEAD: 'lead_no_proposal', LEAD_2: 'lead_no_proposal_2', UNPAID_1: 'proposal_unpaid_1', UNPAID_2: 'proposal_unpaid_2', EXPIRING: 'proposal_expiring' };
 
 export function isSendable(p) { return Boolean(p) && !p.unsubscribed && !p.nurture_suppressed; }
 export function hoursBetween(aIso, bIso) { return (new Date(bIso).getTime() - new Date(aIso).getTime()) / 3600e3; }
@@ -14,6 +14,17 @@ export function leadDue(prospect, hasProposal, sentSteps, nowIso) {
   if (sentSteps && sentSteps.has(STEP.LEAD)) return false;
   if (!prospect.updated_at) return false;
   return hoursBetween(prospect.updated_at, nowIso) >= DUE.LEAD_HOURS;
+}
+
+// Second lead touch — a different angle a few days after the first, only if the first went out,
+// they still haven't scoped a proposal, and they haven't opted out.
+export function lead2Due(prospect, hasProposal, sentSteps, nowIso) {
+  if (!prospect || prospect.stage !== 'engaged') return false;
+  if (!prospect.email || hasProposal) return false;
+  if (!isSendable(prospect)) return false;
+  if (!sentSteps || !sentSteps.has(STEP.LEAD) || sentSteps.has(STEP.LEAD_2)) return false;
+  if (!prospect.updated_at) return false;
+  return hoursBetween(prospect.updated_at, nowIso) >= DUE.LEAD2_HOURS;
 }
 
 export function dueStepForProposal(proposal, sentSteps, nowIso) {
@@ -42,10 +53,16 @@ export function listUnsubHeaders(unsubscribeUrl) {
 function footer(unsubscribeUrl) { return `\n\nNot interested in these? Unsubscribe: ${unsubscribeUrl}`; }
 
 export function leadEmail({ prospect, hasPlan, siteUrl, unsubscribeUrl }) {
-  const subject = hasPlan ? 'Want me to turn your plan into a firm quote?' : 'Want me to map out what a build would look like?';
+  const subject = hasPlan ? 'Want me to turn your plan into a real quote?' : 'Want me to map out what a build would take?';
   const body = hasPlan
-    ? `Hi,\n\nYou put together a plan on my site a couple of days back. Want me to turn it into a firm scope and price? It takes me a few minutes, and you get a real number to work with.\n\nStart here: ${siteUrl}/build.html\nOr if it's easier, book a short call: ${siteUrl}/book.html`
-    : `Hi,\n\nYou grabbed something from my site recently. If you have a project in mind, I can map out what it would take and what it would cost, with no obligation.\n\nScope it here: ${siteUrl}/build.html\nOr book a short call: ${siteUrl}/book.html`;
+    ? `Hi,\n\nYou scoped a plan on my site a couple of days ago, nice pick. Want me to turn it into a firm scope, timeline, and price you can act on? Takes me a few minutes and there's no obligation.\n\nThe thing that makes working with me different: I don't just build it, I prove it works. Every claim is backed by a number you can see, not a "trust me".\n\nPick it back up: ${siteUrl}/build.html\nOr grab 15 minutes and we'll talk it through: ${siteUrl}/book.html`
+    : `Hi,\n\nYou stopped by my site recently. If there's a project on your mind (an AI feature, an automation, a system that keeps leaking your time), I can map out what it'd take and what it'd cost, free.\n\nWhat makes it different: I build it and I prove it works, with evals and tests you can see. No hand-waving.\n\nScope it in a few minutes: ${siteUrl}/build.html\nOr book a quick call: ${siteUrl}/book.html`;
+  return { subject, text: body + footer(unsubscribeUrl) + `\n\n— Jason`, headers: listUnsubHeaders(unsubscribeUrl) };
+}
+
+export function lead2Email({ prospect, hasPlan, siteUrl, unsubscribeUrl }) {
+  const subject = 'The one thing most AI projects get wrong';
+  const body = `Hi,\n\nCircling back once, then I'll leave you be.\n\nMost AI and automation work ships on a demo and a prayer: it looks great in the meeting, then a real customer finds the one thing it gets wrong. The fix isn't more AI; it's proof: evals, tests, and a gate that catches the bad output before it ships. That's the whole reason my site runs its own quality checks in public.\n\nIf you've got something you're not 100% sure about, that's exactly the conversation to have. 15 minutes, no pitch:\n${siteUrl}/book.html\nOr scope it yourself: ${siteUrl}/build.html`;
   return { subject, text: body + footer(unsubscribeUrl) + `\n\n— Jason`, headers: listUnsubHeaders(unsubscribeUrl) };
 }
 
