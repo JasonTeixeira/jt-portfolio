@@ -18,11 +18,24 @@ function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 /* ── anonymous prospect tracking: fire-and-forget, never affects the UI ──
    A missing/failing /api/scope endpoint (static hosting, no env configured)
    must never log a console error or block any interaction. */
+// Always emit a valid UUID v4 — the server stores prospectId in a Postgres `uuid`
+// column, so a non-UUID string (the old Date+Math.random fallback) silently failed
+// the cast and dropped the write. crypto.randomUUID needs a secure context; this
+// getRandomValues path also covers http/older browsers so telemetry is never lost.
+function uuid4() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  const b = new Uint8Array(16);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(b);
+  else for (let i = 0; i < 16; i++) b[i] = Math.floor(Math.random() * 256);
+  b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, (x) => x.toString(16).padStart(2, '0'));
+  return `${h[0]}${h[1]}${h[2]}${h[3]}-${h[4]}${h[5]}-${h[6]}${h[7]}-${h[8]}${h[9]}-${h[10]}${h[11]}${h[12]}${h[13]}${h[14]}${h[15]}`;
+}
 function prospectId() {
   try {
     let pid = localStorage.getItem('scope_pid');
     if (!pid) {
-      pid = (crypto.randomUUID && crypto.randomUUID()) || (Date.now().toString(36) + Math.random().toString(36).slice(2));
+      pid = uuid4();
       localStorage.setItem('scope_pid', pid);
     }
     return pid;
