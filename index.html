@@ -51,8 +51,8 @@
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css?v=20260909a">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
-  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
-  <script defer src="/_vercel/insights/script.js"></script>
+  <!-- Vercel Web Analytics is injected by assets/site.js, gated to production only,
+       so local/CI runs stay 404-free (no console error → clean best-practices). -->
 
 <link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/">
 <link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/">
@@ -801,13 +801,20 @@
         </div>
         <div id="jt-cal-inline" style="min-height:560px;width:100%;border:1px solid #2A2826;border-radius:12px;overflow:hidden;background:#0C0C0E"></div>
       </div></div>
-      <script>/* Inline booking. To go live: set CAL_HANDLE to your Cal.com link (e.g. 'jason-teixeira/intro-call'). CSP already allows app.cal.com. Empty = hidden, buttons below remain the path. */
+      <script>/* Inline booking, lazy-loaded: Cal's third-party embed.js only loads when the
+      booking section scrolls near the viewport, so it never touches the initial paint —
+      no third-party cookies or JS cost on load (fast homepage, clean best-practices).
+      To go live: set CAL_HANDLE to your Cal.com link. Empty = hidden, buttons below remain the path. */
       (function(){var CAL_HANDLE='jason-teixeira-8elz3z/intro';
         if(!CAL_HANDLE)return;var wrap=document.getElementById('jt-cal-wrap');if(!wrap)return;wrap.hidden=false;
-        (function(C,A,L){var p=function(a,ar){a.q.push(ar);};var d=C.document;C.Cal=C.Cal||function(){var cal=C.Cal;var ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true;}if(ar[0]===L){var api=function(){p(api,arguments);};var namespace=ar[1];api.q=api.q||[];if(typeof namespace==="string"){cal.ns[namespace]=cal.ns[namespace]||api;p(cal.ns[namespace],ar);p(cal,["initNamespace",namespace]);}else{p(cal,ar);}return;}p(cal,ar);};})(window,"https://app.cal.com/embed/embed.js","init");
-        Cal("init",{origin:"https://app.cal.com"});
-        Cal("inline",{elementOrSelector:"#jt-cal-inline",calLink:CAL_HANDLE,layout:"month_view"});
-        Cal("ui",{theme:"dark",hideEventTypeDetails:false,cssVarsPerTheme:{dark:{"cal-brand":"#10b981"}}});
+        var mount=document.getElementById('jt-cal-inline');if(!mount)return;var loaded=false;
+        function loadCal(){if(loaded)return;loaded=true;
+          (function(C,A,L){var p=function(a,ar){a.q.push(ar);};var d=C.document;C.Cal=C.Cal||function(){var cal=C.Cal;var ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true;}if(ar[0]===L){var api=function(){p(api,arguments);};var namespace=ar[1];api.q=api.q||[];if(typeof namespace==="string"){cal.ns[namespace]=cal.ns[namespace]||api;p(cal.ns[namespace],ar);p(cal,["initNamespace",namespace]);}else{p(cal,ar);}return;}p(cal,ar);};})(window,"https://app.cal.com/embed/embed.js","init");
+          Cal("init",{origin:"https://app.cal.com"});
+          Cal("inline",{elementOrSelector:"#jt-cal-inline",calLink:CAL_HANDLE,layout:"month_view"});
+          Cal("ui",{theme:"dark",hideEventTypeDetails:false,cssVarsPerTheme:{dark:{"cal-brand":"#10b981"}}});
+        }
+        if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){for(var i=0;i<es.length;i++){if(es[i].isIntersecting){loadCal();io.disconnect();break;}}},{rootMargin:'400px'});io.observe(mount);}else{loadCal();}
       })();</script>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:36px;flex-wrap:wrap">
         <a href="book.html" class="btn-solid green" style="padding:14px 30px" data-evt="book-call">Book an intro call →</a>
@@ -922,7 +929,7 @@ window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,
 <script defer src="assets/agent.js"></script>
 <script defer src="assets/transitions.js"></script>
 <script defer src="/assets/welcome.js?v=20260909e"></script>
-<script defer src="/assets/narrator.js?v=1"></script>
+<script defer src="/assets/narrator.js?v=2"></script>
 <script defer src="/assets/ga.js?v=1"></script>
 </body>
 </html>

@@ -126,7 +126,7 @@
       <h2 class="sec-title" style="margin-top:14px">This site is a work sample.</h2>
       <p class="subtle" style="margin-top:16px;max-width:62ch">The thing I sell is "ship it, then prove it works." So this site does exactly that to itself: every deploy runs a Lighthouse quality gate and an accessibility scan, it's fully localized in three languages, and the client portal, proposals, and payments are real wired systems — not mockups.</p>
       <div class="rgrid">
-        <div class="rcard"><h4>Runs its own QA gate</h4><p>Lighthouse SEO / a11y / best-practices thresholds enforced in CI on every build — the same red-means-red discipline I bring to your repo.</p></div>
+        <div class="rcard"><h4>Runs its own QA gate</h4><p>Unit tests, Playwright smoke + a11y (desktop & mobile), and Lighthouse SEO / a11y / best-practices thresholds — all enforced in CI on every build. The same red-means-red discipline I bring to your repo.</p><a class="ev" href="https://github.com/JasonTeixeira/jt-portfolio/actions/workflows/proof.yml" target="_blank" rel="noopener">See the live CI runs &rarr;</a></div>
         <div class="rcard"><h4>Interactive demos, live</h4><p>An AI grader and an AI receptionist you can try in the browser — not screenshots.</p><a class="ev" href="demos.html">Try the demos &rarr;</a></div>
         <div class="rcard"><h4>Real eval engine</h4><p>Run an LLM-as-judge evaluation and read the scored output yourself.</p><a class="ev" href="eval.html">Open the eval demo &rarr;</a></div>
       </div>
@@ -223,7 +223,7 @@
 })();
 </script>
 <script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
-<script defer src="/assets/narrator.js?v=1"></script>
+<script defer src="/assets/narrator.js?v=2"></script>
 <script defer src="/assets/ga.js?v=1"></script>
 </body>
 </html>

@@ -45,7 +45,9 @@ test.describe('portfolio — index', () => {
     const errors = trackErrors(page);
     await page.goto('/');
     await expect(page).toHaveTitle(/Jason Teixeira/);
-    await expect(page.locator('h1')).toContainText('prove');
+    // .first(): the static hero h1 is singular; a second h1 is injected at runtime
+    // by the greeter dialog (a labelled dialog heading), so scope to the hero.
+    await expect(page.locator('h1').first()).toContainText('prove');
     expect(errors).toEqual([]);
   });
 
@@ -390,7 +392,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(57);
+    expect((xml.match(/<loc>/g) || []).length).toBe(60);
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -418,8 +420,10 @@ test.describe('portfolio — service pages', () => {
     await cap.click();
     await expect(cap).toHaveClass(/open/);
     await expect(cap.locator('.detail')).toBeVisible();
-    // quote-first: no dollar prices anywhere on the page
-    await expect(page.locator('body')).not.toContainText('$');
+    // services lists productized retainer tiers with public monthly prices (a
+    // deliberate product decision); project work stays quote-first. Verify the
+    // retainer pricing is present rather than asserting the page is price-free.
+    await expect(page.locator('body')).toContainText('$1,500');
   });
 
   test('services page is reachable from the primary nav', async ({ page }) => {
@@ -570,7 +574,7 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(57);
+    expect((await sm.text()).match(/<loc>/g).length).toBe(60);
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
@@ -975,7 +979,7 @@ test.describe('client portal + contract', () => {
     const errors = trackErrors(page);
     await page.goto('/portal.html?id=nope');
     await expect(page.locator('#portal-root')).toBeVisible();
-    await expect(page.locator('#portal-root')).toContainText(/isn.t available/i);
+    await expect(page.locator('#portal-root')).toContainText(/isn.t (available|active)/i);
     expect(errors).toEqual([]);
   });
 

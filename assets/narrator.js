@@ -122,12 +122,14 @@
   function injectCss() {
     if (d.getElementById('jt-nar-css')) return;
     var css = [
-      '#jt-narrator{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:2147482000;font-family:"Plus Jakarta Sans",system-ui,sans-serif}',
-      '.jt-nar-toggle{display:inline-flex;align-items:center;gap:9px;background:rgba(12,12,15,0.94);backdrop-filter:blur(12px);border:1px solid #2A2826;border-radius:999px;padding:9px 16px 9px 11px;color:#F4F2EF;font:600 12.5px/1 "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer;box-shadow:0 12px 34px rgba(0,0,0,0.5);transition:border-color .2s,transform .2s}',
+      // pointer-events:none on the wrapper so its empty area (full-width on mobile) never
+      // swallows taps meant for the Atlas FAB beneath it; the actual controls re-enable it.
+      '#jt-narrator{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:2147482000;pointer-events:none;font-family:"Plus Jakarta Sans",system-ui,sans-serif}',
+      '.jt-nar-toggle{pointer-events:auto;display:inline-flex;align-items:center;gap:9px;background:rgba(12,12,15,0.94);backdrop-filter:blur(12px);border:1px solid #2A2826;border-radius:999px;padding:9px 16px 9px 11px;color:#F4F2EF;font:600 12.5px/1 "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer;box-shadow:0 12px 34px rgba(0,0,0,0.5);transition:border-color .2s,transform .2s}',
       '.jt-nar-toggle:hover{border-color:#22d3ee;transform:translateY(-1px)}',
       '.jt-nar-orb{width:18px;height:18px;border-radius:50%;flex:0 0 auto;background:radial-gradient(circle at 35% 30%,#22d3ee,#065f46);box-shadow:0 0 10px rgba(34,211,238,.5)}',
       '.jt-nar-orb.big{width:24px;height:24px}',
-      '.jt-nar-panel{background:rgba(12,12,15,0.97);backdrop-filter:blur(16px);border:1px solid #2A2826;border-radius:16px;padding:15px 18px;width:min(460px,calc(100vw - 24px));box-shadow:0 24px 70px rgba(0,0,0,.6)}',
+      '.jt-nar-panel{pointer-events:auto;background:rgba(12,12,15,0.97);backdrop-filter:blur(16px);border:1px solid #2A2826;border-radius:16px;padding:15px 18px;width:min(460px,calc(100vw - 24px));box-shadow:0 24px 70px rgba(0,0,0,.6)}',
       '.jt-nar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}',
       '.jt-nar-name{font:700 12px/1 "JetBrains Mono",monospace;letter-spacing:.06em;color:#F4F2EF}',
       '.jt-nar-viz{width:110px;height:22px;opacity:.9}',
