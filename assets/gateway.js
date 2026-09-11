@@ -27,7 +27,7 @@
   var T = {
     kicker: L({ en: 'AI Automation × QA / LLM Eval', es: 'Automatización de IA × QA', pt: 'Automação de IA × QA' }),
     title: L({ en: 'I ship AI features.\nThen I <em>prove</em> they work.', es: 'Lanzo funciones de IA.\nLuego <em>demuestro</em> que funcionan.', pt: 'Eu entrego recursos de IA.\nDepois <em>provo</em> que funcionam.' }),
-    hi: L({ en: "Hi — I'm Jason's assistant. What brings you in today?", es: 'Hola — soy la asistente de Jason. ¿Qué te trae hoy?', pt: 'Oi — sou a assistente do Jason. O que te traz aqui hoje?' }),
+    hi: L({ en: "Hi — I'm Nadine, Jason's AI. What brings you in today?", es: 'Hola — soy Nadine, la IA de Jason. ¿Qué te trae hoy?', pt: 'Oi — sou a Nadine, a IA do Jason. O que te traz aqui hoje?' }),
     tour: L({ en: 'Take the 60-second tour', es: 'Ver el recorrido de 60 s', pt: 'Ver o tour de 60 s' }),
     skip: L({ en: 'Skip to the site', es: 'Ir directo al sitio', pt: 'Ir direto ao site' }),
     on: L({ en: 'online', es: 'en línea', pt: 'online' })

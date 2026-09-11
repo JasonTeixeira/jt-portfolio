@@ -324,7 +324,11 @@ async function handler(req, res) {
     }
 
     if (!isScope) {
-      return res.status(200).json({ ok: true, reply: raw });
+      // Price backstop: automations mode intentionally quotes fixed setup prices; every
+      // other mode is quote-first, so scrub any stray dollar figure (and the em-dash tic)
+      // a model slip might introduce before it ever reaches the visitor.
+      const reply = mode === 'automations' ? raw : deVoiceTic(sanitizeScopeReply(raw));
+      return res.status(200).json({ ok: true, reply });
     }
 
     // Scope mode: parse the model's structured turn, then ground it before

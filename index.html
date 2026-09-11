@@ -803,7 +803,7 @@
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8E8882;margin-bottom:12px">
           <span style="display:inline-flex;align-items:center;gap:8px;color:#10b981;font-weight:600"><span class="pulse" style="position:static"></span>pick a time — 30 min, free</span>
           <span style="color:#3D3A37">·</span>
-          <span>I reply and run the call myself. No sales team, no spam, no automated sequence.</span>
+          <span>I run the call and reply myself. No sales team, no spam — an instant confirmation, then a real reply from me.</span>
         </div>
         <div id="jt-cal-inline" style="min-height:560px;width:100%;border:1px solid #2A2826;border-radius:12px;overflow:hidden;background:#0C0C0E"></div>
       </div></div>
@@ -837,7 +837,14 @@
       <div class="only-client" style="display:contents"><div id="mini-eval" style="max-width:560px;margin:36px auto 0;border:1px solid #a78bfa;background:#0C0C0E;padding:clamp(20px,3.5vw,30px);text-align:left">
         <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#a78bfa;margin-bottom:10px">free mini-eval · a work sample you keep</div>
         <p style="margin:0;font-size:14px;line-height:1.7;color:#A8A29E">Send me your AI feature. I&rsquo;ll run a free mini-eval against it and send you the findings: pass/fail, failure examples, and what I&rsquo;d gate before your next release. <span style="color:#F4F2EF">No call required.</span></p>
-        <p style="margin:10px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">use the form below; put the feature URL in the message and pick any stage</p>
+        <form id="jt-minieval-form" style="margin:16px 0 0;display:flex;flex-direction:column;gap:10px" novalidate>
+          <input id="jt-me-url" type="url" inputmode="url" autocomplete="url" placeholder="https://your-app.com/chat — your live AI feature" style="background:#08090c;border:1px solid #2A2826;border-radius:9px;padding:11px 13px;font-size:13px;color:#F4F2EF;font-family:inherit;outline:none">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <input id="jt-me-email" type="email" required autocomplete="email" placeholder="you@company.com" style="flex:1;min-width:200px;background:#08090c;border:1px solid #2A2826;border-radius:9px;padding:11px 13px;font-size:13px;color:#F4F2EF;font-family:inherit;outline:none">
+            <button type="submit" style="background:#a78bfa;color:#1a0f2e;border:none;border-radius:9px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">Send me the findings →</button>
+          </div>
+          <p id="jt-me-status" aria-live="polite" style="margin:2px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">No call needed. Jason runs it himself and emails you what he finds.</p>
+        </form>
       </div></div>
       <form id="jt-contact-form" style="max-width:560px;margin:44px auto 0;text-align:left;display:flex;flex-direction:column;gap:14px" novalidate>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px">
@@ -874,7 +881,7 @@
           <button type="submit" class="btn-solid green" style="border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Send it →</button>
           <span id="jt-form-status" role="status" aria-live="polite" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8E8882"></span>
         </div>
-        <p style="margin:4px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">I reply within one business day myself. There's no automated sequence.</p>
+        <p style="margin:4px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882">You'll get an instant confirmation, then a personal reply from me within one business day.</p>
       </form>
       <!-- what happens next -->
       <div style="max-width:560px;margin:28px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:14px;text-align:left">
@@ -944,7 +951,7 @@
 <div id="jt-toast" role="status" aria-live="polite">copied</div>
 <script defer src="assets/transform.js"></script>
 <script defer src="assets/nav.js?v=20260910a"></script>
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v=20260911a"></script>
 <script src="assets/subscribe.js"></script>
 <script>/* analytics: Google Analytics 4 — loads only on production once GA_ID is set */
 window.va=function(){};var GA_ID='__GA_ID__';
@@ -952,10 +959,10 @@ if(GA_ID.charAt(0)==='G'&&GA_ID.indexOf('X')<0&&location.hostname.endsWith('sage
 var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(g);
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config',GA_ID);
 window.va=function(kind,payload){try{gtag('event',(payload&&payload.name)||kind,(payload&&payload.data)||{});}catch(e){}};}</script>
-<script defer src="assets/agent.js?v=20260911d"></script>
-<script defer src="/assets/gateway.js?v=4"></script>
+<script defer src="assets/agent.js?v=20260911e"></script>
+<script defer src="/assets/gateway.js?v=5"></script>
 <script defer src="assets/transitions.js"></script>
-<script defer src="/assets/welcome.js?v=20260910a"></script>
+<script defer src="/assets/welcome.js?v=20260911a"></script>
 <script defer src="/assets/narrator.js?v=5"></script>
 <script defer src="/assets/ga.js?v=1"></script>
 </body>
