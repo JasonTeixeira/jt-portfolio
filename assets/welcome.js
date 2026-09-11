@@ -97,7 +97,7 @@
   // real time — the actual voice signal, not a fake loop. Degrades to plain playback if Web Audio
   // is unavailable, and to text-only if the clip is missing.
   var AUDIO_BASE = base + '/assets/greeter/' + loc + '/';
-  var AUDIO_V = '?v=nadine2'; // cache-buster — bump when clips are re-generated
+  var AUDIO_V = '?v=v3'; // cache-buster — bump when clips are re-generated
   var muted = false, narAudio = null, actx = null, analyser = null, freq = null, vizRAF = 0;
   function ensureGraph() {
     if (narAudio) return true;
