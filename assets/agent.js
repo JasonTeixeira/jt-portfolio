@@ -34,7 +34,7 @@
   // that MATCHES the recorded line. This tap-through tree covers the common questions + key objections;
   // free-text still hits the live AI as text (can't pre-record a live reply). Covers ~the whole journey.
   var GUIDED = {
-    build: { clip: 'build', next: ['useCases', 'eval', 'proof', 'book'],
+    build: { clip: 'build', next: ['useCases', 'eval', 'browsing', 'book'],
       en: "Jason builds AI features and then proves they actually work — chatbots, RAG assistants, automations — with the evaluation and testing that keeps them honest in production. Want to see it live, or have your own feature checked for free?",
       es: "Jason construye funciones de IA y luego demuestra que realmente funcionan — chatbots, asistentes RAG, automatizaciones — con la evaluación y las pruebas que las mantienen confiables en producción. ¿Quieres verlo en vivo o que revise tu propia función gratis?",
       pt: "O Jason constrói recursos de IA e depois prova que eles realmente funcionam — chatbots, assistentes RAG, automações — com a avaliação e os testes que os mantêm confiáveis em produção. Quer ver ao vivo ou que ele avalie o seu próprio recurso de graça?" },
@@ -42,7 +42,7 @@
       en: "It's a simple path. First a short, low-risk audit — about a week — where Jason maps your problem and hands you a plan and a real quote. Then a sprint, then the build, and an optional ongoing phase if you want him to keep it running. You're never locked in, and you own everything.",
       es: "Es un camino simple. Primero una auditoría breve y de bajo riesgo — más o menos una semana — donde Jason mapea tu problema y te entrega un plan y una cotización real. Luego un sprint, después el build, y una fase continua opcional si quieres que lo siga manteniendo. Nunca quedas atado, y todo es tuyo.",
       pt: "É um caminho simples. Primeiro uma auditoria curta e de baixo risco — mais ou menos uma semana — onde o Jason mapeia o seu problema e te entrega um plano e um orçamento real. Depois um sprint, depois o build, e uma fase contínua opcional se você quiser que ele continue mantendo. Você nunca fica preso, e tudo é seu." },
-    useCases: { clip: 'useCases', next: ['eval', 'whyYou', 'book'],
+    useCases: { clip: 'useCases', next: ['wrapper', 'eval', 'book'],
       en: "Quite a range. AI chatbots and RAG assistants, voice agents, document intake, workflow automation with tools like n8n and Make, plus the whole testing and evaluation side — eval harnesses, safety red-teaming, and CI quality gates. What are you trying to build?",
       es: "Bastante variado. Chatbots de IA y asistentes RAG, agentes de voz, procesamiento de documentos, automatización de flujos con herramientas como n8n y Make, y todo el lado de pruebas y evaluación — arneses de evaluación, red-teaming de seguridad y controles de calidad en CI. ¿Qué estás intentando construir?",
       pt: "Bastante coisa. Chatbots de IA e assistentes RAG, agentes de voz, leitura de documentos, automação de fluxos com ferramentas como n8n e Make, e todo o lado de testes e avaliação — arneses de avaliação, red-teaming de segurança e portões de qualidade no CI. O que você está tentando construir?" },
@@ -58,11 +58,11 @@
       en: "It depends on scope, but roughly: the audit is about a week, a sprint two, and a full build usually four to eight weeks. You'll get a real timeline in your plan, not a guess. Want to book a quick call to scope yours?",
       es: "Depende del alcance, pero a grandes rasgos: la auditoría es como una semana, un sprint dos, y un build completo normalmente de cuatro a ocho semanas. Tendrás un cronograma real en tu plan, no una adivinanza. ¿Agendamos una llamada rápida para definir el tuyo?",
       pt: "Depende do escopo, mas por alto: a auditoria é cerca de uma semana, um sprint duas, e um build completo normalmente de quatro a oito semanas. Você vai ter um cronograma real no seu plano, não um chute. Quer marcar uma conversa rápida pra definir o seu?" },
-    reliability: { clip: 'reliability', next: ['eval', 'whyYou', 'book'],
+    reliability: { clip: 'reliability', next: ['busFactor', 'whyYou', 'book'],
       en: "That's exactly the problem Jason solves. Most people build the AI and hope it behaves. He puts a gate in front of it — evaluations and adversarial tests that catch a wrong answer, a bad price, or an off-the-rails reply before your customer ever sees it. That reliability is the whole point.",
       es: "Ese es justo el problema que Jason resuelve. La mayoría construye la IA y espera que se porte bien. Él pone una compuerta delante — evaluaciones y pruebas adversarias que atrapan una respuesta equivocada, un precio malo o una salida fuera de control antes de que tu cliente la vea. Esa confiabilidad es todo el punto.",
       pt: "Esse é exatamente o problema que o Jason resolve. A maioria constrói a IA e torce pra ela se comportar. Ele coloca um portão na frente — avaliações e testes adversariais que pegam uma resposta errada, um preço ruim ou uma saída fora de controle antes do seu cliente ver. Essa confiabilidade é o ponto todo." },
-    whyYou: { clip: 'whyYou', next: ['reliability', 'proof', 'book'],
+    whyYou: { clip: 'whyYou', next: ['inHouse', 'reliability', 'book'],
       en: "Fair question. A cheap builder ships you a demo and a prayer. Jason ships the feature and the proof it works — the tests, the evals, the gate — and hands you code you own. If your AI talks to customers and has to be right, that's the difference.",
       es: "Buena pregunta. Un desarrollador barato te entrega una demo y una plegaria. Jason entrega la función y la prueba de que funciona — las pruebas, las evaluaciones, la compuerta — y te da el código, que es tuyo. Si tu IA habla con clientes y tiene que estar bien, esa es la diferencia.",
       pt: "Pergunta justa. Um desenvolvedor barato te entrega uma demo e uma reza. O Jason entrega o recurso e a prova de que funciona — os testes, as avaliações, o portão — e te dá o código, que é seu. Se a sua IA fala com clientes e precisa estar certa, essa é a diferença." },
@@ -93,7 +93,27 @@
     book: { clip: 'book', cta: 'book.html',
       en: "Easiest is a quick fifteen-minute call. You tell Jason the problem, and he tells you honestly what it takes and what it costs. I can open his calendar for you right now.",
       es: "Lo más fácil es una llamada rápida de quince minutos. Le cuentas el problema a Jason y él te dice con honestidad qué implica y cuánto cuesta. Puedo abrir su calendario ahora mismo.",
-      pt: "O mais fácil é uma conversa rápida de quinze minutos. Você conta o problema pro Jason e ele te diz com honestidade o que envolve e quanto custa. Posso abrir a agenda dele agora mesmo." }
+      pt: "O mais fácil é uma conversa rápida de quinze minutos. Você conta o problema pro Jason e ele te diz com honestidade o que envolve e quanto custa. Posso abrir a agenda dele agora mesmo." },
+    notSure: { next: ['scoper', 'useCases', 'book'],
+      en: "Totally normal — most people start there. Fastest way: Jason's two-minute scoping tool. A few plain questions and it lays out a rough plan and a ballpark, free, no call. Or just tell me what's eating your time and I'll point you the right way.",
+      es: "Totalmente normal — la mayoría empieza ahí. Lo más rápido: la herramienta de scoping de Jason, dos minutos. Unas preguntas simples y te arma un plan aproximado y un rango, gratis, sin llamada. O cuéntame qué te quita tiempo y te oriento.",
+      pt: "Totalmente normal — a maioria começa aí. O jeito mais rápido: a ferramenta de scoping do Jason, dois minutos. Algumas perguntas simples e ela monta um plano aproximado e uma faixa, de graça, sem ligação. Ou me conta o que toma seu tempo e eu te oriento." },
+    inHouse: { next: ['whyYou', 'cost', 'book'],
+      en: "You could — and if you've got an ML engineer who also does QA, you should. Most teams don't, and hiring one is months plus a salary. Jason gives you the senior build-and-proof in weeks, hands you code you own, and steps out once it runs. You rent the expertise for the hard part instead of adding headcount.",
+      es: "Podrías — y si tienes un ingeniero de ML que además haga QA, deberías. La mayoría no lo tiene, y contratarlo son meses más un salario. Jason te da la construcción y la prueba senior en semanas, te entrega código que es tuyo, y se retira cuando ya funciona. Rentas la experiencia para la parte difícil en vez de sumar plantilla.",
+      pt: "Você poderia — e se tiver um engenheiro de ML que também faça QA, deveria. A maioria não tem, e contratar um são meses mais um salário. O Jason te entrega a construção e a prova sênior em semanas, te dá o código, que é seu, e sai quando já está rodando. Você aluga a expertise pra parte difícil em vez de aumentar o time." },
+    busFactor: { next: ['dataSafe', 'whyYou', 'book'],
+      en: "Fair — betting on one person is a real risk, so Jason builds so you're never stuck with him. Everything ships into your repo, your infrastructure, your keys — documented and tested, so your team or the next dev can run it without him. The tests and the eval gate are the handoff. You're buying something that outlives the engagement.",
+      es: "Justo — apostar por una sola persona es un riesgo real, así que Jason construye para que nunca dependas de él. Todo queda en tu repositorio, tu infraestructura, tus claves — documentado y probado, para que tu equipo o el siguiente desarrollador lo mantenga sin él. Las pruebas y la compuerta de evaluación son el traspaso. Compras algo que sobrevive al proyecto.",
+      pt: "Justo — apostar em uma só pessoa é um risco real, então o Jason constrói pra você nunca ficar preso a ele. Tudo vai pro seu repositório, sua infraestrutura, suas chaves — documentado e testado, pra sua equipe ou o próximo dev tocar sem ele. Os testes e o portão de avaliação são a entrega. Você compra algo que sobrevive ao projeto." },
+    wrapper: { next: ['reliability', 'proof', 'book'],
+      en: "Fair thing to be suspicious of — most 'AI agencies' are a thin wrapper and a markup. The wrapper's the easy twenty percent. Jason's actual work is the other eighty: making it reliable — the evals, the adversarial tests, the gate that stops it saying the wrong thing to your customer. Anyone can wire up an API; proving it won't embarrass you is the job.",
+      es: "Es justo desconfiar — la mayoría de las 'agencias de IA' son una capa fina y un sobreprecio. Esa capa es el veinte por ciento fácil. El trabajo real de Jason es el otro ochenta: hacerlo confiable — las evaluaciones, las pruebas adversarias, la compuerta que evita que le diga algo mal a tu cliente. Cualquiera conecta una API; probar que no te dejará mal es el trabajo.",
+      pt: "É justo desconfiar — a maioria das 'agências de IA' é uma casca fina e uma margem. A casca é os vinte por cento fáceis. O trabalho real do Jason é os outros oitenta: deixar confiável — as avaliações, os testes adversariais, o portão que impede de falar besteira pro seu cliente. Qualquer um conecta uma API; provar que não vai te deixar mal é o trabalho." },
+    browsing: { next: ['eval', 'proof', 'book'],
+      en: "No pressure at all — browse away. If it's useful, the free mini-eval is a zero-commitment way to see how Jason works: real probes on your AI, findings sent over, no call. Or leave your email and I'll send the case studies to read later. No follow-up unless you ask.",
+      es: "Cero presión — mira con calma. Si te sirve, la mini-evaluación gratis es una forma sin compromiso de ver cómo trabaja Jason: pruebas reales sobre tu IA, te enviamos los hallazgos, sin llamada. O deja tu correo y te mando los casos de estudio para leer luego. Sin seguimiento salvo que lo pidas.",
+      pt: "Zero pressão — fica à vontade. Se ajudar, a mini-avaliação grátis é um jeito sem compromisso de ver como o Jason trabalha: testes reais na sua IA, resultados enviados, sem ligação. Ou deixa seu e-mail e eu mando os estudos de caso pra ler depois. Sem cobrança, a não ser que você peça." }
   };
 
   var GUIDE_LABEL = {
@@ -112,11 +132,18 @@
     hiring: L({ en: "I'm hiring for a role", es: 'Estoy contratando', pt: 'Estou contratando' }),
     demos: L({ en: 'See it live', es: 'Verlo en vivo', pt: 'Ver ao vivo' }),
     book: L({ en: 'Book a call', es: 'Agendar una llamada', pt: 'Agendar uma conversa' }),
-    cases: L({ en: 'Case studies', es: 'Casos de estudio', pt: 'Estudos de caso' })
+    cases: L({ en: 'Case studies', es: 'Casos de estudio', pt: 'Estudos de caso' }),
+    scoper: L({ en: 'Scope it in 2 min', es: 'Cotízalo en 2 min', pt: 'Faça o escopo em 2 min' }),
+    notSure: L({ en: "I'm not sure what I need", es: 'No sé qué necesito', pt: 'Não sei o que preciso' }),
+    inHouse: L({ en: 'Why not build in-house?', es: '¿Por qué no hacerlo interno?', pt: 'Por que não fazer interno?' }),
+    busFactor: L({ en: 'What if you disappear?', es: '¿Y si desapareces?', pt: 'E se você sumir?' }),
+    wrapper: L({ en: "Isn't this just a GPT wrapper?", es: '¿No es solo una capa sobre GPT?', pt: 'Não é só uma casca de GPT?' }),
+    browsing: L({ en: 'Just browsing', es: 'Solo estoy mirando', pt: 'Só dando uma olhada' })
   };
 
   var START = [
     { label: GUIDE_LABEL.build, guide: 'build' },
+    { label: GUIDE_LABEL.notSure, guide: 'notSure' },
     { label: GUIDE_LABEL.howItWorks, guide: 'howItWorks' },
     { label: GUIDE_LABEL.reliability, guide: 'reliability' },
     { label: GUIDE_LABEL.eval, guide: 'eval' },
@@ -235,8 +262,29 @@
 
   function scripted(q) { for (var i = 0; i < FALLBACK.length; i++) if (FALLBACK[i].re.test(q)) return L(FALLBACK[i]); return L(FB_DEFAULT); }
 
+  // Assemble a short context string from the visitor's OWN session data (name they gave,
+  // what they scoped, where they landed from) so Nadine can reference it naturally. The
+  // server sanitizes + caps it. Never fabricated — it's their data reflected back.
+  function buildContext() {
+    var bits = [];
+    try {
+      var nm = localStorage.getItem('jt-name'); if (nm) bits.push('Their first name is ' + nm + '.');
+      var snap = JSON.parse(localStorage.getItem('jt-scope-snapshot') || 'null');
+      if (snap && snap.names && snap.names.length) bits.push('Earlier on this device they scoped: ' + snap.names.join(', ') + (snap.band ? ' (~' + snap.band + ' indicative)' : '') + '.');
+    } catch (e) { /* ignore */ }
+    try {
+      var ref = document.referrer || '';
+      if (ref && ref.indexOf(location.host) === -1) { var d = ref.replace(/^https?:\/\//, '').split('/')[0]; if (d) bits.push('They arrived from ' + d + '.'); }
+    } catch (e) { /* ignore */ }
+    try {
+      var path = location.pathname.replace(/^\/(es|pt)/, '');
+      if (path && path !== '/' && path !== '/index.html') bits.push('They are reading the "' + path.replace(/^\//, '').replace(/\.html$/, '').replace(/-/g, ' ') + '" page.');
+    } catch (e) { /* ignore */ }
+    return bits.join(' ').slice(0, 380);
+  }
+
   function ask(history) {
-    return fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'associate', locale: LOC, messages: history }) })
+    return fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'associate', locale: LOC, context: buildContext(), messages: history }) })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { return d && d.ok && d.reply ? d.reply : null; })
       .catch(function () { return null; });
@@ -304,9 +352,11 @@
     var b = bubble('bot'); b.textContent = intro; speak(kind === 'minieval' ? 'captureIntro' : null); hist.push({ role: 'assistant', content: intro });
 
     var wrap = el('div', { alignSelf: 'stretch', display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px 2px' });
+    var name = el('input'); name.type = 'text'; name.placeholder = L({ en: 'First name (optional)', es: 'Nombre (opcional)', pt: 'Nome (opcional)' });
+    try { var nm0 = localStorage.getItem('jt-name'); if (nm0) name.value = nm0; } catch (e) { /* ignore */ }
     var email = el('input'); email.type = 'email'; email.placeholder = 'you@company.com';
     var url = el('input'); url.type = 'text'; url.placeholder = 'https://yourapp.com/chat  (optional)';
-    [email, url].forEach(function (inp) {
+    [name, email, url].forEach(function (inp) {
       css(inp, { background: '#0F0F13', border: '1px solid ' + C.line, borderRadius: '9px', padding: '10px 12px', fontSize: '13px', color: C.ink, fontFamily: 'inherit', outline: 'none' });
       inp.onfocus = function () { inp.style.borderColor = 'rgba(16,185,129,0.5)'; };
       inp.onblur = function () { inp.style.borderColor = C.line; };
@@ -315,15 +365,17 @@
     var go = el('button', { background: C.green, color: '#052e22', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit' }, kind === 'minieval'
       ? L({ en: 'Send me the findings →', es: 'Envíame los hallazgos →', pt: 'Me envie os resultados →' })
       : L({ en: 'Have Jason reach out →', es: 'Que Jason me contacte →', pt: 'Que o Jason entre em contato →' }));
-    wrap.appendChild(email); wrap.appendChild(url); wrap.appendChild(go);
+    wrap.appendChild(name); wrap.appendChild(email); wrap.appendChild(url); wrap.appendChild(go);
     msgsEl.appendChild(wrap); scroll();
 
     go.onclick = function () {
       var e = (email.value || '').trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { email.style.borderColor = '#f43f5e'; email.focus(); return; }
+      var nm = (name.value || '').trim().slice(0, 40);
+      try { if (nm) localStorage.setItem('jt-name', nm.split(/\s+/)[0]); } catch (e2) { /* ignore */ }
       go.disabled = true; go.textContent = 'sending…';
       track('atlas-lead-' + kind);
-      fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: e, feature: (url.value || '').trim(), name: '', source: 'atlas-' + kind }) })
+      fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: e, feature: (url.value || '').trim(), name: nm, source: 'atlas-' + kind }) })
         .then(function () { return true; }).catch(function () { return true; })
         .then(function () {
           if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
@@ -347,6 +399,7 @@
     var list = (keys || []).map(function (k) {
       if (k === 'cases') return { label: GUIDE_LABEL.cases, nav: 'case-studies.html' };
       if (k === 'live') return { label: GUIDE_LABEL.demos, nav: 'eval.html' };
+      if (k === 'scoper') return { label: GUIDE_LABEL.scoper, nav: 'build.html' };
       return { label: GUIDE_LABEL[k] || k, guide: k };
     });
     if (!list.some(function (c) { return c.guide === 'book'; })) list.push({ label: GUIDE_LABEL.book, guide: 'book' });
@@ -433,8 +486,19 @@
         // Returning visitor → a warm welcome-back (their own local flag, never claims to "remember" them).
         var back = false;
         try { back = localStorage.getItem('jt-nadine-seen') === '1'; localStorage.setItem('jt-nadine-seen', '1'); } catch (e) {}
-        if (back) { speak('welcomeBack'); typeInto(g, GREET_BACK, function () { hist.push({ role: 'assistant', content: GREET_BACK }); renderChips(START); }); }
-        else { speak('greet'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); }); }
+        if (back) {
+          speak('welcomeBack');
+          // If they scoped a plan before, offer to resume it (deep-links back into /build).
+          var startChips = START;
+          try {
+            var snap = JSON.parse(localStorage.getItem('jt-scope-snapshot') || 'null');
+            if (snap && snap.names && snap.names.length) {
+              var href = 'build.html' + (snap.hash ? '#plan=' + snap.hash : '');
+              startChips = [{ label: L({ en: 'Resume your plan', es: 'Retomar tu plan', pt: 'Retomar seu plano' }), nav: href }].concat(START);
+            }
+          } catch (e) { /* ignore */ }
+          typeInto(g, GREET_BACK, function () { hist.push({ role: 'assistant', content: GREET_BACK }); renderChips(startChips); });
+        } else { speak('greet'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); }); }
       }
       track('atlas-open');
     } else if (hasIntent) { showGuided(intent); }

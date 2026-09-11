@@ -45,15 +45,15 @@ async function handler(req, res) {
   // A — leads with no proposal
   try {
     const leads = await db.leadCandidates(now);
-    for (const { prospect, hasPlan } of (leads.data || [])) {
+    for (const { prospect, hasPlan, plan } of (leads.data || [])) {
       if (cap()) break;
       const steps = (await db.sentStepsForProspect(prospect.id)).data || new Set();
       if (leadDue(prospect, false, steps, now)) {
         await fire({ prospect, proposal: null, step: STEP.LEAD,
-          email: (u) => leadEmail({ prospect, hasPlan, siteUrl: SITE, unsubscribeUrl: u }) });
+          email: (u) => leadEmail({ prospect, hasPlan, plan, siteUrl: SITE, unsubscribeUrl: u }) });
       } else if (lead2Due(prospect, false, steps, now)) {
         await fire({ prospect, proposal: null, step: STEP.LEAD_2,
-          email: (u) => lead2Email({ prospect, hasPlan, siteUrl: SITE, unsubscribeUrl: u }) });
+          email: (u) => lead2Email({ prospect, hasPlan, plan, siteUrl: SITE, unsubscribeUrl: u }) });
       }
     }
   } catch (e) { errors++; console.error('nurture section error:', e && e.message ? e.message : e); }
