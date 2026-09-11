@@ -37,7 +37,7 @@ async function handler(req, res) {
       const tok = await db.ensureUnsubToken(prospect.id);
       if (!tok.ok || !tok.token) return;
       const built = email(unsubUrl(tok.token));
-      const r = await sendClient({ to: prospect.email || (proposal && proposal.client_email), subject: built.subject, text: built.text, headers: built.headers });
+      const r = await sendClient({ to: prospect.email || (proposal && proposal.client_email), subject: built.subject, text: built.text, html: built.html, headers: built.headers });
       if (r.ok) sent++;
       // send row already recorded; a send failure is not retried (a nurture nudge is best-effort)
     } catch { errors++; }

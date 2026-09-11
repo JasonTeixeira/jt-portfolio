@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:08.809
+Um recurso de IA é fácil de demonstrar — e brutal de colocar no ar. Essa lacuna, entre "funciona na demo" e "funciona pra um cliente real", é onde a maioria morre.
+
+00:08.809 --> 00:19.433
+Eu construo o recurso que você realmente quer. Um assistente de chat. Um agente que toma ações reais. Um copiloto dentro do seu produto — conectado aos seus dados, suas ferramentas, seus sistemas.
+
+00:19.433 --> 00:33.540
+Os agentes são a parte difícil. Tudo que pode agir pode agir errado — chamar a ferramenta errada, entrar em loop, vazar um segredo. Por isso eu construo os guardrails: ferramentas com escopo, retries, timeouts e um humano no loop onde importa.
+
+00:33.540 --> 00:44.257
+E aí eu provo. Cada prompt, cada chamada de ferramenta, cada caminho do usuário — testado contra casos reais e com gates no seu pipeline, pra não quebrar em silêncio em produção.
+
+00:44.257 --> 00:50.834
+O resultado é um recurso de IA que vai pro ar — e continua no ar. Me traga o que te deixa em dúvida.
+

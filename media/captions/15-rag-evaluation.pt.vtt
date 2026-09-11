@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.599
+Sua IA cita um documento. Confiante, específico, e errado. O modelo não mentiu — o retrieval entregou a página errada. E a maioria dos times nunca mede isso.
+
+00:09.599 --> 00:19.619
+A avaliação RAG pontua o retrieval em si, separado do modelo. Ele buscou os documentos certos? A resposta realmente usou eles? A citação é real?
+
+00:19.619 --> 00:31.032
+Você mede com perguntas reais: precisão do retrieval, fidelidade da resposta e exatidão da citação. Agora uma resposta ruim te diz exatamente que parte quebrou — a busca, ou o modelo.
+
+00:31.032 --> 00:36.223
+Sem isso, você adivinha. Com isso, você sabe: conserta o retrieval, ou conserta o prompt.
+
+00:36.223 --> 00:39.781
+Meça seu retrieval, não seus palpites. Vamos conversar.
+

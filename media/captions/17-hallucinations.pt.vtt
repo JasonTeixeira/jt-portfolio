@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.738
+Uma alucinação de IA não é um bug. É o modelo fazendo exatamente o que foi construído pra fazer — produzir uma resposta fluente e confiante, seja verdade ou não.
+
+00:09.738 --> 00:19.154
+Você não consegue deletar elas. Você consegue pegar. Ancore o modelo em fontes reais, depois cheque cada resposta contra essas fontes — a afirmação realmente aparece nos dados?
+
+00:19.154 --> 00:30.707
+As perigosas são confiantes e específicas: uma política falsa, um número errado, uma citação inventada. Por isso eu testo exatamente essas, com entradas reais, e sinalizo antes de chegar num usuário.
+
+00:30.707 --> 00:35.387
+O objetivo não é zero alucinação. É zero que chega no seu cliente.
+
+00:35.387 --> 00:38.341
+Pegue elas antes que custem caro. Vamos conversar.
+

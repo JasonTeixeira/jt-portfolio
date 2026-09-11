@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:09.506
+Your code has a pipeline: every change runs tests before it ships. Your AI feature? For most teams, it ships on a person clicking around and saying, looks fine.
+
+00:09.506 --> 00:20.223
+CI for AI is the same idea, applied to the parts that actually break: prompts, retrieval, and agents. Every change triggers the evaluations and the tests, automatically.
+
+00:20.223 --> 00:28.385
+If quality drops, the build goes red and stops — same as a failing unit test. No human has to remember to check. The pipeline remembers for you.
+
+00:28.385 --> 00:34.504
+This is the difference between hoping your AI is still good, and knowing it — on every single change.
+
+00:34.504 --> 00:37.319
+Put your AI on a pipeline. Let's talk.
+

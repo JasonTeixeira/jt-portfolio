@@ -1,0 +1,17 @@
+WEBVTT
+
+00:00.000 --> 00:07.648
+People use these three words like they mean the same thing. They don't — and confusing them is exactly why AI features ship broken.
+
+00:07.648 --> 00:22.359
+A test checks one known case: given this input, expect that output. Pass or fail. An evaluation scores quality across many cases. A gate is the rule that blocks the build when the score drops.
+
+00:22.359 --> 00:33.076
+You need all three. Tests catch the bugs you know about. Evaluations measure the quality you can't unit-test. And the gate is what stops bad code from reaching a customer.
+
+00:33.076 --> 00:41.842
+Miss one and it leaks. No tests, silent bugs. No evaluations, silent quality drops. No gate, both ship anyway.
+
+00:41.842 --> 00:45.911
+I build all three, wired together into your pipeline. Let's talk.
+

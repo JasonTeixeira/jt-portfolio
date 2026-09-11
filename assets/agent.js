@@ -361,13 +361,17 @@
     };
   }
 
-  function openPanel() {
+  // openPanel(intent?) — opening with a guided-intent key (from the full-screen gateway) skips
+  // the greeting and takes the visitor straight into that Nadine-voiced answer.
+  function openPanel(intent) {
     open = true; panel.style.display = 'flex';
     requestAnimationFrame(function () { panel.style.opacity = '1'; panel.style.transform = 'none'; });
+    var hasIntent = intent && typeof intent === 'string' && GUIDED[intent];
     if (!msgsEl.children.length) {
-      var g = bubble('bot'); speak('greet'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); });
+      if (hasIntent) { showGuided(intent); }
+      else { var g = bubble('bot'); speak('greet'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); }); }
       track('atlas-open');
-    }
+    } else if (hasIntent) { showGuided(intent); }
     setTimeout(function () { input && input.focus(); }, 300);
   }
   function closePanel() { open = false; stopSpeak(); panel.style.opacity = '0'; panel.style.transform = 'translateY(10px) scale(0.98)'; setTimeout(function () { panel.style.display = 'none'; }, 200); }
