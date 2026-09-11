@@ -1,5 +1,5 @@
 /**
- * assets/agent.js — "Atlas," Jason's AI associate. A premium, agentic site-wide
+ * assets/agent.js — "Nadine," Jason's AI assistant. A premium, agentic site-wide
  * assistant: it represents Jason, qualifies the visitor, and drives to the real
  * conversion actions (free mini-eval, book a call, see it live, browse services).
  *
@@ -19,9 +19,9 @@
   function L(m) { return (m && (m[LOC] || m.en)) || ''; }
 
   var GREET = L({
-    en: "Hi — I'm Jason's assistant. Tell me what you're working on, and I'll point you straight to the right thing. So, what brings you in today?",
-    es: "Hola — soy la asistente de Jason. Cuéntame en qué estás trabajando y te llevo directo a lo que necesitas. ¿Qué te trae por aquí hoy?",
-    pt: "Oi — sou a assistente do Jason. Me conta no que você está trabalhando e eu te levo direto ao que precisa. O que te traz aqui hoje?"
+    en: "Hi — I'm Nadine, Jason's AI. Tell me what you're working on, and I'll point you straight to the right thing. So, what brings you in today?",
+    es: "Hola — soy Nadine, la IA de Jason. Cuéntame en qué estás trabajando y te llevo directo a lo que necesitas. ¿Qué te trae por aquí hoy?",
+    pt: "Oi — sou a Nadine, a IA do Jason. Me conta no que você está trabalhando e eu te levo direto ao que precisa. O que te traz aqui hoje?"
   });
 
   // Every guided answer = a real Nadine voice clip (assets/concierge/<loc>/<clip>.mp3) + localized copy
@@ -145,9 +145,9 @@
       es: "Pruebas reales, todas públicas: un eval-gate de código abierto (verde en ~10 min), una plataforma de QA con 85 runners y un arreglo de seguridad rojo→verde documentado, una suite Playwright 37/37, más infraestructura de pruebas Fortune-50 y una suite en vivo llevada del 10% de inestabilidad a menos del 1%. ¿Quieres los casos de estudio?",
       pt: "Provas reais, todas públicas: um eval-gate de código aberto (verde em ~10 min), uma plataforma de QA com 85 runners e uma correção de segurança vermelho→verde documentada, uma suíte Playwright 37/37, além de infraestrutura de testes Fortune-50 e uma suíte ao vivo levada de 10% de instabilidade para menos de 1%. Quer os estudos de caso?" },
     { re: /human|real person|are you (a )?(ai|bot|real)|atlas|humano|persona real|eres.*(ia|bot)|voc[êe].*(ia|rob[ôo])|pessoa real/i,
-      en: "Honest answer: I'm Atlas, Jason's AI associate, real AI, and a real person reads everything at hello@sageideas.dev. I can answer most things about the work and set up the next step. What do you need?",
-      es: "Respuesta honesta: soy Atlas, la IA de Jason. Soy IA real, y una persona real lee todo en hello@sageideas.dev. Puedo responder casi todo sobre el trabajo y preparar el siguiente paso. ¿Qué necesitas?",
-      pt: "Resposta honesta: sou a Atlas, a IA do Jason. Sou IA de verdade, e uma pessoa real lê tudo em hello@sageideas.dev. Posso responder quase tudo sobre o trabalho e organizar o próximo passo. O que você precisa?" }
+      en: "Honest answer: I'm Nadine, Jason's AI — real AI, and a real person reads everything at hello@sageideas.dev. I can answer most things about the work and set up the next step. What do you need?",
+      es: "Respuesta honesta: soy Nadine, la IA de Jason. Soy IA real, y una persona real lee todo en hello@sageideas.dev. Puedo responder casi todo sobre el trabajo y preparar el siguiente paso. ¿Qué necesitas?",
+      pt: "Resposta honesta: sou Nadine, a IA do Jason. Sou IA de verdade, e uma pessoa real lê tudo em hello@sageideas.dev. Posso responder quase tudo sobre o trabalho e organizar o próximo passo. O que você precisa?" }
   ];
   var FB_DEFAULT = {
     en: "Good question. For anything specific, the fastest paths are a free mini-eval on your feature or a 15-minute call. Meanwhile I can walk you through what Jason builds, the proof behind it, or how engagements work. What's most useful?",
@@ -363,7 +363,7 @@
   // speak(key) plays /assets/concierge/en/<key>.mp3. On/off persists per visitor.
   var VLANG = LOC;
   var speakOn = true; try { speakOn = localStorage.getItem('atlas-voice') !== 'off'; } catch (e) {}
-  var CLIP_BASE = '/assets/concierge/' + VLANG + '/', CLIP_V = '?v=3';
+  var CLIP_BASE = '/assets/concierge/' + VLANG + '/', CLIP_V = '?v=4';
   var canVoice = true; // Nadine clips exist for en / es / pt
   var curAudio = null;
   function stopSpeak() { try { if (curAudio) { curAudio.pause(); curAudio = null; } } catch (e) {} }
@@ -425,14 +425,14 @@
       opacity: '0', transform: 'translateY(10px) scale(0.98)', transition: 'opacity .2s, transform .2s'
     });
     panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-label', "Atlas — Jason's AI associate");
+    panel.setAttribute('aria-label', "Nadine — Jason's AI assistant");
 
     // header
     var head = el('div', { display: 'flex', alignItems: 'center', gap: '11px', padding: '14px 16px', borderBottom: '1px solid ' + C.line, background: 'linear-gradient(180deg,rgba(16,185,129,0.06),transparent)' });
     var av = el('div', { position: 'relative', width: '38px', height: '38px', borderRadius: '11px', background: 'linear-gradient(135deg,#10b981,#22d3ee)', display: 'grid', placeItems: 'center', fontFamily: MONO, fontSize: '15px', fontWeight: '700', color: '#03231b', flexShrink: '0' }, '✦');
     var pulseDot = el('span', { position: 'absolute', right: '-2px', bottom: '-2px', width: '11px', height: '11px', borderRadius: '50%', background: C.green, border: '2px solid ' + C.panel });
     av.appendChild(pulseDot);
-    var htext = el('div', { flex: '1', minWidth: '0' }, '<div style="font-size:14px;font-weight:700;color:' + C.ink + '">Atlas</div><div style="font-family:' + MONO + ';font-size:9.5px;color:' + C.green + '">● Jason’s AI associate · online</div>');
+    var htext = el('div', { flex: '1', minWidth: '0' }, '<div style="font-size:14px;font-weight:700;color:' + C.ink + '">Nadine</div><div style="font-family:' + MONO + ';font-size:9.5px;color:' + C.green + '">● Jason’s AI assistant · online</div>');
     // Voice on/off — the concierge speaks by default; this mutes/unmutes her (persists).
     var vbtn = el('button', { background: 'none', border: '1px solid ' + C.line, borderRadius: '9px', width: '31px', height: '31px', cursor: 'pointer', fontSize: '14px', lineHeight: '1', flexShrink: '0', color: speakOn ? C.cyan : C.faint }, speakOn ? '🔊' : '🔇');
     vbtn.setAttribute('aria-label', speakOn ? 'Voice on — click to mute' : 'Voice off — click to unmute');
@@ -456,13 +456,13 @@
     chipsEl = el('div', { display: 'flex', flexWrap: 'wrap', gap: '7px', padding: '0 16px 10px' });
 
     var row = el('div', { display: 'flex', gap: '8px', alignItems: 'center', padding: '11px 14px', borderTop: '1px solid ' + C.line });
-    input = document.createElement('input'); input.placeholder = L({ en: 'Ask me anything…', es: 'Pregúntame lo que sea…', pt: 'Pergunte o que quiser…' }); input.setAttribute('aria-label', 'Message Atlas');
+    input = document.createElement('input'); input.placeholder = L({ en: 'Ask me anything…', es: 'Pregúntame lo que sea…', pt: 'Pergunte o que quiser…' }); input.setAttribute('aria-label', 'Message Nadine');
     css(input, { flex: '1', minWidth: '0', background: '#0F0F13', border: '1px solid ' + C.line, borderRadius: '11px', padding: '10px 13px', fontSize: '13.5px', color: C.ink, fontFamily: 'inherit', outline: 'none' });
     input.onfocus = function () { input.style.borderColor = 'rgba(34,211,238,0.5)'; };
     input.onblur = function () { input.style.borderColor = C.line; };
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send(input.value); });
     var mic = el('button', { background: 'transparent', border: '1px solid ' + C.line, color: C.faint, borderRadius: '11px', width: '38px', height: '38px', cursor: 'pointer', flexShrink: '0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }, '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg>');
-    mic.setAttribute('aria-label', 'Talk to Atlas');
+    mic.setAttribute('aria-label', 'Talk to Nadine');
     var sendBtn = el('button', { background: 'linear-gradient(135deg,#10b981,#0ea5b7)', color: '#03231b', border: 'none', borderRadius: '11px', width: '40px', height: '38px', fontSize: '15px', fontWeight: '700', cursor: 'pointer', flexShrink: '0' }, '→');
     sendBtn.setAttribute('aria-label', 'Send'); sendBtn.onclick = function () { send(input.value); };
     row.appendChild(input); row.appendChild(mic); row.appendChild(sendBtn);

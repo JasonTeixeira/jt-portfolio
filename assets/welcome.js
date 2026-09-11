@@ -1,7 +1,7 @@
-/* welcome.js — "Atlas concierge": a proactive, NON-blocking first-visit greeter on the home page.
+/* welcome.js — "Nadine concierge": a proactive, NON-blocking first-visit greeter on the home page.
    Slides in after the splash settles, greets, offers a language choice, and either runs a guided
    TOUR (animated section spotlight + typed narration + optional natural voice) or routes to the
-   right action. Hands off to the existing systems (funnel mode, Atlas chat, real pages). Once-only,
+   right action. Hands off to the existing systems (funnel mode, Nadine chat, real pages). Once-only,
    skippable, a11y + i18n. Home pages only (index.html, es/index.html, pt/index.html).
 
    VOICE (optional, drop-in): each tour line looks for an audio clip at
@@ -23,11 +23,11 @@
   // tour" button), so it's never "lost" after the first dismissal.
   var hasSeen = false; try { hasSeen = !!localStorage.getItem(SEEN); } catch (e) {}
   var isBot = false; try { isBot = !!navigator.webdriver; } catch (e) {}
-  var autoShow = force || (!hasSeen && !isBot);
+  var autoShow = force || (!hasSeen && !isBot && !localStorage.getItem('jt-gateway-v1'));
 
   var T = {
     en: {
-      hi: "Hey — I'm Atlas, Jason's assistant.", q: "Want the 60-second tour, or shall I point you straight to it?",
+      hi: "Hey — I'm Nadine, Jason's AI.", q: "Want the 60-second tour, or shall I point you straight to it?",
       tour: "Take the 60-second tour", ship: "Ship an AI feature I can trust", qa: "Fix flaky or untested QA",
       hire: "I'm hiring for a role", browse: "Just exploring", watch: "Watch the 60-sec pitch",
       dismiss: "I'm here bottom-right whenever you need me.", hired: "Switched to the hiring view — résumé's up top.",
@@ -44,7 +44,7 @@
       ]
     },
     es: {
-      hi: "Hola — soy Atlas, el asistente de Jason.", q: "¿Quieres el recorrido de 60 segundos o te llevo directo?",
+      hi: "Hola — soy Nadine, la IA de Jason.", q: "¿Quieres el recorrido de 60 segundos o te llevo directo?",
       tour: "Ver el recorrido de 60 s", ship: "Lanzar una función de IA confiable", qa: "Arreglar QA inestable o sin pruebas",
       hire: "Estoy contratando", browse: "Solo explorando", watch: "Ver el pitch de 60 s",
       dismiss: "Estoy abajo a la derecha cuando me necesites.", hired: "Cambié a la vista de contratación — el CV está arriba.",
@@ -61,7 +61,7 @@
       ]
     },
     pt: {
-      hi: "Olá — sou o Atlas, o assistente do Jason.", q: "Quer o tour de 60 segundos ou te levo direto ao ponto?",
+      hi: "Olá — sou a Nadine, a IA do Jason.", q: "Quer o tour de 60 segundos ou te levo direto ao ponto?",
       tour: "Ver o tour de 60 s", ship: "Lançar um recurso de IA confiável", qa: "Corrigir QA instável ou sem testes",
       hire: "Estou contratando", browse: "Só explorando", watch: "Ver o pitch de 60 s",
       dismiss: "Estou no canto inferior direito quando precisar.", hired: "Mudei para a visão de contratação — o CV está no topo.",
@@ -188,11 +188,11 @@
     var langs = LANGS.map(function (l) {
       return l[0] === loc ? '<b>' + l[1] + '</b>' : '<a href="' + l[2] + '">' + l[1] + '</a>';
     }).join('<span aria-hidden="true">·</span>');
-    card = d.createElement('div'); card.id = 'jt-welcome'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', 'Atlas'); card.setAttribute('lang', loc);
+    card = d.createElement('div'); card.id = 'jt-welcome'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', 'Nadine'); card.setAttribute('lang', loc);
     card.innerHTML =
       '<button class="jt-w-x" aria-label="' + T.close + '">&times;</button>' +
       '<div class="jt-w-inner">' +
-      '<div class="jt-w-head"><span class="jt-w-mk" aria-hidden="true"></span><span class="jt-w-name">Atlas</span><span class="jt-w-on"><i></i>' + T.online + '</span></div>' +
+      '<div class="jt-w-head"><span class="jt-w-mk" aria-hidden="true"></span><span class="jt-w-name">Nadine</span><span class="jt-w-on"><i></i>' + T.online + '</span></div>' +
       '<p class="jt-w-hi">' + T.hi + '</p>' +
       '<p class="jt-w-q">' + T.q + '</p>' +
       '<button class="jt-w-tour"><span class="jt-w-tour-ic" aria-hidden="true">&#9654;</span> ' + T.tour + '</button>' +
@@ -224,7 +224,7 @@
       '<div class="jt-tour-panel">' +
       '<div class="jt-tour-row">' +
       '<span class="jt-tour-orb" aria-hidden="true"></span>' +
-      '<span class="jt-tour-name">Atlas</span>' +
+      '<span class="jt-tour-name">Nadine</span>' +
       '<canvas class="jt-tour-viz" width="120" height="24" aria-hidden="true"></canvas>' +
       '<span class="jt-tour-label"></span>' +
       '<span class="jt-tour-dots" aria-hidden="true"></span>' +

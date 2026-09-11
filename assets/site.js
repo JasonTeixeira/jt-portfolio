@@ -784,6 +784,38 @@
       .catch(function () { /* strip stays hidden — never fake green */ });
   }
 
+  /* ───────────────────────── mini-eval quick capture ───────────────────────── */
+  // The hero's most differentiated, lowest-friction offer: one URL + email → /api/lead.
+  // Degrade-safe: on a static host the POST 501s; we still confirm + point to email so
+  // the visitor is never stranded (the real capture fires in prod).
+  var meForm = document.getElementById('jt-minieval-form');
+  if (meForm) {
+    var meStatus = document.getElementById('jt-me-status');
+    var meEmail = document.getElementById('jt-me-email');
+    var meUrl = document.getElementById('jt-me-url');
+    meForm.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var email = (meEmail.value || '').trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { meEmail.style.borderColor = '#f43f5e'; meEmail.focus(); return; }
+      meEmail.style.borderColor = '#2A2826';
+      var btn = meForm.querySelector('button[type=submit]');
+      btn.disabled = true; btn.textContent = 'sending…';
+      if (window.plausible) { try { window.plausible('mini-eval-submit'); } catch (e) {} }
+      fetch('/api/lead', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, feature: (meUrl.value || '').trim(), name: '', source: 'mini-eval' })
+      }).then(function (r) { return r && r.ok; }).catch(function () { return false; })
+        .then(function (ok) {
+          meForm.querySelector('div').style.display = 'none';
+          meUrl.style.display = 'none';
+          meStatus.style.color = '#10b981';
+          meStatus.textContent = ok
+            ? "Got it — Jason will run the eval and email your findings, usually the same day."
+            : "Got it. If you don't hear back shortly, email hello@sageideas.dev and I'll jump on it.";
+        });
+    });
+  }
+
   /* ───────────────────────── numbers count-up ───────────────────────── */
 
   var countEls = document.querySelectorAll('[data-countup]');
