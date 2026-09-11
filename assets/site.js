@@ -373,18 +373,87 @@
       PIPELINE_LOGS.concat(PIPELINE_LOGS).map(function (l) { return txt('div', 'white-space:nowrap', l); }));
     var logs = el('div', "position:absolute;right:18px;top:10px;bottom:10px;width:300px;overflow:hidden;opacity:0.07;" + MONO + "font-size:10px;line-height:1.9;color:#F4F2EF;text-align:right;pointer-events:none;-webkit-mask-image:linear-gradient(transparent,black 20%,black 80%,transparent);mask-image:linear-gradient(transparent,black 20%,black 80%,transparent)", [logCol]);
 
+    // Interactive hero packet: the visitor deploys a change, watches it FAIL the eval gate,
+    // bounce back to build, and only ship once it's green. The whole thesis in five seconds.
+    var heroPacket = el('div', "position:absolute;left:0;top:0;width:12px;height:12px;border-radius:50%;background:#22d3ee;box-shadow:0 0 12px #22d3ee;opacity:0;offset-path:path('" + pMid + "');offset-rotate:0deg;offset-distance:0%;z-index:4");
+    var heroFlash = el('div', 'position:absolute;left:686px;top:136px;width:28px;height:28px;border-radius:50%;border:2px solid #f43f5e;opacity:0;z-index:3;transition:opacity .2s');
     var stage = el('div', 'position:relative;width:' + W + 'px;height:' + H + 'px', [svg].concat(rings, [flash,
       packet(pTop, '#22d3ee', 5.5, 0, 'jt-travel'),
       packet(pTop, '#a78bfa', 5.5, 2.7, 'jt-travel'),
       packet(pBot, '#10b981', 6.5, 1.2, 'jt-travel'),
       packet(pBot, '#22d3ee', 6.5, 4.3, 'jt-travel'),
-      packet(pMid, '#22d3ee', 11, 0.5, 'jt-fail')
+      packet(pMid, '#22d3ee', 11, 0.5, 'jt-fail'),
+      heroFlash, heroPacket
     ]));
 
-    return el('div', 'position:relative;background:#0C0C0E;border:1px solid #2A2826;border-radius:14px;overflow:hidden;min-width:' + W + 'px', [logs, stage]);
+    var filled = [].slice.call(svg.querySelectorAll('circle')).filter(function (c) { return c.getAttribute('fill') !== 'none'; });
+    function setNode(cx, cy, color) {
+      filled.forEach(function (c) { if (Math.round(+c.getAttribute('cx')) === cx && Math.round(+c.getAttribute('cy')) === cy) c.setAttribute('fill', color); });
+    }
+    var GATE = 0.655, deployN = 481, running = false, statusEl = null, btnRef = null;
+    function status(t, color) { if (statusEl) { statusEl.textContent = t; statusEl.style.color = color; } }
+    function move(from, to, dur) {
+      return new Promise(function (res) {
+        var a = heroPacket.animate([{ offsetDistance: (from * 100) + '%' }, { offsetDistance: (to * 100) + '%' }], { duration: dur, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+        a.onfinish = res; a.oncancel = res;
+      });
+    }
+    function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    function runDeploy() {
+      if (running) return; running = true; deployN++;
+      setNode(700, 150, '#a78bfa'); setNode(1010, 150, '#10b981');
+      status('deploying change #' + deployN + ' — running the eval gate…', '#A8A29E');
+      heroPacket.style.background = '#22d3ee'; heroPacket.style.boxShadow = '0 0 12px #22d3ee'; heroPacket.style.opacity = '1';
+      move(0, GATE, 900).then(function () {
+        heroPacket.style.background = '#f43f5e'; heroPacket.style.boxShadow = '0 0 16px #f43f5e';
+        setNode(700, 150, '#f43f5e');
+        heroFlash.style.opacity = '1'; setTimeout(function () { heroFlash.style.opacity = '0'; }, 900);
+        status('✗ eval FAILED — faithfulness 0.71 < 0.85 gate. blocked before it ships.', '#f43f5e');
+        return wait(1300);
+      }).then(function () {
+        status('↩ bounced back to build — fixing the prompt, re-testing…', '#a78bfa');
+        return move(GATE, 0, 750);
+      }).then(function () {
+        setNode(700, 150, '#a78bfa');
+        heroPacket.style.background = '#22d3ee'; heroPacket.style.boxShadow = '0 0 12px #22d3ee';
+        status('re-deploying the fix through the same gate…', '#A8A29E');
+        return wait(400);
+      }).then(function () { return move(0, 1, 1500); }).then(function () {
+        heroPacket.style.background = '#10b981'; heroPacket.style.boxShadow = '0 0 18px #10b981';
+        setNode(1010, 150, '#10b981');
+        status('✓ eval PASSED — 0.91 · shipped · proof ledger signed. that gate is the whole job.', '#10b981');
+        return wait(2800);
+      }).then(function () {
+        heroPacket.style.opacity = '0'; running = false; status('', '#8E8882');
+        if (btnRef) btnRef.disabled = false;
+      });
+    }
+
+    var container = el('div', 'position:relative;background:#0C0C0E;border:1px solid #2A2826;border-radius:14px;overflow:hidden;min-width:' + W + 'px', [logs, stage]);
+    return { container: container, run: runDeploy, setBtn: function (b) { btnRef = b; }, setStatus: function (s) { statusEl = s; } };
   }
   var pipelineMount = document.getElementById('jt-pipeline');
-  if (pipelineMount) pipelineMount.appendChild(buildPipeline());
+  if (pipelineMount) {
+    var built = buildPipeline();
+    pipelineMount.appendChild(built.container);
+    var pctrl = document.getElementById('jt-pipeline-ctrl');
+    if (pctrl) {
+      var pbtn = el('button', 'background:#10b981;color:#052e22;border:none;border-radius:9px;padding:11px 18px;font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;cursor:pointer;letter-spacing:.02em;flex-shrink:0');
+      pbtn.type = 'button'; pbtn.textContent = '▶ Deploy a change';
+      var pst = el('span', 'font-family:"JetBrains Mono",monospace;font-size:12px;color:#8E8882;line-height:1.5');
+      pst.setAttribute('aria-live', 'polite');
+      built.setBtn(pbtn); built.setStatus(pst);
+      if (REDUCED) {
+        pbtn.addEventListener('click', function () {
+          pst.textContent = '✗ fail (0.71) → back to build → ✓ pass (0.91), shipped. the gate blocks a bad change before your customer sees it.';
+          pst.style.color = '#10b981';
+        });
+      } else {
+        pbtn.addEventListener('click', function () { pbtn.disabled = true; built.run(); });
+      }
+      pctrl.appendChild(pbtn); pctrl.appendChild(pst);
+    }
+  }
 
   /* ───────────────────────── live ticker + stat counters ───────────────────────── */
 
@@ -769,17 +838,39 @@
         var greenGates = gateNames.filter(function (k) { return sc.gates[k].green; }).length;
         var when = sc.generatedAt ? sc.generatedAt.slice(0, 10) : '';
         var detail = document.getElementById('jt-selfproof-detail');
-        detail.textContent = sc.totals.passed + ' checks passed' +
-          (sc.totals.skipped ? ' (' + sc.totals.skipped + ' honest-skip)' : '') +
-          ' · ' + greenGates + '/' + gateNames.length +
-          ' gates green · smoke + a11y on desktop & mobile · ' + when +
+        var skip = sc.totals.skipped ? ' (' + sc.totals.skipped + ' honest-skip)' : '';
+        var tail = ' gates green · smoke + a11y on desktop & mobile · ' + when +
           (sc.commit && sc.commit !== 'uncommitted' ? ' @ ' + sc.commit : '') +
           ' · regenerate: ' + sc.command;
+        detail.innerHTML = '<b id="jt-sp-p" style="color:#F4F2EF;font-weight:600">0</b> checks passed' + skip +
+          ' · <b id="jt-sp-g" style="color:#F4F2EF;font-weight:600">0</b>/' + gateNames.length + tail;
         if (!sc.totals.green) {
           selfProof.style.borderColor = 'rgba(244,63,94,0.4)';
           selfProof.style.background = 'rgba(244,63,94,0.05)';
         }
         selfProof.hidden = false;
+        // Count the numbers up when the strip scrolls into view — the site's most
+        // uncopyable claim ("it runs its own QA") earns a beat of attention.
+        var reduceSP = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var pEl = document.getElementById('jt-sp-p'), gEl = document.getElementById('jt-sp-g');
+        var spDone = false;
+        function countTo(node, target) {
+          if (!node) return;
+          if (reduceSP) { node.textContent = target; return; }
+          var step = 0, steps = 26;
+          var iv = setInterval(function () {
+            step++; var e = 1 - Math.pow(1 - step / steps, 3);
+            node.textContent = Math.round(target * e);
+            if (step >= steps) { clearInterval(iv); node.textContent = target; }
+          }, 30);
+        }
+        function fireSP() { if (spDone) return; spDone = true; countTo(pEl, sc.totals.passed); countTo(gEl, greenGates); }
+        if ('IntersectionObserver' in window) {
+          var ioSP = new IntersectionObserver(function (ents) {
+            ents.forEach(function (en) { if (en.isIntersecting) { fireSP(); ioSP.disconnect(); } });
+          }, { threshold: 0.4 });
+          ioSP.observe(selfProof);
+        } else { fireSP(); }
       })
       .catch(function () { /* strip stays hidden — never fake green */ });
   }

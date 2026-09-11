@@ -23,6 +23,12 @@
     es: "Hola — soy Nadine, la IA de Jason. Cuéntame en qué estás trabajando y te llevo directo a lo que necesitas. ¿Qué te trae por aquí hoy?",
     pt: "Oi — sou a Nadine, a IA do Jason. Me conta no que você está trabalhando e eu te levo direto ao que precisa. O que te traz aqui hoje?"
   });
+  // Returning visitor greeting (paired with the welcomeBack voice clip).
+  var GREET_BACK = L({
+    en: "Welcome back. Want to pick up where you left off, or start something new?",
+    es: "Qué bueno verte de nuevo. ¿Retomamos donde lo dejaste o empezamos algo nuevo?",
+    pt: "Que bom te ver de novo. Quer continuar de onde parou ou começar algo novo?"
+  });
 
   // Every guided answer = a real Nadine voice clip (assets/concierge/<loc>/<clip>.mp3) + localized copy
   // that MATCHES the recorded line. This tap-through tree covers the common questions + key objections;
@@ -190,15 +196,42 @@
     })();
   }
 
+  // Visible reasoning — instead of three dumb dots, Nadine shows her actual work
+  // (read → retrieve → draft → fact-check). This IS the product Jason sells: observable,
+  // checkable AI. Kept disciplined (mono, terse, ✓ ticks) — instrumentation, not a gimmick.
+  var REASON = {
+    en: ['reading your message', 'retrieving Jason’s work + proof', 'drafting a reply', 'checking it against the real proof'],
+    es: ['leyendo tu mensaje', 'buscando el trabajo y las pruebas de Jason', 'redactando la respuesta', 'verificándola con las pruebas reales'],
+    pt: ['lendo sua mensagem', 'buscando o trabalho e as provas do Jason', 'escrevendo a resposta', 'conferindo com as provas reais']
+  };
+  var reasonTimer = null;
   function showTyping() {
-    typingEl = el('div', { alignSelf: 'flex-start', display: 'flex', gap: '4px', padding: '12px 14px', background: '#17161a', borderRadius: '14px 14px 14px 4px' });
-    for (var i = 0; i < 3; i++) {
-      var dot = el('span', { width: '6px', height: '6px', borderRadius: '50%', background: C.faint, animation: 'atlasdot 1s ' + (i * 0.15) + 's infinite ease-in-out' });
-      typingEl.appendChild(dot);
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    typingEl = el('div', { alignSelf: 'flex-start', maxWidth: '82%', display: 'flex', flexDirection: 'column', gap: '5px', padding: '11px 14px', background: '#17161a', borderRadius: '14px 14px 14px 4px', fontFamily: MONO, fontSize: '11px', lineHeight: '1.5' });
+    if (reduce) {
+      typingEl.appendChild(el('div', { color: C.faint }, 'thinking…'));
+      msgsEl.appendChild(typingEl); scroll(); return;
     }
+    var steps = REASON[LOC] || REASON.en;
+    var rows = steps.map(function (s) {
+      var row = el('div', { display: 'flex', alignItems: 'center', gap: '8px', color: C.faint, opacity: '0.35', transition: 'opacity .3s, color .3s' });
+      var mk = el('span', { width: '11px', textAlign: 'center', flexShrink: '0', color: C.faint }, '·');
+      row.appendChild(mk); row.appendChild(el('span', null, s));
+      row._mk = mk; typingEl.appendChild(row); return row;
+    });
     msgsEl.appendChild(typingEl); scroll();
+    var cur = 0;
+    (function advance() {
+      if (!typingEl) return;
+      if (cur > 0) { var p = rows[cur - 1]; p.style.opacity = '1'; p.style.color = C.dim; p._mk.textContent = '✓'; p._mk.style.color = C.green; p._mk.style.animation = ''; }
+      if (cur < rows.length) {
+        var r = rows[cur]; r.style.opacity = '1'; r.style.color = C.ink;
+        r._mk.style.color = C.cyan; r._mk.style.animation = 'atlasdot 1s infinite ease-in-out';
+        cur++; reasonTimer = setTimeout(advance, 620); scroll();
+      }
+    })();
   }
-  function hideTyping() { if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl); typingEl = null; }
+  function hideTyping() { if (reasonTimer) { clearTimeout(reasonTimer); reasonTimer = null; } if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl); typingEl = null; }
 
   function scripted(q) { for (var i = 0; i < FALLBACK.length; i++) if (FALLBACK[i].re.test(q)) return L(FALLBACK[i]); return L(FB_DEFAULT); }
 
@@ -395,7 +428,14 @@
     var hasIntent = intent && typeof intent === 'string' && GUIDED[intent];
     if (!msgsEl.children.length) {
       if (hasIntent) { showGuided(intent); }
-      else { var g = bubble('bot'); speak('greet'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); }); }
+      else {
+        var g = bubble('bot');
+        // Returning visitor → a warm welcome-back (their own local flag, never claims to "remember" them).
+        var back = false;
+        try { back = localStorage.getItem('jt-nadine-seen') === '1'; localStorage.setItem('jt-nadine-seen', '1'); } catch (e) {}
+        if (back) { speak('welcomeBack'); typeInto(g, GREET_BACK, function () { hist.push({ role: 'assistant', content: GREET_BACK }); renderChips(START); }); }
+        else { speak('greet'); typeInto(g, GREET, function () { hist.push({ role: 'assistant', content: GREET }); renderChips(START); }); }
+      }
       track('atlas-open');
     } else if (hasIntent) { showGuided(intent); }
     setTimeout(function () { input && input.focus(); }, 300);

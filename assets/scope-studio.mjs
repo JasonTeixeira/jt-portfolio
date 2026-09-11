@@ -337,6 +337,21 @@ if (root && qMount && planMount && disc) {
     return { 'seg-service': 'service-business', 'seg-aiproduct': 'ai-product', 'seg-ops': 'ops-automation', 'seg-product': 'product-build' }[s] || null;
   }
 
+  // One-time voiced hand-off (Nadine) the first time a real plan assembles — a warm
+  // "there's your plan" moment. Generic line (never TTS of the dynamic plan); honors the
+  // concierge voice-off pref and only fires after the visitor's own interaction.
+  const SS_LOC = /^\/pt(\/|$)/.test(location.pathname) ? 'pt' : /^\/es(\/|$)/.test(location.pathname) ? 'es' : 'en';
+  let planVoicePlayed = false;
+  function playPlanReady() {
+    if (planVoicePlayed) return;
+    planVoicePlayed = true;
+    try {
+      if (localStorage.getItem('atlas-voice') === 'off') return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      new window.Audio('/assets/concierge/' + SS_LOC + '/planReady.mp3?v=1').play().catch(() => {});
+    } catch (e) { /* audio optional */ }
+  }
+
   function renderPlan() {
     const keys = chatKeys !== null ? chatKeys : keysFromAnswers(answers);
     const segment = chatKeys !== null ? (chatSegment || segmentFromAnswers()) : segmentFromAnswers();
@@ -351,6 +366,7 @@ if (root && qMount && planMount && disc) {
     root.setAttribute('data-state', keys.length ? 'plan' : 'discovery');
     updateHandoff(plan);
     if (keys.length) {
+      playPlanReady();
       clearTimeout(planTrackTimer);
       planTrackTimer = setTimeout(() => {
         track('plan_built', { plan: { keys, segment, total: plan.totalBand } });

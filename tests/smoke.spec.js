@@ -291,6 +291,18 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#ck-score')).toContainText('13/18');
   });
 
+  test('interactive hero pipeline: deploy button runs the eval fail→bounce→pass sequence', async ({ page }) => {
+    await page.goto('/');
+    const ctrl = page.locator('#jt-pipeline-ctrl');
+    const btn = ctrl.getByRole('button', { name: /deploy a change/i });
+    await expect(btn).toBeVisible();
+    await btn.click();
+    const status = ctrl.locator('span[aria-live]');
+    await expect(status).not.toBeEmpty();
+    // reaches a passing verdict — animated end-state OR the reduced-motion one-line summary
+    await expect(status).toContainText(/pass|shipped/i, { timeout: 9000 });
+  });
+
   test('404 page and comparison table and delta bars', async ({ page, request }) => {
     const nf = await request.get('/404.html');
     expect(nf.status()).toBe(200);
