@@ -4,7 +4,7 @@
 // the piece plays as a captioned motion sequence today. To add narration: record the
 // ~150s VO, save it as assets/intro-vo.mp3, and set VO_SRC below — everything else
 // (scene timings, captions, controls, progress) already syncs to it.
-const VO_SRC = 'assets/intro-vo.mp3'; // real Jason ElevenLabs narration; '' falls back to the captioned silent cut
+const VO_SRC = 'assets/intro-vo.mp3?v=2'; // real Jason ElevenLabs narration; '' falls back to the captioned silent cut
 
 // Scene time ranges (seconds) — synced to assets/intro-vo.mp3 (generated line-by-line; see
 // scripts/gen-intro-vo.mjs + assets/intro-timings.json). Each scene starts exactly when its line does.

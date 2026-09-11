@@ -70,7 +70,7 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
 <script>
 const wrap=w=>w.map(x=>`<span class="w">${x}</span>`).join(' ');
 const CONFIGS={
- rag:{ vo:'assets/svc-rag-vo.mp3', rail:'RAG SYSTEMS · SAGE IDEAS',
+ rag:{ vo:'assets/svc-rag-vo.mp3?v=2', rail:'RAG SYSTEMS · SAGE IDEAS',
   scenes:[['hook',0,9.924],['build',9.924,20.873],['hard',20.873,31.218],['proof',31.218,41.146],['cta',41.146,46.236]],
   hook:{bar:'support-agent · retrieval',lines:['<div class="ln u">▸ "what\'s your refund window?"</div>','<div class="ln step">agent → "90 days, per policy §4.2" <span class="ok">✓</span></div>','<div class="ln bad">✕ policy §4.2 does not exist — confident, and wrong</div>'],
    sub:'Confident. Cited. <span class="rose">Fabricated.</span>',head:['Your AI is','<span class="rose">making it up.</span>'],headSub:"That's retrieval done wrong — I fix it."},
@@ -80,7 +80,7 @@ const CONFIGS={
   cta:{head:['Answers you can','<span class="green">trust</span> — with receipts.'],btn:'Build my retrieval →'},
   pLabels:['fabricated','building','relevance','proven · green']},
 
- workflow:{ vo:'assets/svc-workflow-vo.mp3', rail:'WORKFLOW AUTOMATION · SAGE IDEAS',
+ workflow:{ vo:'assets/svc-workflow-vo.mp3?v=2', rail:'WORKFLOW AUTOMATION · SAGE IDEAS',
   scenes:[['hook',0,10.249],['build',10.249,20.733],['hard',20.733,34.794],['proof',34.794,43.142],['cta',43.142,47.536]],
   hook:{bar:'you · 9:00am → 5:00pm',lines:['<div class="ln u">▸ export CSV → clean → paste → email → repeat</div>','<div class="ln step">tool 1 → tool 2 → tool 3 → tool 4 → tool 5</div>','<div class="ln bad">✕ 3 hours a day, every day, done by a human</div>'],
    sub:'That\'s not a job. <span class="rose">It\'s an unwritten script.</span>',head:['Stop doing','<span class="rose">the robot\'s job.</span>'],headSub:'I write the script that does it for you.'},
@@ -90,7 +90,7 @@ const CONFIGS={
   cta:{head:['The busywork','<span class="green">runs itself.</span>'],btn:'Automate my process →'},
   pLabels:['manual','building','reliability','proven · green']},
 
- websites:{ vo:'assets/svc-websites-vo.mp3', rail:'WEBSITES & WEB APPS · SAGE IDEAS',
+ websites:{ vo:'assets/svc-websites-vo.mp3?v=2', rail:'WEBSITES & WEB APPS · SAGE IDEAS',
   scenes:[['hook',0,6.58],['build',6.58,14.371],['hard',14.371,24.206],['proof',24.206,32.415],['cta',32.415,36.483]],
   hook:{bar:'customer · first visit',lines:['<div class="ln u">▸ loading your site…</div>','<div class="ln step">LCP 6.2s · layout shifting · still spinning</div>','<div class="ln bad">✕ customer bounced — and you paid for that click</div>'],
    sub:'Slow is <span class="rose">invisible.</span>',head:['Six seconds.','<span class="rose">Already gone.</span>'],headSub:'I build sites that don\'t lose the click.'},
@@ -100,7 +100,7 @@ const CONFIGS={
   cta:{head:['Sites that ship','<span class="green">— and perform.</span>'],btn:'Build my site →'},
   pLabels:['bounced','building','quality','proven · green']},
 
- content:{ vo:'assets/svc-content-vo.mp3', rail:'CONTENT SYSTEMS · SAGE IDEAS',
+ content:{ vo:'assets/svc-content-vo.mp3?v=2', rail:'CONTENT SYSTEMS · SAGE IDEAS',
   scenes:[['hook',0,8.716],['build',8.716,18.922],['hard',18.922,28.757],['proof',28.757,36.501],['cta',36.501,40.942]],
   hook:{bar:'generic-ai · 1,000 articles',lines:['<div class="ln u">▸ generate 1,000 articles</div>','<div class="ln step">"In today\'s fast-paced world, leveraging synergy…"</div>','<div class="ln bad">✕ slop — generic, off-brand, forgettable</div>'],
    sub:'Volume is easy. <span class="rose">Voice is hard.</span>',head:['Scale without','<span class="rose">the slop.</span>'],headSub:'I build the engine that sounds like you.'},
@@ -110,7 +110,7 @@ const CONFIGS={
   cta:{head:['Content at scale','<span class="green">that sounds like you.</span>'],btn:'Build my content engine →'},
   pLabels:['slop','building','quality','proven · green']},
 
- proof:{ vo:'assets/svc-proof-vo.mp3', rail:'THE PROOF LAYER · SAGE IDEAS',
+ proof:{ vo:'assets/svc-proof-vo.mp3?v=2', rail:'THE PROOF LAYER · SAGE IDEAS',
   scenes:[['hook',0,6.998],['build',6.998,16.508],['hard',16.508,28.664],['proof',28.664,37.43],['cta',37.43,41.453]],
   hook:{bar:'every AI vendor',lines:['<div class="ln u">▸ is it production-ready?</div>','<div class="ln step">vendor → "trust me, it works" <span class="ok">✓</span></div>','<div class="ln bad">✕ trust is not a strategy — a number is</div>'],
    sub:'"Trust me" is <span class="rose">not proof.</span>',head:['Stop shipping','<span class="rose">on faith.</span>'],headSub:'I build the number you can see.'},
@@ -120,7 +120,7 @@ const CONFIGS={
   cta:{head:['Ship with','<span class="green">proof.</span>'],btn:'Build my gate →'},
   pLabels:['on faith','building','drift','proven · green']},
 
- howwework:{ vo:'assets/svc-howwework-vo.mp3', rail:'HOW WE WORK · SAGE IDEAS',
+ howwework:{ vo:'assets/svc-howwework-vo.mp3?v=2', rail:'HOW WE WORK · SAGE IDEAS',
   scenes:[['hook',0,8.484],['build',8.484,17.529],['hard',17.529,28.942],['proof',28.942,35.712],['cta',35.712,40.291]],
   hook:{bar:'you · after you sign',lines:['<div class="ln u">▸ ok… what happens now?</div>','<div class="ln step">…silence. no plan, no demos, no idea.</div>','<div class="ln bad">✕ the black box most agencies sell</div>'],
    sub:'No mystery. <span class="rose">Here is exactly how I work.</span>',head:['After you sign,','<span class="rose">no black box.</span>'],headSub:'Four stages. Fixed scope. You own it all.'},
@@ -130,7 +130,7 @@ const CONFIGS={
   cta:{head:['Know what you get','<span class="green">before you commit.</span>'],btn:'Start with the audit →'},
   pLabels:['black box','four stages','no surprises','proven · green']},
 
- casestudy:{ vo:'assets/svc-casestudy-vo.mp3', rail:'ANATOMY OF A CATCH · SAGE IDEAS',
+ casestudy:{ vo:'assets/svc-casestudy-vo.mp3?v=2', rail:'ANATOMY OF A CATCH · SAGE IDEAS',
   scenes:[['hook',0,10.342],['build',10.342,19.34],['hard',19.34,32.286],['proof',32.286,41.424],['cta',41.424,45.075]],
   hook:{bar:'support-agent · looked flawless',lines:['<div class="ln u">▸ refunds approved · policy answered</div>','<div class="ln step">agent → fast, confident, demo-perfect <span class="ok">✓</span></div>','<div class="ln bad">✕ flawless in the demo means nothing</div>'],
    sub:'Every demo looked <span class="rose">perfect.</span>',head:['Perfect in the demo.','<span class="rose">That is the trap.</span>'],headSub:"So I don't trust demos — I test everything."},
@@ -140,7 +140,7 @@ const CONFIGS={
   cta:{head:['Every build ships','<span class="green">with evidence.</span>'],btn:'Let me prove yours →'},
   pLabels:['looked flawless','testing','the catch','caught · green']},
 
- demoslie:{ vo:'assets/svc-demoslie-vo.mp3', rail:'WHY AI DEMOS LIE · SAGE IDEAS',
+ demoslie:{ vo:'assets/svc-demoslie-vo.mp3?v=2', rail:'WHY AI DEMOS LIE · SAGE IDEAS',
   scenes:[['hook',0,11.038],['build',11.038,24.031],['hard',24.031,37.255],['proof',37.255,43.467],['cta',43.467,48]],
   hook:{bar:'the demo · flawless',lines:['<div class="ln u">▸ run the demo</div>','<div class="ln step">5 hand-picked inputs → perfect answers <span class="ok">✓</span></div>','<div class="ln bad">✕ your customers never use the happy path</div>'],
    sub:'Every demo works. <span class="rose">That is the trick.</span>',head:['A demo is','<span class="rose">a magic trick.</span>'],headSub:'Same inputs. Same happy path. Every time.'},
@@ -150,7 +150,7 @@ const CONFIGS={
   cta:{head:['Stop trusting demos.','<span class="green">Test everything.</span>'],btn:"Let's talk →"},
   pLabels:['the trick','the gap','guaranteed','tested · green']},
 
- llmjudge:{ vo:'assets/svc-llmjudge-vo.mp3', rail:'LLM-AS-JUDGE · SAGE IDEAS',
+ llmjudge:{ vo:'assets/svc-llmjudge-vo.mp3?v=2', rail:'LLM-AS-JUDGE · SAGE IDEAS',
   scenes:[['hook',0,8.484],['build',8.484,18.179],['hard',18.179,28.943],['proof',28.943,36.409],['cta',36.409,41.174]],
   hook:{bar:'your AI · 10,000 answers/day',lines:['<div class="ln u">▸ is it still good today?</div>','<div class="ln step">10,000 answers · nobody read them</div>','<div class="ln bad">✕ you can\'t grade what you can\'t see</div>'],
    sub:'You can\'t read <span class="rose">ten thousand answers.</span>',head:['Grade','<span class="cyan">ten thousand answers?</span>'],headSub:"A human can't. A judge can."},
@@ -160,7 +160,7 @@ const CONFIGS={
   cta:{head:['Grade your AI','<span class="green">at scale.</span>'],btn:"Let's talk →"},
   pLabels:['unseen','the idea','calibrate','scored · green']},
 
- evalsvstests:{ vo:'assets/svc-evalsvstests-vo.mp3', rail:'EVALS vs TESTS vs GATES · SAGE IDEAS',
+ evalsvstests:{ vo:'assets/svc-evalsvstests-vo.mp3?v=2', rail:'EVALS vs TESTS vs GATES · SAGE IDEAS',
   scenes:[['hook',0,7.648],['build',7.648,22.359],['hard',22.359,33.076],['proof',33.076,41.842],['cta',41.842,45.911]],
   hook:{bar:'three words · used wrong',lines:['<div class="ln u">▸ "we tested it"</div>','<div class="ln step">…but tested ≠ evaluated ≠ gated</div>','<div class="ln bad">✕ confusing them ships AI broken</div>'],
    sub:'Three words. <span class="rose">Not the same thing.</span>',head:['Test. Eval.','<span class="rose">Gate.</span>'],headSub:'Confuse them, and it ships broken.'},
@@ -170,7 +170,7 @@ const CONFIGS={
   cta:{head:['All three,','<span class="green">wired together.</span>'],btn:"Let's talk →"},
   pLabels:['confused','three jobs','the leak','wired · green']},
 
- rageval:{ vo:'assets/svc-rageval-vo.mp3', rail:'RAG EVALUATION · SAGE IDEAS',
+ rageval:{ vo:'assets/svc-rageval-vo.mp3?v=2', rail:'RAG EVALUATION · SAGE IDEAS',
   scenes:[['hook',0,9.599],['build',9.599,19.619],['hard',19.619,31.032],['proof',31.032,36.223],['cta',36.223,39.781]],
   hook:{bar:'your AI · citing a doc',lines:['<div class="ln u">▸ "per document 4.2, yes"</div>','<div class="ln step">confident · specific · sourced <span class="ok">✓</span></div>','<div class="ln bad">✕ retrieval fetched the wrong page</div>'],
    sub:'Confident, specific — <span class="rose">and wrong.</span>',head:['The model didn\'t lie.','<span class="rose">Retrieval did.</span>'],headSub:'And most teams never measure it.'},
@@ -180,7 +180,7 @@ const CONFIGS={
   cta:{head:['Measure retrieval,','<span class="green">not vibes.</span>'],btn:"Let's talk →"},
   pLabels:['wrong page','scoring','the break','measured · green']},
 
- promptreg:{ vo:'assets/svc-promptreg-vo.mp3', rail:'PROMPT REGRESSION · SAGE IDEAS',
+ promptreg:{ vo:'assets/svc-promptreg-vo.mp3?v=2', rail:'PROMPT REGRESSION · SAGE IDEAS',
   scenes:[['hook',0,7.973],['build',7.973,17.529],['hard',17.529,27.085],['proof',27.085,33.761],['cta',33.761,37.226]],
   hook:{bar:'one prompt tweak',lines:['<div class="ln u">▸ fixed the one thing <span class="ok">✓</span></div>','<div class="ln step">…and quietly broke five others</div>','<div class="ln bad">✕ you won\'t see it until a customer does</div>'],
    sub:'One fix. <span class="rose">Five silent breaks.</span>',head:['Fix one thing.','<span class="rose">Break five.</span>'],headSub:'That is prompt regression.'},
@@ -190,7 +190,7 @@ const CONFIGS={
   cta:{head:['Change prompts,','<span class="green">not your luck.</span>'],btn:"Let's talk →"},
   pLabels:['silent break','entangled','the catch','caught · green']},
 
- hallucinations:{ vo:'assets/svc-hallucinations-vo.mp3', rail:'HALLUCINATIONS · SAGE IDEAS',
+ hallucinations:{ vo:'assets/svc-hallucinations-vo.mp3?v=2', rail:'HALLUCINATIONS · SAGE IDEAS',
   scenes:[['hook',0,9.738],['build',9.738,19.154],['hard',19.154,30.707],['proof',30.707,35.387],['cta',35.387,38.341]],
   hook:{bar:'the model · confident',lines:['<div class="ln u">▸ "your policy allows this"</div>','<div class="ln step">fluent · confident · specific <span class="ok">✓</span></div>','<div class="ln bad">✕ the policy does not exist</div>'],
    sub:'Fluent, confident — <span class="rose">and made up.</span>',head:['Not a glitch.','<span class="rose">A feature.</span>'],headSub:'The model does exactly what it was built to.'},
@@ -200,7 +200,7 @@ const CONFIGS={
   cta:{head:['Catch them','<span class="green">before they cost you.</span>'],btn:"Let's talk →"},
   pLabels:['made up','grounding','the danger','caught · green']},
 
- ciforai:{ vo:'assets/svc-ciforai-vo.mp3', rail:'CI FOR AI · SAGE IDEAS',
+ ciforai:{ vo:'assets/svc-ciforai-vo.mp3?v=2', rail:'CI FOR AI · SAGE IDEAS',
   scenes:[['hook',0,9.506],['build',9.506,20.223],['hard',20.223,28.385],['proof',28.385,34.504],['cta',34.504,37.319]],
   hook:{bar:'your AI · shipping',lines:['<div class="ln u">▸ ship the change</div>','<div class="ln step">someone clicks around → "looks fine" <span class="ok">✓</span></div>','<div class="ln bad">✕ no pipeline · no gate · just hope</div>'],
    sub:'Your code has CI. <span class="rose">Your AI has "looks fine."</span>',head:['Your AI ships','<span class="rose">on a vibe.</span>'],headSub:'Your code never would.'},
@@ -210,7 +210,7 @@ const CONFIGS={
   cta:{head:['Put your AI','<span class="green">on a pipeline.</span>'],btn:"Let's talk →"},
   pLabels:['looks fine','the pipeline','red build','knowing · green']},
 
- onemetric:{ vo:'assets/svc-onemetric-vo.mp3', rail:'THE ONE METRIC · SAGE IDEAS',
+ onemetric:{ vo:'assets/svc-onemetric-vo.mp3?v=2', rail:'THE ONE METRIC · SAGE IDEAS',
   scenes:[['hook',0,8.902],['build',8.902,18.736],['hard',18.736,30.661],['proof',30.661,34.969],['cta',34.969,37.273]],
   hook:{bar:'the dashboard · 95% accurate',lines:['<div class="ln u">▸ accuracy: 95% <span class="ok">✓</span></div>','<div class="ln step">looks great on the slide</div>','<div class="ln bad">✕ the 5% it fails are the refunds</div>'],
    sub:'95% accurate. <span class="rose">Still unshippable.</span>',head:['Accuracy','<span class="rose">hides the failures.</span>'],headSub:'The ones that actually hurt you.'},
@@ -220,7 +220,7 @@ const CONFIGS={
   cta:{head:['Know your','<span class="green">real number.</span>'],btn:"Let's talk →"},
   pLabels:['the average','what matters','the 5%','known · green']},
 
- haveqa:{ vo:'assets/svc-haveqa-vo.mp3', rail:'I ALREADY HAVE QA · SAGE IDEAS',
+ haveqa:{ vo:'assets/svc-haveqa-vo.mp3?v=2', rail:'I ALREADY HAVE QA · SAGE IDEAS',
   scenes:[['hook',0,6.812],['build',6.812,19.572],['hard',19.572,30.846],['proof',30.846,35.526],['cta',35.526,38.805]],
   hook:{bar:'your QA team · great',lines:['<div class="ln u">▸ "we have QA covered"</div>','<div class="ln step">…for deterministic software <span class="ok">✓</span></div>','<div class="ln bad">✕ AI isn\'t deterministic</div>'],
    sub:'Great QA team. <span class="rose">Different animal.</span>',head:['Testing AI','<span class="rose">is different.</span>'],headSub:"I don't replace them — I extend them."},
@@ -230,7 +230,7 @@ const CONFIGS={
   cta:{head:['Add the layer,','<span class="green">not a headcount.</span>'],btn:"Let's talk →"},
   pLabels:['covered?','different','the layer','extended · green']},
 
- eyeball:{ vo:'assets/svc-eyeball-vo.mp3', rail:'CAN\'T I JUST EYEBALL IT? · SAGE IDEAS',
+ eyeball:{ vo:'assets/svc-eyeball-vo.mp3?v=2', rail:'CAN\'T I JUST EYEBALL IT? · SAGE IDEAS',
   scenes:[['hook',0,8.949],['build',8.949,18.783],['hard',18.783,27.039],['proof',27.039,32.647],['cta',32.647,35.787]],
   hook:{bar:'you · reviewing outputs',lines:['<div class="ln u">▸ read 10 outputs → "looks good" <span class="ok">✓</span></div>','<div class="ln step">…now do that 10,000× a day</div>','<div class="ln bad">✕ eyeballing doesn\'t scale</div>'],
    sub:'Fine for ten. <span class="rose">Not ten thousand.</span>',head:['Eyeballing','<span class="rose">doesn\'t scale.</span>'],headSub:'And it misses the slow drift.'},
@@ -240,7 +240,7 @@ const CONFIGS={
   cta:{head:['Stop spot-checking.','<span class="green">Start measuring.</span>'],btn:"Let's talk →"},
   pLabels:['looks good','systematic','the drift','measured · green']},
 
- fastcost:{ vo:'assets/svc-fastcost-vo.mp3', rail:'HOW FAST, HOW MUCH? · SAGE IDEAS',
+ fastcost:{ vo:'assets/svc-fastcost-vo.mp3?v=2', rail:'HOW FAST, HOW MUCH? · SAGE IDEAS',
   scenes:[['hook',0,7.091],['build',7.091,17.483],['hard',17.483,26.574],['proof',26.574,30.65],['cta',30.65,34.115]],
   hook:{bar:'the two first questions',lines:['<div class="ln u">▸ how fast can you start?</div>','<div class="ln step">▸ what does it cost?</div>','<div class="ln bad" style="color:var(--green)">✓ fair — here\'s the honest answer</div>'],
    sub:'Fair questions. <span class="cyan">Honest answers.</span>',head:['Start in','<span class="cyan">a week.</span>'],headSub:'Fixed scope. Fixed price. No mystery.'},
@@ -250,7 +250,7 @@ const CONFIGS={
   cta:{head:['Start small.','<span class="green">Then decide.</span>'],btn:'Book the audit →'},
   pLabels:['two questions','the on-ramp','no surprises','clear · green']},
 
- datasafe:{ vo:'assets/svc-datasafe-vo.mp3', rail:'IS MY DATA SAFE? · SAGE IDEAS',
+ datasafe:{ vo:'assets/svc-datasafe-vo.mp3?v=2', rail:'IS MY DATA SAFE? · SAGE IDEAS',
   scenes:[['hook',0,7.927],['build',7.927,19.247],['hard',19.247,28.524],['proof',28.524,32.368],['cta',32.368,34.904]],
   hook:{bar:'before you hand over access',lines:['<div class="ln u">▸ is my data safe?</div>','<div class="ln step">…it should be your first question</div>','<div class="ln bad" style="color:var(--green)">✓ here\'s exactly how I work</div>'],
    sub:'Your first question. <span class="cyan">The right one.</span>',head:['Your data','<span class="cyan">stays yours.</span>'],headSub:'Provably — not just as a promise.'},
