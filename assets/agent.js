@@ -14,7 +14,7 @@
 (function () {
   var C = { bg: '#0B0B0D', panel: '#0C0C0E', line: '#26241F', ink: '#F4F2EF', dim: '#A8A29E', faint: '#8E8882', green: '#10b981', cyan: '#22d3ee', purple: '#a78bfa' };
   var MONO = "'JetBrains Mono',monospace";
-  // Locale (mirrors the rest of the site: /es/ and /pt/ prefixes). Nadine speaks in all three.
+  // Locale (mirrors the rest of the site: /es/ and /pt/ prefixes). the assistant speaks in all three.
   var LOC = (function () { var p = location.pathname; return /^\/pt(\/|$)/.test(p) ? 'pt' : /^\/es(\/|$)/.test(p) ? 'es' : 'en'; })();
   function L(m) { return (m && (m[LOC] || m.en)) || ''; }
 
@@ -24,7 +24,7 @@
     pt: "Oi — sou a assistente do Jason. Me conta no que você está trabalhando e eu te levo direto ao que precisa. O que te traz aqui hoje?"
   });
 
-  // Every guided answer = a real Nadine voice clip (assets/concierge/<loc>/<clip>.mp3) + localized copy
+  // Every guided answer = a real assistant voice clip (assets/concierge/<loc>/<clip>.mp3) + localized copy
   // that MATCHES the recorded line. This tap-through tree covers the common questions + key objections;
   // free-text still hits the live AI as text (can't pre-record a live reply). Covers ~the whole journey.
   var GUIDED = {
@@ -319,7 +319,7 @@
     if (!list.some(function (c) { return c.guide === 'book'; })) list.push({ label: GUIDE_LABEL.book, guide: 'book' });
     return list;
   }
-  // A tapped guided intent: show the fixed answer, speak it in Nadine's real voice, then
+  // A tapped guided intent: show the fixed answer, speak it in the assistant's real voice, then
   // offer the next steps — always frictionless toward the mini-eval or the booking.
   function showGuided(key) {
     var g = GUIDED[key]; if (!g) { send(GUIDE_LABEL[key] || key); return; }
@@ -356,15 +356,15 @@
     });
   }
 
-  // ── voice OUTPUT — the REAL Nadine voice (pre-rendered clips), NOT a robotic browser
+  // ── voice OUTPUT — the real assistant voice (pre-rendered clips), NOT a robotic browser
   // synth. The guided journey — the greeting, the fixed answer paths, and the capture
-  // prompts — is voiced in Nadine so it feels like a real assistant. Free-text answers are
+  // prompts — is voiced by the assistant so it feels like a real assistant. Free-text answers are
   // generated live and can't be pre-recorded, so those stay text (no robot voice, ever).
   // speak(key) plays /assets/concierge/en/<key>.mp3. On/off persists per visitor.
   var VLANG = LOC;
   var speakOn = true; try { speakOn = localStorage.getItem('atlas-voice') !== 'off'; } catch (e) {}
-  var CLIP_BASE = '/assets/concierge/' + VLANG + '/', CLIP_V = '?v=1';
-  var canVoice = true; // Nadine clips exist for en / es / pt
+  var CLIP_BASE = '/assets/concierge/' + VLANG + '/', CLIP_V = '?v=2';
+  var canVoice = true; // assistant voice clips exist for en / es / pt
   var curAudio = null;
   function stopSpeak() { try { if (curAudio) { curAudio.pause(); curAudio = null; } } catch (e) {} }
   function speak(key) {
@@ -388,7 +388,7 @@
   }
 
   // openPanel(intent?) — opening with a guided-intent key (from the full-screen gateway) skips
-  // the greeting and takes the visitor straight into that Nadine-voiced answer.
+  // the greeting and takes the visitor straight into that assistant-voiced answer.
   function openPanel(intent) {
     open = true; panel.style.display = 'flex';
     requestAnimationFrame(function () { panel.style.opacity = '1'; panel.style.transform = 'none'; });
