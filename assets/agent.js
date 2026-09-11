@@ -117,17 +117,43 @@
     { label: GUIDE_LABEL.book, guide: 'book' }
   ];
 
-  // Scripted fallback brain — quote-first, used only when /api/chat is offline.
+  // Scripted fallback brain — quote-first, used only when /api/chat is offline. Localized (en/es/pt);
+  // the regexes include es/pt keywords so a Spanish/Portuguese query still matches the right answer.
   var FALLBACK = [
-    [/price|cost|\$|how much|pay|budget|rate|quote/i, "There's no fixed price list — every engagement is scoped and quoted after a short call, so you pay for your problem, not a package. The lowest-risk start is free: Jason runs a real eval on your live AI feature and sends the findings. Want that?"],
-    [/what.*(do|does|build|offer)|who is|services?|help with/i, "Jason ships AI features and then proves they work — LLM evaluation harnesses, adversarial safety testing, CI quality gates — plus test automation and AI workflow automation. His whole thing is 'proof, not vibes.' Want to see it run live, or have your own feature checked?"],
-    [/eval|test|prove|check|feature|bot|assistant|chatbot|agent|rag|hallucinat|safety|injection/i, "The fastest path: a free mini-eval. Jason points his eval engine at your live AI feature, runs adversarial probes (injection, jailbreak, hallucination, PII…), and sends you the verbatim findings — no call required. Drop your feature URL and I'll set it up."],
-    [/book|call|talk|meet|hire|start|contact|email|reach/i, "Easiest is a 15-minute call — you describe the problem, Jason tells you honestly what it takes and what it'd cost. Want me to open the booking page, or should I take your email so he reaches out?"],
-    [/demo|see|show|work|voice|live|example/i, "Two live things worth seeing: the Demos page has an AI receptionist you can chat or talk to, and the Eval page grades an AI in real time — press run and watch it fail probes. Want me to open one?"],
-    [/proof|case|experience|done before|track record|result|metric|client/i, "Real proof, all public: an open-source eval gate (green in ~10 min), a QA platform with 85 runners and a documented red→green security fix, a 37/37 Playwright suite, plus Fortune-50 test infra and a live suite taken from 10% flake to under 1%. Want the case studies?"],
-    [/human|real person|are you (a )?(ai|bot|real)|atlas/i, "Honest answer: I'm Atlas, Jason's AI associate — real AI, and a real person reads everything at hello@sageideas.dev. I can answer most things about the work and set up the next step. What do you need?"]
+    { re: /price|cost|\$|how much|pay|budget|rate|quote|precio|cu[aá]nto|cuesta|presupuesto|tarifa|pre[çc]o|quanto|or[çc]amento/i,
+      en: "There's no fixed price list: every engagement is scoped and quoted after a short call, so you pay for your problem, not a package. The lowest-risk start is free: Jason runs a real eval on your live AI feature and sends the findings. Want that?",
+      es: "No hay lista de precios fija: cada proyecto se define y cotiza tras una breve llamada, así pagas por tu problema, no por un paquete. El inicio con menos riesgo es gratis: Jason corre una evaluación real sobre tu función de IA en vivo y te envía los hallazgos. ¿La quieres?",
+      pt: "Não existe tabela de preços fixa: cada projeto é definido e orçado depois de uma conversa rápida, então você paga pelo seu problema, não por um pacote. O começo de menor risco é grátis: o Jason roda uma avaliação real no seu recurso de IA ao vivo e te envia os resultados. Quer?" },
+    { re: /what.*(do|does|build|offer)|who is|services?|help with|qu[eé] hac|qu[eé] construy|servicios?|o que.*faz|constr[oó]i|servi[çc]os?/i,
+      en: "Jason ships AI features and then proves they work: LLM evaluation harnesses, adversarial safety testing, CI quality gates, plus test automation and AI workflow automation. His whole thing is 'proof, not vibes.' Want to see it run live, or have your own feature checked?",
+      es: "Jason lanza funciones de IA y luego demuestra que funcionan: arneses de evaluación de LLM, pruebas de seguridad adversarias, controles de calidad en CI, más automatización de pruebas y de flujos con IA. Su lema es 'pruebas, no promesas'. ¿Quieres verlo en vivo o que revise tu propia función?",
+      pt: "O Jason entrega recursos de IA e depois prova que funcionam: arneses de avaliação de LLM, testes de segurança adversariais, portões de qualidade no CI, além de automação de testes e de fluxos com IA. O lema dele é 'provas, não promessas'. Quer ver ao vivo ou que ele avalie o seu próprio recurso?" },
+    { re: /eval|test|prove|check|feature|bot|assistant|chatbot|agent|rag|hallucinat|safety|injection|prueba|evalua|revisa|alucina|seguridad|inye|avalia|teste|alucina[çc]|seguran[çc]a|inje[çc]/i,
+      en: "The fastest path: a free mini-eval. Jason points his eval engine at your live AI feature, runs adversarial probes (injection, jailbreak, hallucination, PII…), and sends you the verbatim findings, no call required. Drop your feature URL and I'll set it up.",
+      es: "El camino más rápido: una mini-evaluación gratis. Jason apunta su motor de evaluación a tu función de IA en vivo, corre pruebas adversarias (inyección, jailbreak, alucinación, PII…) y te envía los hallazgos textuales, sin llamada. Deja la URL de tu función y la preparo.",
+      pt: "O caminho mais rápido: uma mini-avaliação grátis. O Jason aponta o motor de avaliação dele para o seu recurso de IA ao vivo, roda testes adversariais (injeção, jailbreak, alucinação, PII…) e te envia os resultados na íntegra, sem ligação. Deixe o link do seu recurso e eu preparo." },
+    { re: /book|call|talk|meet|hire|start|contact|email|reach|agend|llamada|hablar|contact|reserv|marcar|conversa|ligar|falar|contat/i,
+      en: "Easiest is a 15-minute call: you describe the problem, Jason tells you honestly what it takes and what it'd cost. Want me to open the booking page, or should I take your email so he reaches out?",
+      es: "Lo más fácil es una llamada de 15 minutos: describes el problema y Jason te dice con honestidad qué implica y cuánto cuesta. ¿Te abro la página de reserva o tomo tu correo para que te contacte?",
+      pt: "O mais fácil é uma conversa de 15 minutos: você descreve o problema e o Jason te diz com honestidade o que envolve e quanto custa. Quer que eu abra a página de agendamento ou pego seu e-mail pra ele entrar em contato?" },
+    { re: /demo|see|show|work|voice|live|example|ver|mostr|ejemplo|en vivo|ao vivo|exemplo/i,
+      en: "Two live things worth seeing: the Demos page has an AI receptionist you can chat or talk to, and the Eval page grades an AI in real time, press run and watch it fail probes. Want me to open one?",
+      es: "Dos cosas en vivo que vale la pena ver: la página de Demos tiene un recepcionista de IA con el que puedes chatear o hablar, y la página de Eval califica una IA en tiempo real; presionas ejecutar y ves cómo falla las pruebas. ¿Te abro una?",
+      pt: "Duas coisas ao vivo que valem a pena ver: a página de Demos tem um recepcionista de IA com quem você pode conversar, e a página de Eval avalia uma IA em tempo real; você aperta executar e vê ele falhar nos testes. Quer que eu abra uma?" },
+    { re: /proof|case|experience|done before|track record|result|metric|client|prueba|caso|experiencia|resultado|cliente|prova|caso|experi[êe]ncia|resultado/i,
+      en: "Real proof, all public: an open-source eval gate (green in ~10 min), a QA platform with 85 runners and a documented red→green security fix, a 37/37 Playwright suite, plus Fortune-50 test infra and a live suite taken from 10% flake to under 1%. Want the case studies?",
+      es: "Pruebas reales, todas públicas: un eval-gate de código abierto (verde en ~10 min), una plataforma de QA con 85 runners y un arreglo de seguridad rojo→verde documentado, una suite Playwright 37/37, más infraestructura de pruebas Fortune-50 y una suite en vivo llevada del 10% de inestabilidad a menos del 1%. ¿Quieres los casos de estudio?",
+      pt: "Provas reais, todas públicas: um eval-gate de código aberto (verde em ~10 min), uma plataforma de QA com 85 runners e uma correção de segurança vermelho→verde documentada, uma suíte Playwright 37/37, além de infraestrutura de testes Fortune-50 e uma suíte ao vivo levada de 10% de instabilidade para menos de 1%. Quer os estudos de caso?" },
+    { re: /human|real person|are you (a )?(ai|bot|real)|atlas|humano|persona real|eres.*(ia|bot)|voc[êe].*(ia|rob[ôo])|pessoa real/i,
+      en: "Honest answer: I'm Atlas, Jason's AI associate, real AI, and a real person reads everything at hello@sageideas.dev. I can answer most things about the work and set up the next step. What do you need?",
+      es: "Respuesta honesta: soy Atlas, la IA de Jason. Soy IA real, y una persona real lee todo en hello@sageideas.dev. Puedo responder casi todo sobre el trabajo y preparar el siguiente paso. ¿Qué necesitas?",
+      pt: "Resposta honesta: sou a Atlas, a IA do Jason. Sou IA de verdade, e uma pessoa real lê tudo em hello@sageideas.dev. Posso responder quase tudo sobre o trabalho e organizar o próximo passo. O que você precisa?" }
   ];
-  var FB_DEFAULT = "Good question — for anything specific, the fastest paths are a free mini-eval on your feature or a 15-minute call. Meanwhile I can walk you through what Jason builds, the proof behind it, or how engagements work. What's most useful?";
+  var FB_DEFAULT = {
+    en: "Good question. For anything specific, the fastest paths are a free mini-eval on your feature or a 15-minute call. Meanwhile I can walk you through what Jason builds, the proof behind it, or how engagements work. What's most useful?",
+    es: "Buena pregunta. Para algo específico, los caminos más rápidos son una mini-evaluación gratis de tu función o una llamada de 15 minutos. Mientras tanto puedo mostrarte qué construye Jason, las pruebas detrás o cómo funcionan los proyectos. ¿Qué te sirve más?",
+    pt: "Boa pergunta. Para algo específico, os caminhos mais rápidos são uma mini-avaliação grátis do seu recurso ou uma conversa de 15 minutos. Enquanto isso posso te mostrar o que o Jason constrói, as provas por trás ou como funcionam os projetos. O que te ajuda mais?"
+  };
 
   var open = false, mode = null, hist = [], panel, msgsEl, chipsEl, input, typingEl;
 
@@ -174,10 +200,10 @@
   }
   function hideTyping() { if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl); typingEl = null; }
 
-  function scripted(q) { for (var i = 0; i < FALLBACK.length; i++) if (FALLBACK[i][0].test(q)) return FALLBACK[i][1]; return FB_DEFAULT; }
+  function scripted(q) { for (var i = 0; i < FALLBACK.length; i++) if (FALLBACK[i].re.test(q)) return L(FALLBACK[i]); return L(FB_DEFAULT); }
 
   function ask(history) {
-    return fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'associate', messages: history }) })
+    return fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'associate', locale: LOC, messages: history }) })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { return d && d.ok && d.reply ? d.reply : null; })
       .catch(function () { return null; });
@@ -196,16 +222,16 @@
   // contextual action chips based on the running conversation
   function actionsFor(text) {
     var t = (text || '').toLowerCase(), acts = [];
-    if (/price|cost|budget|roi|worth|expensive|value/.test(t))
-      acts.push({ label: CHIP_IC.cost + 'Cost calculator', nav: 'roi.html' });
-    if (/eval|test|prove|check|feature|bot|assistant|chatbot|agent|rag|hallucinat|safety|injection|price|cost/.test(t))
-      acts.push({ label: CHIP_IC.eval + 'Free mini-eval', act: 'minieval' });
-    if (/proof|case|experience|result|metric|client|track record|done before/.test(t))
-      acts.push({ label: CHIP_IC.cases + 'Case studies', nav: 'case-studies.html' });
-    if (/demo|see|show|live|watch|example/.test(t))
-      acts.push({ label: CHIP_IC.live + 'See it live', nav: 'eval.html' });
-    acts.push({ label: CHIP_IC.book + 'Book a call', nav: 'book.html' });
-    if (acts.length < 3) acts.push({ label: CHIP_IC.all + 'All services', nav: 'services.html' });
+    if (/price|cost|budget|roi|worth|expensive|value|precio|cost|presupuesto|pre[çc]o|custo/.test(t))
+      acts.push({ label: CHIP_IC.cost + L({ en: 'Cost calculator', es: 'Calculadora de costos', pt: 'Calculadora de custos' }), nav: 'roi.html' });
+    if (/eval|test|prove|check|feature|bot|assistant|chatbot|agent|rag|hallucinat|safety|injection|price|cost|evalua|prueba|revisa|avalia|teste/.test(t))
+      acts.push({ label: CHIP_IC.eval + L({ en: 'Free mini-eval', es: 'Mini-evaluación gratis', pt: 'Mini-avaliação grátis' }), act: 'minieval' });
+    if (/proof|case|experience|result|metric|client|track record|done before|prueba|caso|resultado|cliente|prova|caso/.test(t))
+      acts.push({ label: CHIP_IC.cases + GUIDE_LABEL.cases, nav: 'case-studies.html' });
+    if (/demo|see|show|live|watch|example|ver|mostr|vivo|exemplo/.test(t))
+      acts.push({ label: CHIP_IC.live + GUIDE_LABEL.demos, nav: 'eval.html' });
+    acts.push({ label: CHIP_IC.book + GUIDE_LABEL.book, nav: 'book.html' });
+    if (acts.length < 3) acts.push({ label: CHIP_IC.all + L({ en: 'All services', es: 'Todos los servicios', pt: 'Todos os serviços' }), nav: 'services.html' });
     // de-dupe by label, cap 3
     var seen = {}, out = [];
     acts.forEach(function (a) { if (!seen[a.label] && out.length < 3) { seen[a.label] = 1; out.push(a); } });
