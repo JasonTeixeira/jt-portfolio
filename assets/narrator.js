@@ -1,7 +1,7 @@
-/* narrator.js — site-wide voice narration in the assistant's voice.
+/* narrator.js — site-wide voice narration in Nadine's voice.
    Drop this on any page; it maps the current page to a pre-recorded narration clip
    (/assets/narration/en/<key>.mp3), and if that clip exists, shows a small "Hear this page"
-   control. Click it and the assistant narrates the page through a Web Audio graph that drives a live
+   control. Click it and Nadine narrates the page through a Web Audio graph that drives a live
    orb + waveform (the same real-signal visualizer as the intro). No autoplay (starts on the
    click gesture), degrades to plain playback without Web Audio, and never shows if no clip. */
 (function () {
@@ -31,7 +31,7 @@
   };
   var key = keyFor(p);
   if (!key || !CAPTIONS[key]) return;
-  var SRC = '/assets/narration/en/' + key + '.mp3?v=v2';
+  var SRC = '/assets/narration/en/' + key + '.mp3?v=v3';
 
   // Only mount if the clip is really there (fetch HEAD — deterministic, no autoplay dependency).
   try {
@@ -48,7 +48,7 @@
       '<span class="jt-nar-lbl">Hear this page</span>' +
       '</button>' +
       '<div class="jt-nar-panel" hidden>' +
-      '<div class="jt-nar-row"><span class="jt-nar-orb big" aria-hidden="true"></span><span class="jt-nar-name">Jason&#39;s assistant</span>' +
+      '<div class="jt-nar-row"><span class="jt-nar-orb big" aria-hidden="true"></span><span class="jt-nar-name">Nadine</span>' +
       '<canvas class="jt-nar-viz" width="110" height="22" aria-hidden="true"></canvas>' +
       '<button class="jt-nar-x" aria-label="Stop narration">&times;</button></div>' +
       '<p class="jt-nar-cap"></p>' +
