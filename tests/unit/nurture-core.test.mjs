@@ -59,3 +59,18 @@ test('email builders: non-empty, carry unsubscribe url + List-Unsubscribe header
   }
 });
 test('SEND_CAP is a sane positive integer', () => { assert.ok(Number.isInteger(SEND_CAP) && SEND_CAP > 0); });
+
+test('leadEmail names the actual scoped plan + first name, no em-dash tic', () => {
+  const built = leadEmail({
+    prospect: { email: 'a@b.co', name: 'Sarah Lee' },
+    hasPlan: true,
+    plan: { keys: ['chatbot', 'llm-eval'], segment: null, total_lo: 8000, total_hi: 21000 },
+    siteUrl: 'https://x', unsubscribeUrl: 'https://x/u?t=1',
+  });
+  assert.match(built.text, /Sarah/);                        // first name used warmly
+  assert.match(built.text, /conversational assistant/i);    // real capability name from the rate card
+  assert.match(built.text, /LLM evaluation harness/i);      // second capability named
+  assert.match(built.text, /\$8k–\$21k/);                   // indicative band
+  assert.doesNotMatch(built.text, / — /);                   // banned em-dash tic stays out
+  assert.match(built.html, /Sarah/);                        // and in the HTML body
+});

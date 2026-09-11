@@ -367,6 +367,17 @@ if (root && qMount && planMount && disc) {
     updateHandoff(plan);
     if (keys.length) {
       playPlanReady();
+      // Snapshot the plan to localStorage so a returning visitor can be offered a warm
+      // "pick up where you left off" (read by the gateway + the concierge). Their own data.
+      try {
+        if (plan.count) {
+          let hash = '';
+          try { const ids = selectedOptionIds(); if (ids.length) hash = encodeKeys(ids); } catch (e) { /* chat-mode plans have no option ids */ }
+          localStorage.setItem('jt-scope-snapshot', JSON.stringify({
+            names: plan.items.map((i) => i.name), band: band(plan.totalBand), hash, ts: Date.now()
+          }));
+        }
+      } catch (e) { /* storage optional */ }
       clearTimeout(planTrackTimer);
       planTrackTimer = setTimeout(() => {
         track('plan_built', { plan: { keys, segment, total: plan.totalBand } });

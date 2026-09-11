@@ -1,4 +1,26 @@
 // Pure nurture rules + email templates. Shared browser+node. No I/O.
+import { CARD_BY_KEY } from './scope-core.mjs';
+
+// Personalization helpers — name the visitor + what they actually scoped, so the
+// follow-up reads like a person who paid attention, not a mail-merge. All from their
+// own session data (name they gave, capabilities they picked); never fabricated.
+export function firstName(prospect) {
+  const n = ((prospect && prospect.name) || '').trim();
+  if (!n) return '';
+  const f = n.split(/\s+/)[0];
+  return /^[\p{L}'’-]{2,20}$/u.test(f) ? f : '';
+}
+function kMoney(n) { return n >= 1000 ? '$' + Math.round(n / 1000) + 'k' : '$' + n; }
+export function bandStr(lo, hi) { return (lo && hi) ? kMoney(lo) + '–' + kMoney(hi) : ''; }
+export function planPhrase(plan) {
+  if (!plan || !Array.isArray(plan.keys) || !plan.keys.length) return null;
+  const names = plan.keys.map((k) => CARD_BY_KEY.get(k)).filter(Boolean).map((c) => c.name.toLowerCase());
+  if (!names.length) return null;
+  const list = names.length === 1 ? names[0]
+    : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  return { list, band: bandStr(plan.total_lo, plan.total_hi) };
+}
+
 export const DUE = { LEAD_HOURS: 48, LEAD2_HOURS: 144, UNPAID_1_DAYS: 3, UNPAID_2_DAYS: 8, EXPIRING_WITHIN_DAYS: 3, DRAFT_STALE_HOURS: 24 };
 export const SEND_CAP = 200;
 export const STEP = { LEAD: 'lead_no_proposal', LEAD_2: 'lead_no_proposal_2', UNPAID_1: 'proposal_unpaid_1', UNPAID_2: 'proposal_unpaid_2', EXPIRING: 'proposal_expiring' };
@@ -87,23 +109,36 @@ function htmlEmail({ preheader, heading, paras, ctaText, ctaUrl, altText, altUrl
 </table></td></tr></table></body></html>`;
 }
 
-export function leadEmail({ prospect, hasPlan, siteUrl, unsubscribeUrl }) {
+export function leadEmail({ prospect, hasPlan, plan, siteUrl, unsubscribeUrl }) {
+  const first = firstName(prospect);
+  const pp = hasPlan ? planPhrase(plan) : null;
+  const you = first ? `${first}, you` : 'You';
   const subject = hasPlan ? 'Turning your plan into a firm quote' : 'What would it take to build it?';
   const heading = hasPlan ? 'Want me to turn your plan into a real quote?' : 'Want me to map out what a build would take?';
-  const paras = hasPlan
-    ? ["You scoped a plan on my site a couple of days ago, and the picks were solid. If you'd like, I'll turn it into a firm scope, timeline, and price you can act on. It takes me a few minutes, and there's no obligation.",
-       "What makes working with me different: I don't just build the AI feature, I prove it works. Every number is backed by a test you can see, not a promise."]
-    : ["You stopped by my site recently. If there's a project on your mind, an AI feature, an automation, or a system that keeps leaking your time, I can map out what it would take and what it would cost. Free, no obligation.",
-       "What makes it different: I build it and I prove it works, with evals and tests you can see. No hand-waving."];
-  const text = `Hi,\n\n${paras.join('\n\n')}\n\nScope it: ${siteUrl}/build.html\nOr book a quick call: ${siteUrl}/book.html` + footer(unsubscribeUrl);
+  let paras;
+  if (pp) {
+    paras = [
+      `${you} scoped ${pp.list} on my site a couple of days ago${pp.band ? `, roughly ${pp.band} indicative` : ''}. Solid picks. If you want, I'll turn that exact list into a firm scope, timeline, and price you can act on. Takes me a few minutes, and there's no obligation.`,
+      "What's different about working with me: I don't just build the AI feature, I prove it works. Every number is backed by a test you can see, not a promise."];
+  } else if (hasPlan) {
+    paras = [
+      `${you} scoped a plan on my site a couple of days ago, and the picks were solid. If you'd like, I'll turn it into a firm scope, timeline, and price you can act on. Takes me a few minutes, and there's no obligation.`,
+      "What makes working with me different: I don't just build the AI feature, I prove it works. Every number is backed by a test you can see, not a promise."];
+  } else {
+    paras = [
+      `${you} stopped by my site recently. If there's a project on your mind, an AI feature, an automation, or a system that keeps leaking your time, I can map out what it would take and what it would cost. Free, no obligation.`,
+      "What makes it different: I build it and I prove it works, with evals and tests you can see. No hand-waving."];
+  }
+  const text = `${paras.join('\n\n')}\n\nScope it: ${siteUrl}/build.html\nOr book a quick call: ${siteUrl}/book.html` + footer(unsubscribeUrl);
   const html = htmlEmail({ preheader: heading, heading, paras, ctaText: hasPlan ? 'Turn my plan into a quote' : 'Scope it in a few minutes', ctaUrl: `${siteUrl}/build.html`, altText: 'Or grab 15 minutes:', altUrl: `${siteUrl}/book.html`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }
 
 export function lead2Email({ prospect, hasPlan, siteUrl, unsubscribeUrl }) {
+  const first = firstName(prospect);
   const subject = 'The one thing most AI projects get wrong';
   const heading = 'The one thing most AI projects get wrong';
-  const paras = ["Circling back once, then I'll leave you be.",
+  const paras = [`${first ? first + ', c' : 'C'}ircling back once, then I'll leave you be.`,
     "Most AI and automation work ships on a demo and a prayer. It looks great in the meeting, then a real customer finds the one thing it gets wrong. The fix isn't more AI. It's proof: evals, tests, and a gate that catches the bad output before it ships. That's why my own site runs its quality checks in public.",
     "If there's something you're not fully sure about, that's exactly the conversation to have. Fifteen minutes, no pitch."];
   const text = `Hi,\n\n${paras.join('\n\n')}\n\nBook 15 minutes: ${siteUrl}/book.html\nOr scope it yourself: ${siteUrl}/build.html` + footer(unsubscribeUrl);
