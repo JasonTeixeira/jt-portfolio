@@ -720,6 +720,28 @@ test.describe('portfolio — lead magnet + concierge', () => {
     await page.locator('button[data-evt="atlas-hero"]').click();
     await expect(page.locator('div[role="dialog"][aria-label*="Nadine"]')).toBeVisible();
   });
+
+  test('Nadine: "not sure" routes to the Scope Studio', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('button[aria-label="Ask about working with Jason"]').click();
+    const panel = page.locator('div[role="dialog"][aria-label*="Nadine"]');
+    await panel.getByRole('button', { name: /not sure what I need/i }).click();
+    // the guided answer offers a chip that deep-links into the scoper
+    await expect(panel.getByRole('button', { name: /Scope it in 2 min/i })).toBeVisible({ timeout: 6000 });
+  });
+
+  test('Nadine: returning visitor gets welcome-back + resume-your-plan', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('jt-nadine-seen', '1');
+      localStorage.setItem('jt-scope-snapshot', JSON.stringify({ names: ['RAG assistant'], band: '$8k–$21k', hash: 'Q2hhdA', ts: Date.now() }));
+    });
+    await page.reload();
+    await page.locator('button[aria-label="Ask about working with Jason"]').click();
+    const panel = page.locator('div[role="dialog"][aria-label*="Nadine"]');
+    await expect(panel).toContainText(/Welcome back/i, { timeout: 6000 });
+    await expect(panel.getByRole('button', { name: /Resume your plan/i })).toBeVisible();
+  });
 });
 
 test.describe('portfolio — docs hub', () => {
