@@ -100,7 +100,15 @@ export function initDashboard() {
       const p2 = el('p', null, data.admin ? '' : t('dash.emptySub'));
       p2.style.cssText = 'margin-top:8px;font-size:14px';
       if (!data.admin) { const talk = el('a', null, t('dash.talk')); talk.href = 'book.html'; talk.style.color = 'var(--cyan)'; talk.style.textDecoration = 'none'; p2.appendChild(document.createTextNode(' ')); p2.appendChild(talk); }
-      e.appendChild(p2); root.appendChild(e); return;
+      e.appendChild(p2);
+      // Email-mismatch hint: a paying client who signed up under a different email than they were
+      // invoiced under lands here with nothing. Tell them why + point to the receipt portal link.
+      if (!data.admin) {
+        const hint = el('p', null, t('dash.emptyMismatch').replace('{email}', u.email || 'this email'));
+        hint.style.cssText = 'margin-top:16px;font-size:12.5px;color:var(--faint);line-height:1.65;max-width:54ch';
+        e.appendChild(hint);
+      }
+      root.appendChild(e); return;
     }
 
     const grid = el('div', 'cx-grid');

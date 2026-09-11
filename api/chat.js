@@ -253,7 +253,11 @@ async function handler(req, res) {
   const ctx = typeof body.context === 'string'
     ? body.context.replace(/[^\w\s.,:;'/&()+-]/g, '').slice(0, 400).trim()
     : '';
-  const persona = ctx ? `${basePersona}\n\nVISITOR CONTEXT (use naturally, don't recite): ${ctx}` : basePersona;
+  // Page locale (es/pt version of the site) → tell the model to default to that language.
+  const loc = body.locale === 'es' ? 'es' : body.locale === 'pt' ? 'pt' : 'en';
+  const langHint = loc === 'en' ? ''
+    : `\n\nLANGUAGE: the visitor is on the ${loc === 'es' ? 'Spanish' : 'Portuguese'} version of the site. Reply in ${loc === 'es' ? 'Spanish' : 'Portuguese'} unless they clearly write to you in another language.`;
+  const persona = (ctx ? `${basePersona}\n\nVISITOR CONTEXT (use naturally, don't recite): ${ctx}` : basePersona) + langHint;
   let messages = Array.isArray(body.messages) ? body.messages : [];
   // Validate + clamp: only user/assistant turns, capped length and count.
   messages = messages
