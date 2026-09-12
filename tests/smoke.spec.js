@@ -753,6 +753,23 @@ test.describe('portfolio — lead magnet + concierge', () => {
   });
 });
 
+test.describe('portfolio — approach', () => {
+  test('the Proof-First Method page renders the four phases + standards, no horizontal overflow', async ({ page }) => {
+    await page.goto('/approach.html');
+    await expect(page.locator('h1')).toContainText(/Proof-First Method/i);
+    // four phase cards
+    await expect(page.locator('article.case')).toHaveCount(4);
+    await expect(page.getByText('Audit — find where it breaks', { exact: false })).toBeVisible();
+    await expect(page.getByText('Operate — keep it proven', { exact: false })).toBeVisible();
+    // the real machine is linked (honest depth)
+    await expect(page.locator('a[href*="github.com/JasonTeixeira/sage-kernel"]')).toBeVisible();
+    // nav marks Approach current
+    await expect(page.locator('nav.site-nav a[aria-current="page"]')).toContainText(/Approach/i);
+    const noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+    expect(noOverflow).toBeTruthy();
+  });
+});
+
 test.describe('portfolio — case studies', () => {
   test('selected builds showcase: real repos linked, forks excluded', async ({ page }) => {
     await page.goto('/case-studies.html');
