@@ -391,8 +391,9 @@ test.describe('portfolio — service pages', () => {
       const types = schemas.map((s) => JSON.parse(s)['@type']);
       expect(types, slug).toContain('Service');
       expect(types, slug).toContain('BreadcrumbList');
-      // every service page carries a booking CTA back to the funnel
-      await expect(page.locator('a[href="../book.html"]').first()).toBeVisible();
+      // every service page carries a booking CTA in the body (the nav CTA is
+      // correctly behind the mobile hamburger, so target the in-body book-call CTA)
+      await expect(page.locator('a[href="../book.html"][data-evt="book-call"]').first()).toBeVisible();
       expect(await page.locator('details.faq').count(), slug).toBeGreaterThanOrEqual(3);
     }
   });
