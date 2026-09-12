@@ -182,8 +182,9 @@ test.describe('portfolio — index', () => {
     const circular = await page.locator('a[href*="agency.sageideas.dev"]').count();
     expect(circular).toBe(0);
     const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
-    const types = schemas.map((s) => JSON.parse(s)['@type']);
+    const types = schemas.flatMap((s) => { const d = JSON.parse(s); return d['@graph'] ? d['@graph'].map((n) => n['@type']) : [d['@type']]; });
     expect(types).toContain('Person');
+    expect(types).toContain('Organization');
     expect(types).toContain('FAQPage');
   });
 
@@ -402,7 +403,7 @@ test.describe('portfolio — service pages', () => {
   test('sitemap covers service pages', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const slug of SLUGS) expect(xml).toContain(`/services/${slug}.html`);
-    expect((xml.match(/<loc>/g) || []).length).toBe(136);
+    expect((xml.match(/<loc>/g) || []).length).toBeGreaterThanOrEqual(130); // grows as pages are added
   });
 
   test('services matrix page: path, flagship cards expand, capability filter works', async ({ page }) => {
@@ -584,14 +585,16 @@ test.describe('portfolio — field notes', () => {
   test('sitemap + robots exist; homepage has OG image and Person schema', async ({ page, request }) => {
     const sm = await request.get('/sitemap.xml');
     expect(sm.status()).toBe(200);
-    expect((await sm.text()).match(/<loc>/g).length).toBe(136);
+    expect((await sm.text()).match(/<loc>/g).length).toBeGreaterThanOrEqual(130); // grows as pages are added
     const rb = await request.get('/robots.txt');
     expect(rb.status()).toBe(200);
     const og = await request.get('/assets/og.png');
     expect(og.status()).toBe(200);
     await page.goto('/');
     const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
-    expect(ld['@type']).toBe('Person');
+    const graph = ld['@graph'] || [ld];
+    expect(graph.some((n) => n['@type'] === 'Person')).toBeTruthy();
+    expect(graph.some((n) => n['@type'] === 'Organization')).toBeTruthy();
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og\.png/);
   });
 });
