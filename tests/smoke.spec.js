@@ -770,6 +770,18 @@ test.describe('portfolio — approach', () => {
   });
 });
 
+test.describe('portfolio — quality standard', () => {
+  test('quality standard page: definition of done, SLA, floor, honest limits', async ({ page }) => {
+    await page.goto('/quality-standard.html');
+    await expect(page.locator('h1')).toContainText(/Quality Standard/i);
+    await expect(page.getByText(/command you can re-run/i)).toBeVisible();
+    await expect(page.getByText(/Active build engagement/i)).toBeVisible();   // SLA table
+    await expect(page.getByText(/What I guarantee . and what I don/i)).toBeVisible(); // honest limits
+    const noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+    expect(noOverflow).toBeTruthy();
+  });
+});
+
 test.describe('portfolio — security', () => {
   test('security page: honest posture, continuity, and liability — no horizontal overflow', async ({ page }) => {
     await page.goto('/security.html');
