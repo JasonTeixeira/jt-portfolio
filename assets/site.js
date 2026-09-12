@@ -313,9 +313,10 @@
   document.querySelectorAll('.funnel-btn').forEach(function (b) {
     b.addEventListener('click', function () { setFunnel(b.getAttribute('data-set')); });
   });
-  var savedFunnel = null;
-  try { savedFunnel = localStorage.getItem('jt-funnel'); } catch (e) { /* private mode */ }
-  setFunnel(savedFunnel === 'hire' ? 'hire' : 'client');
+  // The flagship reads firm-only now — the full-time path lives on hire-ai-qa-engineer.html.
+  // Force the client (firm) view and clear any stale 'hire' preference from a prior visit.
+  try { localStorage.removeItem('jt-funnel'); } catch (e) { /* private mode */ }
+  setFunnel('client');
 
   /* ───────────────────────── hero pipeline ───────────────────────── */
 

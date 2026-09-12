@@ -59,22 +59,20 @@ test.describe('portfolio — index', () => {
     await expect(page.locator('#jt-notes a')).toHaveCount(7);
   });
 
-  test('dual funnel toggles and persists', async ({ page }) => {
-    // The funnel toggle lives in .site-nav-index-extra (desktop-only nav); on
-    // mobile it's not rendered, so this desktop interaction test doesn't apply.
-    test.skip(test.info().project.name === 'mobile', 'funnel toggle is desktop-only nav UI');
+  test('flagship is firm-only — hire toggle retired, funnel forced to client', async ({ page }) => {
+    test.skip(test.info().project.name === 'mobile', 'nav extra is desktop-only');
     await page.goto('/');
     const root = page.locator('#jt-root');
     await expect(root).toHaveAttribute('data-funnel', 'client');
+    await expect(page.locator('button[data-set="hire"]')).toHaveCount(0);   // toggle removed
     await expect(page.locator('#top .only-client a').first()).toBeVisible();
-
-    await page.locator('button[data-set="hire"]').click();
-    await expect(root).toHaveAttribute('data-funnel', 'hire');
-    await expect(page.locator('#top .only-hire a').first()).toBeVisible();
-    await expect(page.locator('#top .only-client a').first()).toBeHidden();
-
+    await expect(page.locator('#top .only-hire a').first()).toBeHidden();    // hire content stays hidden
+    // a stale 'hire' preference from a prior visit is reset to client
+    await page.evaluate(() => { try { localStorage.setItem('jt-funnel', 'hire'); } catch (e) {} });
     await page.reload();
-    await expect(root).toHaveAttribute('data-funnel', 'hire');
+    await expect(root).toHaveAttribute('data-funnel', 'client');
+    // the full-time path is still reachable, just de-emphasized (footer)
+    await expect(page.locator('footer a[href="hire-ai-qa-engineer.html"]')).toHaveCount(1);
   });
 
   test('no horizontal overflow', async ({ page }) => {
