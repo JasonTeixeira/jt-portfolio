@@ -14,6 +14,7 @@
     if (a.target === '_blank' || a.hasAttribute('download') || a.getAttribute('rel') === 'external') return;
     var href = a.getAttribute('href') || '';
     if (/^(#|mailto:|tel:|javascript:)/i.test(href)) return;
+    if (/^\/?captures\//.test(href)) return; // run captures open in the receipt lightbox, not a page transition
     var url;
     try { url = new URL(a.href, location.href); } catch (_) { return; }
     if (url.origin !== location.origin) return;                 // external → normal

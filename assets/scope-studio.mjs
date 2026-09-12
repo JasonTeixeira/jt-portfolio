@@ -430,6 +430,13 @@ if (root && qMount && planMount && disc) {
   }
 
   function rehydrateFromUrl() {
+    // #caps= carries capability keys (seg~keys) handed off from the concierge's in-chat
+    // scoping — render the SAME visual blueprint the questionnaire builds, pre-loaded.
+    const mc = location.hash.match(/caps=([^&]+)/);
+    if (mc) {
+      const { keys, segment } = decodeKeys(mc[1]);
+      if (keys && keys.length) { chatKeys = keys.filter(Boolean); chatSegment = segment || null; return; }
+    }
     const m = location.hash.match(/plan=([^&]+)/);
     if (!m) return;
     const { keys: ids } = decodeKeys(m[1]); // these are option ids
