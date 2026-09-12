@@ -754,6 +754,21 @@ test.describe('portfolio — lead magnet + concierge', () => {
 });
 
 test.describe('portfolio — case studies', () => {
+  test('selected builds showcase: real repos linked, forks excluded', async ({ page }) => {
+    await page.goto('/case-studies.html');
+    const builds = page.locator('.bcard');
+    expect(await builds.count()).toBeGreaterThanOrEqual(15);
+    // flagships link to real public repos
+    await expect(page.locator('a.bcard[href*="github.com/JasonTeixeira/CISSP-Exam-Prep"]')).toBeVisible();
+    await expect(page.locator('a.bcard[href*="github.com/JasonTeixeira/AlphaStream"]')).toBeVisible();
+    // products route to their case studies
+    await expect(page.locator('a.bcard[href="work-nexural.html"]')).toBeVisible();
+    // no fork is showcased as own work
+    for (const fork of ['dspy', 'mem0', 'autogen', 'crewAI', 'langflow', 'storybook']) {
+      await expect(page.locator(`a.bcard[href*="/${fork}"]`)).toHaveCount(0);
+    }
+  });
+
   test('a receipt opens in an inline lightbox (not a navigation)', async ({ page }) => {
     await page.goto('/case-studies.html');
     await page.locator('a.plink[href^="captures/"]').first().click();
