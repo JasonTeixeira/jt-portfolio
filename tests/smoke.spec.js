@@ -378,7 +378,10 @@ test.describe('portfolio — SEO', () => {
 });
 
 test.describe('portfolio — service pages', () => {
-  const SLUGS = ['llm-evaluation-qa', 'test-automation-ci', 'ai-workflow-automation'];
+  // all five productized service depth pages
+  const SLUGS = ['llm-evaluation-qa', 'test-automation-ci', 'ai-workflow-automation', 'security-hardening', 'ai-product-build'];
+  // the curated subset promoted on the homepage (homepage stays focused, not exhaustive)
+  const HOME_SLUGS = ['llm-evaluation-qa', 'test-automation-ci', 'ai-workflow-automation'];
 
   test('all service pages load with schema, symptoms, deliverables, CTA', async ({ page }) => {
     for (const slug of SLUGS) {
@@ -388,14 +391,15 @@ test.describe('portfolio — service pages', () => {
       const types = schemas.map((s) => JSON.parse(s)['@type']);
       expect(types, slug).toContain('Service');
       expect(types, slug).toContain('BreadcrumbList');
-      await expect(page.locator('a[href="../index.html#contact"]').first()).toBeVisible();
+      // every service page carries a booking CTA back to the funnel
+      await expect(page.locator('a[href="../book.html"]').first()).toBeVisible();
       expect(await page.locator('details.faq').count(), slug).toBeGreaterThanOrEqual(3);
     }
   });
 
   test('homepage service cards link to landing pages', async ({ page }) => {
     await page.goto('/');
-    for (const slug of SLUGS) {
+    for (const slug of HOME_SLUGS) {
       await expect(page.locator(`#jt-services a[href="services/${slug}.html"]`)).toHaveCount(1);
     }
   });
@@ -411,8 +415,8 @@ test.describe('portfolio — service pages', () => {
     await expect(page.locator('h1')).toBeVisible();
     // engagement path renders four steps
     await expect(page.locator('#path .step')).toHaveCount(4);
-    // three flagship service cards, each linking to its detail page
-    await expect(page.locator('#svcgrid .svc')).toHaveCount(3);
+    // five productized flagship service cards, each linking to its detail page
+    await expect(page.locator('#svcgrid .svc')).toHaveCount(5);
     for (const slug of SLUGS) {
       await expect(page.locator(`#svcgrid a[href="services/${slug}.html"]`)).toHaveCount(1);
     }
@@ -435,6 +439,19 @@ test.describe('portfolio — service pages', () => {
     // deliberate product decision); project work stays quote-first. Verify the
     // retainer pricing is present rather than asserting the page is price-free.
     await expect(page.locator('body')).toContainText('$1,500');
+  });
+
+  test('capability matrix is collapsed by default — tracks are <details>, first open', async ({ page }) => {
+    await page.goto('/services.html');
+    const groups = page.locator('#capgrid details.trackgroup');
+    await expect(groups).toHaveCount(6);
+    // first track open, the rest collapsed on load (progressive disclosure)
+    await expect(groups.first()).toHaveJSProperty('open', true);
+    await expect(groups.nth(1)).toHaveJSProperty('open', false);
+    // a collapsed track's summary toggles it open (native, keyboard-accessible)
+    const second = groups.nth(1);
+    await second.locator('summary').click();
+    await expect(second).toHaveJSProperty('open', true);
   });
 
   test('services page is reachable from the primary nav', async ({ page }) => {
