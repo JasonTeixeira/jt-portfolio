@@ -742,6 +742,26 @@ test.describe('portfolio — lead magnet + concierge', () => {
     await expect(panel).toContainText(/Welcome back/i, { timeout: 6000 });
     await expect(panel.getByRole('button', { name: /Resume your plan/i })).toBeVisible();
   });
+
+  test('Nadine: "scope it with me" starts an in-chat scoping turn', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('button[aria-label="Ask about working with Jason"]').click();
+    const panel = page.locator('div[role="dialog"][aria-label*="Nadine"]');
+    await panel.getByRole('button', { name: /not sure what I need/i }).click();
+    await panel.getByRole('button', { name: /scope it with me/i }).click();
+    await expect(panel).toContainText(/scope it with you|what you're trying to build/i, { timeout: 6000 });
+  });
+});
+
+test.describe('portfolio — case studies', () => {
+  test('a receipt opens in an inline lightbox (not a navigation)', async ({ page }) => {
+    await page.goto('/case-studies.html');
+    await page.locator('a.plink[href^="captures/"]').first().click();
+    await expect(page.locator('div[role="dialog"][aria-modal="true"] iframe')).toBeVisible({ timeout: 6000 });
+    // closing returns to the page (still on case-studies, not navigated to the capture)
+    await page.locator('.jt-rc-x').click();
+    await expect(page).toHaveURL(/case-studies/);
+  });
 });
 
 test.describe('portfolio — docs hub', () => {
