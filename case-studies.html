@@ -68,6 +68,20 @@
   .opcard .more { font-family:var(--mono); font-size:12px; color:var(--ac); margin-top:20px; display:inline-flex; gap:6px; }
 
   .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  /* Selected builds — the body of work */
+  .btier { font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); margin:34px 0 14px; display:flex; align-items:center; gap:10px; }
+  .btier::after { content:""; flex:1; height:1px; background:var(--line); }
+  .bgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr)); gap:14px; }
+  .bcard { display:flex; flex-direction:column; border:1px solid var(--line); border-left:2px solid var(--ac,var(--line)); border-radius:12px; background:var(--card); padding:17px 18px; transition:border-color .2s, transform .2s; text-decoration:none; }
+  a.bcard:hover { border-color:var(--ac); transform:translateY(-2px); }
+  .bcard .bh { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .bcard .bn { font-family:var(--serif); font-weight:400; font-size:1.22rem; color:var(--ink); line-height:1.1; letter-spacing:-0.01em; }
+  .bcard .bstar { font-family:var(--mono); font-size:11px; color:var(--amber); white-space:nowrap; flex-shrink:0; }
+  .bcard .bd { font-size:12.5px; line-height:1.62; color:var(--dim); margin:9px 0 0; flex:1; }
+  .bcard .bm { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:13px; }
+  .bcard .bstack { font-family:var(--mono); font-size:10px; letter-spacing:0.04em; color:var(--faint); }
+  .bcard .blink { font-family:var(--mono); font-size:11px; color:var(--ac); white-space:nowrap; }
+  .bcard .btag { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ac); margin-bottom:7px; }
   section { padding:clamp(40px,6vw,64px) 0; }
   .rule { border-top:1px solid var(--line); }
 </style>
@@ -245,6 +259,125 @@
         <span class="verified" style="color:var(--faint);border-color:var(--line);background:transparent">prior full-time role · figures self-reported</span>
       </div>
     </article>
+    </section>
+
+    <!-- SELECTED BUILDS — the body of work behind the case studies -->
+    <section class="rule">
+      <div class="kick" style="color:var(--faint)">Selected builds &amp; systems · public code is linked, products I run are described</div>
+      <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,3vw,2.1rem);letter-spacing:-0.015em;margin:18px 0 0;max-width:24ch">Not a portfolio of mockups. Shipped systems you can open.</h2>
+      <p class="subtle" style="margin-top:14px;max-width:64ch">Eighty-plus original repositories and a dozen live products across AI/LLM evaluation, QA &amp; test automation, cloud infrastructure, security, and quantitative systems. A representative slice — every public repo links to real code; forks and other people's libraries are deliberately excluded.</p>
+
+      <div class="btier">Flagships</div>
+      <div class="bgrid">
+        <a class="bcard" style="--ac:var(--purple)" href="https://github.com/JasonTeixeira/CISSP-Exam-Prep" target="_blank" rel="noopener">
+          <div class="btag">AI engineering · security</div>
+          <div class="bh"><span class="bn">CISSP Exam Prep</span><span class="bstar">★ 7</span></div>
+          <p class="bd">A citation-grounded CISSP tutor: an MCP server exposing 14 tools — FSRS spaced repetition, IRT-driven adaptive exam simulation, and semantic search over NIST, MITRE &amp; OWASP. 48 tests. Built while passing the 2024 exam.</p>
+          <div class="bm"><span class="bstack">TypeScript · MCP</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/Nexural_Automation" target="_blank" rel="noopener">
+          <div class="btag">Automation · safety engineering</div>
+          <div class="bh"><span class="bn">Nexural Automation</span><span class="bstar">★ 6</span></div>
+          <p class="bd">A safety-first NinjaTrader 8 automation lab: 5 tracks, 60 executable labs, 5 capstones, NinjaScript + Python SDKs, and 4 CI pipelines incl. CodeQL. Grading is derived from replayed artifacts — live-account routing is absent by design.</p>
+          <div class="bm"><span class="bstack">TS · Python · C# · CI</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--cyan)" href="https://github.com/JasonTeixeira/AlphaStream" target="_blank" rel="noopener">
+          <div class="btag">Machine learning · full-stack</div>
+          <div class="bh"><span class="bn">AlphaStream</span><span class="bstar">★ 5</span></div>
+          <p class="bd">An ML trading-signal platform: a FastAPI ML pipeline with 45 leak-free features, a Next.js 16 / React 19 front end (33 pages, 122 components), Supabase, Railway. Real models, real data, no fake metrics.</p>
+          <div class="bm"><span class="bstack">FastAPI · ML · Next.js</span><span class="blink">GitHub ↗</span></div>
+        </a>
+      </div>
+
+      <div class="btier">Open source &amp; infrastructure</div>
+      <div class="bgrid">
+        <a class="bcard" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/sage-kernel" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">sage-kernel</span><span class="bstar">★ 1</span></div>
+          <p class="bd">A proof-first, MCP-native engineering OS for the terminal — 124 MCP tools where every "done" is backed by a command you can re-run.</p>
+          <div class="bm"><span class="bstack">JavaScript · MCP</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--purple)" href="https://github.com/JasonTeixeira/llm-eval-gate" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">llm-eval-gate</span></div>
+          <p class="bd">Your first green LLM eval gate in ten minutes — zero API keys to start. The eval-harness pattern I bring to client LLM features, MIT-licensed.</p>
+          <div class="bm"><span class="bstack">JavaScript · MIT</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">playwright-sdet-regression-suite</span></div>
+          <p class="bd">A Playwright + TypeScript SDET regression suite with release-style QA evidence — traces, screenshots, and a reproducible run.</p>
+          <div class="bm"><span class="bstack">TypeScript · Playwright</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--amber)" href="https://github.com/JasonTeixeira/terraform-aws-modules" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">terraform-aws-modules</span></div>
+          <p class="bd">Four production AWS modules — multi-AZ VPC, S3 + CloudFront static site, Lambda API, and GitHub OIDC keyless CI/CD. CI-tested, with variable validation.</p>
+          <div class="bm"><span class="bstack">Terraform · AWS</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--cyan)" href="https://github.com/JasonTeixeira/TOGAF-Master-Documenting-Template" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">TOGAF Documentation Template</span><span class="bstar">★ 2</span></div>
+          <p class="bd">The full TOGAF ADM enterprise-architecture deliverable map — every document you should produce across all ADM phases, in one checklist.</p>
+          <div class="bm"><span class="bstack">Enterprise architecture</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--purple)" href="https://github.com/JasonTeixeira/micro-saas-starter" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">micro-saas-starter</span><span class="bstar">★ 1</span></div>
+          <p class="bd">A production SaaS starter: Next.js 16, Supabase auth, Stripe billing — the boilerplate I clone to ship a monetised app fast.</p>
+          <div class="bm"><span class="bstack">Next.js · Supabase · Stripe</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/Master-Migration-Pipeline" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">Master Migration Pipeline</span><span class="bstar">★ 1</span></div>
+          <p class="bd">An enterprise migration pipeline with automated deployment and rollback strategies — the runbook I use to move production systems safely.</p>
+          <div class="bm"><span class="bstack">CI/CD · infra</span><span class="blink">GitHub ↗</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--cyan)" href="https://github.com/JasonTeixeira/graphify" target="_blank" rel="noopener">
+          <div class="bh"><span class="bn">graphify</span></div>
+          <p class="bd">An AI coding-assistant skill that turns any input into a knowledge graph — works across Claude Code, Codex, Cursor, and Gemini.</p>
+          <div class="bm"><span class="bstack">Python · AI skill</span><span class="blink">GitHub ↗</span></div>
+        </a>
+      </div>
+
+      <div class="btier">Products I build &amp; operate</div>
+      <div class="bgrid">
+        <a class="bcard" style="--ac:var(--cyan)" href="work-nexural.html">
+          <div class="bh"><span class="bn">Nexural</span></div>
+          <p class="bd">A live trading-media platform — ~800 API routes, 244 RLS-secured tables, real market data, a Discord AI engine, and a full learning academy. Built and operated solo.</p>
+          <div class="bm"><span class="bstack">Next.js · Supabase · AI</span><span class="blink">Case study →</span></div>
+        </a>
+        <a class="bcard" style="--ac:var(--purple)" href="work-academy.html">
+          <div class="bh"><span class="bn">Sage Ideas Academy</span></div>
+          <p class="bd">An AI-engineering learning platform — dozens of courses and hundreds of lessons with in-browser Pyodide labs, a RAG-grounded tutor, and verifiable certificates.</p>
+          <div class="bm"><span class="bstack">Next.js · Supabase · RAG</span><span class="blink">Case study →</span></div>
+        </a>
+        <div class="bcard" style="--ac:var(--green)">
+          <div class="bh"><span class="bn">Voza</span></div>
+          <p class="bd">A speaking-first English-learning app for Latin America — a 256-screen Expo product with a four-tier verification pipeline.</p>
+          <div class="bm"><span class="bstack">Expo · React Native</span><span class="blink" style="color:var(--faint)">operated · private</span></div>
+        </div>
+        <div class="bcard" style="--ac:var(--amber)">
+          <div class="bh"><span class="bn">Knox</span></div>
+          <p class="bd">An AI car-diagnostic app — a mobile-first flow that turns symptoms and photos into a ranked diagnosis.</p>
+          <div class="bm"><span class="bstack">AI · mobile</span><span class="blink" style="color:var(--faint)">in build · private</span></div>
+        </div>
+        <div class="bcard" style="--ac:var(--rose)">
+          <div class="bh"><span class="bn">Undeny</span></div>
+          <p class="bd">An AI insurance-denial appeal builder — turns a denial letter into a grounded, citation-backed appeal.</p>
+          <div class="bm"><span class="bstack">AI · LLM</span><span class="blink" style="color:var(--faint)">in build · private</span></div>
+        </div>
+        <div class="bcard" style="--ac:var(--cyan)">
+          <div class="bh"><span class="bn">Hard Things Daily</span></div>
+          <p class="bd">A daily-discipline product — a web + mobile + API monorepo with a production certification gate.</p>
+          <div class="bm"><span class="bstack">Next.js · Expo · API</span><span class="blink" style="color:var(--faint)">operated · private</span></div>
+        </div>
+        <div class="bcard" style="--ac:var(--green)">
+          <div class="bh"><span class="bn">Trayd</span></div>
+          <p class="bd">An AI receptionist + estimator for trades — answers, qualifies, and produces a photo-based estimate.</p>
+          <div class="bm"><span class="bstack">AI · voice</span><span class="blink" style="color:var(--faint)">in build · private</span></div>
+        </div>
+        <div class="bcard" style="--ac:var(--purple)">
+          <div class="bh"><span class="bn">Owly</span></div>
+          <p class="bd">A speed-reading training app — eight mini-games and a character-driven progression loop.</p>
+          <div class="bm"><span class="bstack">TypeScript · mobile</span><span class="blink" style="color:var(--faint)">operated · private</span></div>
+        </div>
+      </div>
+
+      <p class="subtle" style="margin-top:26px;font-size:13px">Eighty-plus original repositories in total. <a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:underline;text-underline-offset:2px">Browse them all on GitHub ↗</a></p>
     </section>
 
     <!-- TESTIMONIALS (renders only when real quotes are added below) -->
