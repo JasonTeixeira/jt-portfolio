@@ -137,6 +137,18 @@
   </header>
 
   <main class="wrap">
+    <!-- RESULTS BAND: the engineer metrics, reframed as what they meant for the business -->
+    <section style="padding-top:clamp(20px,3vw,32px);padding-bottom:0">
+      <div class="kick" style="color:var(--faint)">Outcomes &middot; what the numbers meant for the business</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:1px;margin-top:20px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden">
+        <div style="background:var(--card);padding:22px 20px"><div style="font-family:var(--serif);font-size:clamp(2.1rem,4vw,2.7rem);line-height:1;color:var(--rose)">15</div><p style="margin:10px 0 0;font-size:12.5px;line-height:1.6;color:var(--dim)">exploitable vulnerabilities <b style="color:var(--ink)">blocked from shipping</b> &mdash; in public, by the gate, before a customer or auditor ever saw them.</p></div>
+        <div style="background:var(--card);padding:22px 20px"><div style="font-family:var(--serif);font-size:clamp(2.1rem,4vw,2.7rem);line-height:1;color:var(--amber)">10% &rarr; &lt;1%</div><p style="margin:10px 0 0;font-size:12.5px;line-height:1.6;color:var(--dim)">a flaky suite the team had learned to ignore, <b style="color:var(--ink)">turned back into a release gate they trust.</b></p></div>
+        <div style="background:var(--card);padding:22px 20px"><div style="font-family:var(--serif);font-size:clamp(2.1rem,4vw,2.7rem);line-height:1;color:var(--cyan)">4h &rarr; 75m</div><p style="margin:10px 0 0;font-size:12.5px;line-height:1.6;color:var(--dim)">release regression cut from half a day &mdash; <b style="color:var(--ink)">safer, faster ships</b> across systems serving 2,300+ stores.</p></div>
+        <div style="background:var(--card);padding:22px 20px"><div style="font-family:var(--serif);font-size:clamp(2.1rem,4vw,2.7rem);line-height:1;color:var(--green)">0</div><p style="margin:10px 0 0;font-size:12.5px;line-height:1.6;color:var(--dim)">uncited answers in a customer-facing AI &mdash; <b style="color:var(--ink)">zero fabricated-source liability</b>, by construction.</p></div>
+      </div>
+      <p class="subtle" style="margin-top:12px;font-size:12px;color:var(--faint)">Each figure traces to a receipt below. Prior-role numbers are self-reported and labeled as such.</p>
+    </section>
+
     <!-- FLAGSHIP: BUILT & OPERATED (own products, not client work) -->
     <section style="padding-bottom:6px">
       <div class="kick" style="color:var(--cyan)">Built &amp; operated &middot; my own products, not client logos</div>
@@ -179,7 +191,7 @@
       <h3>The QA platform that refused to show a fake green.</h3>
       <div class="metric">
         <span class="big">red&nbsp;→&nbsp;green</span>
-        <span class="lbl">CVE gate went red at 11:39, blocked the release, and was back to a proven 13/13 by 14:35. Both runs published verbatim.</span>
+        <span class="lbl">A release carrying <b>15 exploitable CVEs</b> — caught by the gate at 11:39, blocked, and green again by 14:35. Both runs published verbatim, so &ldquo;passing&rdquo; is a fact you can audit, not a claim.</span>
       </div>
       <div class="grid">
         <div class="blk"><div class="h">The problem</div><p>A quality platform is only trustworthy if it can fail. On a real run, the dependency-audit gate found 15 high/critical CVEs. The honest verdict was <b>not shippable</b>, not a green badge.</p></div>
@@ -201,7 +213,7 @@
       <h3>A regression suite a release manager can trust.</h3>
       <div class="metric">
         <span class="big">37/37</span>
-        <span class="lbl">specs green in CI · 15.3s · <b>0 flakes</b> — with traces, screenshots, and a written risk model.</span>
+        <span class="lbl">specs green in CI · 15.3s · <b>0 flakes</b> — a regression estate the team can <b>trust to block a bad merge</b>, with traces, screenshots, and a written risk model.</span>
       </div>
       <div class="grid">
         <div class="blk"><div class="h">The problem</div><p>Most suites are script soup: coverage follows whoever wrote tests last, red is ignored because it's flaky, and every failure starts a screenshot scavenger hunt.</p></div>
@@ -223,7 +235,7 @@
       <h3>An AI assistant that can't answer without a citation.</h3>
       <div class="metric">
         <span class="big">100%</span>
-        <span class="lbl">of answers cite their source, built into the design rather than requested by prompt. There is no uncited generation path.</span>
+        <span class="lbl">of answers cite their source — built into the design, not requested by prompt — so <b>nothing a customer reads can invent a source</b>. There is no uncited generation path, and no fabricated-source liability.</span>
       </div>
       <div class="grid">
         <div class="blk"><div class="h">The problem</div><p>Most RAG demos hallucinate confidently. "Grounded" is claimed in the prompt and quietly violated in production the first time retrieval comes back thin.</p></div>
