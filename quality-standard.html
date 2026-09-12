@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Proof-First Method — How Every Engagement Runs · Jason Teixeira</title>
-<meta name="description" content="The Proof-First Method: the operating system behind every Sage Ideas engagement — Audit, Sprint, Build, Operate, with a concrete artifact at each phase and the standard enforced before anything ships.">
+<title>The Quality Standard &amp; SLA — Sage Ideas</title>
+<meta name="description" content="The Sage Ideas quality standard: what &quot;done&quot; means — verified by a re-runnable command, what a proof report contains, response-time SLA per tier, the quality floor, and handoff/rollback guarantees.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://agency.sageideas.dev/approach.html">
+<link rel="canonical" href="https://agency.sageideas.dev/quality-standard.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="The Proof-First Method — How Every Engagement Runs">
-<meta property="og:description" content="Four phases, a concrete artifact at each, and five standards that never bend. The proof-first operating system behind every engagement.">
-<meta property="og:url" content="https://agency.sageideas.dev/approach.html">
+<meta property="og:title" content="The Quality Standard &amp; SLA — Sage Ideas">
+<meta property="og:description" content="What &quot;done&quot; means, what a proof report contains, the response SLA, the quality floor, and the handoff guarantees — the bar every engagement is held to.">
+<meta property="og:url" content="https://agency.sageideas.dev/quality-standard.html">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <meta property="og:site_name" content="Sage Ideas">
 <meta name="twitter:card" content="summary_large_image">
@@ -89,8 +89,8 @@
   <script defer src="/_vercel/insights/script.js"></script>
 
 <meta property="og:locale" content="en_US">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"The Proof-First Method","description":"The four-phase operating system behind every Sage Ideas engagement.","step":[{"@type":"HowToStep","name":"Audit","text":"Find where the AI breaks before building: a prioritized plan, risk map, baseline eval, and a firm quote you keep."},{"@type":"HowToStep","name":"Sprint","text":"Ship a thin slice gated from day one: a working slice, the first eval harness, and a CI gate."},{"@type":"HowToStep","name":"Build","text":"The full feature plus the eval battery, a signed proof ledger, and a runbook your team can operate."},{"@type":"HowToStep","name":"Operate","text":"Keep it proven in production: monitoring, scheduled evals, maintained gates, and a monthly proof report."}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Approach","item":"https://agency.sageideas.dev/approach.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"The Quality Standard & SLA","description":"The standard every Sage Ideas engagement is held to: definition of done, proof report, response SLA, quality floor, and handoff guarantees.","url":"https://agency.sageideas.dev/quality-standard.html","isPartOf":{"@id":"https://agency.sageideas.dev/#website"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Quality Standard","item":"https://agency.sageideas.dev/quality-standard.html"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
 </head>
 <body>
@@ -106,7 +106,7 @@
     </button>
     <div class="site-nav-links" id="site-nav-panel">
       <a href="services.html" class="site-nav-link">Services</a>
-      <a href="approach.html" class="site-nav-link" aria-current="page">Approach</a>
+      <a href="approach.html" class="site-nav-link">Approach</a>
       <a href="case-studies.html" class="site-nav-link">Work</a>
       <a href="proof.html" class="site-nav-link">Proof</a>
       <a href="resources.html" class="site-nav-link">Resources</a>
@@ -121,86 +121,86 @@
 
   <main class="wrap">
     <section style="padding-bottom:6px">
-      <div class="kick">The method · how every engagement actually runs</div>
-      <h1 style="font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,5vw,3.4rem);letter-spacing:-0.02em;line-height:1.04;margin-top:18px;max-width:16ch">The Proof-First Method</h1>
-      <p class="subtle" style="margin-top:20px;max-width:66ch">Most AI work ships on a demo and a prayer — and a customer finds the one thing it gets wrong. Mine ships behind a gate, with the evidence attached. This is the exact operating system that runs my own two live products, applied to your build: four phases, a concrete artifact produced at each, and the standard enforced before anything moves forward.</p>
+      <div class="kick">The quality standard · what "done" means and what you can hold me to</div>
+      <h1 style="font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,5vw,3.4rem);letter-spacing:-0.02em;line-height:1.04;margin-top:18px;max-width:17ch">The Quality Standard</h1>
+      <p class="subtle" style="margin-top:20px;max-width:66ch">Transparency is only worth something if it's specific. This is the standard every engagement is held to — what "done" means, what you receive, how fast I respond, and the guarantees you can point your team at. It's the same bar my own two live products are gated on.</p>
       <div class="cred">
-        <span class="pill"><span class="dot" style="background:var(--green)"></span>Fixed scope, in writing</span>
-        <span class="pill"><span class="dot" style="background:var(--cyan)"></span>An artifact at every phase</span>
-        <span class="pill"><span class="dot" style="background:var(--purple)"></span>Done = verified, not claimed</span>
+        <span class="pill"><span class="dot" style="background:var(--green)"></span>Done = verified, not claimed</span>
+        <span class="pill"><span class="dot" style="background:var(--cyan)"></span>A proof report, every time</span>
+        <span class="pill"><span class="dot" style="background:var(--purple)"></span>Fixed scope, no surprise hours</span>
       </div>
     </section>
 
-    <section style="padding-top:clamp(24px,4vw,40px);padding-bottom:0">
-      <div class="kick" style="color:var(--faint)">The loop · four phases, each with a deliverable you keep</div>
-    </section>
-
-    <section style="padding-top:14px">
-      <article class="case" style="--ac:var(--cyan)">
-        <div class="tag">Phase 01 · ~1 week</div>
-        <h3>Audit — find where it breaks before you build</h3>
-        <div class="grid" style="margin-top:18px">
-          <div class="blk"><div class="h">What you get</div><p>A prioritized plan, a risk map of where your AI can fail, a baseline eval run against your current feature, and a firm, fixed quote for the build — yours to keep whether or not you continue.</p></div>
-          <div class="blk"><div class="h">The standard enforced</div><p>Every claim is measured, nothing is assumed. You leave with a real number and a real plan, not a range and a maybe.</p></div>
-        </div>
-      </article>
-      <article class="case" style="--ac:var(--purple)">
-        <div class="tag">Phase 02 · ~2 weeks</div>
-        <h3>Sprint — ship a thin slice, gated from day one</h3>
-        <div class="grid" style="margin-top:18px">
-          <div class="blk"><div class="h">What you get</div><p>A working thin slice of the feature, the first eval harness wired to your real traffic patterns, and a CI gate that already blocks a bad change from merging.</p></div>
-          <div class="blk"><div class="h">The standard enforced</div><p>It ships behind a gate from the first commit. No feature lands without a test that can fail — proof is built in, not bolted on.</p></div>
-        </div>
-      </article>
+    <section style="padding-top:clamp(20px,3vw,32px);padding-bottom:0">
       <article class="case" style="--ac:var(--green)">
-        <div class="tag">Phase 03 · ~4–8 weeks</div>
-        <h3>Build — the feature, and the evidence it works</h3>
-        <div class="grid" style="margin-top:18px">
-          <div class="blk"><div class="h">What you get</div><p>The full feature, the eval battery — faithfulness, prompt-injection, regression, safety — a signed proof ledger, and a runbook your team can operate without me.</p></div>
-          <div class="blk"><div class="h">The standard enforced</div><p>"Done" means verified by a command you can re-run, not asserted in a status meeting. No fake green — not even mine.</p></div>
-        </div>
+        <div class="tag">Definition of done</div>
+        <h3>"Done" is a command you can re-run — not a status in a meeting.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">A deliverable is done when three things are true: it passes its eval and test gate in CI, its proof report is generated, and the runbook is handed over. If a claim can't be shown with an artifact you can open, it isn't done — it's a promise, and promises aren't what you're paying for.</p>
       </article>
+    </section>
+
+    <section style="padding-top:18px">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">The artifact</div>
+        <h3>What a proof report contains</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">Every build ships with a proof report — plain enough for a PM, backed enough for an engineer:</p>
+        <ul style="margin:14px 0 0;padding-left:20px;font-size:14px;line-height:1.8;color:var(--dim);max-width:66ch">
+          <li>The eval scores — faithfulness, prompt-injection, regression, safety — and the thresholds each must clear</li>
+          <li>The test run: pass/fail counts, coverage, and the exact command to reproduce it yourself</li>
+          <li>The gate verdict — ship or blocked — and precisely why</li>
+          <li>Known limits, stated honestly, not buried</li>
+          <li>A signed, re-verifiable record — no number without a backing artifact</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="rule">
+      <div class="kick" style="color:var(--faint)">The SLA · response &amp; cadence you can hold me to</div>
+      <div style="border:1px solid #2A2826;border-radius:12px;overflow:hidden;margin:22px 0;font-family:'JetBrains Mono',monospace">
+        <div style="display:flex;justify-content:space-between;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div style="max-width:58ch"><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Active build engagement</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Same-business-day response. A working demo + written status every week. You always know what shipped and what's next.</div></div><div style="color:#10b981;font-size:12px;font-weight:700;white-space:nowrap">≤ 1 business day</div></div>
+        <div style="display:flex;justify-content:space-between;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div style="max-width:58ch"><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Operate retainer</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Next-business-day response, a monthly proof report, and a critical production regression triaged the same day it's reported.</div></div><div style="color:#10b981;font-size:12px;font-weight:700;white-space:nowrap">same-day critical</div></div>
+        <div style="display:flex;justify-content:space-between;gap:14px;padding:15px 18px;flex-wrap:wrap"><div style="max-width:58ch"><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Audit &amp; pre-engagement</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Every inbound — a question, a mini-eval, a scoping note — gets a real reply, not an auto-responder.</div></div><div style="color:#10b981;font-size:12px;font-weight:700;white-space:nowrap">≤ 1 business day</div></div>
+      </div>
+      <p class="d-note-style subtle" style="font-size:12.5px;color:#8E8882;max-width:66ch">Times are business days, US Eastern. A critical production issue on a retainer is triaged the same day, regardless. Founder-led means the person answering is the person who built it — no ticket queue.</p>
+    </section>
+
+    <section class="rule">
+      <div class="kick" style="color:var(--faint)">The floor · standards that never drop, on any engagement</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px;margin-top:20px">
+        <div class="bcard" style="--ac:var(--rose)"><div class="bh"><span class="bn">No fake green</span></div><p class="bd">A gate goes red when it should — in public. You see the real verdict, never a dressed-up one. This site does it to itself on every deploy.</p></div>
+        <div class="bcard" style="--ac:var(--green)"><div class="bh"><span class="bn">Floors ratchet up</span></div><p class="bd">Coverage and quality thresholds only move one way. Once a bar is met it becomes the new minimum — regressions can't quietly lower it.</p></div>
+        <div class="bcard" style="--ac:var(--amber)"><div class="bh"><span class="bn">Honest-skip discipline</span></div><p class="bd">A skipped check is counted and explained, never hidden to make a dashboard greener than the truth.</p></div>
+        <div class="bcard" style="--ac:var(--cyan)"><div class="bh"><span class="bn">Gated, not demoed</span></div><p class="bd">Every AI feature ships behind an eval gate, not on a demo and a prayer. The gate is the product as much as the feature is.</p></div>
+      </div>
+    </section>
+
+    <section class="rule">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">Handoff &amp; rollback</div>
+        <h3>You can run it without me — that's the test of a real handoff.</h3>
+        <ul style="margin:14px 0 0;padding-left:20px;font-size:14px;line-height:1.8;color:var(--dim);max-width:66ch">
+          <li>Everything lands in your repo, your CI, your infrastructure — with a documented runbook</li>
+          <li>A rollback path for every change that touches production</li>
+          <li>Access revoked at handoff; nothing retained on my side</li>
+          <li>The eval gate keeps the system honest after I'm gone — the handoff isn't a document, it's a working safety net</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="rule">
       <article class="case" style="--ac:var(--amber)">
-        <div class="tag">Phase 04 · optional retainer</div>
-        <h3>Operate — keep it proven in production</h3>
-        <div class="grid" style="margin-top:18px">
-          <div class="blk"><div class="h">What you get</div><p>Monitoring, scheduled eval runs, maintained CI quality gates, and a monthly proof report in language your PM can read.</p></div>
-          <div class="blk"><div class="h">The standard enforced</div><p>A regression is caught before your customer sees it — and the result is published, not claimed. You can hand the repo to anyone and it still runs.</p></div>
-        </div>
+        <div class="tag">Honest limits</div>
+        <h3>What I guarantee — and what I don't</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch"><b>I guarantee</b> the scope in writing, the proof report, the gate, the clean handoff, and responses within the SLA above. <b>I don't guarantee</b> a model will never be wrong, or that a metric hits a target before the work is done — anyone who promises perfect AI is selling you the demo again. What I guarantee instead is that you'll always know the truth, measured, <em>before</em> it reaches your customer.</p>
       </article>
-    </section>
-
-    <section class="rule">
-      <div class="kick" style="color:var(--faint)">The standards · the same ones that govern my own products</div>
-      <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,3vw,2.1rem);letter-spacing:-0.015em;margin:18px 0 0;max-width:24ch">Five rules I don't break.</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px;margin-top:24px">
-        <div class="bcard" style="--ac:var(--rose)"><div class="bh"><span class="bn">No fake green — not even mine</span></div><p class="bd">The gate goes red when it should, in public. This very site publishes its own failing runs; your project gets the same honesty.</p></div>
-        <div class="bcard" style="--ac:var(--green)"><div class="bh"><span class="bn">Done means verified, not claimed</span></div><p class="bd">Every number is backed by an artifact you can open — a run, a ledger, a test exit code. If it can't be shown, it isn't done.</p></div>
-        <div class="bcard" style="--ac:var(--cyan)"><div class="bh"><span class="bn">Your repo, your infra, your keys</span></div><p class="bd">Work runs on your accounts, not mine. Nothing is retained after handoff — no lock-in, no dependency on me to keep it running.</p></div>
-        <div class="bcard" style="--ac:var(--amber)"><div class="bh"><span class="bn">Priced to the problem, not a package</span></div><p class="bd">Fixed scope, quoted in writing before work starts. Never open-ended hours, never a menu price padded for the worst case.</p></div>
-        <div class="bcard" style="--ac:var(--purple)"><div class="bh"><span class="bn">Founder-led, senior-only</span></div><p class="bd">The person who scopes it is the person who builds and operates it. No account managers, no junior handoff, no telephone game.</p></div>
-      </div>
-    </section>
-
-    <section class="rule">
-      <div class="kick" style="color:var(--faint)">Not a slide · the machine behind the method is real and public</div>
-      <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,3vw,2.1rem);letter-spacing:-0.015em;margin:18px 0 0;max-width:26ch">The same system runs my products and your build.</h2>
-      <p class="subtle" style="margin-top:14px;max-width:64ch">This isn't a methodology I wrote for a sales page. It's the tooling I run every day — and most of it is open for you to inspect.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:22px">
-        <a class="plink" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/sage-kernel" target="_blank" rel="noopener">▸ sage-kernel — the proof-first engineering OS</a>
-        <a class="plink" style="--ac:var(--purple)" href="https://github.com/JasonTeixeira/llm-eval-gate" target="_blank" rel="noopener">▸ llm-eval-gate — the open eval template</a>
-        <a class="plink" style="--ac:var(--cyan)" href="proof.html">▸ this site's own QA, in public</a>
-        <a class="plink" style="--ac:var(--amber)" href="case-studies.html">▸ the body of work it produced</a>
-        <a class="plink" style="--ac:var(--rose)" href="quality-standard.html">▸ the quality standard &amp; SLA</a>
-      </div>
     </section>
 
     <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
-      <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3.4vw,2.3rem);letter-spacing:-0.015em;margin:0">It starts with one low-risk week.</h2>
-      <p class="subtle" style="margin-top:14px">The audit is the front door: a plan and a real quote you own, whether or not you build.</p>
+      <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3.4vw,2.3rem);letter-spacing:-0.015em;margin:0">This is the bar. Let's put your feature against it.</h2>
+      <p class="subtle" style="margin-top:14px">Start with the one-week audit — you'll see the standard applied to your own AI before you commit to anything.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px">
-        <a class="cta" href="book.html" data-evt="approach-book">Start with the audit →</a>
-        <a class="plink" style="--ac:var(--cyan)" href="proof.html">See it proven first</a>
+        <a class="cta" href="book.html" data-evt="quality-book">Start with the audit →</a>
+        <a class="plink" style="--ac:var(--cyan)" href="approach.html">See how engagements run</a>
       </div>
     </section>
   </main>
