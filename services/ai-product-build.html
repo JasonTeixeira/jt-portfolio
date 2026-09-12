@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Product Build — Full-Stack AI Apps Shipped to Production, With the Eval Layer</title>
+<meta name="description" content="Full-stack AI product builds: frontend, backend, auth, payments, and data, with the AI feature wired in and an eval + guardrail layer that keeps it safe. Shipped to production, owned by your team.">
+<link rel="canonical" href="https://agency.sageideas.dev/services/ai-product-build.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Product Build — Full-Stack AI Apps Shipped to Production, With the Eval Layer">
+<meta property="og:description" content="Full-stack AI product builds: frontend, backend, auth, payments, and data, with the AI feature wired in and an eval + guardrail layer that keeps it safe. Shipped to production, owned by your team.">
+<meta property="og:url" content="https://agency.sageideas.dev/services/ai-product-build.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og-service-ai-product-build.png">
+<link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"AI product build","description":"Full-stack AI product builds: frontend, backend, auth, payments, and data, with the AI feature wired in and an eval + guardrail layer that keeps it safe. Shipped to production, owned by your team.","url":"https://agency.sageideas.dev/services/ai-product-build.html","provider":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"areaServed":"Remote (US)","serviceType":"Full-stack AI product development","offers":[{"@type":"Offer","name":"AI product build — Product Spec","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"A scoped spec and architecture for the product: the stack, the data model, the AI surface, and where the eval and guardrail layer goes — a concrete plan and quote you own."},{"@type":"Offer","name":"AI product build — MVP Sprint","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"One real, deployed slice: the core flow, end to end, with auth and the AI feature live behind a basic gate — something you can put in front of a user, not a prototype."},{"@type":"Offer","name":"AI product build — Full Build","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"The production product: frontend, backend, auth, payments, data, the AI feature, and the eval + guardrail layer, deployed with a runbook your team owns at handoff."}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"AI product build","item":"https://agency.sageideas.dev/services/ai-product-build.html"}]}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Do you build the whole product or just the AI part?","acceptedAnswer":{"@type":"Answer","text":"The whole thing — frontend, backend, auth, payments, data model, and deploy — with the AI feature wired in properly rather than bolted on. If you already have an app and just need the AI surface built and made safe, that's in scope too."}},
+{"@type":"Question","name":"What stack do you build on?","acceptedAnswer":{"@type":"Answer","text":"Next.js + Supabase is my default for speed and ownership, deployed on Vercel — but I work in your stack if you have one. The point is a product your team can maintain, not one locked to my tools."}},
+{"@type":"Question","name":"Do you do design too, or just engineering?","acceptedAnswer":{"@type":"Answer","text":"Both. I run a design system with a real typography and motion language — the same discipline behind this site and the products I ship — so you get something that looks intentional, not a default template."}},
+{"@type":"Question","name":"What makes this different from any dev shop?","acceptedAnswer":{"@type":"Answer","text":"The eval and guardrail layer. Most teams can build the UI; the hard part is an AI feature that stays correct and safe in production. Every build ships with the regression and safety gate that catches a wrong or unsafe answer before your customer sees it."}},
+{"@type":"Question","name":"How do you price this?","acceptedAnswer":{"@type":"Answer","text":"Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a spec-and-architecture week, and that fee credits into the build if you continue."}},
+{"@type":"Question","name":"What do we own at the end?","acceptedAnswer":{"@type":"Answer","text":"Everything — the code in your repo, the deploy in your accounts, the eval suite, and a runbook and walkthrough so your team runs it without me. Nothing is retained or locked to my platform."}}
+]}
+</script>
+</head>
+<body>
+<div style="min-height:100vh;background:#09090B;position:relative">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(18px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
+    <a href="../index.html" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
+      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.02em">jason.teixeira<span style="color:#10b981">()</span></span>
+    </a>
+    <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
+      <a href="../services.html" class="dim-link">Services</a>
+      <a href="../case-studies.html" class="dim-link">Work</a>
+      <a href="../proof.html" class="dim-link">Proof</a>
+      <a href="../resources.html" class="dim-link">Resources</a>
+      <a href="../book.html" class="dim-link" style="color:#10b981">Book a call →</a>
+    </div>
+  </nav>
+
+  <header style="max-width:920px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 40px;animation:jt-fadeup 500ms ease-out">
+    <div style="display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882">
+      <span style="width:8px;height:8px;border-radius:50%;background:#22d3ee;animation:jt-blink 2.4s ease-in-out infinite"></span>
+      <span style="color:#22d3ee">AI product build</span>
+      <span style="flex:1;height:1px;background:#2A2826"></span>
+    </div>
+    <h1 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.4rem,5.4vw,4rem);line-height:1.08;letter-spacing:-0.02em;margin:24px 0 0;text-wrap:balance">A production AI product, not a demo.</h1>
+    <p style="margin:20px 0 0;font-size:15.5px;line-height:1.75;color:#A8A29E;max-width:62ch">The whole thing, front to back — frontend, backend, auth, payments, and data — with the AI feature wired in properly and an eval + guardrail layer that keeps it correct and safe in production. Deployed, documented, and owned by your team at handoff. The same discipline behind the products I run myself.</p>
+    <div style="display:flex;gap:14px;margin-top:32px;flex-wrap:wrap">
+      <a href="../book.html" class="btn-solid green" data-evt="book-call">Book an intro call →</a>
+      <a href="../case-studies.html" class="btn-ghost" data-evt="see-work">See shipped work</a>
+      <a href="../index.html#briefs" class="btn-ghost">Read the engineering briefs</a>
+    </div>
+  </header>
+
+  <section style="max-width:920px;margin:0 auto;padding:24px clamp(18px,4vw,40px)">
+    <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">sound familiar?</span><span class="line"></span></div>
+    <ul style="margin:24px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:10px">
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">You have a prototype that dazzles in a demo but falls over the moment a real user touches it</li>
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">A shop built the UI, but the AI feature has no evals, no guardrails, and no way to tell when it's wrong</li>
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">The AI was bolted on at the end — no observability, no cost model, no idea how it behaves in production</li>
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">You need one owner who can do design, frontend, backend, and the AI layer — not four contractors and a project manager</li>
+    </ul>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px">
+    <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">what you get</span><span class="line"></span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-top:24px">
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#22d3ee"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">The product, front to back</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Design system, frontend, backend, auth, payments, and data model — on Next.js + Supabase or your stack. The boring-but-critical parts done right.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#22d3ee"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">The AI feature, wired in</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Assistant, agent, or RAG pipeline built as a first-class part of the backend — structured outputs, schema validation, fallbacks — not a fragile demo call.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#22d3ee"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">The eval + guardrail layer</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">The differentiator: a golden set, safety probes, and a CI gate that catches a wrong or unsafe answer before your customer does. Most builds ship without this.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#22d3ee"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">Observability &amp; cost model</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Tracing, per-run cost tracking, and drift monitoring, so quality decay and runaway spend show up on a dashboard instead of in a support ticket.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#22d3ee"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">Deploy + runbook + handoff</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Live in your accounts, with a runbook and a walkthrough so your team runs it without me — and the work outlives me being unavailable.</p>
+      </div>
+    </div>
+    <p style="margin:20px 0 0;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#837D77">fixed scope · quoted after a spec-and-architecture week · your repo, your accounts, your stack</p>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px" id="packages">
+    <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">how we work together</span><span class="line"></span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px;margin-top:24px">
+      <div style="border:1px solid #22d3ee;background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#22d3ee">Product Spec</div>
+        <div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.01em;color:#F4F2EF">~1 week</span> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">· scoped &amp; quoted</span></div>
+        <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">A scoped spec and architecture — the stack, the data model, the AI surface, and where the eval and guardrail layer goes. A concrete plan and quote you own.</p>
+        <a href="../book.html" class="btn-solid green" data-evt="pkg-book" style="align-self:flex-start">Start here — get a quote →</a>
+      </div>
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#22d3ee">MVP Sprint</div>
+        <div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.01em;color:#F4F2EF">~2 weeks</span> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">· scoped &amp; quoted</span></div>
+        <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">One real, deployed slice: the core flow end to end, with auth and the AI feature live behind a basic gate — something you can put in front of a user, not a prototype.</p>
+        <a href="../book.html" class="btn-ghost" data-evt="pkg-book" style="align-self:flex-start">Get a quote →</a>
+      </div>
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#22d3ee">Full Build</div>
+        <div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.01em;color:#F4F2EF">~4–8 weeks</span> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">· scoped &amp; quoted</span></div>
+        <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">The production product: frontend, backend, auth, payments, data, the AI feature, and the eval + guardrail layer — deployed with a runbook your team owns at handoff.</p>
+        <a href="../book.html" class="btn-ghost" data-evt="pkg-book" style="align-self:flex-start">Get a quote →</a>
+      </div>
+    </div>
+    <p style="margin:18px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">no fixed price list — every engagement is scoped and quoted after a short conversation, so you pay for your problem, not a package · every engagement ends with a product you own — and if the scoping shows I can’t help, I’ll say so and it costs nothing</p>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px">
+    <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">proof, not promises</span><span class="line"></span></div>
+    <div style="margin-top:12px">
+
+      <a href="../case-studies.html" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;padding:18px 0;border-bottom:1px solid #2A2826;color:#F4F2EF" class="note-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#22d3ee;min-width:14em">Shipped products</span>
+        <span style="flex:1;font-size:13px;line-height:1.6;color:#8E8882">Production platforms built and run solo — full-stack, AI-native, live with real users. The work, with the receipts →</span>
+      </a>
+
+      <a href="/index.html#proof" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;padding:18px 0;border-bottom:1px solid #2A2826;color:#F4F2EF" class="note-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#22d3ee;min-width:14em">This site</span>
+        <span style="flex:1;font-size:13px;line-height:1.6;color:#8E8882">A full product, designed and built front to back, that runs its own QA suite on every push — the scorecard on the homepage is generated by it →</span>
+      </a>
+
+      <a href="https://github.com/JasonTeixeira/llm-eval-gate" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;padding:18px 0;border-bottom:1px solid #2A2826;color:#F4F2EF" class="note-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#22d3ee;min-width:14em">llm-eval-gate</span>
+        <span style="flex:1;font-size:13px;line-height:1.6;color:#8E8882">The public, keyless eval gate that ships inside every build — the guardrail layer most products never get →</span>
+      </a>
+    </div>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:12px clamp(18px,4vw,40px) 0">
+    <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">worked example</span><span class="line"></span></div>
+    <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);margin:16px 0 8px">A full learning platform, shipped solo.</h2>
+    <div style="border:1px solid #2A2826;background:#0C0C0E;border-radius:14px;padding:clamp(18px,3vw,26px);margin-top:12px">
+      <p style="font-size:14px;line-height:1.7;color:#A8A29E;margin:0 0 12px">An AI-native learning platform — catalog, lesson player, in-browser code labs, certificates, and an admin back office — designed, built, and deployed end to end by one engineer. The AI tutor is <b style="color:#F4F2EF">RAG-grounded</b> so it answers from the course material, not its imagination, behind the same eval discipline I ship for clients.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="border-left:2px solid #22d3ee;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#22d3ee">scope</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">Design system, frontend, backend, auth, payments, data, the AI tutor, and the eval layer — one owner, one coherent product.</p></div>
+        <div style="border-left:2px solid #10b981;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#10b981">shipped</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">Live in production with real users — the grounded tutor answers from source, with a quality gate behind it.</p></div>
+      </div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;margin:14px 0 0">One of several products I build and run under Sage Ideas. The method on a client build is the same.</p>
+    </div>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 64px">
+    <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">questions</span><span class="line"></span></div>
+    <div style="margin-top:16px">
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">Do you build the whole product or just the AI part?</summary>
+        <p style="color:#A8A29E">The whole thing — frontend, backend, auth, payments, data model, and deploy — with the AI feature wired in properly rather than bolted on. If you already have an app and just need the AI surface built and made safe, that's in scope too.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">What stack do you build on?</summary>
+        <p style="color:#A8A29E">Next.js + Supabase is my default for speed and ownership, deployed on Vercel — but I work in your stack if you have one. The point is a product your team can maintain, not one locked to my tools.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">Do you do design too, or just engineering?</summary>
+        <p style="color:#A8A29E">Both. I run a design system with a real typography and motion language — the same discipline behind this site and the products I ship — so you get something that looks intentional, not a default template.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">What makes this different from any dev shop?</summary>
+        <p style="color:#A8A29E">The eval and guardrail layer. Most teams can build the UI; the hard part is an AI feature that stays correct and safe in production. Every build ships with the regression and safety gate that catches a wrong or unsafe answer before your customer sees it.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How do you price this?</summary>
+        <p style="color:#A8A29E">Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a spec-and-architecture week, and that fee credits into the build if you continue.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">What do we own at the end?</summary>
+        <p style="color:#A8A29E">Everything — the code in your repo, the deploy in your accounts, the eval suite, and a runbook and walkthrough so your team runs it without me. Nothing is retained or locked to my platform.</p>
+      </details>
+    </div>
+    <div style="margin-top:44px;text-align:center;border:1px solid #2A2826;background:#0C0C0E;padding:clamp(28px,5vw,48px)">
+      <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-0.015em;margin:0">30 minutes. Bring the product you want to ship.</h2>
+      <p style="margin:14px auto 0;font-size:14px;color:#A8A29E;max-width:44ch">You leave with a concrete plan either way — the call is free and the plan is yours.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+        <a href="../book.html" class="btn-solid green" data-evt="book-call">Book the call →</a>
+        <a href="#packages" class="btn-ghost" data-evt="see-packages">see the engagement paths ↑</a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</span>
+    <span><a href="../index.html" class="dim-link" style="color:#837D77">← portfolio</a></span>
+  </footer>
+<script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
+</div>
+<script defer src="../assets/agent.js"></script>
+</body>
+</html>

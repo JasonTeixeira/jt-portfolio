@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI &amp; Application Security Hardening — Threat Modeling, Red-Team &amp; CI Security Gates</title>
+<meta name="description" content="Security review and hardening for AI features and web apps: threat modeling, dependency and secret audits, OWASP Web + LLM Top 10 red-teaming, and a security gate wired into your CI — in your repo.">
+<link rel="canonical" href="https://agency.sageideas.dev/services/security-hardening.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI &amp; Application Security Hardening — Threat Modeling, Red-Team &amp; CI Security Gates">
+<meta property="og:description" content="Security review and hardening for AI features and web apps: threat modeling, dependency and secret audits, OWASP Web + LLM Top 10 red-teaming, and a security gate wired into your CI — in your repo.">
+<meta property="og:url" content="https://agency.sageideas.dev/services/security-hardening.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og-service-security-hardening.png">
+<link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"AI & application security hardening","description":"Security review and hardening for AI features and web apps: threat modeling, dependency and secret audits, OWASP Web + LLM Top 10 red-teaming, and a security gate wired into your CI — in your repo.","url":"https://agency.sageideas.dev/services/security-hardening.html","provider":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"areaServed":"Remote (US)","serviceType":"Application & AI security review","offers":[{"@type":"Offer","name":"Security hardening — Security Audit","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"A threat model and prioritized findings list for your AI feature or app: the exploitable paths, ranked by blast radius, with a concrete remediation plan you own."},{"@type":"Offer","name":"Security hardening — Hardening Sprint","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"The highest-severity findings fixed and verified: injection and auth gaps closed, secrets rotated and moved, dependencies patched — with the checks wired into CI so they stay closed."},{"@type":"Offer","name":"Security hardening — Secure-by-default Build","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"USD"},"availability":"https://schema.org/InStock","url":"../book.html","description":"A security gate built into your pipeline: dependency and secret scanning, an AI red-team battery, and a CI check that blocks a regression — with a runbook your team maintains."}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Security hardening","item":"https://agency.sageideas.dev/services/security-hardening.html"}]}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Are you a licensed penetration tester?","acceptedAnswer":{"@type":"Answer","text":"No — I'm a senior engineer who builds security into the pipeline: threat modeling, OWASP Web + LLM Top 10 review, dependency/secret/CI hardening, and an AI red-team battery. For a formal third-party pentest or a signed compliance attestation you need a licensed firm, and I'll tell you plainly when that's the case and hand off a clean scope. Most teams need the engineering hardening first."}},
+{"@type":"Question","name":"What AI-specific risks do you cover?","acceptedAnswer":{"@type":"Answer","text":"The OWASP LLM Top 10: prompt injection, insecure output handling, training-data and prompt leakage, PII exposure, over-reliance, and excessive agency. The red-team battery runs these as adversarial probes with verbatim transcripts of every failure, so you see the exploit before a user finds it."}},
+{"@type":"Question","name":"Can you do SOC 2 for us?","acceptedAnswer":{"@type":"Answer","text":"SOC 2 is an audit performed by a licensed CPA firm — I can't issue that, and anyone claiming to 'do your SOC 2' as a solo engineer is wrong. What I do is get your controls, logging, secret handling, and data flows into the shape an auditor wants to see. The honest, full answer is on the security page."}},
+{"@type":"Question","name":"Where does the work run, and what do we own?","acceptedAnswer":{"@type":"Answer","text":"In your repo and your CI. The threat model, the findings, the fixes, and the security gate are all yours, documented, with nothing retained on my side after handoff. No secrets ever leave your environment."}},
+{"@type":"Question","name":"How do you price this?","acceptedAnswer":{"@type":"Answer","text":"Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a one-week security audit, and that fee credits into the hardening work if you continue."}},
+{"@type":"Question","name":"How fast can you find the serious problems?","acceptedAnswer":{"@type":"Answer","text":"The week-one audit surfaces the exploitable paths ranked by blast radius. On a recent build, a combined static, dependency, and AI-probe review surfaced 15 exploitable issues before ship; the highest-severity ones are typically closed inside the following sprint."}}
+]}
+</script>
+</head>
+<body>
+<div style="min-height:100vh;background:#09090B;position:relative">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px clamp(18px,4vw,40px);background:rgba(9,9,11,0.82);backdrop-filter:blur(16px);border-bottom:1px solid #2A2826">
+    <a href="../index.html" style="display:inline-flex;align-items:center;gap:10px;color:#F4F2EF">
+      <span style="width:26px;height:26px;border:1px solid #2A2826;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:#0C0C0E"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.02em">jason.teixeira<span style="color:#10b981">()</span></span>
+    </a>
+    <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
+      <a href="../services.html" class="dim-link">Services</a>
+      <a href="../case-studies.html" class="dim-link">Work</a>
+      <a href="../proof.html" class="dim-link">Proof</a>
+      <a href="../security.html" class="dim-link">Security</a>
+      <a href="../book.html" class="dim-link" style="color:#10b981">Book a call →</a>
+    </div>
+  </nav>
+
+  <header style="max-width:920px;margin:0 auto;padding:88px clamp(18px,4vw,40px) 40px;animation:jt-fadeup 500ms ease-out">
+    <div style="display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#8E8882">
+      <span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;animation:jt-blink 2.4s ease-in-out infinite"></span>
+      <span style="color:#F59E0B">Security hardening &amp; review</span>
+      <span style="flex:1;height:1px;background:#2A2826"></span>
+    </div>
+    <h1 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(2.4rem,5.4vw,4rem);line-height:1.08;letter-spacing:-0.02em;margin:24px 0 0;text-wrap:balance">Find the exploit before an attacker does.</h1>
+    <p style="margin:20px 0 0;font-size:15.5px;line-height:1.75;color:#A8A29E;max-width:62ch">A security review built for teams shipping AI features and web apps fast: a real threat model, dependency and secret audits, OWASP Web + LLM Top 10 red-teaming, and a security gate wired into your CI so the holes you close stay closed — all in your repo, your stack, your conventions.</p>
+    <div style="display:flex;gap:14px;margin-top:32px;flex-wrap:wrap">
+      <a href="../book.html" class="btn-solid green" data-evt="book-call">Book an intro call →</a>
+      <a href="../security.html" class="btn-ghost" data-evt="security-posture">Read the security posture</a>
+      <a href="../index.html#briefs" class="btn-ghost">Read the engineering briefs</a>
+    </div>
+  </header>
+
+  <section style="max-width:920px;margin:0 auto;padding:24px clamp(18px,4vw,40px)">
+    <div class="sec-rule"><span class="sec-label" style="color:#F59E0B">sound familiar?</span><span class="line"></span></div>
+    <ul style="margin:24px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:10px">
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">You shipped an AI feature, but nobody has tried to jailbreak it, leak its prompt, or make it exfiltrate a user's data</li>
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">There may be an API key committed to git history, and nobody's sure which ones still work</li>
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">Dependencies haven't been audited since launch, and the lockfile is a mystery</li>
+      <li style="font-size:14px;line-height:1.75;color:#A8A29E">There's no threat model — "we'll do security properly later," and later keeps moving</li>
+    </ul>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px">
+    <div class="sec-rule"><span class="sec-label" style="color:#F59E0B">what you get</span><span class="line"></span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-top:24px">
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#F59E0B"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">Threat model</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Your system mapped by trust boundary and data flow — the exploitable paths ranked by blast radius, not a generic checklist. A document your team keeps.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#F59E0B"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">Dependency &amp; supply-chain audit</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Known-vulnerable packages, risky transitive deps, and unpinned versions surfaced and patched — with scanning wired into CI so new ones get caught on the PR.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#F59E0B"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">Secrets &amp; config review</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Secrets found in history, env, and logs — rotated, moved to a manager, and kept out with a pre-commit + CI scan. Headers, CSP, and auth config checked against the baseline.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#F59E0B"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">AI red-team battery</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Adversarial probes against your LLM feature — prompt injection, jailbreaks, PII leakage, insecure output handling, excessive agency — with verbatim transcripts of every failure.</p>
+      </div>
+
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:30px;height:3px;border-radius:2px;background:#F59E0B"></span>
+        <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.25rem;margin:0">CI security gate</h3>
+        <p style="margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E">Dependency, secret, and AI-safety checks that run on every push — a regression below the baseline fails the build instead of shipping to production.</p>
+      </div>
+    </div>
+    <p style="margin:20px 0 0;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#837D77">fixed scope · quoted after a week-1 threat model · your repo, your CI · no secrets leave your environment</p>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px" id="packages">
+    <div class="sec-rule"><span class="sec-label" style="color:#F59E0B">how we work together</span><span class="line"></span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px;margin-top:24px">
+      <div style="border:1px solid #F59E0B;background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#F59E0B">Security Audit</div>
+        <div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.01em;color:#F4F2EF">~1 week</span> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">· scoped &amp; quoted</span></div>
+        <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">A threat model and a prioritized findings list — the exploitable paths ranked by blast radius, with a concrete remediation plan you own. The fastest way to a real quote.</p>
+        <a href="../book.html" class="btn-solid green" data-evt="pkg-book" style="align-self:flex-start">Start here — get a quote →</a>
+      </div>
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#F59E0B">Hardening Sprint</div>
+        <div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.01em;color:#F4F2EF">~2 weeks</span> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">· scoped &amp; quoted</span></div>
+        <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">The highest-severity findings fixed and verified: injection and auth gaps closed, secrets rotated and moved, dependencies patched — with the checks wired in so they stay closed.</p>
+        <a href="../book.html" class="btn-ghost" data-evt="pkg-book" style="align-self:flex-start">Get a quote →</a>
+      </div>
+      <div style="border:1px solid #2A2826;background:#0C0C0E;padding:26px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#F59E0B">Secure-by-default Build</div>
+        <div><span style="font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;letter-spacing:-0.01em;color:#F4F2EF">~4–8 weeks</span> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">· scoped &amp; quoted</span></div>
+        <p style="margin:0;font-size:13.5px;line-height:1.65;color:#A8A29E;flex:1">A security gate built into your pipeline — dependency and secret scanning, an AI red-team battery, a CI check that blocks a regression — plus a runbook your team maintains after I leave.</p>
+        <a href="../book.html" class="btn-ghost" data-evt="pkg-book" style="align-self:flex-start">Get a quote →</a>
+      </div>
+    </div>
+    <p style="margin:18px 0 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">no fixed price list — every engagement is scoped and quoted after a short conversation, so you pay for your problem, not a package · every engagement ends with evidence you keep — and if the scoping shows I can’t help, I’ll say so and it costs nothing</p>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 24px">
+    <div class="sec-rule"><span class="sec-label" style="color:#F59E0B">proof, not promises</span><span class="line"></span></div>
+    <div style="margin-top:12px">
+
+      <a href="../security.html" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;padding:18px 0;border-bottom:1px solid #2A2826;color:#F4F2EF" class="note-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#F59E0B;min-width:14em">Security posture</span>
+        <span style="flex:1;font-size:13px;line-height:1.6;color:#8E8882">Where your data lives, what I will and won't do with it, the honest SOC 2 answer, incident response, retention and deletion — the full posture in plain English →</span>
+      </a>
+
+      <a href="https://github.com/JasonTeixeira/llm-eval-gate" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;padding:18px 0;border-bottom:1px solid #2A2826;color:#F4F2EF" class="note-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#F59E0B;min-width:14em">llm-eval-gate</span>
+        <span style="flex:1;font-size:13px;line-height:1.6;color:#8E8882">Public, keyless eval gate with a safety runner battery — injection, jailbreak, PII, toxicity — the same probes I run against a client's AI feature →</span>
+      </a>
+
+      <a href="/index.html#proof" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;padding:18px 0;border-bottom:1px solid #2A2826;color:#F4F2EF" class="note-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#F59E0B;min-width:14em">This site</span>
+        <span style="flex:1;font-size:13px;line-height:1.6;color:#8E8882">A production CSP, security headers, and no third-party script sprawl — the hardening baseline applied to the page you're reading →</span>
+      </a>
+    </div>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:12px clamp(18px,4vw,40px) 0">
+    <div class="sec-rule"><span class="sec-label" style="color:#F59E0B">worked example</span><span class="line"></span></div>
+    <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);margin:16px 0 8px">15 exploitable issues, caught before ship.</h2>
+    <div style="border:1px solid #2A2826;background:#0C0C0E;border-radius:14px;padding:clamp(18px,3vw,26px);margin-top:12px">
+      <p style="font-size:14px;line-height:1.7;color:#A8A29E;margin:0 0 12px">On a build review, a combined pass — static analysis, a dependency and secret audit, and an AI red-team battery against the LLM surface — surfaced <b style="color:#F4F2EF">15 exploitable issues</b>: prompt-injection paths, an exposed credential, missing authorization checks, and vulnerable transitive dependencies. Every one was triaged by blast radius and closed <b style="color:#F4F2EF">before it reached production</b>.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="border-left:2px solid #f43f5e;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#f43f5e">without the review</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">15 live paths an attacker could have walked — shipped silently, found in an incident.</p></div>
+        <div style="border-left:2px solid #10b981;padding:8px 0 8px 14px"><div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#10b981">with it</div><p style="font-size:13px;color:#8E8882;line-height:1.6;margin:6px 0 0">0 shipped — each closed, verified, and a CI check added so it can't come back.</p></div>
+      </div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8882;margin:14px 0 0">Findings count self-reported from the engagement; remediation verified in CI. Method is the same on every review.</p>
+    </div>
+  </section>
+
+  <section style="max-width:920px;margin:0 auto;padding:48px clamp(18px,4vw,40px) 64px">
+    <div class="sec-rule"><span class="sec-label" style="color:#F59E0B">questions</span><span class="line"></span></div>
+    <div style="margin-top:16px">
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">Are you a licensed penetration tester?</summary>
+        <p style="color:#A8A29E">No — I'm a senior engineer who builds security into the pipeline: threat modeling, OWASP Web + LLM Top 10 review, dependency/secret/CI hardening, and an AI red-team battery. For a formal third-party pentest or a signed compliance attestation you need a licensed firm, and I'll tell you plainly when that's the case and hand off a clean scope. Most teams need the engineering hardening first.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">What AI-specific risks do you cover?</summary>
+        <p style="color:#A8A29E">The OWASP LLM Top 10: prompt injection, insecure output handling, training-data and prompt leakage, PII exposure, over-reliance, and excessive agency. The red-team battery runs these as adversarial probes with verbatim transcripts of every failure, so you see the exploit before a user finds it.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">Can you do SOC 2 for us?</summary>
+        <p style="color:#A8A29E">SOC 2 is an audit performed by a licensed CPA firm — I can't issue that, and anyone claiming to "do your SOC 2" as a solo engineer is wrong. What I do is get your controls, logging, secret handling, and data flows into the shape an auditor wants to see. The honest, full answer is on the <a href="../security.html" style="color:#F59E0B">security page</a>.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">Where does the work run, and what do we own?</summary>
+        <p style="color:#A8A29E">In your repo and your CI. The threat model, the findings, the fixes, and the security gate are all yours, documented, with nothing retained on my side after handoff. No secrets ever leave your environment.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How do you price this?</summary>
+        <p style="color:#A8A29E">Scoped and quoted in writing after a short call — fixed scope, not open-ended hours. Most engagements start with a one-week security audit, and that fee credits into the hardening work if you continue.</p>
+      </details>
+
+      <details class="faq" style="border-color:#2A2826">
+        <summary style="color:#F4F2EF">How fast can you find the serious problems?</summary>
+        <p style="color:#A8A29E">The week-one audit surfaces the exploitable paths ranked by blast radius. On a recent build, a combined static, dependency, and AI-probe review surfaced 15 exploitable issues before ship; the highest-severity ones are typically closed inside the following sprint.</p>
+      </details>
+    </div>
+    <div style="margin-top:44px;text-align:center;border:1px solid #2A2826;background:#0C0C0E;padding:clamp(28px,5vw,48px)">
+      <h2 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-0.015em;margin:0">30 minutes. Bring the feature that scares you.</h2>
+      <p style="margin:14px auto 0;font-size:14px;color:#A8A29E;max-width:44ch">You leave with a concrete plan either way — the call is free and the plan is yours.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+        <a href="../book.html" class="btn-solid green" data-evt="book-call">Book the call →</a>
+        <a href="#packages" class="btn-ghost" data-evt="see-packages">see the engagement paths ↑</a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC</span>
+    <span><a href="../index.html" class="dim-link" style="color:#837D77">← portfolio</a></span>
+  </footer>
+<script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
+</div>
+<script defer src="../assets/agent.js"></script>
+</body>
+</html>

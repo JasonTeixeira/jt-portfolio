@@ -112,6 +112,12 @@
   a.card { transition:border-color .2s, transform .2s; } a.card:hover { border-color:var(--cyan); transform:translateY(-2px); }
   @keyframes rise { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
   @media (prefers-reduced-motion:reduce){ .step,.svc,.cap { animation:none !important; opacity:1 !important; } .sweep { display:none; } }
+  /* collapsible track groups — native <details>, marker hidden for our own chevron */
+  details.trackgroup > summary { list-style:none; }
+  details.trackgroup > summary::-webkit-details-marker { display:none; }
+  details.trackgroup > summary:hover h3 { color:var(--ink); }
+  details.trackgroup > summary:focus-visible { outline:2px solid var(--cyan); outline-offset:4px; border-radius:6px; }
+  details.trackgroup .tchev { transition:transform .18s ease; }
 </style>
   <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
   <script defer src="/_vercel/insights/script.js"></script>
@@ -218,7 +224,8 @@
   <!-- FLAGSHIP -->
   <section><div class="wrap">
     <div class="kick" style="color:var(--purple)">02: flagship engagements</div>
-    <h2 style="margin-top:12px">The three I'm known for. Click to open one up.</h2>
+    <h2 style="margin-top:12px">Five productized engagements. Click to open one up.</h2>
+    <p class="subtle" style="margin-top:12px;max-width:58ch">The sharp, named offers most work starts from — each with its own depth page, outcome, and the real proof behind it. The full capability index is below.</p>
     <div class="svcgrid" id="svcgrid"></div>
   </div></section>
 
@@ -226,7 +233,7 @@
   <section id="matrix"><div class="wrap">
     <div class="kick" style="color:var(--cyan)">03: the full capability matrix</div>
     <h2 style="margin-top:12px">35+ things I can build for you.</h2>
-    <p class="subtle" style="margin-top:12px;max-width:56ch">Filter by track. Click any card for the explainer: what it is, what you get, and the outcome. Every one ends in a quote, worked out on a call.</p>
+    <p class="subtle" style="margin-top:12px;max-width:62ch">The five above are where most work starts — this is the full range behind them. Expand a track to open it, filter to narrow, and click any card for the explainer: what it is, what you get, and the outcome. Every one ends in a quote, worked out on a call.</p>
     <div class="cat-filter" id="cats"></div>
     <div id="capgrid"></div>
   </div></section>
@@ -373,6 +380,18 @@
       phases:[['Automation Audit','~1 wk'],['One Workflow','~2 wks'],['System Build','~4–8 wks']],
       proof:'BRIEF/01 — feedback triage that runs itself · sage-agents with a hard consent gate',
       href:'services/ai-workflow-automation.html' },
+    { cat:'Security & risk', ac:AMBER, name:'AI &amp; App Security Hardening',
+      sub:"You shipped fast. Now find the exploit before an attacker does: a real threat model, dependency and secret audits, OWASP Web + LLM Top 10 red-teaming, and a security gate wired into CI so the holes you close stay closed.",
+      deliv:['Threat model mapped by trust boundary and data flow — ranked by blast radius','Dependency, supply-chain &amp; secret audit — patched, rotated, and kept out with CI scanning','AI red-team battery: injection, jailbreak, PII leakage, insecure output, excessive agency','CI security gate: a regression below the baseline fails the build'],
+      phases:[['Security Audit','~1 wk'],['Hardening Sprint','~2 wks'],['Secure-by-default Build','~4–8 wks']],
+      proof:'15 exploitable issues caught before ship · llm-eval-gate safety battery · public security posture',
+      href:'services/security-hardening.html' },
+    { cat:'Product', ac:ROSE, name:'AI Product Build',
+      sub:"The whole product, front to back — frontend, backend, auth, payments, data — with the AI feature wired in and an eval + guardrail layer that keeps it correct and safe in production. Shipped, documented, owned by your team.",
+      deliv:['Design system, frontend, backend, auth, payments, data — your stack or Next.js + Supabase','The AI feature built as a first-class backend citizen: structured outputs, validation, fallbacks','The eval + guardrail layer: golden set, safety probes, CI gate — the part most builds skip','Observability, cost model, runbook + handoff so your team runs it without me'],
+      phases:[['Product Spec','~1 wk'],['MVP Sprint','~2 wks'],['Full Build','~4–8 wks']],
+      proof:'A full AI-native learning platform shipped solo · this self-proving site · llm-eval-gate',
+      href:'services/ai-product-build.html' },
   ];
   var grid=document.getElementById('svcgrid');
   SERVICES.forEach(function(s,i){
@@ -473,16 +492,21 @@
   function renderCaps(){
     capgrid.innerHTML='';
     var tracks = cur==='All' ? TRACKS : TRACKS.filter(function(t){ return t.key===cur; });
-    tracks.forEach(function(trk){
+    tracks.forEach(function(trk,gi){
       var col=trk.color;
       var caps=CAPS.filter(function(c){ return c.track===trk.key; });
-      var group=document.createElement('div'); group.className='trackgroup';
-      var head=document.createElement('div'); head.className='trackhead';
-      head.innerHTML='<span class="tn" style="color:'+col+'">'+trk.n+'</span><h3>'+esc(trk.key)+'</h3><span class="tc">'+caps.length+' capabilities</span>';
-      var sub=document.createElement('p'); sub.className='subtle'; sub.style.margin='0 0 18px'; sub.style.maxWidth='60ch'; sub.textContent=trk.blurb;
+      /* each track is a native <details> — first one open, the rest collapsed.
+         keeps the full breadth discoverable without a wall of 36 cards on load. */
+      var group=document.createElement('details'); group.className='trackgroup';
+      if(gi===0) group.open=true;
+      var head=document.createElement('summary'); head.className='trackhead';
+      head.style.cursor='pointer'; head.style.listStyle='none'; head.style.display='flex'; head.style.alignItems='baseline'; head.style.gap='12px';
+      head.innerHTML='<span class="tn" style="color:'+col+'">'+trk.n+'</span><h3 style="margin:0">'+esc(trk.key)+'</h3><span class="tc">'+caps.length+' capabilities</span><span class="tchev" aria-hidden="true" style="margin-left:auto;color:'+col+';font-size:13px">'+(gi===0?'▾':'▸')+'</span>';
+      var sub=document.createElement('p'); sub.className='subtle'; sub.style.margin='14px 0 18px'; sub.style.maxWidth='60ch'; sub.textContent=trk.blurb;
       var grid=document.createElement('div'); grid.className='capgrid';
       caps.forEach(function(c,i){ grid.appendChild(makeCap(c,i,col)); });
       group.appendChild(head); group.appendChild(sub); group.appendChild(grid);
+      group.addEventListener('toggle', function(){ var ch=head.querySelector('.tchev'); if(ch) ch.textContent=group.open?'▾':'▸'; });
       capgrid.appendChild(group);
     });
   }
