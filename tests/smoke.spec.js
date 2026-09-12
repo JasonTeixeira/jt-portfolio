@@ -516,7 +516,8 @@ test.describe('portfolio — service pages', () => {
     for (const s of slugs) {
       await page.goto('/' + s + '.html');
       await expect(page.locator('h1')).toBeVisible();
-      await expect(page.locator('svg').first()).toBeVisible();
+      // scope to the content diagram — nav/footer social icons are behind the mobile hamburger
+      await expect(page.locator('main svg').first()).toBeVisible();
       // in-content book CTA (the nav CTA is behind the hamburger on mobile)
       await expect(page.locator('main a[href="book.html"]').first()).toBeVisible();
     }
