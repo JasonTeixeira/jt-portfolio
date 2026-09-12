@@ -770,6 +770,19 @@ test.describe('portfolio — approach', () => {
   });
 });
 
+test.describe('portfolio — security', () => {
+  test('security page: honest posture, continuity, and liability — no horizontal overflow', async ({ page }) => {
+    await page.goto('/security.html');
+    await expect(page.locator('h1')).toContainText(/Security/i);
+    await expect(page.getByText(/Are you SOC 2 certified/i)).toBeVisible();
+    await expect(page.getByText(/not a certified organization/i)).toBeVisible();   // honest, not faked
+    await expect(page.getByText(/What happens if I'm unavailable/i)).toBeVisible(); // continuity/bus-factor
+    await expect(page.getByText(/E&O\)? coverage can be put in place|E&amp;O/i)).toBeVisible();
+    const noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+    expect(noOverflow).toBeTruthy();
+  });
+});
+
 test.describe('portfolio — case studies', () => {
   test('selected builds showcase: real repos linked, forks excluded', async ({ page }) => {
     await page.goto('/case-studies.html');
