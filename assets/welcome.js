@@ -205,6 +205,7 @@
     card.querySelectorAll('.jt-w-chip').forEach(function (b) { b.addEventListener('click', function () { var c = CHIPS.filter(function (x) { return x.k === b.dataset.k; })[0]; if (c) c.act(); }); });
     card.querySelector('.jt-w-watch').addEventListener('click', function () { va('welcome-watch'); openVideo(); });
     d.addEventListener('keydown', onKey);
+    try { d.dispatchEvent(new CustomEvent('jt-greeter-open')); } catch (e) {}
     requestAnimationFrame(function () { card.classList.add('in'); });
     va('welcome-shown', { loc: loc });
   }
@@ -426,4 +427,12 @@
   }
   window.jtTour = function () { reopen(false); };      // open the Atlas greeter (with the tour button)
   window.jtTourStart = function () { reopen(true); };  // jump straight into the voiced 60-second tour
+
+  // Mutual exclusivity with the concierge chat: when the chat panel opens, dismiss the
+  // greeter card and any running tour so the two Nadine surfaces never overlap.
+  d.addEventListener('jt-chat-open', function () {
+    try { close(true); } catch (e) {}
+    var g = d.getElementById('jt-welcome'); if (g) g.remove();
+    var tr = d.getElementById('jt-tour'); if (tr) tr.remove();
+  });
 })();

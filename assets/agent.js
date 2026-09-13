@@ -550,6 +550,8 @@
   // openPanel(intent?) — opening with a guided-intent key (from the full-screen gateway) skips
   // the greeting and takes the visitor straight into that assistant-voiced answer.
   function openPanel(intent) {
+    // mutual exclusivity: opening the chat dismisses the first-visit greeter/tour so they never overlap
+    try { document.dispatchEvent(new CustomEvent('jt-chat-open')); } catch (e) {}
     open = true; panel.style.display = 'flex';
     requestAnimationFrame(function () { panel.style.opacity = '1'; panel.style.transform = 'none'; });
     var hasIntent = intent && typeof intent === 'string' && GUIDED[intent];
@@ -649,6 +651,8 @@
 
     panel.appendChild(head); panel.appendChild(msgsEl); panel.appendChild(chipsEl); panel.appendChild(row); panel.appendChild(trust);
     document.body.appendChild(fab); document.body.appendChild(panel);
+    // if the first-visit greeter opens, close the chat so the two Nadine surfaces never overlap
+    document.addEventListener('jt-greeter-open', function () { if (open) closePanel(); });
     setupVoice(mic);
   }
 
