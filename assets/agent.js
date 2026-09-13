@@ -523,7 +523,7 @@
   // speak(key) plays /assets/concierge/en/<key>.mp3. On/off persists per visitor.
   var VLANG = LOC;
   var speakOn = true; try { speakOn = localStorage.getItem('atlas-voice') !== 'off'; } catch (e) {}
-  var CLIP_BASE = '/assets/concierge/' + VLANG + '/', CLIP_V = '?v=6';
+  var CLIP_BASE = '/assets/concierge/' + VLANG + '/', CLIP_V = '?v=7';
   var canVoice = true; // Nadine clips exist for en / es / pt
   var curAudio = null;
   function stopSpeak() { try { if (curAudio) { curAudio.pause(); curAudio = null; } } catch (e) {} }
