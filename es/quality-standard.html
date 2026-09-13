@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Estándar de Calidad y el SLA — Sage Ideas</title>
+<meta name="description" content="El estándar de calidad de Sage Ideas: qué significa &quot;hecho&quot; — verificado por un comando que puedes volver a correr, qué contiene un informe de pruebas, el SLA de tiempo de respuesta por nivel, el piso de calidad y las garantías de entrega/rollback.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/es/quality-standard.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="El Estándar de Calidad y el SLA — Sage Ideas">
+<meta property="og:description" content="Qué significa &quot;hecho&quot;, qué contiene un informe de pruebas, el SLA de respuesta, el piso de calidad y las garantías de entrega — el listón al que se somete cada proyecto.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/quality-standard.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<meta property="og:site_name" content="Sage Ideas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SageideasAI">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260909a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+
+  /* credibility strip */
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* case study */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; max-width:22ch; }
+  .metric { display:flex; align-items:baseline; gap:12px; margin:20px 0; flex-wrap:wrap; }
+  .metric .big { font-family:var(--serif); font-size:clamp(2.2rem,5vw,3rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .metric .lbl { font-family:var(--mono); font-size:11.5px; color:var(--faint); max-width:26ch; line-height:1.5; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:8px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:4px; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+
+  /* flagship "built & operated" cards */
+  .opcard { display:block; border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(22px,3vw,32px); transition:border-color .2s, transform .2s; }
+  .opcard:hover { border-color:var(--ac); transform:translateY(-2px); }
+  .opcard .ol { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .opcard h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.45rem,3vw,1.9rem); letter-spacing:-0.015em; margin:10px 0 0; color:var(--ink); }
+  .opcard .od { font-size:13.5px; line-height:1.66; color:var(--dim); margin-top:12px; }
+  .opcard .os { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:18px; }
+  .opcard .os div { line-height:1.1; }
+  .opcard .os .n { font-family:var(--serif); font-size:1.45rem; color:var(--ac); }
+  .opcard .os .u { font-family:var(--mono); font-size:9.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-top:4px; }
+  .opcard .more { font-family:var(--mono); font-size:12px; color:var(--ac); margin-top:20px; display:inline-flex; gap:6px; }
+
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  /* Selected builds — the body of work */
+  .btier { font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); margin:34px 0 14px; display:flex; align-items:center; gap:10px; }
+  .btier::after { content:""; flex:1; height:1px; background:var(--line); }
+  .bgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr)); gap:14px; }
+  .bcard { display:flex; flex-direction:column; border:1px solid var(--line); border-left:2px solid var(--ac,var(--line)); border-radius:12px; background:var(--card); padding:17px 18px; transition:border-color .2s, transform .2s; text-decoration:none; }
+  a.bcard:hover { border-color:var(--ac); transform:translateY(-2px); }
+  .bcard .bh { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .bcard .bn { font-family:var(--serif); font-weight:400; font-size:1.22rem; color:var(--ink); line-height:1.1; letter-spacing:-0.01em; }
+  .bcard .bstar { font-family:var(--mono); font-size:11px; color:var(--amber); white-space:nowrap; flex-shrink:0; }
+  .bcard .bd { font-size:12.5px; line-height:1.62; color:var(--dim); margin:9px 0 0; flex:1; }
+  .bcard .bm { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:13px; }
+  .bcard .bstack { font-family:var(--mono); font-size:10px; letter-spacing:0.04em; color:var(--faint); }
+  .bcard .blink { font-family:var(--mono); font-size:11px; color:var(--ac); white-space:nowrap; }
+  .bcard .btag { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ac); margin-bottom:7px; }
+  section { padding:clamp(40px,6vw,64px) 0; }
+  .rule { border-top:1px solid var(--line); }
+</style>
+  <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+<meta property="og:locale" content="es_ES">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"El Estándar de Calidad y el SLA","description":"El estándar al que se somete cada proyecto de Sage Ideas: definición de hecho, informe de pruebas, SLA de respuesta, piso de calidad y garantías de entrega.","url":"https://agency.sageideas.dev/quality-standard.html","isPartOf":{"@id":"https://agency.sageideas.dev/#website"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Estándar de Calidad","item":"https://agency.sageideas.dev/quality-standard.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/quality-standard.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/quality-standard.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/quality-standard.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/quality-standard.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/quality-standard.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/quality-standard.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/es/index.html" class="site-nav-brand" aria-label="Jason Teixeira — inicio">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menú" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/es/approach.html" class="site-nav-link">Método</a>
+      <a href="/es/services.html" class="site-nav-link">Servicios</a>
+      <a href="/es/case-studies.html" class="site-nav-link">Trabajo</a>
+      <a href="/es/proof.html" class="site-nav-link">Pruebas</a>
+      <a href="/es/resources.html" class="site-nav-link">Recursos</a>
+      <a href="/es/lab.html" class="site-nav-link">Lab</a>
+      <a href="/es/build.html" class="site-nav-link">Definir un proyecto</a>
+      <a href="/es/docs.html" class="site-nav-link">Docs</a>
+      <a href="/automations/" class="site-nav-link" data-evt="nav-automations">Automations</a>
+      <a href="/es/field-notes.html" class="site-nav-link">Notas</a>
+      <span class="nav-social" aria-label="Redes sociales" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Correo" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="/es/book.html" class="btn-solid green site-nav-cta" data-evt="nav-book">Agendar una llamada &rarr;</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section style="padding-bottom:6px">
+      <div class="kick">El estándar de calidad · qué significa "hecho" y a qué puedes exigirme</div>
+      <h1 style="font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,5vw,3.4rem);letter-spacing:-0.02em;line-height:1.04;margin-top:18px;max-width:17ch">El Estándar de Calidad</h1>
+      <p class="subtle" style="margin-top:20px;max-width:66ch">La transparencia solo vale algo si es específica. Este es el estándar al que se somete cada proyecto — qué significa "hecho", qué recibes, con qué rapidez respondo y las garantías que puedes mostrarle a tu equipo. Es el mismo listón con el que se controlan mis dos productos en vivo.</p>
+      <div class="cred">
+        <span class="pill"><span class="dot" style="background:var(--green)"></span>Hecho = verificado, no afirmado</span>
+        <span class="pill"><span class="dot" style="background:var(--cyan)"></span>Un informe de pruebas, siempre</span>
+        <span class="pill"><span class="dot" style="background:var(--purple)"></span>Alcance fijo, sin horas sorpresa</span>
+      </div>
+    </section>
+
+    <section style="padding-top:clamp(20px,3vw,32px);padding-bottom:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">Definición de hecho</div>
+        <h3>"Hecho" es un comando que puedes volver a correr — no un estado en una reunión.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">Un entregable está hecho cuando se cumplen tres cosas: pasa su compuerta de evaluación y pruebas en CI, se genera su informe de pruebas y se entrega el runbook. Si una afirmación no se puede mostrar con un artefacto que puedas abrir, no está hecha — es una promesa, y no estás pagando por promesas.</p>
+      </article>
+    </section>
+
+    <section style="padding-top:18px">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">El artefacto</div>
+        <h3>Qué contiene un informe de pruebas</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">Cada build se entrega con un informe de pruebas — claro para un PM, respaldado para un ingeniero:</p>
+        <ul style="margin:14px 0 0;padding-left:20px;font-size:14px;line-height:1.8;color:var(--dim);max-width:66ch">
+          <li>Las puntuaciones de evaluación — fidelidad, inyección de prompts, regresión, seguridad — y los umbrales que cada una debe superar</li>
+          <li>La corrida de pruebas: conteos de aprobado/fallado, cobertura y el comando exacto para reproducirla tú mismo</li>
+          <li>El veredicto de la compuerta — lanzar o bloqueado — y exactamente por qué</li>
+          <li>Límites conocidos, declarados con honestidad, no enterrados</li>
+          <li>Un registro firmado y re-verificable — ningún número sin un artefacto que lo respalde</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="rule">
+      <div class="kick" style="color:var(--faint)">El SLA · respuesta y cadencia que puedes exigirme</div>
+      <div style="border:1px solid #2A2826;border-radius:12px;overflow:hidden;margin:22px 0;font-family:'JetBrains Mono',monospace">
+        <div style="display:flex;justify-content:space-between;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div style="max-width:58ch"><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Proyecto de build activo</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Respuesta el mismo día hábil. Una demo funcional + estado por escrito cada semana. Siempre sabes qué se lanzó y qué sigue.</div></div><div style="color:#10b981;font-size:12px;font-weight:700;white-space:nowrap">≤ 1 día hábil</div></div>
+        <div style="display:flex;justify-content:space-between;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div style="max-width:58ch"><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Retainer de operación</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Respuesta al siguiente día hábil, un informe de pruebas mensual y una regresión crítica de producción atendida el mismo día en que se reporta.</div></div><div style="color:#10b981;font-size:12px;font-weight:700;white-space:nowrap">crítico el mismo día</div></div>
+        <div style="display:flex;justify-content:space-between;gap:14px;padding:15px 18px;flex-wrap:wrap"><div style="max-width:58ch"><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Auditoría y pre-proyecto</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Cada mensaje entrante — una pregunta, una mini-evaluación, una nota de alcance — recibe una respuesta real, no un autoresponder.</div></div><div style="color:#10b981;font-size:12px;font-weight:700;white-space:nowrap">≤ 1 día hábil</div></div>
+      </div>
+      <p class="d-note-style subtle" style="font-size:12.5px;color:#8E8882;max-width:66ch">Los tiempos son en días hábiles, hora del Este de EE. UU. Un problema crítico de producción en un retainer se atiende el mismo día, sin excepción. Liderado por el fundador significa que quien responde es quien lo construyó — sin cola de tickets.</p>
+    </section>
+
+    <section class="rule">
+      <div class="kick" style="color:var(--faint)">El piso · estándares que nunca bajan, en ningún proyecto</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px;margin-top:20px">
+        <div class="bcard" style="--ac:var(--rose)"><div class="bh"><span class="bn">Sin falsos verdes</span></div><p class="bd">Una compuerta se pone roja cuando debe — en público. Ves el veredicto real, nunca uno maquillado. Este sitio se lo hace a sí mismo en cada despliegue.</p></div>
+        <div class="bcard" style="--ac:var(--green)"><div class="bh"><span class="bn">Los pisos solo suben</span></div><p class="bd">Los umbrales de cobertura y calidad solo se mueven en una dirección. Una vez que se alcanza un listón, se vuelve el nuevo mínimo — las regresiones no pueden bajarlo en silencio.</p></div>
+        <div class="bcard" style="--ac:var(--amber)"><div class="bh"><span class="bn">Disciplina de omisión honesta</span></div><p class="bd">Una verificación omitida se cuenta y se explica, nunca se oculta para que un panel se vea más verde que la verdad.</p></div>
+        <div class="bcard" style="--ac:var(--cyan)"><div class="bh"><span class="bn">Con compuerta, no con demo</span></div><p class="bd">Cada función de IA se lanza detrás de una compuerta de evaluación, no con una demo y un rezo. La compuerta es tanto el producto como la función.</p></div>
+      </div>
+    </section>
+
+    <section class="rule">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">Entrega y rollback</div>
+        <h3>Puedes operarlo sin mí — esa es la prueba de una entrega real.</h3>
+        <ul style="margin:14px 0 0;padding-left:20px;font-size:14px;line-height:1.8;color:var(--dim);max-width:66ch">
+          <li>Todo llega a tu repo, tu CI, tu infraestructura — con un runbook documentado</li>
+          <li>Una ruta de rollback para cada cambio que toca producción</li>
+          <li>Acceso revocado tras la entrega; nada retenido de mi lado</li>
+          <li>La compuerta de evaluación mantiene el sistema honesto después de que me voy — la entrega no es un documento, es una red de seguridad que funciona</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="rule">
+      <article class="case" style="--ac:var(--amber)">
+        <div class="tag">Límites honestos</div>
+        <h3>Lo que garantizo — y lo que no</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch"><b>Garantizo</b> el alcance por escrito, el informe de pruebas, la compuerta, la entrega limpia y respuestas dentro del SLA de arriba. <b>No garantizo</b> que un modelo nunca se equivoque, ni que una métrica alcance un objetivo antes de que el trabajo esté hecho — quien promete IA perfecta te está vendiendo la demo otra vez. Lo que sí garantizo es que siempre sabrás la verdad, medida, <em>antes</em> de que llegue a tu cliente.</p>
+      </article>
+    </section>
+
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2 style="font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3.4vw,2.3rem);letter-spacing:-0.015em;margin:0">Este es el listón. Pongamos tu función a prueba contra él.</h2>
+      <p class="subtle" style="margin-top:14px">Empieza con la auditoría de una semana — verás el estándar aplicado a tu propia IA antes de comprometerte a nada.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px">
+        <a class="cta" href="/es/book.html" data-evt="quality-book">Empieza con la auditoría →</a>
+        <a class="plink" style="--ac:var(--cyan)" href="/es/approach.html">Ver cómo funcionan los proyectos</a>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Redes sociales" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Correo" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academia &#8599;</a> · <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> · <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a> · <a href="/es/demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="/es/what-i-build.html" class="dim-link" style="color:inherit">qué construyo</a></span>
+    <span>tipografías Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>cada número etiquetado como verificado o estimado. sin falsos verdes.</span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js?v=20260912b"></script>
+<script defer src="/assets/exit-capture.js?v=1"></script>
+<script defer src="/assets/nav.js?v=20260910a"></script>
+<script defer src="/assets/transitions.js?v=20260912a"></script>
+
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+<script defer src="/assets/narrator.js?v=5"></script>
+<script defer src="/assets/ga.js?v=1"></script>
+<script defer src="/assets/receipt-modal.js?v=1"></script>
+</body>
+</html>
