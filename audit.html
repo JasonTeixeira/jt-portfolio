@@ -168,5 +168,5 @@ let playing=false;function tick(){if(!playing)return;render(au.currentTime||0);r
 window.__play=()=>{if(playing)return;playing=true;au.play().catch(()=>{});tick();};
 au.addEventListener('ended',()=>{playing=false;render(TOTAL);});
 render(0);document.addEventListener('click',()=>window.__play(),{once:true});
-</script><script defer src="/assets/ga.js?v=2"></script>
+</script><script defer src="/assets/ga.js?v=3"></script>
 </body></html>

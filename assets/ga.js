@@ -17,7 +17,13 @@
   gtag('config', GA_ID, { anonymize_ip: true });
   // The site fires window.va('event-name', { name, data }) at funnel milestones — send them to GA4.
   function gaRouter(kind, payload) {
-    try { gtag('event', (payload && payload.name) || kind, (payload && payload.data) || {}); } catch (e) { /* ignore */ }
+    try {
+      // GA4 event names must be alphanumeric+underscore, start with a letter, <=40 chars.
+      // The site fires hyphenated names (book-call, wib-mini-eval, funnel-hire) — normalize them.
+      var raw = (payload && payload.name) || kind || 'event';
+      var name = String(raw).replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z]+/, '').slice(0, 40) || 'event';
+      gtag('event', name, (payload && payload.data) || {});
+    } catch (e) { /* ignore */ }
   }
   window.va = gaRouter;
   // Vercel Insights (injected async by site.js) replaces window.va with its own reporter when it
