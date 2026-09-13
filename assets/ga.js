@@ -16,7 +16,13 @@
   gtag('js', new Date());
   gtag('config', GA_ID, { anonymize_ip: true });
   // The site fires window.va('event-name', { name, data }) at funnel milestones — send them to GA4.
-  window.va = function (kind, payload) {
+  function gaRouter(kind, payload) {
     try { gtag('event', (payload && payload.name) || kind, (payload && payload.data) || {}); } catch (e) { /* ignore */ }
-  };
+  }
+  window.va = gaRouter;
+  // Vercel Insights (injected async by site.js) replaces window.va with its own reporter when it
+  // loads, which would steal the funnel events. Reclaim window.va after load so the funnel's
+  // click-events (book, mini-eval, capture, etc.) reliably reach GA4. Vercel still auto-tracks
+  // pageviews via its own script, independent of window.va — so both dashboards stay populated.
+  window.addEventListener('load', function () { window.va = gaRouter; });
 })();
