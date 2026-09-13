@@ -1,5 +1,23 @@
 /* Jason Teixeira Portfolio — implemented from Claude Design "Jason Teixeira Portfolio.dc.html" */
 
+/* ─── design tokens — single source of truth (pages may still override locally) ─── */
+:root {
+  --ink: #F4F2EF;
+  --dim: #A8A29E;
+  --faint: #8E8882;
+  --line: #2A2826;
+  --card: #0C0C0E;
+  --bg: #09090B;
+  --green: #10b981;
+  --cyan: #22d3ee;
+  --purple: #a78bfa;
+  --amber: #F59E0B;
+  --rose: #f43f5e;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
 /* ─── self-hosted fonts (latin subset, variable where available) ─── */
 @font-face {
   font-family: 'Plus Jakarta Sans';

@@ -27,8 +27,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#000;font-family
 .scene.on{opacity:1;visibility:visible}
 .eyebrow{font-family:var(--mono);font-size:24px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:34px;opacity:0}
 .eyebrow .g{color:var(--green)}.eyebrow .c{color:var(--cyan)}
-h1{font-family:var(--serif);font-weight:400;font-size:132px;line-height:.96;letter-spacing:-.005em}
-h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
+h1,h2{font-family:var(--serif);font-weight:400;font-size:132px;line-height:.96;letter-spacing:-.005em}
+h1 .w,h2 .w{display:inline-block;opacity:0;transform:translateY(28px)}
 .hollow{-webkit-text-stroke:1.6px #C8C4BE;color:transparent}
 .green{color:var(--green)}.greeni{color:var(--green);font-style:italic}.cyan{color:var(--cyan)}.rose{color:var(--rose)}
 .sub{font-family:var(--serif);font-size:44px;color:#C8C4BE;margin-top:40px;max-width:26ch;line-height:1.16;opacity:0}
@@ -80,7 +80,7 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
 
   <section class="scene" data-s="what">
     <div class="eyebrow" id="ey2">one week · deep on your AI</div>
-    <h1 id="h2" style="font-size:104px"><span class="w">I go where it</span> <span class="w rose">quietly breaks.</span></h1>
+    <h2 id="h2" style="font-size:104px"><span class="w">I go where it</span> <span class="w rose">quietly breaks.</span></h2>
     <div class="week">
       <div class="day" id="d1"><div class="dk">MON</div><div class="dt">Prompts</div></div>
       <div class="day" id="d2"><div class="dk">TUE</div><div class="dt">Retrieval</div></div>
@@ -92,7 +92,7 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
 
   <section class="scene" data-s="do">
     <div class="eyebrow" id="ey3">not vibes — numbers</div>
-    <h1 id="h3" style="font-size:96px"><span class="w">I score it</span> <span class="w cyan">against reality.</span></h1>
+    <h2 id="h3" style="font-size:96px"><span class="w">I score it</span> <span class="w cyan">against reality.</span></h2>
     <div class="score" id="score">
       <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i>&nbsp; eval-harness · your_use_cases.jsonl</div>
       <div class="mrow" id="m1"><span class="k">hallucination rate</span><span><span class="v rose">4.2%</span><span class="flag rose">above threshold</span></span></div>
@@ -118,13 +118,13 @@ h1 .w{display:inline-block;opacity:0;transform:translateY(28px)}
 
   <section class="scene" data-s="honest">
     <div class="eyebrow" id="ey5">the honest part</div>
-    <h1 id="h5" style="font-size:108px"><span class="w">Already solid?</span><br><span class="w green">I'll tell you that too.</span></h1>
+    <h2 id="h5" style="font-size:108px"><span class="w">Already solid?</span><br><span class="w green">I'll tell you that too.</span></h2>
     <div class="sub" id="sub5">Either way — you stop guessing.</div>
   </section>
 
   <section class="scene" data-s="cta" style="align-items:flex-start">
     <div class="brand" id="b6" style="opacity:1"><span class="box">JT</span>jason.teixeira()</div>
-    <h1 id="h6" style="font-size:120px;margin-top:14px"><span class="w">One week.</span> <span class="w green">One answer.</span></h1>
+    <h2 id="h6" style="font-size:120px;margin-top:14px"><span class="w">One week.</span> <span class="w green">One answer.</span></h2>
     <div class="ctabtn" id="ctab">Book the audit →</div>
     <div class="cta-url" id="ctau">agency.sageideas.dev</div>
   </section>
