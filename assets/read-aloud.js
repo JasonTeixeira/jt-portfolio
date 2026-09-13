@@ -23,7 +23,7 @@
       var txt = (btn.textContent || 'Read aloud').trim();
       btn.dataset.label = txt; btn.dataset.stopLabel = btn.dataset.stopLabel || 'Stop';
       btn.textContent = '';
-      var ic = d.createElement('span'); ic.setAttribute('aria-hidden', 'true'); ic.textContent = '🔊 ';
+      var ic = d.createElement('span'); ic.setAttribute('aria-hidden', 'true'); ic.style.marginRight='6px'; ic.style.display='inline-flex'; ic.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
       var s = d.createElement('span'); s.className = 'ra-lbl'; s.textContent = txt;
       btn.appendChild(ic); btn.appendChild(s);
     }
