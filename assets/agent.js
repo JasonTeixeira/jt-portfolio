@@ -208,6 +208,7 @@
 
   function css(el, s) { for (var k in s) el.style[k] = s[k]; }
   function el(tag, style, html) { var n = document.createElement(tag); if (style) css(n, style); if (html != null) n.innerHTML = html; return n; }
+  var SPK_ON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>', SPK_OFF = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
   function track(n) { try { if (typeof window.va === 'function') window.va('event', { name: n }); } catch (e) {} }
 
   function bubble(who) {
@@ -611,14 +612,14 @@
     av.appendChild(pulseDot);
     var htext = el('div', { flex: '1', minWidth: '0' }, '<div style="font-size:14px;font-weight:700;color:' + C.ink + '">Nadine</div><div style="font-family:' + MONO + ';font-size:9.5px;color:' + C.green + '">● Jason’s AI assistant · online</div>');
     // Voice on/off — the concierge speaks by default; this mutes/unmutes her (persists).
-    var vbtn = el('button', { background: 'none', border: '1px solid ' + C.line, borderRadius: '9px', width: '31px', height: '31px', cursor: 'pointer', fontSize: '14px', lineHeight: '1', flexShrink: '0', color: speakOn ? C.cyan : C.faint }, speakOn ? '🔊' : '🔇');
+    var vbtn = el('button', { background: 'none', border: '1px solid ' + C.line, borderRadius: '9px', width: '31px', height: '31px', cursor: 'pointer', fontSize: '14px', lineHeight: '1', flexShrink: '0', color: speakOn ? C.cyan : C.faint }, speakOn ? SPK_ON : SPK_OFF);
     vbtn.setAttribute('aria-label', speakOn ? 'Voice on — click to mute' : 'Voice off — click to unmute');
     vbtn.setAttribute('title', vbtn.getAttribute('aria-label'));
     vbtn.onclick = function () {
       speakOn = !speakOn;
       try { localStorage.setItem('atlas-voice', speakOn ? 'on' : 'off'); } catch (e) {}
       if (!speakOn) stopSpeak();
-      vbtn.textContent = speakOn ? '🔊' : '🔇';
+      vbtn.innerHTML = speakOn ? SPK_ON : SPK_OFF;
       vbtn.style.color = speakOn ? C.cyan : C.faint;
       var lbl = speakOn ? 'Voice on — click to mute' : 'Voice off — click to unmute';
       vbtn.setAttribute('aria-label', lbl); vbtn.setAttribute('title', lbl);
