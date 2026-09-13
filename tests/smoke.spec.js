@@ -379,7 +379,7 @@ test.describe('portfolio — SEO', () => {
 
 test.describe('portfolio — service pages', () => {
   // all five productized service depth pages
-  const SLUGS = ['llm-evaluation-qa', 'test-automation-ci', 'ai-workflow-automation', 'security-hardening', 'ai-product-build'];
+  const SLUGS = ['llm-evaluation-qa', 'test-automation-ci', 'ai-workflow-automation', 'security-hardening', 'ai-product-build', 'custom-ai-builds'];
   // the curated subset promoted on the homepage (homepage stays focused, not exhaustive)
   const HOME_SLUGS = ['llm-evaluation-qa', 'test-automation-ci', 'ai-workflow-automation'];
 
@@ -416,8 +416,8 @@ test.describe('portfolio — service pages', () => {
     await expect(page.locator('h1')).toBeVisible();
     // engagement path renders four steps
     await expect(page.locator('#path .step')).toHaveCount(4);
-    // five productized flagship service cards, each linking to its detail page
-    await expect(page.locator('#svcgrid .svc')).toHaveCount(5);
+    // six productized flagship service cards, each linking to its detail page
+    await expect(page.locator('#svcgrid .svc')).toHaveCount(6);
     for (const slug of SLUGS) {
       await expect(page.locator(`#svcgrid a[href="services/${slug}.html"]`)).toHaveCount(1);
     }

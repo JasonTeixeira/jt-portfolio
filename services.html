@@ -225,7 +225,7 @@
   <!-- FLAGSHIP -->
   <section><div class="wrap">
     <div class="kick" style="color:var(--purple)">02: flagship engagements</div>
-    <h2 style="margin-top:12px">Five productized engagements. Click to open one up.</h2>
+    <h2 style="margin-top:12px">Six productized engagements. Click to open one up.</h2>
     <p class="subtle" style="margin-top:12px;max-width:58ch">The sharp, named offers most work starts from — each with its own depth page, outcome, and the real proof behind it. The full capability index is below.</p>
     <div class="svcgrid" id="svcgrid"></div>
   </div></section>
@@ -393,6 +393,12 @@
       phases:[['Product Spec','~1 wk'],['MVP Sprint','~2 wks'],['Full Build','~4–8 wks']],
       proof:'A full AI-native learning platform shipped solo · this self-proving site · llm-eval-gate',
       href:'services/ai-product-build.html' },
+    { cat:'Custom builds', ac:BLUE, name:'Custom AI Builds &amp; Agents',
+      sub:"When off-the-shelf can't do it: bespoke agents, chatbots, and copilots; custom integrations between systems with no connector; and full custom apps — each shipped with the eval + guardrail layer that keeps it safe.",
+      deliv:['Custom agents &amp; copilots — LangGraph-style orchestration, tool use, approval gates','Chatbots grounded in your data — RAG, citations, scope guard','Bespoke integrations + custom apps built for your exact workflow','The eval + guardrail layer on every custom build'],
+      phases:[['Scoping &amp; Spec','~1 wk'],['Working Prototype','~2 wks'],['Custom Build','~4–8 wks']],
+      proof:"this site's concierge is a custom agent, red-teamed 10/10 · sage-kernel (100+ tools) · llm-eval-gate",
+      href:'services/custom-ai-builds.html' },
   ];
   var grid=document.getElementById('svcgrid');
   SERVICES.forEach(function(s,i){
