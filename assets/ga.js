@@ -31,4 +31,30 @@
   // click-events (book, mini-eval, capture, etc.) reliably reach GA4. Vercel still auto-tracks
   // pageviews via its own script, independent of window.va — so both dashboards stay populated.
   window.addEventListener('load', function () { window.va = gaRouter; });
+
+  // Sitewide click/engagement tracking. This lived only in site.js (homepage-only) before, so
+  // every lander/demo/book page carried [data-evt] attributes with no listener — their
+  // funnel-step clicks were silently unreported. ga.js is loaded on every page, so put it here.
+  // (site.js's duplicate delegator was removed to avoid double-firing on the homepage.)
+  try {
+    var qp = new URLSearchParams(location.search);
+    var utm = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
+      .map(function (k) { var v = qp.get(k); return v ? k + '=' + v : ''; }).filter(Boolean).join('&');
+    if (utm && !sessionStorage.getItem('jt-utm')) sessionStorage.setItem('jt-utm', utm);
+  } catch (e) { /* private mode */ }
+  function track(name, data) {
+    var payload = data || {};
+    try { var u = sessionStorage.getItem('jt-utm'); if (u) payload.utm = u; } catch (e) { /* ignore */ }
+    gaRouter('event', { name: name, data: payload });
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('[data-evt]');
+    if (el) track(el.getAttribute('data-evt'));
+    var resume = e.target.closest && e.target.closest('a[href$="Jason-Teixeira-Resume.pdf"]');
+    if (resume) track('resume-download');
+  });
+  document.addEventListener('toggle', function (e) {
+    if (e.target.classList && e.target.classList.contains('brief-more') && e.target.open) track('brief-expand');
+    if (e.target.classList && e.target.classList.contains('faq') && e.target.open) track('faq-open');
+  }, true);
 })();

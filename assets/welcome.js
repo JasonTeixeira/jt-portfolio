@@ -413,8 +413,12 @@
 
   var delay = reduce ? 600 : 1600;
   if (autoShow) {
-    if (d.readyState === 'complete') setTimeout(build, delay);
-    else window.addEventListener('load', function () { setTimeout(build, delay); });
+    // The first-visit gateway (gateway.js) builds on DOMContentLoaded and is its own
+    // Nadine greeting; don't auto-open the greeter on top of it (that was a double
+    // "Hi, I'm Nadine"). Re-check live DOM at show-time, not just the parse-time flag.
+    var maybeBuild = function () { if (!d.getElementById('jt-gateway')) build(); };
+    if (d.readyState === 'complete') setTimeout(maybeBuild, delay);
+    else window.addEventListener('load', function () { setTimeout(maybeBuild, delay); });
   }
 
   // Persistent, on-demand replay — works even for returning visitors who already dismissed it,

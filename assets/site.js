@@ -1065,16 +1065,9 @@
     try { var u = sessionStorage.getItem('jt-utm'); if (u) payload.utm = u; } catch (err) {}
     if (typeof window.va === 'function') window.va('event', { name: name, data: payload });
   }
-  document.addEventListener('click', function (e) {
-    var evtEl = e.target.closest && e.target.closest('[data-evt]');
-    if (evtEl) track(evtEl.getAttribute('data-evt'));
-    var resume = e.target.closest && e.target.closest('a[href$="Jason-Teixeira-Resume.pdf"]');
-    if (resume) track('resume-download');
-  });
-  document.addEventListener('toggle', function (e) {
-    if (e.target.classList && e.target.classList.contains('brief-more') && e.target.open) track('brief-expand');
-    if (e.target.classList && e.target.classList.contains('faq') && e.target.open) track('faq-open');
-  }, true);
+  // The sitewide [data-evt] click delegator + FAQ/brief toggle tracker now live in
+  // assets/ga.js (loaded on every page) so non-homepage funnel-step clicks report too.
+  // site.js keeps track() above only for its own explicit calls (e.g. contact-submit).
 
   /* ───────────────────────── contact form ───────────────────────── */
 
