@@ -218,7 +218,7 @@
     <section style="padding-bottom:0">
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">The lesson · why single-turn evals aren't enough</div>
-        <h3>A green single-turn suite hid a 502 on every follow-up.</h3>
+        <h2>A green single-turn suite hid a 502 on every follow-up.</h2>
         <p class="subtle" style="margin-top:14px;max-width:66ch">On one build, a scoping chatbot passed its single-turn checks cleanly: ask a question, get a good answer, assertion green. But the moment a user sent a <em>second</em> message in the same conversation, the endpoint returned a <span class="mono" style="color:var(--rose)">502</span> — every time. Single-turn testing can't see that, because it never sends turn two. A <b>multi-turn golden probe</b> — a scripted conversation that replays several turns and asserts on the whole trajectory — caught it immediately. That's the core of agent testing: you test the <em>conversation</em> and the <em>loop</em>, not one call.</p>
         <div class="proofrow">
           <span class="verified">Real lesson from a shipped build · no metric claimed beyond the failure itself</span>
@@ -364,7 +364,7 @@
     <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">The method · three families of probe</div>
-        <h3>Multi-turn golden probes + a red-team battery + robustness.</h3>
+        <h2>Multi-turn golden probes + a red-team battery + robustness.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">1 · Multi-turn golden probes</div>
@@ -398,7 +398,7 @@
     <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">The proof · not claims, receipts</div>
-        <h3>This isn't theory — it's how I already work.</h3>
+        <h2>This isn't theory — it's how I already work.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">A gate that blocked its own release</div>

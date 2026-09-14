@@ -63,7 +63,7 @@
       badge: 'VERIFIED', badgeColor: '#10b981', badgeBorder: 'rgba(16,185,129,0.4)', priv: true, href: '',
       desc: 'RAG knowledge base where every answer is extractive and cited. Durable ingestion worker, pgvector retrieval, persisted eval runs, and a full audit trail from source to answer.',
       metric: '100% citation coverage — verified 2026-08-15: ran it live, asked a real question, screenshot below is the actual answer',
-      shot: { src: 'assets/shots/rag-dashboard.jpg', full: 'assets/shots/rag-dashboard-full.png', alt: 'The real AI Research Dashboard answering a query with chunk-level citations: retrieval candidates ranked and selected, 100% citation coverage, honest no-evidence abstain rate visible in the metrics row.' },
+      shot: { src: 'assets/shots/rag-dashboard.jpg', full: 'assets/shots/rag-dashboard-full.webp', alt: 'The real AI Research Dashboard answering a query with chunk-level citations: retrieval candidates ranked and selected, 100% citation coverage, honest no-evidence abstain rate visible in the metrics row.' },
       tags: ['FastAPI', 'pgvector', 'Gemini', 'React'],
       term: [
         { c: '#8E8882', t: '$ curl -X POST /queries -d "…"' },
@@ -614,10 +614,11 @@
       txt('span', MONO + 'font-size:10px;letter-spacing:0.1em;padding:3px 8px;border-radius:4px;border:1px solid ' + p.badgeBorder + ';color:' + p.badgeColor, p.badge)
     ]);
 
-    var h3 = el('h3', SERIF + 'font-weight:400;font-size:clamp(1.5rem,2.4vw,2rem);margin:0;letter-spacing:-0.01em', [
-      p.name + ' ',
-      txt('span', 'color:' + p.color + ';display:inline-block', '→', { class: 'arrow' })
-    ]);
+    // the → arrow reads as "this card links somewhere"; only show it when there's a
+    // real destination (public repo). Private/estimated cards (href:'') stay non-clickable.
+    var h3kids = [p.name];
+    if (p.href) h3kids.push(' ', txt('span', 'color:' + p.color + ';display:inline-block', '→', { class: 'arrow' }));
+    var h3 = el('h3', SERIF + 'font-weight:400;font-size:clamp(1.5rem,2.4vw,2rem);margin:0;letter-spacing:-0.01em', h3kids);
 
     var info = el('div', 'display:flex;flex-direction:column;gap:12px;flex:1', [
       head, h3,

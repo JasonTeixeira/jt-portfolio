@@ -252,7 +252,7 @@
     <section>
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">La rúbrica · lo que puntúa la demo en vivo</div>
-        <h3>Cuatro dimensiones, cada una con aquello que detecta y su puntuación.</h3>
+        <h2>Cuatro dimensiones, cada una con aquello que detecta y su puntuación.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Cada respuesta que ve el juez se califica en los mismos cuatro ejes. Dos son deterministas (aprueban o no); dos usan un LLM como juez con una rúbrica explícita, de modo que la puntuación es explicable, no una corazonada. Esta es la rúbrica exacta que hay detrás de la <a href="/es/eval.html" style="color:var(--cyan)">demo en vivo</a>.</p>
         <div class="matrix-wrap">
           <div class="matrix-scroll" tabindex="0" role="region" aria-label="Tabla comparativa — desplácese horizontalmente">
@@ -301,7 +301,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">La metodología · golden set → juez → gate</div>
-        <h3>Cómo se detecta una regresión antes de que llegue a producción.</h3>
+        <h2>Cómo se detecta una regresión antes de que llegue a producción.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Un cambio de modelo o de prompt entra en CI. Se ejecuta contra un <b>golden set</b> curado de casos representativos. Cada salida se puntúa con el juez LLM <em>y</em> con las verificaciones deterministas. Si alguna dimensión cae por debajo de su piso, el gate bloquea el merge — el cambio nunca llega a los usuarios. Si todo pasa, llega a producción.</p>
 
         <figure class="flow">
@@ -368,7 +368,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">La prueba · este gate ya bloqueó una versión</div>
-        <h3>Una historia rojo → verde con pruebas que puedo enseñarle.</h3>
+        <h2>Una historia rojo → verde con pruebas que puedo enseñarle.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">En mi propia plataforma de QA, <b>nexural-qa-os</b>, el gate hizo exactamente lo que se supone que hace un gate: detectó <b>15 CVE altas/críticas</b> y <b>bloqueó su propia versión</b>. Ese mismo día se parchearon los problemas y el sistema se puso en verde — <b>3.759 pruebas superadas, 13 de 13 gates en verde</b>. La evidencia son dos ejecuciones capturadas, antes y después.</p>
         <div class="grid" style="margin-top:20px">
           <div class="blk">
@@ -404,7 +404,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">Prueba adyacente · la misma disciplina, en otros contextos</div>
-        <h3>El rigor de evaluación es una faceta de cómo pruebo.</h3>
+        <h2>El rigor de evaluación es una faceta de cómo pruebo.</h2>
         <div class="grid" style="margin-top:20px">
           <div class="blk">
             <div class="h">Suites deterministas</div>
