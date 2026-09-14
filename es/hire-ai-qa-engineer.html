@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrate a un ingeniero de QA de IA para probar su IA</title>
+<meta name="description" content="Incorpore a un ingeniero de QA de IA antes de que su función de LLM falle frente a los clientes. Suites de evaluación, gates de juez y disciplina de regresión en CI: pruebas, no promesas.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/es/hire-ai-qa-engineer.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contrate a un ingeniero de QA de IA para probar su IA">
+<meta property="og:description" content="El ingeniero que incorpora antes de que una función de LLM sin probar avergüence a su empresa. Suites de evaluación, gates de juez, disciplina de regresión en CI, y una demo en vivo que puede calificar usted mismo.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/hire-ai-qa-engineer.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og-hire-ai-qa-engineer.png">
+<meta property="og:site_name" content="Sage Ideas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SageideasAI">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260909a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .cta.ghost { background:transparent; color:var(--cyan); border:1px solid var(--line); }
+  .cta.ghost:hover { border-color:var(--cyan); }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* capability matrix */
+  .matrix-wrap { overflow-x:auto; margin-top:22px; border:1px solid var(--line); border-radius:14px; }
+  table.matrix { width:100%; border-collapse:collapse; font-size:13px; min-width:560px; }
+  table.matrix th, table.matrix td { padding:14px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.matrix thead th { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); background:#0A0A0C; }
+  table.matrix thead th.me { color:var(--green); }
+  table.matrix tbody th { font-weight:600; color:var(--ink); font-size:13px; }
+  table.matrix td { color:var(--dim); text-align:center; font-family:var(--mono); font-size:12px; }
+  table.matrix td.me { background:rgba(16,185,129,0.06); }
+  table.matrix tr:last-child th, table.matrix tr:last-child td { border-bottom:none; }
+  .yes { color:var(--green); font-weight:600; }
+  .no { color:var(--rose); }
+  .partial { color:var(--amber); }
+  .mcap { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-top:10px; }
+
+  /* flag list */
+  .flags { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); gap:14px; margin-top:22px; }
+  .flag { border:1px solid var(--line); border-radius:12px; padding:16px 18px; background:#0A0A0C; }
+  .flag .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
+  .flag.red .lbl { color:var(--rose); }
+  .flag.green .lbl { color:var(--green); }
+  .flag p { margin:0; font-size:13.5px; line-height:1.65; color:var(--dim); }
+  .flag p b { color:var(--ink); font-weight:600; }
+
+  /* svg diagram */
+  .diagram { margin-top:22px; border:1px solid var(--line); border-radius:14px; background:#0A0A0C; padding:clamp(16px,3vw,28px); }
+  .diagram svg { width:100%; display:block; }
+  .dgcap { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-top:12px; text-align:center; line-height:1.6; }
+  @media (prefers-reduced-motion: reduce) { .flow-packet { display:none; } }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"Contrate a un ingeniero de QA de IA para probar su IA","about":"Por qué y cuándo contratar a un ingeniero de QA de IA dedicado para construir suites de evaluación, gates de juez y disciplina de regresión en CI para funciones de LLM antes de que fallen en producción.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/hire-ai-qa-engineer.html","image":"https://agency.sageideas.dev/assets/og-hire-ai-qa-engineer.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Servicios","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Contrate a un ingeniero de QA de IA","item":"https://agency.sageideas.dev/hire-ai-qa-engineer.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Necesito una contratación a tiempo completo o puede ser por contrato?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La mayoría de los proyectos comienzan como un contrato acotado — una auditoría o una construcción — no como una plaza de plantilla. Obtiene la cobertura sin contratar, y todo queda en su repositorio para que su equipo pueda ejecutarlo tras la entrega."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué entrega realmente un ingeniero de QA de IA?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Las pruebas y evaluaciones que demuestran que su función de IA funciona: conjuntos de referencia (golden sets), puntuación con LLM-as-judge y gates de CI que bloquean una versión defectuosa, además de un runbook que su equipo puede operar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿En qué se diferencia esto de un QA/SDET normal?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "El QA estándar comprueba software determinista. Las funciones de IA son no deterministas, así que necesitan evaluación — ¿es la respuesta fiel, citada, segura? — encima de las pruebas tradicionales. Yo hago ambas mitades."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Con qué rapidez puede empezar y ver resultados?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Una auditoría de una semana le da un plan priorizado y las brechas de mayor impacto; una primera evaluación o gate de CI funcional normalmente queda lista en unas dos semanas."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Es un proyecto por contrato o una contratación a tiempo completo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Un contrato, por defecto — acotado a un resultado, no a un puesto. Si más adelante desea cobertura continua podemos pasar a un retainer, pero nada obliga a una decisión de plantilla."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Con qué rapidez puede familiarizarse con nuestro stack y base de código?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La familiarización empieza el primer día: leo su repositorio, sus prompts y sus pruebas existentes antes de escribir nada. Encajar en la forma en que su stack ya funciona importa más que imponer uno nuevo."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Con qué herramientas y frameworks trabaja?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pytest y Playwright para la capa de pruebas, LangGraph, CrewAI y n8n para la orquestación de agentes y flujos de trabajo, y arneses de LLM-as-judge para la capa de evaluación. Trabajo contra su modelo en lugar de sustituirlo por el mío."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Trabaja directamente en nuestro repositorio y CI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí — todo llega como pull requests en su repositorio y como gates que se ejecutan en su CI, no como un sistema aparte que no puede ver. Cuando el proyecto termina, su equipo es dueño de todo ello y lo ejecuta."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo colabora en remoto y entre husos horarios?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Totalmente en remoto y con prioridad asíncrona: el trabajo avanza mediante pull requests, actualizaciones escritas y un runbook compartido, de modo que nada depende de una llamada en directo. Mantengo horas de solapamiento para revisión y para desbloquear decisiones."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo se acota y se cotiza el proyecto?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "El alcance se fija a un entregable, como una auditoría, una suite de evaluación o un gate de CI, y se cotiza por proyecto en lugar de por hora. Usted aprueba el alcance antes de comenzar el trabajo, así que no hay un contador abierto."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/hire-ai-qa-engineer.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/hire-ai-qa-engineer.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/hire-ai-qa-engineer.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/hire-ai-qa-engineer.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/hire-ai-qa-engineer.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/hire-ai-qa-engineer.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/es/index.html" class="site-nav-brand" aria-label="Jason Teixeira — inicio">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menú" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/es/approach.html" class="site-nav-link">Enfoque</a>
+      <a href="/es/services.html" class="site-nav-link">Servicios</a>
+      <a href="/es/case-studies.html" class="site-nav-link">Trabajo</a>
+      <a href="/es/proof.html" class="site-nav-link">Pruebas</a>
+      <a href="/es/resources.html" class="site-nav-link">Recursos</a>
+      <a href="/es/lab.html" class="site-nav-link">Lab</a>
+      <a href="/es/build.html" class="site-nav-link">Definir un proyecto</a>
+      <a href="/es/docs.html" class="site-nav-link">Docs</a>
+      <a href="/automations/" class="site-nav-link" data-evt="nav-automations">Automatizaciones</a>
+      <a href="/es/field-notes.html" class="site-nav-link">Notas de campo</a>
+      <span class="nav-social" aria-label="Enlaces sociales" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Correo electrónico" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="/es/book.html" class="btn-solid green site-nav-cta" data-evt="nav-book">Reservar una llamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Contratación · Ingeniería de calidad de IA</div>
+    <h1 style="margin-top:20px;max-width:22ch">Contrate a un ingeniero de QA de IA <em style="color:var(--cyan)">antes de que su LLM salga sin probar.</em></h1>
+    <p class="lede" style="margin-top:22px">Una función de IA que se lanza sin pruebas no se cae — falla <em>en silencio</em>. Alucina una política, cita una fuente que no existe, filtra un prompt o le da con total confianza el número equivocado a un cliente. Nadie recibe un stack trace. Se entera por una captura de pantalla en redes sociales. Yo soy el ingeniero que incorpora <em>antes</em> de que eso ocurra: construyo las suites de evaluación, los gates de juez y la disciplina de regresión en CI que atrapan una mala respuesta mientras todavía está en su pipeline — no frente a sus clientes.</p>
+    <div class="cred">
+      <span class="pill" style="--ac:var(--green)"><span class="dot" style="background:var(--green)"></span>ISTQB <b>CT-AI</b></span>
+      <span class="pill" style="--ac:var(--cyan)"><span class="dot" style="background:var(--cyan)"></span>ISTQB <b>Test Automation Engineer</b></span>
+      <a class="pill link" style="--ac:var(--purple)" href="/es/eval.html#byo"><span class="dot" style="background:var(--purple)"></span>Demo de evaluación en vivo: <b>califique su propia IA</b> &nearr;</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section style="padding-bottom:8px">
+      <div class="kick" style="color:var(--green)">Vea la presentación completa</div>
+      <div style="margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 20px 60px rgba(0,0,0,0.4)">
+        <video controls preload="none" playsinline poster="/assets/video/vsl-poster.webp" data-evt="watch-vsl-hire" style="display:block;width:100%;aspect-ratio:16/9;background:#09090B">
+          <source src="/assets/video/vsl.mp4" type="video/mp4">
+          Su navegador no admite video incrustado. <a href="/assets/video/vsl.mp4" style="color:var(--green)">Descárguelo (MP4)</a>.
+        </video>
+      </div>
+    </section>
+
+    <!-- THE RISK -->
+    <section style="padding-bottom:0">
+      <article class="case" style="--ac:var(--rose)">
+        <div class="tag">El riesgo · por qué existe este rol</div>
+        <h3>Quienes construyen la función son las personas equivocadas para demostrar que funciona.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:66ch">Quien escribió el prompt ya cree que funciona — ese es exactamente el sesgo que QA existe para romper. Una función de LLM tiene modos de fallo que el software ordinario no tiene: es no determinista, se degrada en silencio cuando un modelo o un prompt cambia aguas arriba, y "parece correcto" no es lo mismo que "es correcto". Probarla requiere una disciplina que se sitúa <em>entre</em> construir IA y el QA tradicional. Esa es la brecha que yo cubro.</p>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">Lo que se lanza sin probar</div>
+            <ul>
+              <li>Hechos, políticas y precios alucinados y afirmados con total confianza</li>
+              <li>Citas a fuentes que <b>no existen</b></li>
+              <li>Rutas de inyección de prompts y jailbreak que nadie sondeó</li>
+              <li>Regresiones silenciosas cuando cambia el modelo o el prompt</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">Lo que le cuesta</div>
+            <ul>
+              <li>Una respuesta equivocada a un cliente real, en público</li>
+              <li>Ninguna forma de saber si el arreglo de la semana pasada rompió la respuesta de esta semana</li>
+              <li>"Funcionó en la demo" — y en ningún otro sitio</li>
+              <li>Confianza que no tendrá una segunda oportunidad de ganarse</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">Cómo se ve lo correcto</div>
+            <ul>
+              <li>Un <b>conjunto de referencia (golden set)</b> de respuestas esperadas y calificadas</li>
+              <li><b>Gates de juez</b> automatizados para seguridad y calidad</li>
+              <li>Un <b>gate de CI</b> que bloquea la versión cuando una comprobación falla</li>
+              <li>Cada afirmación rastreable hasta una fuente, por construcción</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE MATRIX -->
+    <section>
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">La brecha de capacidades · quién hace qué</div>
+        <h3>Un constructor de IA, un ingeniero de QA y yo no somos la misma contratación.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">La mayoría de los equipos ya tienen a alguien que puede construir una función de LLM, y quizá a alguien que puede escribir pruebas de UI. Ninguno de los dos, por sí solo, cierra el ciclo de la calidad de la IA. Aquí está la división honesta.</p>
+        <div class="matrix-wrap" tabindex="0" role="region" aria-label="Comparación de capacidades: constructor de IA vs QA generalista vs ingeniero de QA de IA">
+          <table class="matrix">
+            <caption class="mono" style="text-align:left;padding:12px 16px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)">Comparación de capacidades</caption>
+            <thead>
+              <tr>
+                <th scope="col">Capacidad</th>
+                <th scope="col">Constructor de IA</th>
+                <th scope="col">QA generalista</th>
+                <th scope="col" class="me">Yo (QA de IA)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Lanza funciones de LLM en producción</th>
+                <td><span class="yes">Sí</span></td>
+                <td><span class="no">No</span></td>
+                <td class="me"><span class="yes">Sí</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Construye suites de evaluación y gates de juez</th>
+                <td><span class="no">Rara vez</span></td>
+                <td><span class="partial">Parcial</span></td>
+                <td class="me"><span class="yes">Sí</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Disciplina de regresión en CI</th>
+                <td><span class="partial">Algo</span></td>
+                <td><span class="yes">Sí</span></td>
+                <td class="me"><span class="yes">Sí</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Sondeo de seguridad / inyección</th>
+                <td><span class="no">Rara vez</span></td>
+                <td><span class="no">Rara vez</span></td>
+                <td class="me"><span class="yes">Sí</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Certificado en pruebas de IA (ISTQB CT-AI)</th>
+                <td><span class="no">No</span></td>
+                <td><span class="partial">Varía</span></td>
+                <td class="me"><span class="yes">Sí</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mcap"><span class="yes">Sí</span> = fortaleza principal &middot; <span class="partial">Parcial / Varía</span> = depende de la persona &middot; <span class="no">No / Rara vez</span> = no es el rol. Valorado con honestidad — existe un constructor de IA que también construye gates de evaluación, pero no es lo habitual.</p>
+      </article>
+    </section>
+
+    <!-- THE DIAGRAM -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">El mecanismo · el gate de evaluación</div>
+        <h3>Cada respuesta de IA supera una prueba de fuego antes de que un cliente la vea.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Esta es la forma del sistema que construyo. La salida de su IA no se lanza por fe — se puntúa contra comprobaciones de seguridad y calidad, y un gate de CI toma una decisión binaria: lanzarla, o bloquear la versión y decirle exactamente qué comprobación falló.</p>
+        <div class="diagram">
+          <svg viewBox="0 0 900 300" role="img" aria-labelledby="dg-title dg-desc" preserveAspectRatio="xMidYMid meet">
+            <title id="dg-title">El flujo del gate de evaluación de IA</title>
+            <desc id="dg-desc">La salida de IA fluye hacia comprobaciones de seguridad y calidad, luego hacia un gate de CI que o bien lanza la versión o la bloquea.</desc>
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#8E8882"></path>
+              </marker>
+            </defs>
+            <!-- 1. AI output -->
+            <rect x="20" y="112" width="150" height="76" rx="12" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5"></rect>
+            <text x="95" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#F4F2EF">Salida de IA</text>
+            <text x="95" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">la respuesta cruda</text>
+            <line x1="170" y1="150" x2="212" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <circle class="flow-packet" r="3.2" cy="150" fill="#22d3ee"><animate attributeName="cx" values="150;480" dur="2.4s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" repeatCount="indefinite"></animate></circle>
+            <circle class="flow-packet" r="3.2" cy="150" fill="#10b981"><animate attributeName="cx" values="150;480" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate></circle>
+            <!-- 2. Checks -->
+            <rect x="220" y="60" width="200" height="180" rx="12" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5"></rect>
+            <text x="320" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" letter-spacing="0.08em" fill="#a78bfa">SEGURIDAD + CALIDAD</text>
+            <text x="240" y="118" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; cobertura de citas</text>
+            <text x="240" y="142" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; fundamento factual</text>
+            <text x="240" y="166" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; inyección / jailbreak</text>
+            <text x="240" y="190" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; formato y esquema</text>
+            <text x="240" y="214" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4F2EF">&#8226; coincidencia con golden set</text>
+            <line x1="420" y1="150" x2="462" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <!-- 3. CI gate (diamond) -->
+            <polygon points="540,96 604,150 540,204 476,150" fill="#0C0C0E" stroke="#10b981" stroke-width="1.5"></polygon>
+            <text x="540" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#F4F2EF">Gate de CI</text>
+            <text x="540" y="164" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">¿pasa?</text>
+            <!-- pass -> ship -->
+            <line x1="604" y1="150" x2="700" y2="88" stroke="#10b981" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <text x="648" y="98" font-family="'JetBrains Mono',monospace" font-size="10" fill="#10b981">pasa</text>
+            <rect x="708" y="52" width="160" height="66" rx="12" fill="#0C0C0E" stroke="#10b981" stroke-width="1.5"></rect>
+            <text x="788" y="82" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#10b981">LANZAR &#10003;</text>
+            <text x="788" y="101" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">la versión avanza</text>
+            <!-- fail -> blocked -->
+            <line x1="604" y1="150" x2="700" y2="212" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <text x="646" y="205" font-family="'JetBrains Mono',monospace" font-size="10" fill="#f43f5e">falla</text>
+            <rect x="708" y="182" width="160" height="66" rx="12" fill="#0C0C0E" stroke="#f43f5e" stroke-width="1.5"></rect>
+            <text x="788" y="212" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#f43f5e">BLOQUEADA &#10007;</text>
+            <text x="788" y="231" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">versión retenida</text>
+          </svg>
+        </div>
+        <p class="dgcap">La misma disciplina de gate ejecuta este mismo sitio. ¿Quiere ver una comprobación puntuar una respuesta real? Pegue la salida de su IA en la demo en vivo y véala calificarse.</p>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="/es/eval.html#byo">&#9656; califique su propia IA, en vivo</a>
+          <span class="verified">evaluación real &middot; se ejecuta en su navegador &middot; sin registro</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- RED FLAG / GREEN FLAG -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--amber)">
+        <div class="tag">Guía del comprador · cómo distinguir una contratación real de una tienda que revende Zapier</div>
+        <h3>No todos los que venden "QA de IA" están probando IA.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Muchas ofertas de "QA de IA" son un flujo de Zapier con un chatbot atornillado. Aquí está cómo notar la diferencia antes de firmar nada.</p>
+        <div class="flags">
+          <div class="flag red"><div class="lbl">&#9873; Señal de alerta</div><p>Muestra un chatbot respondiendo preguntas y llama a eso "probado".</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Buena señal</div><p>Le muestra una evaluación que <b>falla</b> y la comprobación exacta que la atrapó.</p></div>
+
+          <div class="flag red"><div class="lbl">&#9873; Señal de alerta</div><p>Cita una cifra de precisión sin un golden set que la respalde.</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Buena señal</div><p>Le entrega un <b>golden set versionado</b> que usted posee y puede volver a ejecutar.</p></div>
+
+          <div class="flag red"><div class="lbl">&#9873; Señal de alerta</div><p>"Funciona" — pero nada se ejecuta en CI y nada bloquea una mala versión.</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Buena señal</div><p>Conecta un <b>gate en su pipeline</b> que hace fallar el build ante regresiones.</p></div>
+
+          <div class="flag red"><div class="lbl">&#9873; Señal de alerta</div><p>No sabe explicar el no determinismo, la deriva ni el riesgo de inyección de prompts.</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Buena señal</div><p>Sondea rutas de seguridad e inyección, y puede <b>demostrar</b> los resultados.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- PROOF -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">La prueba · afirmaciones que puedo respaldar</div>
+        <h3>La tesis entera de este sitio: pruebas por encima de promesas.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Cada cifra aquí está enlazada a su evidencia. Si no puedo mostrarlo, no lo digo.</p>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">Mi propio QA OS bloqueó su propia versión</div>
+            <p>Un sistema de QA que construí detectó <b>15 CVE altos/críticos</b>, se negó a lanzarse a sí mismo y fue parcheado el mismo día hasta <b>3.759 pruebas</b> pasando en <b>13 de 13</b> gates. El antes y el después están ambos capturados.</p>
+            <div class="proofrow" style="margin-top:14px;padding-top:14px">
+              <a class="plink" style="--ac:var(--rose)" href="captures/nexural-qa-os.html">&#9656; bloqueado (antes)</a>
+              <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">&#9656; en verde (después)</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Disciplina de regresión, medida</div>
+            <p>Una suite de regresión SDET ejecutando <b>37 de 37</b> specs, <b>0 flakes</b>, en <b>15,3 s</b>. El código fuente completo es público.</p>
+            <div class="proofrow" style="margin-top:14px;padding-top:14px">
+              <a class="plink" style="--ac:var(--cyan)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">&#9656; la suite en GitHub &nearr;</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Generación fundamentada, por construcción</div>
+            <p>Un dashboard de investigación RAG con <b>100 % de cobertura de citas por construcción</b> — no hay ninguna ruta de código que pueda generar una afirmación sin cita.</p>
+            <div class="proofrow" style="margin-top:14px;padding-top:14px">
+              <a class="plink" style="--ac:var(--purple)" href="/es/case-studies.html">&#9656; el caso de estudio</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Historial en sistemas reales</div>
+            <ul>
+              <li><b>HighStrike</b> (fintech): tasa de flakes <b>10 % &rarr; menos del 1 %</b>, más de 500 pruebas sobre flujos de trading en vivo</li>
+              <li><b>The Home Depot</b> (Fortune 50): framework Selenium para <b>más de 2.300 tiendas</b>, regresión <b>4 h &rarr; 75 min</b></li>
+              <li>Este sitio ejecuta su propio QA — <b>más de 100 comprobaciones</b>, limpio en axe</li>
+            </ul>
+          </div>
+        </div>
+        <div class="proofrow">
+          <span class="verified">las cifras públicas enlazan a un recibo; los números de HighStrike y Home Depot son de roles anteriores a tiempo completo, autoinformados &middot; nada redondeado al alza para una presentación</span>
+        </div>
+      </article>
+    </section>
+
+
+    <section style="padding-top:0">
+      <div class="kick" style="color:var(--faint)">Relacionado &middot; más sobre probar la IA</div>
+      <div class="proofrow" style="border-top:none;padding-top:14px"><a href="/es/llm-evaluation-consultant.html" class="plink" style="--ac:var(--cyan)">Consultor de evaluación de LLM &rarr;</a><a href="/es/rag-evaluation-guide.html" class="plink" style="--ac:var(--cyan)">Evaluación de RAG &rarr;</a><a href="/es/ai-agent-testing.html" class="plink" style="--ac:var(--cyan)">Pruebas de agentes de IA &rarr;</a><a href="/es/reduce-test-flakiness.html" class="plink" style="--ac:var(--cyan)">Reducir la inestabilidad de las pruebas &rarr;</a></div>
+    </section>
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>¿Le preocupa una función de IA que está a punto de lanzar?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Reserve una llamada y definiremos el gate de evaluación que su función necesita — o califique una de las respuestas de su IA en vivo, ahora mismo, y vea la disciplina por usted mismo.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/es/book.html" class="cta" data-evt="hire-aiqa-book">Reservar una llamada &rarr;</a>
+        <a href="/es/eval.html#byo" class="cta ghost">Califique su propia IA en vivo</a>
+      </div>
+      <p class="note" style="text-align:center">¿Prefiere leer primero? Consulte <a href="services/llm-evaluation-qa.html" style="color:var(--cyan)">Evaluación y QA de LLM</a> o la <a href="/es/guide-eval-gate.html" style="color:var(--cyan)">guía del gate de evaluación</a>.</p>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">preguntas frecuentes</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Preguntas, respondidas.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Necesito una contratación a tiempo completo o puede ser por contrato?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">La mayoría de los proyectos comienzan como un contrato acotado — una auditoría o una construcción — no como una plaza de plantilla. Obtiene la cobertura sin contratar, y todo queda en su repositorio para que su equipo pueda ejecutarlo tras la entrega.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué entrega realmente un ingeniero de QA de IA?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Las pruebas y evaluaciones que demuestran que su función de IA funciona: conjuntos de referencia (golden sets), puntuación con LLM-as-judge y gates de CI que bloquean una versión defectuosa, además de un runbook que su equipo puede operar.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿En qué se diferencia esto de un QA/SDET normal?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">El QA estándar comprueba software determinista. Las funciones de IA son no deterministas, así que necesitan evaluación — ¿es la respuesta fiel, citada, segura? — encima de las pruebas tradicionales. Yo hago ambas mitades.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Con qué rapidez puede empezar y ver resultados?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Una auditoría de una semana le da un plan priorizado y las brechas de mayor impacto; una primera evaluación o gate de CI funcional normalmente queda lista en unas dos semanas.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Es un proyecto por contrato o una contratación a tiempo completo?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Un contrato, por defecto — acotado a un resultado, no a un puesto. Si más adelante desea cobertura continua podemos pasar a un retainer, pero nada obliga a una decisión de plantilla.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Con qué rapidez puede familiarizarse con nuestro stack y base de código?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">La familiarización empieza el primer día: leo su repositorio, sus prompts y sus pruebas existentes antes de escribir nada. Encajar en la forma en que su stack ya funciona importa más que imponer uno nuevo.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Con qué herramientas y frameworks trabaja?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Pytest y Playwright para la capa de pruebas, LangGraph, CrewAI y n8n para la orquestación de agentes y flujos de trabajo, y arneses de LLM-as-judge para la capa de evaluación. Trabajo contra su modelo en lugar de sustituirlo por el mío.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Trabaja directamente en nuestro repositorio y CI?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sí — todo llega como pull requests en su repositorio y como gates que se ejecutan en su CI, no como un sistema aparte que no puede ver. Cuando el proyecto termina, su equipo es dueño de todo ello y lo ejecuta.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo colabora en remoto y entre husos horarios?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Totalmente en remoto y con prioridad asíncrona: el trabajo avanza mediante pull requests, actualizaciones escritas y un runbook compartido, de modo que nada depende de una llamada en directo. Mantengo horas de solapamiento para revisión y para desbloquear decisiones.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo se acota y se cotiza el proyecto?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">El alcance se fija a un entregable, como una auditoría, una suite de evaluación o un gate de CI, y se cotiza por proyecto en lugar de por hora. Usted aprueba el alcance antes de comenzar el trabajo, así que no hay un contador abierto.</div>
+      </details>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Enlaces sociales" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Correo electrónico" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academia &#8599;</a> · <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> · <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a> · <a href="/es/demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="/es/what-i-build.html" class="dim-link" style="color:inherit">lo que construyo</a></span>
+    <span>compuesto en Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>cada número etiquetado como verificado o estimado. sin verdes falsos.</span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js?v=20260913a"></script>
+<script defer src="/assets/nav.js?v=20260910a"></script>
+<script defer src="/assets/transitions.js?v=20260912a"></script>
+
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+<script defer src="/assets/ga.js?v=3"></script>
+</body>
+</html>

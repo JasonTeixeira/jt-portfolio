@@ -127,13 +127,68 @@
         "@type": "Answer",
         "text": "A graded RAG eval suite in your repo, a scored dashboard, a CI gate, and a runbook your team can operate."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between citation coverage and groundedness?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Citation coverage asks whether the answer cites its sources at all; groundedness asks whether those cited sources actually support each claim. An answer can cite a chunk and still misread it — so the two are scored separately."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which retrieval metrics do you measure — context precision and recall?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Context precision (did the retrieved chunks belong?) and context recall (did retrieval miss a chunk the answer needed?). Both run against a labeled question set, so a retriever change moves a number instead of a vibe."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you fix the retrieval pipeline or only measure it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Measurement comes first, but the eval points straight at the fix — chunking, embeddings, reranking, or the prompt. I can implement those changes and re-run the suite to prove the gain."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you stop the model from inventing facts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Every claim is checked against the retrieved context, and answers with no supporting source fail the grade. Paired with an abstention test, the system is scored on saying “I don’t know” rather than guessing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this work with my vector database and embedding model?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — the eval sits above your stack and treats retrieval as a black box, so any vector database or embedding model works. Swapping either becomes a measurable experiment rather than a blind change."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What deliverables do I get from a RAG evaluation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A graded eval suite in your repo, a scored dashboard covering retrieval and groundedness, a CI gate that blocks regressions, and a runbook your team can operate without me."
+      }
     }
   ]
 }
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/rag-evaluation-guide.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/rag-evaluation-guide.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/rag-evaluation-guide.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/rag-evaluation-guide.html">
+<meta property="og:locale" content="en_US">
 </head>
 <body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><span aria-current="true" style="color:#10b981;font-weight:600">EN</span><span style="color:#3D3A37">·</span><a href="/es/rag-evaluation-guide.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><a href="/pt/rag-evaluation-guide.html" style="color:#8E8882;text-decoration:none">PT</a></div>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
 <div style="min-height:100vh;background:var(--bg)">
   <nav class="site-nav">
@@ -378,6 +433,30 @@
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What do we get at the end?</summary>
         <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A graded RAG eval suite in your repo, a scored dashboard, a CI gate, and a runbook your team can operate.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What is the difference between citation coverage and groundedness?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Citation coverage asks whether the answer cites its sources at all; groundedness asks whether those cited sources actually support each claim. An answer can cite a chunk and still misread it — so the two are scored separately.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Which retrieval metrics do you measure — context precision and recall?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Context precision (did the retrieved chunks belong?) and context recall (did retrieval miss a chunk the answer needed?). Both run against a labeled question set, so a retriever change moves a number instead of a vibe.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Do you fix the retrieval pipeline or only measure it?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Measurement comes first, but the eval points straight at the fix — chunking, embeddings, reranking, or the prompt. I can implement those changes and re-run the suite to prove the gain.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How do you stop the model from inventing facts?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Every claim is checked against the retrieved context, and answers with no supporting source fail the grade. Paired with an abstention test, the system is scored on saying “I don’t know” rather than guessing.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Does this work with my vector database and embedding model?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Yes — the eval sits above your stack and treats retrieval as a black box, so any vector database or embedding model works. Swapping either becomes a measurable experiment rather than a blind change.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What deliverables do I get from a RAG evaluation?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A graded eval suite in your repo, a scored dashboard covering retrieval and groundedness, a CI gate that blocks regressions, and a runbook your team can operate without me.</div>
       </details>
     </section>
   </main>

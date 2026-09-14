@@ -127,13 +127,68 @@
         "@type": "Answer",
         "text": "Provider-agnostic — Promptfoo, DeepEval, and Pytest against a standard chat-completions interface, using your models and your accounts wherever possible."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "How large does the golden dataset need to be to be useful?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A few dozen well-chosen cases beat hundreds of random ones. Start with the failure modes that actually hurt you — real user prompts, edge cases, past incidents — and grow the set as new failures surface."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is LLM-as-judge scoring reliable enough to gate on?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not on its own. Judge prompts are validated against human-labeled cases, and the gate leans on deterministic checks — exact match, citation presence, schema, refusal detection — wherever the answer allows, reserving the judge for the genuinely subjective calls."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the eval gate fit into the CI I already run?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It runs as one more check in your existing pipeline — a step in GitHub Actions or whatever you use — that passes or fails the build. No new platform to adopt; the eval lives beside your unit tests and blocks the merge on the same red X."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens to the gate when I swap models or edit a prompt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "That is exactly what it is for. Any model swap or prompt edit re-runs the full suite, and a change that regresses grounding, safety, or answer quality turns the build red before it reaches users."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you build this in my repo or a separate tool?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In your repo. The suite, the golden set, and the CI config are committed alongside your code, so you own it, run it, and extend it without depending on me or a hosted dashboard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long until the first quality gate is live?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The first working gate — a small golden set wired into CI and blocking on a real threshold — comes early, then the suite deepens from there. You see a build go red on a bad change before the engagement is over, not a slide about one."
+      }
     }
   ]
 }
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/llm-evaluation-consultant.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/llm-evaluation-consultant.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/llm-evaluation-consultant.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/llm-evaluation-consultant.html">
+<meta property="og:locale" content="en_US">
 </head>
 <body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><span aria-current="true" style="color:#10b981;font-weight:600">EN</span><span style="color:#3D3A37">·</span><a href="/es/llm-evaluation-consultant.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><a href="/pt/llm-evaluation-consultant.html" style="color:#8E8882;text-decoration:none">PT</a></div>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
 <div style="min-height:100vh;background:var(--bg)">
   <nav class="site-nav">
@@ -404,6 +459,30 @@
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Which frameworks and models do you use?</summary>
         <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Provider-agnostic — Promptfoo, DeepEval, and Pytest against a standard chat-completions interface, using your models and your accounts wherever possible.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How large does the golden dataset need to be to be useful?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A few dozen well-chosen cases beat hundreds of random ones. Start with the failure modes that actually hurt you — real user prompts, edge cases, past incidents — and grow the set as new failures surface.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Is LLM-as-judge scoring reliable enough to gate on?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Not on its own. Judge prompts are validated against human-labeled cases, and the gate leans on deterministic checks — exact match, citation presence, schema, refusal detection — wherever the answer allows, reserving the judge for the genuinely subjective calls.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How does the eval gate fit into the CI I already run?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">It runs as one more check in your existing pipeline — a step in GitHub Actions or whatever you use — that passes or fails the build. No new platform to adopt; the eval lives beside your unit tests and blocks the merge on the same red X.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What happens to the gate when I swap models or edit a prompt?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">That is exactly what it is for. Any model swap or prompt edit re-runs the full suite, and a change that regresses grounding, safety, or answer quality turns the build red before it reaches users.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Do you build this in my repo or a separate tool?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">In your repo. The suite, the golden set, and the CI config are committed alongside your code, so you own it, run it, and extend it without depending on me or a hosted dashboard.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How long until the first quality gate is live?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">The first working gate — a small golden set wired into CI and blocking on a real threshold — comes early, then the suite deepens from there. You see a build go red on a bad change before the engagement is over, not a slide about one.</div>
       </details>
     </section>
   </main>

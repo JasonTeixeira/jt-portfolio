@@ -113,13 +113,68 @@
         "@type": "Answer",
         "text": "Yes. The agent eval runs in CI and blocks a release that regresses on the trajectories that matter."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Which agent frameworks do you support — LangGraph, CrewAI, or a custom loop?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "All of them. The checks target the agent's trajectory, not the framework, so LangGraph, CrewAI, and hand-rolled loops are wired the same way. I adapt the harness to whatever runtime you already run."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you gate a deploy on agent behavior without blocking every release?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The eval runs in CI against a fixed set of golden trajectories and only blocks when behavior regresses on those. Non-determinism is handled with tolerance bands and repeated runs, so a healthy release ships and a real regression stops it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does a typical engagement timeline look like?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It starts with a short scoping pass to map your agent's critical trajectories, then a build phase for the golden probes and red-team battery, then handoff with the harness wired into CI. The work is front-loaded; the harness keeps running after I leave."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What do I actually receive at the end of the engagement?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A running test harness in your repo — golden probes, a red-team battery, and CI gating — plus a written report of the failure modes found and how each one is now caught. Everything is yours to run and extend without me."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you test agents that call external tools and APIs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tool calls are exercised against controlled fakes and recorded fixtures so tests stay deterministic, then spot-checked against the live integration. That catches malformed calls, bad arguments, and mishandled tool errors before they reach production."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is an agent-testing engagement scoped and priced?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Scope follows your agent's surface area — the number of trajectories, tools, and guardrails that need coverage — and pricing is a fixed quote per agreed scope. You get the estimate before any work starts, with no open-ended hourly meter."
+      }
     }
   ]
 }
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/ai-agent-testing.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/ai-agent-testing.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/ai-agent-testing.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/ai-agent-testing.html">
+<meta property="og:locale" content="en_US">
 </head>
 <body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><span aria-current="true" style="color:#10b981;font-weight:600">EN</span><span style="color:#3D3A37">·</span><a href="/es/ai-agent-testing.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><a href="/pt/ai-agent-testing.html" style="color:#8E8882;text-decoration:none">PT</a></div>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
 <div style="min-height:100vh;background:var(--bg)">
   <nav class="site-nav">
@@ -407,6 +462,30 @@
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Can you gate deploys on agent evals?</summary>
         <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Yes. The agent eval runs in CI and blocks a release that regresses on the trajectories that matter.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Which agent frameworks do you support — LangGraph, CrewAI, or a custom loop?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">All of them. The checks target the agent's trajectory, not the framework, so LangGraph, CrewAI, and hand-rolled loops are wired the same way. I adapt the harness to whatever runtime you already run.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How do you gate a deploy on agent behavior without blocking every release?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">The eval runs in CI against a fixed set of golden trajectories and only blocks when behavior regresses on those. Non-determinism is handled with tolerance bands and repeated runs, so a healthy release ships and a real regression stops it.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What does a typical engagement timeline look like?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">It starts with a short scoping pass to map your agent's critical trajectories, then a build phase for the golden probes and red-team battery, then handoff with the harness wired into CI. The work is front-loaded; the harness keeps running after I leave.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What do I actually receive at the end of the engagement?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A running test harness in your repo — golden probes, a red-team battery, and CI gating — plus a written report of the failure modes found and how each one is now caught. Everything is yours to run and extend without me.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How do you test agents that call external tools and APIs?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Tool calls are exercised against controlled fakes and recorded fixtures so tests stay deterministic, then spot-checked against the live integration. That catches malformed calls, bad arguments, and mishandled tool errors before they reach production.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How is an agent-testing engagement scoped and priced?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Scope follows your agent's surface area — the number of trajectories, tools, and guardrails that need coverage — and pricing is a fixed quote per agreed scope. You get the estimate before any work starts, with no open-ended hourly meter.</div>
       </details>
     </section>
   </main>

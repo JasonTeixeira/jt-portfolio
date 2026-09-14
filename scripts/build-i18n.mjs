@@ -59,7 +59,8 @@ function switcherHtml(page, current) {
 function rewritePaths(html, page) {
   return html
     // assets referenced relatively → absolute so /es/ and /pt/ resolve them
-    .replace(/(\b(?:href|src)=)"(assets\/[^"]*)"/g, '$1"/$2"')
+    // (href/src plus poster= on <video>, which otherwise resolves under /es//pt/)
+    .replace(/(\b(?:href|src|poster)=)"(assets\/[^"]*)"/g, '$1"/$2"')
     .replace(/(\b(?:href|src)=)"(feed\.xml|sitemap\.xml|robots\.txt)"/g, '$1"/$2"')
     // internal page links → locale-prefixed (skip anchors, external, mailto, tel, already-absolute)
     .replace(/(\bhref=)"([a-z0-9][a-z0-9._-]*\.html(?:#[^"]*)?)"/gi, (m, a, href) => `${a}"/${dirOf(page.locale)}${href}"`)
