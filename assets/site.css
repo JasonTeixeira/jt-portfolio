@@ -941,6 +941,9 @@ html.jt-pt-out #jt-pt .jt-pt-mark{animation:jt-ptflip 520ms cubic-bezier(0.16,1,
   .btn-solid, .btn-ghost, .vr-mute-btn { min-height: 44px; }
   /* language pill (fixed, inline-styled): widen the tap area without bloating the pill */
   [data-i18n] a { padding: 11px 9px; margin: -8px -3px; border-radius: 8px; }
+  /* the fixed EN·ES·PT pill sits bottom-left; give the footer clearance so it never
+     overlaps the last line of copy / social row on narrow touch screens */
+  footer { padding-bottom: 78px !important; }
 }
 
 /* ── brand video library (assets/brand-video.js hydrates figure.brand-video) ── */
