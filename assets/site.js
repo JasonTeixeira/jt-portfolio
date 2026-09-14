@@ -831,7 +831,7 @@
 
   var selfProof = document.getElementById('jt-selfproof');
   if (selfProof && window.fetch) {
-    fetch('proof/scorecard.json')
+    fetch('/proof/scorecard.json')
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (sc) {
         if (!sc || !sc.totals) return;
