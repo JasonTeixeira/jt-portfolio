@@ -252,7 +252,7 @@
     <section>
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">A rubrica · o que a demo ao vivo pontua</div>
-        <h3>Quatro dimensões, cada uma com uma falha capturada e uma nota.</h3>
+        <h2>Quatro dimensões, cada uma com uma falha capturada e uma nota.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Toda resposta que o juiz vê é avaliada nos mesmos quatro eixos. Dois são determinísticos (passam ou não passam); dois usam um LLM-como-juiz com uma rubrica explícita, para que a nota seja explicável, não um achismo. Esta é a rubrica exata por trás da <a href="/pt/eval.html" style="color:var(--cyan)">demo ao vivo</a>.</p>
         <div class="matrix-wrap">
           <div class="matrix-scroll" tabindex="0" role="region" aria-label="Tabela comparativa — role horizontalmente">
@@ -301,7 +301,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">A metodologia · golden set → juiz → gate</div>
-        <h3>Como uma regressão é capturada antes de ir para produção.</h3>
+        <h2>Como uma regressão é capturada antes de ir para produção.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Uma mudança de modelo ou prompt entra no CI. Ela roda contra um <b>golden set</b> curado de casos representativos. Cada saída é pontuada pelo LLM juiz <em>e</em> pelas verificações determinísticas. Se qualquer dimensão cair abaixo do seu piso, o gate bloqueia o merge — a mudança nunca chega aos usuários. Se tudo passa, vai para produção.</p>
 
         <figure class="flow">
@@ -368,7 +368,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">A prova · este gate já bloqueou um release</div>
-        <h3>Uma história vermelho → verde com os comprovantes que eu posso te mostrar.</h3>
+        <h2>Uma história vermelho → verde com os comprovantes que eu posso te mostrar.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Na minha própria plataforma de QA, <b>nexural-qa-os</b>, o gate fez exatamente o que um gate deve fazer: detectou <b>15 CVEs altas/críticas</b> e <b>bloqueou seu próprio release</b>. No mesmo dia, os problemas foram corrigidos e o sistema ficou verde — <b>3.759 testes passando, 13 de 13 gates limpos</b>. A evidência são duas execuções capturadas, antes e depois.</p>
         <div class="grid" style="margin-top:20px">
           <div class="blk">
@@ -404,7 +404,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">Prova adjacente · a mesma disciplina, em outros lugares</div>
-        <h3>O rigor de eval é uma faceta de como eu testo.</h3>
+        <h2>O rigor de eval é uma faceta de como eu testo.</h2>
         <div class="grid" style="margin-top:20px">
           <div class="blk">
             <div class="h">Suítes determinísticas</div>

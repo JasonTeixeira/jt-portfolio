@@ -218,7 +218,7 @@
     <section style="padding-bottom:0">
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">La lección · por qué las evaluaciones de un solo turno no bastan</div>
-        <h3>Una suite de un solo turno en verde ocultaba un 502 en cada respuesta de seguimiento.</h3>
+        <h2>Una suite de un solo turno en verde ocultaba un 502 en cada respuesta de seguimiento.</h2>
         <p class="subtle" style="margin-top:14px;max-width:66ch">En un build, un chatbot de definición de alcance pasaba sus chequeos de un solo turno limpiamente: se hace una pregunta, se obtiene una buena respuesta, aserción en verde. Pero en el momento en que un usuario enviaba un <em>segundo</em> mensaje en la misma conversación, el endpoint devolvía un <span class="mono" style="color:var(--rose)">502</span> — todas las veces. El testing de un solo turno no puede ver eso, porque nunca envía el turno dos. Una <b>sonda golden multiturno</b> — una conversación con guion que reproduce varios turnos y hace aserciones sobre toda la trayectoria — lo atrapó de inmediato. Ese es el núcleo del testing de agentes: se testea la <em>conversación</em> y el <em>bucle</em>, no una sola llamada.</p>
         <div class="proofrow">
           <span class="verified">Lección real de un build ya lanzado · ninguna métrica reclamada más allá del propio fallo</span>
@@ -364,7 +364,7 @@
     <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">El método · tres familias de sonda</div>
-        <h3>Sondas golden multiturno + una batería de red-team + robustez.</h3>
+        <h2>Sondas golden multiturno + una batería de red-team + robustez.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">1 · Sondas golden multiturno</div>
@@ -398,7 +398,7 @@
     <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">La prueba · no afirmaciones, recibos</div>
-        <h3>Esto no es teoría — es como ya trabajo.</h3>
+        <h2>Esto no es teoría — es como ya trabajo.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">Una barrera que bloqueó su propio lanzamiento</div>

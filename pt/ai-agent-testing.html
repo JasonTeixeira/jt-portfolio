@@ -218,7 +218,7 @@
     <section style="padding-bottom:0">
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">A lição · por que avaliações de turno único não bastam</div>
-        <h3>Uma suíte de turno único verde escondia um 502 em cada mensagem seguinte.</h3>
+        <h2>Uma suíte de turno único verde escondia um 502 em cada mensagem seguinte.</h2>
         <p class="subtle" style="margin-top:14px;max-width:66ch">Em um build, um chatbot de escopo passava suas verificações de turno único sem problemas: faça uma pergunta, receba uma boa resposta, verificação verde. Mas no momento em que um usuário enviava uma <em>segunda</em> mensagem na mesma conversa, o endpoint retornava um <span class="mono" style="color:var(--rose)">502</span> — toda vez. O teste de turno único não consegue enxergar isso, porque nunca envia o turno dois. Uma <b>golden probe multi-turno</b> — uma conversa roteirizada que reproduz vários turnos e verifica toda a trajetória — pegou o problema na hora. Essa é a essência do teste de agentes: você testa a <em>conversa</em> e o <em>loop</em>, não uma única chamada.</p>
         <div class="proofrow">
           <span class="verified">Lição real de um build publicado · nenhuma métrica reivindicada além da própria falha</span>
@@ -364,7 +364,7 @@
     <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">O método · três famílias de sonda</div>
-        <h3>Golden probes multi-turno + uma bateria de red-team + robustez.</h3>
+        <h2>Golden probes multi-turno + uma bateria de red-team + robustez.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">1 · Golden probes multi-turno</div>
@@ -398,7 +398,7 @@
     <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">A prova · não afirmações, recibos</div>
-        <h3>Isso não é teoria — é como eu já trabalho.</h3>
+        <h2>Isso não é teoria — é como eu já trabalho.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">Um gate que bloqueou seu próprio release</div>

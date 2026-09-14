@@ -113,6 +113,9 @@
   .pipe-legend { display:flex; gap:18px; flex-wrap:wrap; margin-top:16px; font-family:var(--mono); font-size:10.5px; color:var(--dim); }
   .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
   .subtle { color:var(--dim); font-size:14px; line-height:1.7; }
+  /* the fixed-coordinate pipeline SVG becomes illegible when scaled to phone width —
+     keep it at a legible min-width and let the console scroll horizontally instead */
+  @media (max-width:640px){ .pipebox { overflow-x:auto; -webkit-overflow-scrolling:touch; } #pipe-svg { min-width:580px; } }
   @media (prefers-reduced-motion:reduce){ .tile,.orb.live,.orb.idle { animation:none !important; opacity:1 !important; } }
 </style>
   <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->

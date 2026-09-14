@@ -243,7 +243,7 @@
     <section>
       <article class="case" style="--ac:var(--green)">
         <div class="tag">The checklist · what a real RAG eval measures</div>
-        <h3>Five things, or you're guessing.</h3>
+        <h2>Five things, or you're guessing.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">A pass/fail RAG evaluation harness has to score all five of these on a fixed question set — ideally a golden set with known-correct sources — and gate the release on the results. Skip one and you've left a whole class of failure untested.</p>
         <ul class="check">
           <li><span class="b">01</span><span><b>Citation coverage.</b> What fraction of answer claims carry a citation that actually supports them? Not "has a footnote" — the cited chunk must contain the claim. Target: every load-bearing sentence is traceable to a retrieved source.</span></li>
@@ -309,7 +309,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">The matrix · failure mode &rarr; the check that catches it</div>
-        <h3>Every way RAG breaks, and its test.</h3>
+        <h2>Every way RAG breaks, and its test.</h2>
         <div class="tscroll" tabindex="0" role="region" aria-label="Comparison table — scroll horizontally">
           <table class="doc">
             <caption>RAG failure modes mapped to the evaluation check that catches each</caption>
@@ -336,7 +336,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">The proof · citation coverage by construction</div>
-        <h3>100% cited, because there's no other path.</h3>
+        <h2>100% cited, because there's no other path.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">The design move</div>
@@ -363,7 +363,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">Why take this checklist from me</div>
-        <h3>I gate my own releases on evidence.</h3>
+        <h2>I gate my own releases on evidence.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">The abstain-and-cite discipline above isn't theory. My QA OS caught <b>15 high/critical CVEs</b> in its own dependency set, <b>blocked its own release</b>, and was patched the same day to <b>3,759 tests passing across 13 of 13 gates</b>. My SDET regression suite runs <b>37 of 37 specs, zero flakes, in 15.3 seconds</b>. This whole site runs its own QA — <b>100+ checks, axe-clean</b> — and carries a live eval demo you can break yourself.</p>
         <div class="stack" style="margin-top:18px">
           <span class="chip"><b>15</b> CVEs caught, release blocked</span>

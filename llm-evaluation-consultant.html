@@ -252,7 +252,7 @@
     <section>
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">The rubric · what the live demo scores</div>
-        <h3>Four dimensions, each with a catch and a score.</h3>
+        <h2>Four dimensions, each with a catch and a score.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Every answer the judge sees is graded on the same four axes. Two are deterministic (they either pass or they don't); two use an LLM-as-judge with an explicit rubric so the score is explainable, not a vibe. This is the exact rubric behind the <a href="eval.html" style="color:var(--cyan)">live demo</a>.</p>
         <div class="matrix-wrap">
           <div class="matrix-scroll" tabindex="0" role="region" aria-label="Comparison table — scroll horizontally">
@@ -301,7 +301,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">The methodology · golden set → judge → gate</div>
-        <h3>How a regression gets caught before it ships.</h3>
+        <h2>How a regression gets caught before it ships.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">A model or prompt change enters CI. It runs against a curated <b>golden set</b> of representative cases. Each output is scored by the LLM judge <em>and</em> the deterministic checks. If any dimension falls below its floor, the gate blocks the merge — the change never reaches users. If everything clears, it ships.</p>
 
         <figure class="flow">
@@ -368,7 +368,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">The proof · this gate has already blocked a release</div>
-        <h3>A red → green story I can show you the receipts for.</h3>
+        <h2>A red → green story I can show you the receipts for.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">On my own QA platform, <b>nexural-qa-os</b>, the gate did exactly what a gate is supposed to do: it caught <b>15 high/critical CVEs</b> and <b>blocked its own release</b>. Same day, the issues were patched and the system went green — <b>3,759 tests passing, 13 of 13 gates clear</b>. The evidence is two captured runs, before and after.</p>
         <div class="grid" style="margin-top:20px">
           <div class="blk">
@@ -404,7 +404,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">Adjacent proof · the same discipline, elsewhere</div>
-        <h3>Eval rigor is one facet of how I test.</h3>
+        <h2>Eval rigor is one facet of how I test.</h2>
         <div class="grid" style="margin-top:20px">
           <div class="blk">
             <div class="h">Deterministic suites</div>

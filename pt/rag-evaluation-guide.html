@@ -243,7 +243,7 @@
     <section>
       <article class="case" style="--ac:var(--green)">
         <div class="tag">O checklist · o que uma avaliação de RAG de verdade mede</div>
-        <h3>Cinco coisas, ou você está chutando.</h3>
+        <h2>Cinco coisas, ou você está chutando.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Uma bateria de avaliação de RAG com resultado aprovado/reprovado precisa pontuar todas as cinco em um conjunto fixo de perguntas — idealmente um golden set com fontes corretas conhecidas — e bloquear a release com base nos resultados. Pule uma e você deixou uma classe inteira de falhas sem teste.</p>
         <ul class="check">
           <li><span class="b">01</span><span><b>Cobertura de citações.</b> Que fração das afirmações da resposta carrega uma citação que realmente as sustenta? Não "tem uma nota de rodapé" — o trecho citado precisa conter a afirmação. Meta: toda frase que sustenta a resposta é rastreável até uma fonte recuperada.</span></li>
@@ -309,7 +309,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">A matriz · modo de falha &rarr; a verificação que o pega</div>
-        <h3>Toda forma de o RAG quebrar, e seu teste.</h3>
+        <h2>Toda forma de o RAG quebrar, e seu teste.</h2>
         <div class="tscroll" tabindex="0" role="region" aria-label="Tabela comparativa — role horizontalmente">
           <table class="doc">
             <caption>Modos de falha de RAG mapeados para a verificação de avaliação que pega cada um</caption>
@@ -336,7 +336,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">A prova · cobertura de citações por construção</div>
-        <h3>100% citado, porque não há outro caminho.</h3>
+        <h2>100% citado, porque não há outro caminho.</h2>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">A decisão de design</div>
@@ -363,7 +363,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">Por que aceitar este checklist de mim</div>
-        <h3>Eu bloqueio minhas próprias releases com base em evidências.</h3>
+        <h2>Eu bloqueio minhas próprias releases com base em evidências.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">A disciplina de abster-se e citar descrita acima não é teoria. Meu QA OS pegou <b>15 CVEs altas/críticas</b> em seu próprio conjunto de dependências, <b>bloqueou sua própria release</b> e foi corrigido no mesmo dia para <b>3.759 testes passando em 13 de 13 portões</b>. Minha suíte de regressão SDET roda <b>37 de 37 specs, zero flakes, em 15,3 segundos</b>. Este site inteiro roda seu próprio QA — <b>mais de 100 verificações, limpo no axe</b> — e traz uma demo de avaliação ao vivo que você mesmo pode quebrar.</p>
         <div class="stack" style="margin-top:18px">
           <span class="chip"><b>15</b> CVEs pegas, release bloqueada</span>
