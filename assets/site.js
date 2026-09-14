@@ -743,16 +743,16 @@
   if (svcMount && svcMount.children.length === 0) SERVICES.forEach(function (s) {
     svcMount.appendChild(el('article', '', [
       el('span', 'width:34px;height:3px;border-radius:2px;background:' + s.color),
-      txt('h3', SERIF + 'font-weight:400;font-size:1.4rem;margin:0;color:#09090B', s.name),
-      txt('p', 'margin:0;font-size:13.5px;line-height:1.7;color:#57534E;flex:1', s.desc),
-      el('div', MONO + 'font-size:11.5px;line-height:1.8;color:#57534E', s.items.map(function (it) {
+      txt('h3', SERIF + 'font-weight:400;font-size:1.4rem;margin:0;color:#F4F2EF', s.name),
+      txt('p', 'margin:0;font-size:13.5px;line-height:1.7;color:#A8A29E;flex:1', s.desc),
+      el('div', MONO + 'font-size:11.5px;line-height:1.8;color:#A8A29E', s.items.map(function (it) {
         return el('div', '', [txt('span', 'color:' + s.color, '→'), document.createTextNode(' ' + it)]);
       })),
-      el('div', MONO + 'font-size:11px;color:#6B6560;border-top:1px dashed #DDD6CE;padding-top:12px', [
+      el('div', MONO + 'font-size:11px;color:#8E8882;border-top:1px dashed #2A2826;padding-top:12px', [
         document.createTextNode('proof: '),
-        txt('span', 'color:#09090B', s.proof)
+        txt('span', 'color:#F4F2EF', s.proof)
       ]),
-      txt('a', 'font-size:13px;font-weight:700;color:#0e7490', 'Full details →', { href: s.href })
+      txt('a', 'font-size:13px;font-weight:700;color:#22d3ee', 'Full details →', { href: s.href })
     ], { class: 'svc-card' }));
   });
 
@@ -761,11 +761,11 @@
     tlMount.appendChild(el('div', 'flex:1;min-width:min(200px,100%);display:flex;flex-direction:column;gap:10px;position:relative;padding-right:24px', [
       el('div', 'display:flex;align-items:center;gap:10px', [
         el('span', 'width:10px;height:10px;border-radius:50%;background:' + w.color + ';flex-shrink:0;animation:jt-nodepulse 3.2s ease-in-out infinite;animation-delay:' + w.delay),
-        el('span', 'flex:1;height:1px;background:#DDD6CE')
+        el('span', 'flex:1;height:1px;background:#2A2826')
       ]),
-      txt('div', MONO + 'font-size:11px;color:#57534E', w.week),
-      txt('div', 'font-size:13.5px;font-weight:600;color:#09090B', w.name),
-      txt('div', 'font-size:12.5px;line-height:1.6;color:#6B6560', w.desc)
+      txt('div', MONO + 'font-size:11px;color:#8E8882', w.week),
+      txt('div', 'font-size:13.5px;font-weight:600;color:#F4F2EF', w.name),
+      txt('div', 'font-size:12.5px;line-height:1.6;color:#8E8882', w.desc)
     ]));
   });
 

@@ -38,5 +38,27 @@ for (const s of SERVICES) {
   }, s);
   await page.screenshot({ path: `assets/og-service-${s.slug}.png` });
 }
+
+// Top-level commercial pages that would otherwise all share the generic og.png.
+// Distinct cards lift social share CTR (LinkedIn/Slack/X) for the money pages.
+const PAGES = [
+  { key: 'services', kicker: 'services', h1: 'Everything I Build', stats: 'AI · QA · Automation · Product' },
+  { key: 'ai-agent-testing', kicker: 'AI agent testing', h1: 'What Breaks in Production', stats: 'agent evals · tool-use correctness · safety' },
+  { key: 'llm-evaluation-consultant', kicker: 'LLM evaluation', h1: 'Eval Suites & CI Gates', stats: 'golden sets · LLM-as-judge · a gate that blocks bad merges' },
+  { key: 'rag-evaluation-guide', kicker: 'RAG evaluation', h1: 'Citation Coverage & Groundedness', stats: 'context precision/recall · hallucination gate' },
+  { key: 'hire-ai-qa-engineer', kicker: 'hire an AI QA engineer', h1: 'Test Your AI Before Your Users Do', stats: 'evals · red-team · CI quality gate' },
+  { key: 'reduce-test-flakiness', kicker: 'flaky tests', h1: '10% Flake to Under 1%', stats: 'quarantine · retry policy · isolation fixes' }
+];
+for (const p of PAGES) {
+  await page.evaluate((pg) => {
+    document.querySelector('.kicker span:last-child').innerHTML =
+      '<span class="green">' + pg.kicker + '</span> — AI + QA engineering';
+    const h1 = document.querySelector('h1');
+    h1.textContent = pg.h1;
+    h1.style.fontSize = pg.h1.length > 30 ? '76px' : '92px';
+    document.querySelector('.stats').innerHTML = pg.stats + '<br>agency.sageideas.dev';
+  }, p);
+  await page.screenshot({ path: `assets/og-${p.key}.png` });
+}
 await browser.close();
-console.log(`✓ rendered assets/og.png + ${NOTES.length} note cards + ${SERVICES.length} service cards (1200×630)`);
+console.log(`✓ rendered assets/og.png + ${NOTES.length} note cards + ${SERVICES.length} service cards + ${PAGES.length} page cards (1200×630)`);
