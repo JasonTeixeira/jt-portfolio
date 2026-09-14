@@ -141,7 +141,7 @@
       "name": "Quais métricas de recuperação você mede — precisão e recall de contexto?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Precisão de contexto (os trechos recuperados eram pertinentes?) e recall de contexto (a recuperação deixou de fora um trecho que a resposta precisava?). Ambas rodam contra um conjunto de perguntas rotulado, de modo que uma mudança no retriever move um número em vez de uma sensação."
+        "text": "Precisão de contexto (os trechos recuperados eram pertinentes?) e recall de contexto (a recuperação deixou de fora um trecho que a resposta precisava?). Ambas rodam contra um conjunto de perguntas rotulado, de modo que uma mudança no retriever muda um número em vez de uma impressão."
       }
     },
     {
@@ -218,7 +218,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
     <div class="kick" style="color:var(--cyan)">Guia de campo · avaliação de RAG</div>
     <h1 style="margin-top:20px;max-width:18ch">Como de fato <em style="color:var(--cyan)">testar</em> um sistema RAG.</h1>
-    <p class="lede" style="margin-top:22px">A maioria das demos de geração aumentada por recuperação é avaliada no feeling: alguém lê três respostas, elas parecem plausíveis, entra em produção. Isso não é avaliação — é otimismo. Um sistema RAG falha de maneiras específicas e testáveis: cita o trecho errado, inventa um fato que o contexto recuperado nunca disse ou responde com confiança quando deveria ter dito "não tenho essa informação". Cada um desses modos de falha tem uma verificação que o pega. Este é o checklist, e ele está fundamentado em um painel que construí no qual <b style="color:var(--green)">a cobertura de citações é 100% por construção</b> — não existe caminho de código capaz de gerar uma frase sem citação.</p>
+    <p class="lede" style="margin-top:22px">A maioria das demos de geração aumentada por recuperação é avaliada no achismo: alguém lê três respostas, elas parecem plausíveis, entra em produção. Isso não é avaliação — é otimismo. Um sistema RAG falha de maneiras específicas e testáveis: cita o trecho errado, inventa um fato que o contexto recuperado nunca disse ou responde com confiança quando deveria ter dito "não tenho essa informação". Cada um desses modos de falha tem uma verificação que o pega. Este é o checklist, e ele está fundamentado em um painel que construí no qual <b style="color:var(--green)">a cobertura de citações é 100% por construção</b> — não existe caminho de código capaz de gerar uma frase sem citação.</p>
     <div class="cred">
       <a class="pill link" style="--ac:var(--green)" href="/pt/case-studies.html"><span class="dot" style="background:var(--green)"></span>Prova: <b>o build 100% citado</b> &rarr;</a>
       <a class="pill link" style="--ac:var(--cyan)" href="/pt/eval.html"><span class="dot" style="background:var(--cyan)"></span>Experimente a <b>demo de avaliação ao vivo</b> &rarr;</a>
@@ -248,7 +248,7 @@
           <li><span class="b">01</span><span><b>Cobertura de citações.</b> Que fração das afirmações da resposta carrega uma citação que realmente as sustenta? Não "tem uma nota de rodapé" — o trecho citado precisa conter a afirmação. Meta: toda frase que sustenta a resposta é rastreável até uma fonte recuperada.</span></li>
           <li><span class="b">02</span><span><b>Precisão e recall de recuperação.</b> O retriever trouxe os trechos que contêm a resposta (recall) e quanto ruído veio junto (precisão)? Um gerador perfeito não salva um retriever que nunca buscou a passagem certa.</span></li>
           <li><span class="b">03</span><span><b>Fundamentação / fidelidade.</b> Cada afirmação é acarretada pelo contexto recuperado, ou o modelo acrescentou "conhecimento" do pré-treinamento que não está nas fontes? É aqui que a alucinação se esconde mesmo quando há citações presentes.</span></li>
-          <li><span class="b">04</span><span><b>Abster-se quando não há evidência.</b> Quando o corpus genuinamente não contém a resposta, o sistema diz isso — ou fabula? Teste com perguntas fora do corpus e exija uma resposta explícita de "evidência insuficiente".</span></li>
+          <li><span class="b">04</span><span><b>Abster-se quando não há evidência.</b> Quando o corpus genuinamente não contém a resposta, o sistema diz isso — ou inventa? Teste com perguntas fora do corpus e exija uma resposta explícita de "evidência insuficiente".</span></li>
           <li><span class="b">05</span><span><b>Latência e custo por consulta.</b> Recuperação + rerank + geração somam milissegundos e tokens cada um. Meça a latência p50/p95 e o custo por consulta, porque um sistema preciso que ninguém consegue pagar para rodar ainda é um sistema que falhou.</span></li>
         </ul>
       </article>
@@ -300,7 +300,7 @@
           <text x="782" y="96" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="10">suficiente</text>
           <text x="778" y="210" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="10">insuficiente</text>
         </svg>
-        <p class="cap">O portão é o jogo todo. Respostas só entram em produção quando a evidência recuperada sustenta cada afirmação; caso contrário, o sistema se abstém em vez de fabular. Remover o ramo de abstenção é a causa mais comum de RAG "confiantemente errado".</p>
+        <p class="cap">O portão é o jogo todo. Respostas só entram em produção quando a evidência recuperada sustenta cada afirmação; caso contrário, o sistema se abstém em vez de inventar. Remover o ramo de abstenção é a causa mais comum de RAG "confiantemente errado".</p>
       </div>
     </section>
 
@@ -327,7 +327,7 @@
             </tbody>
           </table>
         </div>
-        <p class="note">Uma bateria séria roda toda essa matriz em um golden set fixo a cada mudança e reprova o build quando qualquer linha regride — a mesma disciplina de bloquear-na-regressão que está por trás do meu trabalho de QA.</p>
+        <p class="note">Uma bateria séria roda toda essa matriz em um golden set fixo a cada mudança e reprova o build quando qualquer linha regride — a mesma disciplina de barrar o build na regressão que está por trás do meu trabalho de QA.</p>
       </article>
     </section>
 
@@ -339,7 +339,7 @@
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">A decisão de design</div>
-            <p>Em vez de gerar prosa e torcer para que as citações se anexem, o pipeline vincula cada segmento de resposta emitido ao trecho recuperado do qual ele veio. Se uma afirmação não tem trecho de apoio, ela não é escrita — o sistema se abstém nesse ponto em vez de inventar um.</p>
+            <p>Em vez de gerar o texto e torcer para que as citações se encaixem depois, o pipeline vincula cada trecho de resposta que emite à passagem recuperada de onde ele veio. Se uma afirmação não tem trecho de apoio, ela não é escrita — o sistema se abstém nesse ponto em vez de inventar um.</p>
           </div>
           <div class="blk">
             <div class="h">Por que é estrutural</div>
@@ -363,7 +363,7 @@
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">Por que aceitar este checklist de mim</div>
         <h3>Eu bloqueio minhas próprias releases com base em evidências.</h3>
-        <p class="subtle" style="margin-top:12px;max-width:66ch">A disciplina de abster-se-e-citar acima não é teoria. Meu QA OS pegou <b>15 CVEs altas/críticas</b> em seu próprio conjunto de dependências, <b>bloqueou sua própria release</b> e foi corrigido no mesmo dia para <b>3.759 testes passando em 13 de 13 portões</b>. Minha suíte de regressão SDET roda <b>37 de 37 specs, zero flakes, em 15,3 segundos</b>. Este site inteiro roda seu próprio QA — <b>mais de 100 verificações, limpo no axe</b> — e traz uma demo de avaliação ao vivo que você mesmo pode quebrar.</p>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">A disciplina de abster-se e citar descrita acima não é teoria. Meu QA OS pegou <b>15 CVEs altas/críticas</b> em seu próprio conjunto de dependências, <b>bloqueou sua própria release</b> e foi corrigido no mesmo dia para <b>3.759 testes passando em 13 de 13 portões</b>. Minha suíte de regressão SDET roda <b>37 de 37 specs, zero flakes, em 15,3 segundos</b>. Este site inteiro roda seu próprio QA — <b>mais de 100 verificações, limpo no axe</b> — e traz uma demo de avaliação ao vivo que você mesmo pode quebrar.</p>
         <div class="stack" style="margin-top:18px">
           <span class="chip"><b>15</b> CVEs pegas, release bloqueada</span>
           <span class="chip"><b>3.759</b> testes · 13/13 portões</span>
@@ -404,7 +404,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <div style="border:1px solid color-mix(in oklab,var(--rose) 40%,var(--line));border-radius:10px;padding:14px 16px;background:color-mix(in oklab,var(--rose) 7%,transparent)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose)">✕ recuperou o trecho errado</div>
-            <p style="font-size:13px;color:var(--dim);line-height:1.6;margin:8px 0 0">O melhor match foi a política de <b style="color:var(--ink)">consumidor</b> ("30 dias com garantia de reembolso"). O modelo respondeu <b style="color:var(--ink)">"Sim — 30 dias"</b> — fluente, confiante e errado para enterprise. Um humano dá uma olhada e coloca em produção.</p>
+            <p style="font-size:13px;color:var(--dim);line-height:1.6;margin:8px 0 0">A melhor correspondência foi a política de <b style="color:var(--ink)">consumidor</b> ("30 dias com garantia de reembolso"). O modelo respondeu <b style="color:var(--ink)">"Sim — 30 dias"</b> — fluente, confiante e errado para enterprise. Um humano dá uma olhada e coloca em produção.</p>
           </div>
           <div style="border:1px solid color-mix(in oklab,var(--green) 40%,var(--line));border-radius:10px;padding:14px 16px;background:color-mix(in oklab,var(--green) 7%,transparent)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--green)">✓ o portão pega, e então corrige</div>
@@ -440,7 +440,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Quais métricas de recuperação você mede — precisão e recall de contexto?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Precisão de contexto (os trechos recuperados eram pertinentes?) e recall de contexto (a recuperação deixou de fora um trecho que a resposta precisava?). Ambas rodam contra um conjunto de perguntas rotulado, de modo que uma mudança no retriever move um número em vez de uma sensação.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Precisão de contexto (os trechos recuperados eram pertinentes?) e recall de contexto (a recuperação deixou de fora um trecho que a resposta precisava?). Ambas rodam contra um conjunto de perguntas rotulado, de modo que uma mudança no retriever muda um número em vez de uma impressão.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Você conserta o pipeline de recuperação ou só o mede?</summary>

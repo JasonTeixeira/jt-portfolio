@@ -164,7 +164,7 @@
       "name": "¿Cómo encuentran la causa raíz de una prueba inestable?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Aíslo la prueba que falla, la ejecuto en orden y fuera de orden, e inspecciono el estado compartido, la temporización y los fixtures hasta que el fallo se reproduce a voluntad. Un flake que puedes reproducir es un bug que puedes corregir."
+        "text": "Aíslo la prueba que falla, la ejecuto en orden y fuera de orden, e inspecciono el estado compartido, la temporización y los fixtures hasta que el fallo se reproduce a voluntad. Un flake que puede reproducir es un bug que puede corregir."
       }
     },
     {
@@ -218,7 +218,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
     <div class="kick" style="color:var(--cyan)">Automatización de pruebas · protocolo anti-flake</div>
     <h1 style="margin-top:20px;max-width:22ch">Una suite inestable es peor que <em style="color:var(--rose)">no tener ninguna.</em></h1>
-    <p class="lede" style="margin-top:22px">Cuando un run en rojo es solo ruido, los ingenieros dejan de leerlo — y la única vez que el rojo significaba una regresión real, esta llega directo a producción. La inestabilidad no es una molestia; es el fracaso de todo el gate. Este es el protocolo que uso para llevar una suite de rojo-como-ruido a rojo-como-señal: diagnosticar las causas, poner en cuarentena y establecer una política de reintentos, corregir el aislamiento — y conservar las pruebas que usted ya escribió.</p>
+    <p class="lede" style="margin-top:22px">Cuando un run en rojo es solo ruido, los ingenieros dejan de leerlo — y la única vez que el rojo sí señala una regresión real, esta se cuela directa hasta producción. La inestabilidad no es una molestia; es el fracaso de todo el gate. Este es el protocolo que uso para llevar una suite de rojo-como-ruido a rojo-como-señal: diagnosticar las causas, poner en cuarentena y establecer una política de reintentos, corregir el aislamiento — y conservar las pruebas que usted ya escribió.</p>
     <div class="cred">
       <a class="pill link" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener"><span class="dot" style="background:var(--green)"></span>Prueba: <b>37/37, 0 flakes, 15,3 s</b> &nearr;</a>
       <a class="pill link" style="--ac:var(--cyan)" href="/es/eval.html"><span class="dot" style="background:var(--cyan)"></span>Este sitio ejecuta su <b>propio QA</b> &nearr;</a>
@@ -228,7 +228,7 @@
 
   <main class="wrap">
     <section style="padding-bottom:8px">
-      <div class="kick" style="color:var(--green)">Míralo &middot; automatización de pruebas y CI en ~45 s</div>
+      <div class="kick" style="color:var(--green)">Véalo &middot; automatización de pruebas y CI en ~45 s</div>
       <div style="margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 20px 60px rgba(0,0,0,0.4)">
         <video controls preload="none" playsinline poster="/assets/video/svc-test-ci-poster.webp" data-evt="watch-reduce-flakiness" style="display:block;width:100%;aspect-ratio:16/9;background:#09090B">
           <source src="/assets/video/svc-test-ci.mp4" type="video/mp4">
@@ -263,7 +263,7 @@
           </div>
           <div class="blk">
             <div class="h">El gate que no lo es</div>
-            <p>Un gate de CI solo lo protege si el rojo se cree. Una vez que es ruido, el gate es decorativo — está desplegando a la esperanza, con un dashboard verdoso que da falsa confianza.</p>
+            <p>Un gate de CI solo lo protege si el rojo se cree. Una vez que es ruido, el gate es decorativo — está desplegando a ciegas, confiando en la suerte, con un dashboard verdoso que da falsa confianza.</p>
           </div>
         </div>
       </article>
@@ -370,7 +370,7 @@
               <tr>
                 <th scope="row">Temporización y carreras</th>
                 <td>Pasa localmente, falla en CI; falla bajo carga; se «arregla» añadiendo un <span class="tell mono">sleep()</span>.</td>
-                <td>Reemplace las esperas fijas con <b>esperas basadas en estado</b> (web-first assertions, poll-until-condition). Nunca espere por el reloj — espere por la aplicación.</td>
+                <td>Reemplace las esperas fijas con <b>esperas basadas en estado</b> (web-first assertions, poll-until-condition). Nunca espere al reloj — espere a la aplicación.</td>
               </tr>
               <tr>
                 <th scope="row">Estado compartido</th>
@@ -384,7 +384,7 @@
               </tr>
               <tr>
                 <th scope="row">Entorno y datos</th>
-                <td>Depende de un tercero en vivo, una fila sembrada, una hora del día o el clima de la red.</td>
+                <td>Depende de un tercero en vivo, una fila sembrada, una hora del día o las condiciones de la red.</td>
                 <td><b>Controle el límite</b>: seeds deterministas, externos mockeados o probados por contrato, relojes congelados donde el comportamiento sea sensible al tiempo.</td>
               </tr>
             </tbody>
@@ -455,7 +455,7 @@
         </div>
         <div class="proofrow">
           <a class="plink" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">▸ la suite pública de Playwright en GitHub</a>
-          <a class="plink" style="--ac:var(--cyan)" href="/es/eval.html">▸ prueba la demo de eval en vivo</a>
+          <a class="plink" style="--ac:var(--cyan)" href="/es/eval.html">▸ pruebe la demo de eval en vivo</a>
         </div>
       </article>
     </section>
@@ -511,7 +511,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo encuentran la causa raíz de una prueba inestable?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Aíslo la prueba que falla, la ejecuto en orden y fuera de orden, e inspecciono el estado compartido, la temporización y los fixtures hasta que el fallo se reproduce a voluntad. Un flake que puedes reproducir es un bug que puedes corregir.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Aíslo la prueba que falla, la ejecuto en orden y fuera de orden, e inspecciono el estado compartido, la temporización y los fixtures hasta que el fallo se reproduce a voluntad. Un flake que puede reproducir es un bug que puede corregir.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Con qué nos quedamos al final que evite que el flake regrese?</summary>

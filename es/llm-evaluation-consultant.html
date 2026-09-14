@@ -101,7 +101,7 @@
       "name": "¿Qué es, concretamente, una evaluación de LLM?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Una forma repetible de puntuar la salida de su modelo — precisión, fidelidad, seguridad — frente a casos conocidos como buenos, de modo que un cambio de prompt o de modelo que empeore las cosas se detecte antes de que llegue a producción."
+        "text": "Una forma repetible de puntuar la salida de su modelo — precisión, fidelidad, seguridad — frente a casos de referencia validados, de modo que un cambio de prompt o de modelo que empeore las cosas se detecte antes de que llegue a producción."
       }
     },
     {
@@ -141,7 +141,7 @@
       "name": "¿La puntuación con LLM como juez es lo bastante fiable para poner un gate?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No por sí sola. Los prompts del juez se validan contra casos etiquetados por humanos, y el gate se apoya en verificaciones deterministas — coincidencia exacta, presencia de citas, esquema, detección de rechazo — siempre que la respuesta lo permita, reservando el juez para los casos genuinamente subjetivos."
+        "text": "No por sí sola. Los prompts del juez se validan con casos etiquetados por humanos, y el gate se apoya en verificaciones deterministas — coincidencia exacta, presencia de citas, esquema, detección de rechazo — siempre que la respuesta lo permita, reservando el juez para los casos genuinamente subjetivos."
       }
     },
     {
@@ -173,7 +173,7 @@
       "name": "¿Cuánto tarda en estar activo el primer gate de calidad?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "El primer gate en funcionamiento — un golden set pequeño conectado a CI y bloqueando sobre un umbral real — llega pronto, y la suite se profundiza a partir de ahí. Verá un build ponerse en rojo ante un mal cambio antes de que termine el trabajo, no una diapositiva sobre ello."
+        "text": "El primer gate en funcionamiento — un golden set pequeño conectado a CI y bloqueando sobre un umbral real — llega pronto, y la suite gana profundidad a partir de ahí. Verá un build ponerse en rojo ante un mal cambio antes de que termine el trabajo, no una diapositiva sobre ello."
       }
     }
   ]
@@ -219,7 +219,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
     <div class="kick" style="color:var(--cyan)">Consultor de evaluación de LLM</div>
     <h1 style="margin-top:20px;max-width:20ch">La suite de evaluación que decide <em style="color:var(--cyan)">si su modelo llega a producción.</em></h1>
-    <p class="lede" style="margin-top:22px">Un servicio de evaluación de LLM no es un informe: es un sistema en funcionamiento. Yo construyo el golden dataset, la rúbrica de puntuación y el gate de CI que califica cada cambio de modelo o de prompt frente a él, y luego <em>bloquea el merge</em> cuando la calidad registra una regresión. Puede ver una versión funcional de ese juez calificar una respuesta en vivo, ahora mismo, antes de hablar conmigo.</p>
+    <p class="lede" style="margin-top:22px">Un servicio de evaluación de LLM no es un informe: es un sistema en funcionamiento. Yo construyo el golden dataset, la rúbrica de puntuación y el gate de CI que califica cada cambio de modelo o de prompt frente a él, y luego <em>bloquea el merge</em> cuando la calidad registra una regresión. Puede ver cómo una versión funcional de ese juez califica una respuesta en vivo, ahora mismo, antes de hablar conmigo.</p>
     <div class="cred">
       <a class="pill link" style="--ac:var(--green)" href="/es/eval.html"><span class="dot" style="background:var(--green)"></span>Demo del juez en vivo: <b>eval.html</b> &rarr;</a>
       <a class="pill link" style="--ac:var(--cyan)" href="/es/eval.html#byo"><span class="dot" style="background:var(--cyan)"></span>Califique la respuesta de <b>su</b> IA &rarr;</a>
@@ -229,7 +229,7 @@
 
   <main class="wrap">
     <section style="padding-bottom:8px">
-      <div class="kick" style="color:var(--cyan)">Ver &middot; la cuña de la evaluación en ~45s</div>
+      <div class="kick" style="color:var(--cyan)">Ver &middot; el ángulo de la evaluación en ~45s</div>
       <div style="margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 20px 60px rgba(0,0,0,0.4)">
         <video controls preload="none" playsinline poster="/assets/video/svc-llm-eval-poster.webp" data-evt="watch-llm-eval-consultant" style="display:block;width:100%;aspect-ratio:16/9;background:#09090B">
           <source src="/assets/video/svc-llm-eval.mp4" type="video/mp4">
@@ -245,23 +245,23 @@
         <div class="stat"><div class="n">1</div><div class="l">gate de CI que puede bloquear un merge</div></div>
         <div class="stat"><div class="n">100%</div><div class="l">cobertura de citas en el build de RAG*</div></div>
       </div>
-      <p class="note">*El dashboard de investigación con RAG cita el <b>100% de sus afirmaciones por construcción</b> — no hay ninguna ruta de código que genere una frase sin cita. Verificado en <a href="/es/case-studies.html" style="color:var(--cyan)">case-studies.html</a>. Cualquier otra cifra de esta página es un hecho de diseño del método, no un promedio de clientes.</p>
+      <p class="note">*El dashboard de investigación con RAG cita el <b>100% de sus afirmaciones por construcción</b> — no hay ninguna ruta de código que genere una frase sin cita. Verificado en <a href="/es/case-studies.html" style="color:var(--cyan)">case-studies.html</a>. Cualquier otra cifra de esta página es una consecuencia del diseño del método, no un promedio de clientes.</p>
     </section>
 
     <!-- THE RUBRIC MATRIX -->
     <section>
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">La rúbrica · lo que puntúa la demo en vivo</div>
-        <h3>Cuatro dimensiones, cada una con lo que atrapa y una puntuación.</h3>
+        <h3>Cuatro dimensiones, cada una con aquello que detecta y su puntuación.</h3>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Cada respuesta que ve el juez se califica en los mismos cuatro ejes. Dos son deterministas (aprueban o no); dos usan un LLM como juez con una rúbrica explícita, de modo que la puntuación es explicable, no una corazonada. Esta es la rúbrica exacta que hay detrás de la <a href="/es/eval.html" style="color:var(--cyan)">demo en vivo</a>.</p>
         <div class="matrix-wrap">
           <div class="matrix-scroll" tabindex="0" role="region" aria-label="Tabla comparativa — desplácese horizontalmente">
             <table class="doc">
-              <caption>Rúbrica de evaluación — dimensión × fallo atrapado × método de puntuación</caption>
+              <caption>Rúbrica de evaluación — dimensión × fallo detectado × método de puntuación</caption>
               <thead>
                 <tr>
                   <th scope="col">Dimensión</th>
-                  <th scope="col">Qué atrapa</th>
+                  <th scope="col">Qué detecta</th>
                   <th scope="col">Cómo se puntúa</th>
                 </tr>
               </thead>
@@ -284,14 +284,14 @@
                 <tr>
                   <th scope="row">Calidad de respuesta</th>
                   <td>Respuestas técnicamente fundamentadas pero inútiles — fuera de intención, incompletas, o que ignoran la pregunta real.</td>
-                  <td><b>LLM como juez</b> sobre relevancia, completitud y franqueza, puntuado contra una rúbrica escrita.</td>
+                  <td><b>LLM como juez</b> sobre relevancia, completitud y franqueza, puntuado según una rúbrica escrita.</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
         <div class="proofrow">
-          <a class="plink" style="--ac:var(--green)" href="/es/eval.html#byo">▸ pegue la respuesta de su IA y véala calificada</a>
+          <a class="plink" style="--ac:var(--green)" href="/es/eval.html#byo">▸ pegue la respuesta de su IA y vea cómo se califica</a>
           <span class="verified">la demo ejecuta esta rúbrica sobre entrada real, en vivo</span>
         </div>
       </article>
@@ -301,7 +301,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">La metodología · golden set → juez → gate</div>
-        <h3>Cómo se atrapa una regresión antes de que llegue a producción.</h3>
+        <h3>Cómo se detecta una regresión antes de que llegue a producción.</h3>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Un cambio de modelo o de prompt entra en CI. Se ejecuta contra un <b>golden set</b> curado de casos representativos. Cada salida se puntúa con el juez LLM <em>y</em> con las verificaciones deterministas. Si alguna dimensión cae por debajo de su piso, el gate bloquea el merge — el cambio nunca llega a los usuarios. Si todo pasa, llega a producción.</p>
 
         <figure class="flow">
@@ -368,8 +368,8 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">La prueba · este gate ya bloqueó una versión</div>
-        <h3>Una historia rojo → verde de la que puedo mostrarle los recibos.</h3>
-        <p class="subtle" style="margin-top:12px;max-width:66ch">En mi propia plataforma de QA, <b>nexural-qa-os</b>, el gate hizo exactamente lo que se supone que hace un gate: atrapó <b>15 CVE altas/críticas</b> y <b>bloqueó su propia versión</b>. Ese mismo día se parchearon los problemas y el sistema se puso en verde — <b>3.759 pruebas pasando, 13 de 13 gates en claro</b>. La evidencia son dos ejecuciones capturadas, antes y después.</p>
+        <h3>Una historia rojo → verde con pruebas que puedo enseñarle.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">En mi propia plataforma de QA, <b>nexural-qa-os</b>, el gate hizo exactamente lo que se supone que hace un gate: detectó <b>15 CVE altas/críticas</b> y <b>bloqueó su propia versión</b>. Ese mismo día se parchearon los problemas y el sistema se puso en verde — <b>3.759 pruebas superadas, 13 de 13 gates en verde</b>. La evidencia son dos ejecuciones capturadas, antes y después.</p>
         <div class="grid" style="margin-top:20px">
           <div class="blk">
             <div class="h" style="color:var(--rose)">Antes — versión bloqueada</div>
@@ -382,8 +382,8 @@
           <div class="blk">
             <div class="h" style="color:var(--green)">Después — mismo día, en verde</div>
             <ul>
-              <li><b>3.759 pruebas</b> pasando</li>
-              <li><b>13 / 13</b> gates en claro</li>
+              <li><b>3.759 pruebas</b> superadas</li>
+              <li><b>13 / 13</b> gates en verde</li>
               <li>Parcheado, re-ejecutado, enviado</li>
             </ul>
           </div>
@@ -413,7 +413,7 @@
           </div>
           <div class="blk">
             <div class="h">Flakiness bajo control (fintech)</div>
-            <p>HighStrike (un puesto previo a tiempo completo, autoreportado): tasa de flakiness reducida del <b>10% a menos del 1%</b> en <b>más de 500 pruebas</b> sobre flujos de trading en vivo.</p>
+            <p>HighStrike (un puesto previo a tiempo completo, autodeclarado): tasa de flakiness reducida del <b>10% a menos del 1%</b> en <b>más de 500 pruebas</b> sobre flujos de trading en vivo.</p>
           </div>
           <div class="blk">
             <div class="h">Escala (Fortune 50)</div>
@@ -447,7 +447,7 @@
       <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Preguntas, respondidas.</h2>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué es, concretamente, una evaluación de LLM?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Una forma repetible de puntuar la salida de su modelo — precisión, fidelidad, seguridad — frente a casos conocidos como buenos, de modo que un cambio de prompt o de modelo que empeore las cosas se detecte antes de que llegue a producción.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Una forma repetible de puntuar la salida de su modelo — precisión, fidelidad, seguridad — frente a casos de referencia validados, de modo que un cambio de prompt o de modelo que empeore las cosas se detecte antes de que llegue a producción.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cuántos casos de prueba se necesitan para empezar?</summary>
@@ -467,7 +467,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿La puntuación con LLM como juez es lo bastante fiable para poner un gate?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">No por sí sola. Los prompts del juez se validan contra casos etiquetados por humanos, y el gate se apoya en verificaciones deterministas — coincidencia exacta, presencia de citas, esquema, detección de rechazo — siempre que la respuesta lo permita, reservando el juez para los casos genuinamente subjetivos.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">No por sí sola. Los prompts del juez se validan con casos etiquetados por humanos, y el gate se apoya en verificaciones deterministas — coincidencia exacta, presencia de citas, esquema, detección de rechazo — siempre que la respuesta lo permita, reservando el juez para los casos genuinamente subjetivos.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo encaja el gate de evaluación en el CI que ya ejecuto?</summary>
@@ -483,7 +483,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cuánto tarda en estar activo el primer gate de calidad?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">El primer gate en funcionamiento — un golden set pequeño conectado a CI y bloqueando sobre un umbral real — llega pronto, y la suite se profundiza a partir de ahí. Verá un build ponerse en rojo ante un mal cambio antes de que termine el trabajo, no una diapositiva sobre ello.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">El primer gate en funcionamiento — un golden set pequeño conectado a CI y bloqueando sobre un umbral real — llega pronto, y la suite gana profundidad a partir de ahí. Verá un build ponerse en rojo ante un mal cambio antes de que termine el trabajo, no una diapositiva sobre ello.</div>
       </details>
     </section>
   </main>

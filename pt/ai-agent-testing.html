@@ -204,7 +204,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
     <div class="kick" style="color:var(--cyan)">Teste de agentes de IA · como testar LangGraph &amp; sistemas agênticos</div>
     <h1 style="margin-top:20px;max-width:22ch">Teste de agentes de IA: o que quebra <em style="color:var(--cyan)">em produção.</em></h1>
-    <p class="lede" style="margin-top:22px">Agentes não falham do jeito que funções falham. Um teste unitário verifica uma entrada contra uma saída; um agente planeja, chama ferramentas, lembra e faz loops — então os bugs vivem <em>entre</em> os turnos, na fronteira das ferramentas e nas partes que não são determinísticas. Esta página mapeia a superfície de falha que os testes unitários não conseguem enxergar, e as sondas que capturam cada uma antes que seus usuários o façam.</p>
+    <p class="lede" style="margin-top:22px">Agentes não falham do jeito que funções falham. Um teste unitário verifica uma entrada contra uma saída; um agente planeja, chama ferramentas, lembra e faz loops — então os bugs se escondem <em>entre</em> os turnos, na fronteira das ferramentas e nas partes que não são determinísticas. Esta página mapeia a superfície de falha que os testes unitários não conseguem enxergar, e as sondas que capturam cada uma antes que seus usuários as descubram.</p>
     <div class="cred">
       <a class="pill link" style="--ac:var(--green)" href="/pt/eval.html"><span class="dot" style="background:var(--green)"></span>Demo de avaliação ao vivo: <b>avalie uma resposta</b> &rarr;</a>
       <a class="pill link" style="--ac:var(--purple)" href="services/llm-evaluation-qa.html"><span class="dot" style="background:var(--purple)"></span>Serviço: <b>Avaliação de LLM &amp; QA</b> &rarr;</a>
@@ -230,7 +230,7 @@
     <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
       <div class="kick" style="color:var(--purple)">A superfície de falha</div>
       <h2 style="margin-top:12px">O que os testes unitários não pegam — e o que captura.</h2>
-      <p class="subtle" style="margin-top:12px;max-width:64ch">Cada linha é uma falha que um teste unitário de turno único estruturalmente não consegue observar, associada à sonda que consegue.</p>
+      <p class="subtle" style="margin-top:12px;max-width:64ch">Cada linha é uma falha que um teste unitário de turno único é estruturalmente incapaz de observar, associada à sonda que a captura.</p>
       <div class="tscroll" tabindex="0" role="region" aria-label="Tabela comparativa — role horizontalmente">
         <table class="doc">
           <caption>Superfície de falha do agente → como um teste unitário deixa passar → a sonda que captura</caption>
@@ -275,7 +275,7 @@
           </tbody>
         </table>
       </div>
-      <p class="note">Método, não aprisionamento a fornecedor. As mesmas três famílias — golden probes multi-turno, uma bateria de red-team e execuções de repetição/robustez — se aplicam ao LangGraph, a um loop personalizado ou a um framework de agente pronto.</p>
+      <p class="note">Método, não dependência de fornecedor. As mesmas três famílias — golden probes multi-turno, uma bateria de red-team e execuções de repetição/robustez — se aplicam ao LangGraph, a um loop personalizado ou a um framework de agente pronto.</p>
     </section>
 
     <!-- THE DIAGRAM -->
@@ -382,7 +382,7 @@
             <div class="h">3 · Retentativa / robustez</div>
             <ul>
               <li>Rode cada sonda <b>K vezes</b>, pontue pela taxa de aprovação — instável ≠ aprovado</li>
-              <li>Parafraseie a mesma intenção; o agente precisa se manter</li>
+              <li>Parafraseie a mesma intenção; o agente precisa se manter firme</li>
               <li>Limite as etapas do loop e verifique uma terminação limpa</li>
             </ul>
           </div>
@@ -436,7 +436,7 @@
     </section>
     <!-- CTA -->
     <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
-      <h2>Preocupado que um agente específico seja publicado quebrado?</h2>
+      <h2>Preocupado que um agente específico vá para produção quebrado?</h2>
       <p class="subtle" style="margin:14px auto 0;max-width:48ch">Agende uma call e definiremos o escopo de uma suíte de sondas para o seu agente — ou cole a resposta da sua IA na demo de avaliação ao vivo e veja-a ser avaliada agora mesmo.</p>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
         <a href="/pt/book.html" class="cta" data-evt="agent-book">Agendar uma call &rarr;</a>

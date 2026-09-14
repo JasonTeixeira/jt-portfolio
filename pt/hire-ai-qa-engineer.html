@@ -118,7 +118,7 @@
       "name": "Como isso é diferente de um QA/SDET comum?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "O QA padrão verifica software determinístico. Os recursos de IA são não determinísticos, então precisam de avaliação — a resposta é fiel, citada, segura? — além dos testes tradicionais. Eu faço as duas metades."
+        "text": "O QA padrão verifica software determinístico. Os recursos de IA são não determinísticos, então precisam de avaliação — a resposta é fiel, citada, segura? — além dos testes tradicionais. Eu cubro as duas frentes."
       }
     },
     {
@@ -134,7 +134,7 @@
       "name": "Isso é um contrato ou uma contratação em tempo integral?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Um contrato, por padrão — com escopo definido por um resultado, não por uma cadeira. Se mais tarde você quiser cobertura contínua, podemos migrar para um retainer, mas nada obriga uma decisão de headcount."
+        "text": "Um contrato, por padrão — com escopo definido por um resultado, não por um cargo. Se mais tarde você quiser cobertura contínua, podemos migrar para um retainer, mas nada obriga uma decisão de headcount."
       }
     },
     {
@@ -142,7 +142,7 @@
       "name": "Com que rapidez você se ambienta à nossa stack e ao nosso código?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A ambientação começa no primeiro dia: eu leio o seu repositório, os prompts e os testes existentes antes de escrever qualquer coisa. Encaixar no modo como a sua stack já funciona importa mais do que impor uma nova."
+        "text": "A ambientação começa no primeiro dia: eu leio o seu repositório, os prompts e os testes existentes antes de escrever qualquer coisa. Adaptar-me ao modo como a sua stack já funciona importa mais do que impor uma nova."
       }
     },
     {
@@ -150,7 +150,7 @@
       "name": "Com quais ferramentas e frameworks você trabalha?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Pytest e Playwright para a camada de testes, LangGraph, CrewAI e n8n para orquestração de agentes e workflows, e harnesses de LLM-as-judge para a camada de avaliação. Eu trabalho contra o seu modelo em vez de substituí-lo pelo meu."
+        "text": "Pytest e Playwright para a camada de testes, LangGraph, CrewAI e n8n para orquestração de agentes e workflows, e harnesses de LLM-as-judge para a camada de avaliação. Eu trabalho com o seu modelo em vez de substituí-lo pelo meu."
       }
     },
     {
@@ -282,7 +282,7 @@
     <section>
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">A lacuna de capacidade · quem faz o quê</div>
-        <h3>Um construtor de IA, um engenheiro de QA e eu não somos a mesma contratação.</h3>
+        <h3>Um construtor de IA, um engenheiro de QA e eu somos contratações diferentes.</h3>
         <p class="subtle" style="margin-top:14px;max-width:64ch">A maioria das equipes já tem alguém que consegue construir um recurso de LLM e, talvez, alguém que consegue escrever testes de UI. Nenhum dos dois, sozinho, fecha o ciclo da qualidade de IA. Aqui está a divisão honesta.</p>
         <div class="matrix-wrap" tabindex="0" role="region" aria-label="Comparação de capacidades: construtor de IA vs QA generalista vs engenheiro de QA de IA">
           <table class="matrix">
@@ -337,8 +337,8 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">O mecanismo · o gate de avaliação</div>
-        <h3>Toda resposta de IA passa por um gauntlet antes de um cliente vê-la.</h3>
-        <p class="subtle" style="margin-top:14px;max-width:64ch">Esta é a forma do sistema que eu construo. A saída da sua IA não vai para produção na base da fé — ela é pontuada contra verificações de segurança e qualidade, e um gate de CI toma uma decisão binária: libera, ou bloqueia o lançamento e diz exatamente qual verificação falhou.</p>
+        <h3>Toda resposta de IA passa por um pente-fino antes de um cliente vê-la.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Esta é a forma do sistema que eu construo. A saída da sua IA não vai para produção na base da fé — ela é avaliada em relação a verificações de segurança e qualidade, e um gate de CI toma uma decisão binária: libera, ou bloqueia o lançamento e diz exatamente qual verificação falhou.</p>
         <div class="diagram">
           <svg viewBox="0 0 900 300" role="img" aria-labelledby="dg-title dg-desc" preserveAspectRatio="xMidYMid meet">
             <title id="dg-title">O fluxo do gate de avaliação de IA</title>
@@ -420,8 +420,8 @@
         <p class="subtle" style="margin-top:14px;max-width:64ch">Todo número aqui está ligado à sua evidência. Se eu não consigo mostrar, eu não digo.</p>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
-            <div class="h">Meu próprio QA OS bloqueou o seu próprio lançamento</div>
-            <p>Um sistema de QA que construí pegou <b>15 CVEs alto/crítico</b>, se recusou a ir para produção e foi corrigido no mesmo dia para <b>3.759 testes</b> passando em <b>13 de 13</b> gates. O antes e o depois estão ambos capturados.</p>
+            <div class="h">Meu próprio QA OS bloqueou o próprio lançamento</div>
+            <p>Um sistema de QA que construí pegou <b>15 CVEs alto/crítico</b>, se recusou a ir para produção e foi corrigido no mesmo dia, chegando a <b>3.759 testes</b> passando em <b>13 de 13</b> gates. O antes e o depois estão ambos capturados.</p>
             <div class="proofrow" style="margin-top:14px;padding-top:14px">
               <a class="plink" style="--ac:var(--rose)" href="captures/nexural-qa-os.html">&#9656; bloqueado (antes)</a>
               <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">&#9656; verde (depois)</a>
@@ -463,8 +463,8 @@
     </section>
     <!-- CTA -->
     <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
-      <h2>Preocupado com um recurso de IA que está prestes a lançar?</h2>
-      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Agende uma conversa e vamos definir o escopo do gate de avaliação que o seu recurso precisa — ou avalie uma das respostas da sua IA ao vivo, agora mesmo, e veja a disciplina por si só.</p>
+      <h2>Preocupado com um recurso de IA que você está prestes a lançar?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Agende uma conversa e vamos definir o escopo do gate de avaliação que o seu recurso precisa — ou avalie uma das respostas da sua IA ao vivo, agora mesmo, e veja a disciplina você mesmo.</p>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
         <a href="/pt/book.html" class="cta" data-evt="hire-aiqa-book">Agende uma conversa &rarr;</a>
         <a href="/pt/eval.html#byo" class="cta ghost">Avalie a sua própria IA ao vivo</a>
@@ -484,7 +484,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como isso é diferente de um QA/SDET comum?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">O QA padrão verifica software determinístico. Os recursos de IA são não determinísticos, então precisam de avaliação — a resposta é fiel, citada, segura? — além dos testes tradicionais. Eu faço as duas metades.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">O QA padrão verifica software determinístico. Os recursos de IA são não determinísticos, então precisam de avaliação — a resposta é fiel, citada, segura? — além dos testes tradicionais. Eu cubro as duas frentes.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Com que rapidez você consegue começar e ver resultados?</summary>
@@ -492,15 +492,15 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Isso é um contrato ou uma contratação em tempo integral?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Um contrato, por padrão — com escopo definido por um resultado, não por uma cadeira. Se mais tarde você quiser cobertura contínua, podemos migrar para um retainer, mas nada obriga uma decisão de headcount.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Um contrato, por padrão — com escopo definido por um resultado, não por um cargo. Se mais tarde você quiser cobertura contínua, podemos migrar para um retainer, mas nada obriga uma decisão de headcount.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Com que rapidez você se ambienta à nossa stack e ao nosso código?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A ambientação começa no primeiro dia: eu leio o seu repositório, os prompts e os testes existentes antes de escrever qualquer coisa. Encaixar no modo como a sua stack já funciona importa mais do que impor uma nova.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A ambientação começa no primeiro dia: eu leio o seu repositório, os prompts e os testes existentes antes de escrever qualquer coisa. Adaptar-me ao modo como a sua stack já funciona importa mais do que impor uma nova.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Com quais ferramentas e frameworks você trabalha?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Pytest e Playwright para a camada de testes, LangGraph, CrewAI e n8n para orquestração de agentes e workflows, e harnesses de LLM-as-judge para a camada de avaliação. Eu trabalho contra o seu modelo em vez de substituí-lo pelo meu.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Pytest e Playwright para a camada de testes, LangGraph, CrewAI e n8n para orquestração de agentes e workflows, e harnesses de LLM-as-judge para a camada de avaliação. Eu trabalho com o seu modelo em vez de substituí-lo pelo meu.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Você trabalha diretamente no nosso repositório e CI?</summary>
