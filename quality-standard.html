@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Quality Standard &amp; SLA — Sage Ideas</title>
-<meta name="description" content="The Sage Ideas quality standard: what &quot;done&quot; means — verified by a re-runnable command, what a proof report contains, response-time SLA per tier, the quality floor, and handoff/rollback guarantees.">
+<meta name="description" content="The Sage Ideas quality standard: how done is verified by a re-runnable command — what a proof report contains, the SLA per tier, and rollback guarantees.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://agency.sageideas.dev/quality-standard.html">
 <meta property="og:type" content="website">
@@ -142,7 +142,7 @@
     <section style="padding-top:clamp(20px,3vw,32px);padding-bottom:0">
       <article class="case" style="--ac:var(--green)">
         <div class="tag">Definition of done</div>
-        <h3>"Done" is a command you can re-run — not a status in a meeting.</h3>
+        <h2>"Done" is a command you can re-run — not a status in a meeting.</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">A deliverable is done when three things are true: it passes its eval and test gate in CI, its proof report is generated, and the runbook is handed over. If a claim can't be shown with an artifact you can open, it isn't done — it's a promise, and promises aren't what you're paying for.</p>
       </article>
     </section>
@@ -150,7 +150,7 @@
     <section style="padding-top:18px">
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">The artifact</div>
-        <h3>What a proof report contains</h3>
+        <h2>What a proof report contains</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch">Every build ships with a proof report — plain enough for a PM, backed enough for an engineer:</p>
         <ul style="margin:14px 0 0;padding-left:20px;font-size:14px;line-height:1.8;color:var(--dim);max-width:66ch">
           <li>The eval scores — faithfulness, prompt-injection, regression, safety — and the thresholds each must clear</li>
@@ -185,7 +185,7 @@
     <section class="rule">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">Handoff &amp; rollback</div>
-        <h3>You can run it without me — that's the test of a real handoff.</h3>
+        <h2>You can run it without me — that's the test of a real handoff.</h2>
         <ul style="margin:14px 0 0;padding-left:20px;font-size:14px;line-height:1.8;color:var(--dim);max-width:66ch">
           <li>Everything lands in your repo, your CI, your infrastructure — with a documented runbook</li>
           <li>A rollback path for every change that touches production</li>
@@ -198,7 +198,7 @@
     <section class="rule">
       <article class="case" style="--ac:var(--amber)">
         <div class="tag">Honest limits</div>
-        <h3>What I guarantee — and what I don't</h3>
+        <h2>What I guarantee — and what I don't</h2>
         <p class="subtle" style="margin-top:12px;max-width:66ch"><b>I guarantee</b> the scope in writing, the proof report, the gate, the clean handoff, and responses within the SLA above. <b>I don't guarantee</b> a model will never be wrong, or that a metric hits a target before the work is done — anyone who promises perfect AI is selling you the demo again. What I guarantee instead is that you'll always know the truth, measured, <em>before</em> it reaches your customer.</p>
       </article>
     </section>
