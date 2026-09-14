@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reduza a Instabilidade dos Testes: de 10% para Menos de 1%</title>
+<meta name="description" content="Reduza a instabilidade dos testes para que vermelho signifique uma regressão real. O protocolo anti-flake: diagnosticar fontes, política de quarentena + retry, corrigir isolamento. Prova, não promessas.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/reduce-test-flakiness.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Reduza a Instabilidade dos Testes: de 10% para Menos de 1%">
+<meta property="og:description" content="Uma suíte instável é pior do que nenhuma — quando o vermelho é ruído, regressões reais chegam à produção. O protocolo anti-flake que levou a HighStrike de 10% para menos de 1%, mantendo a suíte intacta.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/reduce-test-flakiness.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og-reduce-test-flakiness.png">
+<meta property="og:site_name" content="Sage Ideas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SageideasAI">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260909a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* metric strip */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:1px; margin-top:34px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--line); }
+  .stat { background:var(--card); padding:22px clamp(14px,2.4vw,24px); }
+  .stat .n { font-family:var(--serif); font-size:clamp(1.9rem,4.4vw,2.6rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); margin-top:9px; line-height:1.5; text-transform:uppercase; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip { font-family:var(--mono); font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .chip b { color:var(--ac); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* flake-source matrix */
+  .matrix-scroll { margin-top:22px; overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+  table.matrix { width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px; }
+  table.matrix caption { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); padding:16px 18px 0; }
+  table.matrix th, table.matrix td { text-align:left; padding:14px 18px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.62; }
+  table.matrix thead th { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  table.matrix tbody th { font-family:var(--mono); font-weight:600; color:var(--cyan); font-size:12.5px; white-space:nowrap; }
+  table.matrix td { color:var(--dim); }
+  table.matrix td b { color:var(--ink); font-weight:600; }
+  table.matrix .tell { color:var(--amber); }
+  table.matrix tr:last-child td, table.matrix tr:last-child th { border-bottom:none; }
+
+  /* diagram */
+  .diagram { margin-top:22px; border:1px solid var(--line); border-radius:16px; background:#0B0B0D; padding:clamp(18px,3vw,30px); }
+  .diagram svg { width:100%; height:auto; display:block; }
+  .diagram figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:16px; line-height:1.6; text-align:center; }
+  .legend { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-top:12px; font-family:var(--mono); font-size:10.5px; color:var(--dim); }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  @media (prefers-reduced-motion: reduce) { .flow-packet { display:none; } }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"Reduza a Instabilidade dos Testes: de 10% para Menos de 1%","about":"Um protocolo para reduzir a instabilidade dos testes em CI para que um run vermelho sinalize uma regressão real: diagnosticar fontes de flake, colocar em quarentena e definir uma política de retry, corrigir o isolamento e manter a suíte existente.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/reduce-test-flakiness.html","image":"https://agency.sageideas.dev/assets/og-reduce-test-flakiness.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Serviços","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Reduzir a Instabilidade dos Testes","item":"https://agency.sageideas.dev/reduce-test-flakiness.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "O que realmente causa testes instáveis?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Quase sempre estado compartilhado, timing e condições de corrida, ou dependências de ordem de execução dos testes — não falta de sorte. Eu diagnostico a fonte em vez de aplicar retry indiscriminadamente."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Você só adiciona retries?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Retries são um paliativo que esconde o sinal. Eu instalo uma faixa de quarentena e uma política de retry enquanto corrijo a causa raiz — isolamento, esperas, fixtures."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vocês vão reconstruir toda a nossa suíte?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Raramente. Manter sua suíte existente e torná-la confiável é mais rápido e mais barato; uma reconstrução é o último recurso, não o primeiro movimento."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Que resultado posso esperar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Uma suíte rápida e estável onde vermelho significa vermelho. Em um cargo full-time anterior, reduzi a taxa de flake de uma suíte em produção de ~10% para menos de 1% e o tempo de execução de 45 para 8 minutos (auto-reportado)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Como você mede nossa taxa real de flake antes de começar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Eu re-executo sua suíte em muitas passagens de CI sobre código inalterado e conto os testes que alternam entre passar e falhar. Isso dá uma taxa real de flake e uma lista ranqueada dos piores infratores antes de eu tocar em qualquer coisa."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Qual é a política de quarentena — testes instáveis são desabilitados?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Testes instáveis vão para uma faixa de quarentena, não para o lixo. Eles continuam rodando e reportando, mas param de bloquear o pipeline principal enquanto corrijo a causa raiz, e depois voltam à ativa quando se mostram estáveis."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quanto tempo leva para ficar abaixo de um por cento?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Depende do tamanho da suíte e de quão profundas são as fontes de flake. Eu coloco em quarentena cedo para que seu pipeline se torne confiável rápido, e depois trabalho as correções de causa raiz em ordem de prioridade."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Isso funciona com nossa suíte existente ou exige uma reescrita?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Funciona com sua suíte existente. Seja usando Playwright, Pytest ou outro framework, eu estabilizo o que você já tem em vez de começar do zero — uma reconstrução é o último recurso."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Como você encontra a causa raiz de um teste instável?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Eu isolo o teste que falha, executo dentro e fora de ordem e inspeciono estado compartilhado, timing e fixtures até a falha reproduzir sob demanda. Um flake que você consegue reproduzir é um bug que você consegue corrigir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "O que ficamos ao final que impede o flake de voltar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Uma suíte estabilizada mais as proteções que a mantêm assim — uma faixa de quarentena, uma política de retry e padrões de isolamento que sua equipe aplica a novos testes. O sinal permanece confiável depois que eu saio."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/reduce-test-flakiness.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/reduce-test-flakiness.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/reduce-test-flakiness.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/reduce-test-flakiness.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/reduce-test-flakiness.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/reduce-test-flakiness.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/pt/index.html" class="site-nav-brand" aria-label="Jason Teixeira — início">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/pt/approach.html" class="site-nav-link">Abordagem</a>
+      <a href="/pt/services.html" class="site-nav-link">Serviços</a>
+      <a href="/pt/case-studies.html" class="site-nav-link">Trabalhos</a>
+      <a href="/pt/proof.html" class="site-nav-link">Prova</a>
+      <a href="/pt/resources.html" class="site-nav-link">Recursos</a>
+      <a href="/pt/lab.html" class="site-nav-link">Lab</a>
+      <a href="/pt/build.html" class="site-nav-link">Definir um projeto</a>
+      <a href="/pt/docs.html" class="site-nav-link">Docs</a>
+      <a href="/automations/" class="site-nav-link" data-evt="nav-automations">Automações</a>
+      <a href="/pt/field-notes.html" class="site-nav-link">Notas de Campo</a>
+      <span class="nav-social" aria-label="Redes sociais" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="E-mail" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="/pt/book.html" class="btn-solid green site-nav-cta" data-evt="nav-book">Agende uma call &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Automação de testes · protocolo anti-flake</div>
+    <h1 style="margin-top:20px;max-width:22ch">Uma suíte instável é pior que <em style="color:var(--rose)">nenhuma suíte.</em></h1>
+    <p class="lede" style="margin-top:22px">Quando um run vermelho é só ruído, os engenheiros param de lê-lo — e na única vez em que o vermelho significava uma regressão real, ela passa direto para a produção. A instabilidade não é um incômodo; é a falha de todo o portão. Este é o protocolo que uso para levar uma suíte de vermelho-como-ruído para vermelho-como-sinal: diagnosticar as fontes, colocar em quarentena e definir uma política de retry, corrigir o isolamento — e manter os testes que você já escreveu.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener"><span class="dot" style="background:var(--green)"></span>Prova: <b>37/37, 0 flakes, 15,3s</b> &nearr;</a>
+      <a class="pill link" style="--ac:var(--cyan)" href="/pt/eval.html"><span class="dot" style="background:var(--cyan)"></span>Este site roda seu <b>próprio QA</b> &nearr;</a>
+      <a class="pill link" style="--ac:var(--purple)" href="services/test-automation-ci.html"><span class="dot" style="background:var(--purple)"></span>Serviço: <b>Automação de testes &amp; CI</b> &nearr;</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section style="padding-bottom:8px">
+      <div class="kick" style="color:var(--green)">Assista &middot; automação de testes &amp; CI em ~45s</div>
+      <div style="margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 20px 60px rgba(0,0,0,0.4)">
+        <video controls preload="none" playsinline poster="/assets/video/svc-test-ci-poster.webp" data-evt="watch-reduce-flakiness" style="display:block;width:100%;aspect-ratio:16/9;background:#09090B">
+          <source src="/assets/video/svc-test-ci.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo incorporado. <a href="/assets/video/svc-test-ci.mp4" style="color:var(--green)">Baixe o clipe (MP4)</a>.
+        </video>
+      </div>
+    </section>
+    <!-- METRIC STRIP -->
+    <section style="padding-bottom:0">
+      <div class="stats" style="--ac:var(--green)">
+        <div class="stat"><div class="n">10% &rarr; &lt;1%</div><div class="l">Taxa de flake da HighStrike, fluxos de trading ao vivo</div></div>
+        <div class="stat"><div class="n">500+</div><div class="l">testes estabilizados em fluxos reais de mercado</div></div>
+        <div class="stat"><div class="n">37&nbsp;/&nbsp;37</div><div class="l">specs verdes · 0 flakes · 15,3s (suíte pública)</div></div>
+        <div class="stat"><div class="n">4h &rarr; 75min</div><div class="l">Regressão Home Depot, 2.300+ lojas</div></div>
+      </div>
+      <p class="note">Cada número aqui vem de trabalho real. Os públicos apontam para o comprovante — a suíte Playwright está no <span class="mono">GitHub</span> e o próprio QA deste site roda ao vivo em <a href="/pt/eval.html" style="color:var(--cyan)">eval.html</a>; os números da HighStrike &amp; Home Depot são de cargos full-time anteriores e são auto-reportados. Sem números de demo arredondados para cima.</p>
+    </section>
+
+    <!-- WHY FLAKINESS IS THE FAILURE -->
+    <section>
+      <article class="case" style="--ac:var(--rose)">
+        <div class="tag">O custo real · por que um comprador deveria se importar</div>
+        <h3>Ruído não só desperdiça tempo. Ele esconde a única falha que importava.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">O colapso da confiança</div>
+            <p>Uma taxa de flake de 10% em uma suíte de 500 testes significa dezenas de falsos vermelhos por run. Os engenheiros aprendem a clicar em "re-executar" por reflexo — e o hábito que limpa o ruído também limpa a única regressão real escondida nele.</p>
+          </div>
+          <div class="blk">
+            <div class="h">O imposto de velocidade</div>
+            <p>Cada vermelho instável é uma troca de contexto: investigar, descartar, re-executar, esperar. Multiplique isso por uma equipe e por um dia, e a suíte que você construiu para ir mais rápido é a coisa que desacelera cada merge.</p>
+          </div>
+          <div class="blk">
+            <div class="h">O portão que não é portão</div>
+            <p>Um portão de CI só protege você se o vermelho for acreditado. Uma vez que ele é ruído, o portão é decorativo — você está entregando na esperança, com um dashboard esverdeado que dá falsa confiança.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- DIAGRAM -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">A virada · o que o protocolo muda</div>
+        <h3>De vermelho-como-ruído para vermelho-como-sinal.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:62ch">O objetivo não é uma suíte que está sempre verde. É uma suíte onde um run vermelho <em>significa algo</em> — para que a equipe o leia, confie nele e pare quando ele dispara.</p>
+        <figure class="diagram">
+          <svg viewBox="0 0 720 260" role="img" aria-labelledby="flow-title flow-desc">
+            <title id="flow-title">Pipeline instável versus pipeline estável</title>
+            <desc id="flow-desc">Um pipeline instável emite runs vermelhos aleatórios que são tratados como ruído e re-executados. O protocolo anti-flake — diagnosticar, colocar em quarentena, definir política de retry, corrigir isolamento — o transforma em um pipeline estável onde um run vermelho é um sinal confiável que bloqueia a entrega.</desc>
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#8E8882"></path>
+              </marker>
+            </defs>
+            <!-- BEFORE label -->
+            <text x="12" y="24" font-family="'JetBrains Mono',monospace" font-size="11" letter-spacing="1.5" fill="#f43f5e">ANTES — VERMELHO É RUÍDO</text>
+            <!-- before runs: mixed random reds -->
+            <g>
+              <rect x="12" y="40" width="30" height="30" rx="6" fill="#10298108" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="50" y="40" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="1.5"></rect>
+              <rect x="88" y="40" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="126" y="40" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="1.5"></rect>
+              <rect x="164" y="40" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="202" y="40" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="1.5"></rect>
+            </g>
+            <text x="12" y="92" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#A8A29E">Vermelhos aleatórios &rarr; "é só re-executar" &rarr; regressão real passa</text>
+
+            <!-- protocol funnel -->
+            <g transform="translate(300,28)">
+              <rect x="0" y="6" width="150" height="86" rx="12" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <text x="75" y="26" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#10b981">PROTOCOLO ANTI-FLAKE</text>
+              <text x="14" y="45" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">1 · Diagnosticar fontes</text>
+              <text x="14" y="61" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">2 · Quarentena + retry</text>
+              <text x="14" y="77" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">3 · Corrigir isolamento</text>
+            </g>
+            <line x1="240" y1="55" x2="298" y2="70" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+
+            <!-- AFTER label -->
+            <text x="12" y="150" font-family="'JetBrains Mono',monospace" font-size="11" letter-spacing="1.5" fill="#10b981">DEPOIS — VERMELHO É SINAL</text>
+            <!-- after runs: all green, one meaningful red -->
+            <g>
+              <rect x="12" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="50" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="88" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="126" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+              <rect x="164" y="166" width="30" height="30" rx="6" fill="#3a1620" stroke="#f43f5e" stroke-width="2.5"></rect>
+              <text x="179" y="216" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#f43f5e">bug real</text>
+              <rect x="202" y="166" width="30" height="30" rx="6" fill="#0d2a22" stroke="#10b981" stroke-width="1.5"></rect>
+            </g>
+            <!-- gate -->
+            <g transform="translate(300,150)">
+              <rect x="0" y="16" width="150" height="60" rx="12" fill="#1a1207" stroke="#F59E0B" stroke-width="1.5"></rect>
+              <text x="75" y="40" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#F59E0B">PORTÃO DE CI</text>
+              <text x="75" y="58" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#F4F2EF">vermelho = bloqueado, acreditado</text>
+            </g>
+            <line x1="240" y1="181" x2="298" y2="181" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <circle class="flow-packet" r="3.2" cy="181" fill="#22d3ee"><animate attributeName="cx" values="100;300" dur="2.4s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" repeatCount="indefinite"></animate></circle>
+            <circle class="flow-packet" r="3.2" cy="181" fill="#10b981"><animate attributeName="cx" values="100;300" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate></circle>
+
+            <!-- outcomes -->
+            <g transform="translate(490,40)">
+              <rect x="0" y="0" width="210" height="86" rx="12" fill="#0d2a22" stroke="#2A2826" stroke-width="1"></rect>
+              <text x="16" y="26" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#10b981">ENTREGAR</text>
+              <text x="16" y="48" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#F4F2EF">O verde é confiável.</text>
+              <text x="16" y="66" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#A8A29E">A suíte que você manteve ainda roda.</text>
+            </g>
+            <line x1="452" y1="55" x2="488" y2="55" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+            <g transform="translate(490,166)">
+              <rect x="0" y="0" width="210" height="60" rx="12" fill="#3a1620" stroke="#2A2826" stroke-width="1"></rect>
+              <text x="16" y="26" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="1" fill="#f43f5e">BLOQUEADO</text>
+              <text x="16" y="46" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#F4F2EF">A regressão real é pega.</text>
+            </g>
+            <line x1="452" y1="196" x2="488" y2="196" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ar)"></line>
+          </svg>
+          <div class="legend">
+            <span><i style="background:#10b981"></i> run que passa</span>
+            <span><i style="background:#f43f5e"></i> run que falha</span>
+            <span><i style="background:#F59E0B"></i> o portão</span>
+          </div>
+          <figcaption>O protocolo não apaga seus testes — ele torna o veredito deles confiável de novo.</figcaption>
+        </figure>
+      </article>
+    </section>
+
+    <!-- THE MATRIX -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">O diagnóstico · fonte do flake &rarr; correção</div>
+        <h3>A maior parte da instabilidade vem de quatro lugares.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:62ch">A instabilidade raramente é aleatória — é um sintoma com uma fonte. O protocolo começa nomeando qual delas você tem, porque a correção é diferente para cada uma. Este é o mapa a partir do qual eu trabalho.</p>
+        <div class="matrix-scroll" tabindex="0" role="region" aria-label="Tabela comparativa — role horizontalmente">
+          <table class="matrix">
+            <caption>Fonte do flake → sinal &rarr; correção</caption>
+            <thead>
+              <tr><th scope="col">Fonte</th><th scope="col">Como aparece</th><th scope="col">A correção</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Timing &amp; corridas</th>
+                <td>Passa localmente, falha em CI; falha sob carga; "resolvido" adicionando um <span class="tell mono">sleep()</span>.</td>
+                <td>Substitua esperas fixas por <b>esperas baseadas em estado</b> (web-first assertions, poll-until-condition). Nunca espere pelo relógio — espere pela aplicação.</td>
+              </tr>
+              <tr>
+                <th scope="row">Estado compartilhado</th>
+                <td>Só falha quando executado <span class="tell">junto</span> com outros testes; um registro "envenenado" de um teste anterior vaza para dentro.</td>
+                <td><b>Isole cada teste</b>: fixtures novas, dados únicos por run, teardown que realmente limpa. Nenhum teste deve depender de outro ter rodado.</td>
+              </tr>
+              <tr>
+                <th scope="row">Dependência de ordem</th>
+                <td>Verde em uma ordem, vermelho quando o runner embaralha ou paraleliza.</td>
+                <td>Torne os testes <b>independentes de ordem</b> e seguros para paralelismo: sem dependência da sequência de execução, sem singletons globais mutados entre specs.</td>
+              </tr>
+              <tr>
+                <th scope="row">Ambiente &amp; dados</th>
+                <td>Depende de um terceiro ao vivo, de uma linha semeada, de uma hora do dia ou do clima da rede.</td>
+                <td><b>Controle a fronteira</b>: seeds determinísticos, externos mockados ou testados por contrato, relógios congelados onde o comportamento é sensível ao tempo.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Este é o mesmo diagnóstico que levou a suíte da HighStrike de uma taxa de flake de 10% para menos de 1% — em 500+ testes rodando contra fluxos de trading ao vivo, onde um falso vermelho é caro e um vermelho real ignorado é pior.</p>
+      </article>
+    </section>
+
+    <!-- THE PROTOCOL -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">O protocolo · como o trabalho corre</div>
+        <h3>Quarentena primeiro. Correção depois. Nunca apagar a suíte.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">1 · Faixa de quarentena</div>
+            <ul>
+              <li>Specs sabidamente instáveis vão para uma <b>faixa separada e não bloqueante</b> — o CI fica verde-confiável imediatamente</li>
+              <li>Nada é apagado; cada teste em quarentena é uma dívida rastreada com um responsável</li>
+              <li>A suíte bloqueante contém apenas testes em que você pode acreditar hoje</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">2 · Política de retry</div>
+            <ul>
+              <li>Um retry <b>limitado e medido</b> — não um retry indiscriminado que esconde falhas reais</li>
+              <li>Os retries são <b>contados</b>: uma spec que só passa no retry é sinalizada, não celebrada</li>
+              <li>A taxa de flake vira uma métrica no dashboard, para que não possa voltar silenciosamente</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">3 · Correções de isolamento</div>
+            <ul>
+              <li>Trabalhe a faixa de quarentena para baixo, fonte por fonte, usando a matriz acima</li>
+              <li>Cada spec corrigida <b>volta à ativa</b> na suíte bloqueante, comprovadamente estável</li>
+              <li>Você termina com a <b>mesma cobertura</b> com que começou — agora confiável</li>
+            </ul>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="services/test-automation-ci.html">▸ como eu construo automação de testes &amp; CI</a>
+          <span class="verified">Certificado ISTQB CT-AI + Test Automation Engineer</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- PROOF -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">A prova · não uma alegação, um link</div>
+        <h3>Uma suíte pública que roda verde, rápida e livre de flakes.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">A suíte pública de regressão</div>
+            <p>Uma suíte SDET aberta em Playwright que você pode ler e rodar: <b>37 de 37 specs passando, 0 flakes, run completo em 15,3 segundos</b>. Web-first assertions, fixtures isoladas, seguras para paralelismo — o protocolo desta página, em código que você pode inspecionar.</p>
+            <div class="stack">
+              <span class="chip"><b>37/37</b> specs</span><span class="chip"><b>0</b> flakes</span><span class="chip"><b>15,3s</b></span><span class="chip">Playwright</span>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Este site faz o QA de si mesmo</div>
+            <p>O site que você está lendo roda seu próprio QA — 100+ verificações, acessibilidade axe-clean — e hospeda uma <b>demo de eval ao vivo</b>. Prova acima de alegações é a tese inteira, então a prova está a um clique de distância, não em um PDF de estudo de caso.</p>
+            <div class="stack">
+              <span class="chip">100+ verificações</span><span class="chip">axe-clean</span><span class="chip"><b>demo ao vivo</b></span>
+            </div>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">▸ a suíte pública Playwright no GitHub</a>
+          <a class="plink" style="--ac:var(--cyan)" href="/pt/eval.html">▸ experimente a demo de eval ao vivo</a>
+        </div>
+      </article>
+    </section>
+
+
+    <section style="padding-top:0">
+      <div class="kick" style="color:var(--faint)">Relacionado &middot; mais sobre testar IA</div>
+      <div class="proofrow" style="border-top:none;padding-top:14px"><a href="/pt/hire-ai-qa-engineer.html" class="plink" style="--ac:var(--cyan)">Contrate um Engenheiro de QA de IA &rarr;</a><a href="/pt/llm-evaluation-consultant.html" class="plink" style="--ac:var(--cyan)">Consultor de Avaliação de LLM &rarr;</a><a href="/pt/rag-evaluation-guide.html" class="plink" style="--ac:var(--cyan)">Avaliação de RAG &rarr;</a><a href="/pt/ai-agent-testing.html" class="plink" style="--ac:var(--cyan)">Teste de Agentes de IA &rarr;</a></div>
+    </section>
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Tem uma suíte em que a equipe deixou de confiar?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Agende uma call e vamos diagnosticar as fontes de flake na sua suíte real — depois colocar em quarentena, corrigir e devolvê-la como um portão em que o vermelho significa algo de novo.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/pt/book.html" class="cta" data-evt="flake-book">Agende uma call &rarr;</a>
+        <a href="services/test-automation-ci.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">Serviço de automação de testes &amp; CI &rarr;</a>
+      </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">perguntas frequentes</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Perguntas, respondidas.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">O que realmente causa testes instáveis?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Quase sempre estado compartilhado, timing e condições de corrida, ou dependências de ordem de execução dos testes — não falta de sorte. Eu diagnostico a fonte em vez de aplicar retry indiscriminadamente.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Você só adiciona retries?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Retries são um paliativo que esconde o sinal. Eu instalo uma faixa de quarentena e uma política de retry enquanto corrijo a causa raiz — isolamento, esperas, fixtures.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Vocês vão reconstruir toda a nossa suíte?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Raramente. Manter sua suíte existente e torná-la confiável é mais rápido e mais barato; uma reconstrução é o último recurso, não o primeiro movimento.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Que resultado posso esperar?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Uma suíte rápida e estável onde vermelho significa vermelho. Em um cargo full-time anterior, reduzi a taxa de flake de uma suíte em produção de ~10% para menos de 1% e o tempo de execução de 45 para 8 minutos (auto-reportado).</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como você mede nossa taxa real de flake antes de começar?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Eu re-executo sua suíte em muitas passagens de CI sobre código inalterado e conto os testes que alternam entre passar e falhar. Isso dá uma taxa real de flake e uma lista ranqueada dos piores infratores antes de eu tocar em qualquer coisa.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Qual é a política de quarentena — testes instáveis são desabilitados?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Testes instáveis vão para uma faixa de quarentena, não para o lixo. Eles continuam rodando e reportando, mas param de bloquear o pipeline principal enquanto corrijo a causa raiz, e depois voltam à ativa quando se mostram estáveis.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Quanto tempo leva para ficar abaixo de um por cento?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Depende do tamanho da suíte e de quão profundas são as fontes de flake. Eu coloco em quarentena cedo para que seu pipeline se torne confiável rápido, e depois trabalho as correções de causa raiz em ordem de prioridade.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Isso funciona com nossa suíte existente ou exige uma reescrita?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Funciona com sua suíte existente. Seja usando Playwright, Pytest ou outro framework, eu estabilizo o que você já tem em vez de começar do zero — uma reconstrução é o último recurso.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como você encontra a causa raiz de um teste instável?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Eu isolo o teste que falha, executo dentro e fora de ordem e inspeciono estado compartilhado, timing e fixtures até a falha reproduzir sob demanda. Um flake que você consegue reproduzir é um bug que você consegue corrigir.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">O que ficamos ao final que impede o flake de voltar?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Uma suíte estabilizada mais as proteções que a mantêm assim — uma faixa de quarentena, uma política de retry e padrões de isolamento que sua equipe aplica a novos testes. O sinal permanece confiável depois que eu saio.</div>
+      </details>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Redes sociais" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="E-mail" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academy &#8599;</a> · <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> · <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a> · <a href="/pt/demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="/pt/what-i-build.html" class="dim-link" style="color:inherit">o que eu construo</a></span>
+    <span>composto em Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>cada número rotulado como verificado ou estimado. sem verde falso.</span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js?v=20260913a"></script>
+<script defer src="/assets/nav.js?v=20260910a"></script>
+<script defer src="/assets/transitions.js?v=20260912a"></script>
+
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+<script defer src="/assets/ga.js?v=3"></script>
+</body>
+</html>

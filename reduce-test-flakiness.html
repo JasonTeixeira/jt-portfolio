@@ -126,13 +126,68 @@
         "@type": "Answer",
         "text": "A fast, stable suite where red means red. In a prior full-time role I cut a live suite’s flake rate from ~10% to under 1% and runtime from 45 to 8 minutes (self-reported)."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you measure our real flake rate before starting?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "I re-run your suite across many CI passes on unchanged code and count the tests that flip between pass and fail. That gives a real flake rate and a ranked list of the worst offenders before I touch anything."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the quarantine policy — do flaky tests get disabled?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Flaky tests move to a quarantine lane, not the trash. They still run and report, but they stop blocking the main pipeline while I fix the root cause, then graduate back once they hold."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does it take to get under one percent?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It depends on suite size and how deep the flake sources run. I quarantine early so your pipeline becomes trustworthy fast, then work the root-cause fixes down in priority order."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this work with our existing suite or require a rewrite?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It works with your existing suite. Whether you run Playwright, Pytest, or another framework, I stabilize what you already have rather than starting over — a rebuild is the last resort."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you find the root cause of a flaky test?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "I isolate the failing test, run it in and out of order, and inspect shared state, timing, and fixtures until the failure reproduces on demand. A flake you can reproduce is a bug you can fix."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What do we have at the end that keeps flake from returning?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A stabilized suite plus the guardrails that hold it there — a quarantine lane, a retry policy, and isolation patterns your team applies to new tests. The signal stays trustworthy after I leave."
+      }
     }
   ]
 }
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/reduce-test-flakiness.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/reduce-test-flakiness.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/reduce-test-flakiness.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/reduce-test-flakiness.html">
+<meta property="og:locale" content="en_US">
 </head>
 <body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><span aria-current="true" style="color:#10b981;font-weight:600">EN</span><span style="color:#3D3A37">·</span><a href="/es/reduce-test-flakiness.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><a href="/pt/reduce-test-flakiness.html" style="color:#8E8882;text-decoration:none">PT</a></div>
 <div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
 <div style="min-height:100vh;background:var(--bg)">
   <nav class="site-nav">
@@ -436,6 +491,30 @@
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What result can I expect?</summary>
         <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A fast, stable suite where red means red. In a prior full-time role I cut a live suite’s flake rate from ~10% to under 1% and runtime from 45 to 8 minutes (self-reported).</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How do you measure our real flake rate before starting?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">I re-run your suite across many CI passes on unchanged code and count the tests that flip between pass and fail. That gives a real flake rate and a ranked list of the worst offenders before I touch anything.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What is the quarantine policy — do flaky tests get disabled?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Flaky tests move to a quarantine lane, not the trash. They still run and report, but they stop blocking the main pipeline while I fix the root cause, then graduate back once they hold.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How long does it take to get under one percent?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">It depends on suite size and how deep the flake sources run. I quarantine early so your pipeline becomes trustworthy fast, then work the root-cause fixes down in priority order.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Does this work with our existing suite or require a rewrite?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">It works with your existing suite. Whether you run Playwright, Pytest, or another framework, I stabilize what you already have rather than starting over — a rebuild is the last resort.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">How do you find the root cause of a flaky test?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">I isolate the failing test, run it in and out of order, and inspect shared state, timing, and fixtures until the failure reproduces on demand. A flake you can reproduce is a bug you can fix.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">What do we have at the end that keeps flake from returning?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A stabilized suite plus the guardrails that hold it there — a quarantine lane, a retry policy, and isolation patterns your team applies to new tests. The signal stays trustworthy after I leave.</div>
       </details>
     </section>
   </main>

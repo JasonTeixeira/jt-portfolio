@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consultor de Avaliação de LLM — Suítes de Eval &amp; Gates</title>
+<meta name="description" content="O que um projeto de avaliação de LLM entrega: uma rubrica de 4 dimensões, uma metodologia de golden set e um gate de CI que bloqueia regressões de qualidade antes de irem para produção.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/llm-evaluation-consultant.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Consultor de Avaliação de LLM — Suítes de Eval &amp; Gates">
+<meta property="og:description" content="A rubrica de 4 dimensões que uma demo de eval ao vivo executa, a metodologia golden set → juiz → gate por trás dela e a prova vermelho→verde de que ela bloqueia releases ruins.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/llm-evaluation-consultant.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og-llm-evaluation-consultant.png">
+<meta property="og:site_name" content="Sage Ideas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SageideasAI">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260909a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* metric strip */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:1px; margin-top:34px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--line); }
+  .stat { background:var(--card); padding:22px clamp(14px,2.4vw,24px); }
+  .stat .n { font-family:var(--serif); font-size:clamp(1.9rem,4.4vw,2.6rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); margin-top:9px; line-height:1.5; text-transform:uppercase; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip { font-family:var(--mono); font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .chip b { color:var(--ac); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* rubric matrix */
+  .matrix-wrap { margin-top:22px; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  .matrix-scroll { overflow-x:auto; }
+  table.doc { width:100%; border-collapse:collapse; min-width:640px; }
+  table.doc caption { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); padding:16px clamp(14px,2.4vw,22px) 0; }
+  table.doc th, table.doc td { text-align:left; padding:14px clamp(14px,2.4vw,22px); border-bottom:1px solid var(--line); vertical-align:top; }
+  table.doc thead th { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); font-weight:600; background:#0a0a0c; }
+  table.doc tbody th { font-family:var(--serif); font-weight:400; font-size:1.05rem; color:var(--ink); white-space:nowrap; }
+  table.doc tbody td { font-size:13px; line-height:1.65; color:var(--dim); }
+  table.doc tbody td b { color:var(--ink); font-weight:600; }
+  table.doc tbody tr:last-child th, table.doc tbody tr:last-child td { border-bottom:none; }
+  table.doc .score { font-family:var(--mono); font-size:11.5px; color:var(--cyan); }
+
+  /* svg flow diagram */
+  .flow { margin-top:22px; border:1px solid var(--line); border-radius:14px; background:#0a0a0c; padding:clamp(16px,3vw,28px); }
+  .flow svg { display:block; width:100%; height:auto; }
+  .flow figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+  .flow-legend { display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; }
+  .flow-legend span { font-family:var(--mono); font-size:10.5px; color:var(--dim); display:inline-flex; align-items:center; gap:7px; }
+  .flow-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
+  @media (prefers-reduced-motion: reduce) { .flow-packet { display:none; } }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"Consultor de Avaliação de LLM — Suítes de Eval & Gates","about":"O que um projeto de avaliação de LLM entrega: uma rubrica de 4 dimensões (grounding, alucinação, segurança & injeção, qualidade da resposta), uma metodologia golden set → LLM-como-juiz → gate de CI e a prova de que ela bloqueia releases ruins.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/llm-evaluation-consultant.html","image":"https://agency.sageideas.dev/assets/og-llm-evaluation-consultant.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Serviços","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Consultor de Avaliação de LLM","item":"https://agency.sageideas.dev/llm-evaluation-consultant.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "O que é uma avaliação de LLM, na prática?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Uma forma repetível de pontuar a saída do seu modelo — precisão, fidelidade, segurança — contra casos comprovadamente corretos, para que uma mudança de prompt ou de modelo que piore as coisas seja detectada antes de ir para produção."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "De quantos casos de teste você precisa para começar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Geralmente de 50 a 200 casos representativos — sinal suficiente para servir de gate — expandidos à medida que modos de falha reais aparecem em produção."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Você consegue aplicar um gate no nosso CI com base nos resultados da eval?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. A eval roda no CI e bloqueia o merge se algum limite regride (cobertura de citações, taxa de alucinação, resistência a injeção). Vermelho antes da produção, não depois."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quais frameworks e modelos você usa?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Independente de provedor — Promptfoo, DeepEval e Pytest contra uma interface padrão de chat-completions, usando seus modelos e suas contas sempre que possível."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Qual precisa ser o tamanho do golden dataset para ser útil?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Algumas dezenas de casos bem escolhidos superam centenas de casos aleatórios. Comece pelos modos de falha que de fato te prejudicam — prompts reais de usuários, casos de borda, incidentes passados — e faça o conjunto crescer conforme novas falhas surgem."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "A pontuação por LLM-como-juiz é confiável o bastante para servir de gate?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Não sozinha. Os prompts do juiz são validados contra casos rotulados por humanos, e o gate se apoia em verificações determinísticas — correspondência exata, presença de citação, schema, detecção de recusa — sempre que a resposta permite, reservando o juiz para os julgamentos genuinamente subjetivos."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Como o gate de eval se encaixa no CI que eu já rodo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ele roda como mais uma verificação no seu pipeline existente — um passo no GitHub Actions ou no que você usar — que aprova ou reprova o build. Nenhuma plataforma nova para adotar; a eval fica ao lado dos seus testes unitários e bloqueia o merge no mesmo X vermelho."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "O que acontece com o gate quando eu troco de modelo ou edito um prompt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "É exatamente para isso que ele serve. Qualquer troca de modelo ou edição de prompt re-executa a suíte completa, e uma mudança que regride grounding, segurança ou qualidade da resposta deixa o build vermelho antes de chegar aos usuários."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Você constrói isso no meu repositório ou em uma ferramenta separada?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No seu repositório. A suíte, o golden set e a configuração de CI ficam versionados junto ao seu código, então você é dono dele, roda e estende sem depender de mim nem de um dashboard hospedado."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quanto tempo até o primeiro quality gate estar no ar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O primeiro gate funcional — um pequeno golden set conectado ao CI e bloqueando em um limite real — chega cedo, e a suíte se aprofunda a partir daí. Você vê um build ficar vermelho em uma mudança ruim antes do fim do projeto, não um slide sobre isso."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/llm-evaluation-consultant.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/llm-evaluation-consultant.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/llm-evaluation-consultant.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/llm-evaluation-consultant.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/llm-evaluation-consultant.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/llm-evaluation-consultant.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/pt/index.html" class="site-nav-brand" aria-label="Jason Teixeira — início">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/pt/approach.html" class="site-nav-link">Abordagem</a>
+      <a href="/pt/services.html" class="site-nav-link">Serviços</a>
+      <a href="/pt/case-studies.html" class="site-nav-link">Trabalhos</a>
+      <a href="/pt/proof.html" class="site-nav-link">Provas</a>
+      <a href="/pt/resources.html" class="site-nav-link">Recursos</a>
+      <a href="/pt/lab.html" class="site-nav-link">Lab</a>
+      <a href="/pt/build.html" class="site-nav-link">Escopo de projeto</a>
+      <a href="/pt/docs.html" class="site-nav-link">Docs</a>
+      <a href="/automations/" class="site-nav-link" data-evt="nav-automations">Automações</a>
+      <a href="/pt/field-notes.html" class="site-nav-link">Notas de Campo</a>
+      <span class="nav-social" aria-label="Redes sociais" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="E-mail" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="/pt/book.html" class="btn-solid green site-nav-cta" data-evt="nav-book">Agendar uma conversa &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Consultor de avaliação de LLM</div>
+    <h1 style="margin-top:20px;max-width:20ch">A suíte de eval que decide <em style="color:var(--cyan)">se o seu modelo vai para produção.</em></h1>
+    <p class="lede" style="margin-top:22px">Um projeto de avaliação de LLM não é um relatório — é um sistema em funcionamento. Eu construo o golden dataset, a rubrica de pontuação e o gate de CI que avalia cada mudança de modelo ou prompt contra ele e, então, <em>bloqueia o merge</em> quando a qualidade regride. Você pode ver uma versão funcional desse juiz avaliar uma resposta ao vivo, agora mesmo, antes de falar comigo.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--green)" href="/pt/eval.html"><span class="dot" style="background:var(--green)"></span>Demo do juiz ao vivo: <b>eval.html</b> &rarr;</a>
+      <a class="pill link" style="--ac:var(--cyan)" href="/pt/eval.html#byo"><span class="dot" style="background:var(--cyan)"></span>Avalie a resposta da <b>sua</b> IA &rarr;</a>
+      <span class="pill"><span class="dot" style="background:var(--purple)"></span>ISTQB <b>CT-AI</b> + <b>Test Automation Engineer</b></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section style="padding-bottom:8px">
+      <div class="kick" style="color:var(--cyan)">Assista &middot; o diferencial da eval em ~45s</div>
+      <div style="margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 20px 60px rgba(0,0,0,0.4)">
+        <video controls preload="none" playsinline poster="/assets/video/svc-llm-eval-poster.webp" data-evt="watch-llm-eval-consultant" style="display:block;width:100%;aspect-ratio:16/9;background:#09090B">
+          <source src="/assets/video/svc-llm-eval.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo incorporado. <a href="/assets/video/svc-llm-eval.mp4" style="color:var(--green)">Baixe o clipe (MP4)</a>.
+        </video>
+      </div>
+    </section>
+    <!-- WHAT THE JUDGE MEASURES -->
+    <section style="padding-bottom:0">
+      <div class="stats" style="--ac:var(--cyan)">
+        <div class="stat"><div class="n">4</div><div class="l">dimensões de pontuação por resposta</div></div>
+        <div class="stat"><div class="n">2</div><div class="l">sinais: LLM-juiz + verificações determinísticas</div></div>
+        <div class="stat"><div class="n">1</div><div class="l">gate de CI que pode bloquear um merge</div></div>
+        <div class="stat"><div class="n">100%</div><div class="l">cobertura de citações no build RAG*</div></div>
+      </div>
+      <p class="note">*O dashboard de pesquisa RAG cita <b>100% de suas afirmações por construção</b> — não há caminho de código que gere uma frase sem citação. Verificado em <a href="/pt/case-studies.html" style="color:var(--cyan)">case-studies.html</a>. Todo outro número nesta página é um fato de projeto do método, não uma média de clientes.</p>
+    </section>
+
+    <!-- THE RUBRIC MATRIX -->
+    <section>
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">A rubrica · o que a demo ao vivo pontua</div>
+        <h3>Quatro dimensões, cada uma com uma falha capturada e uma nota.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">Toda resposta que o juiz vê é avaliada nos mesmos quatro eixos. Dois são determinísticos (passam ou não passam); dois usam um LLM-como-juiz com uma rubrica explícita, para que a nota seja explicável, não um achismo. Esta é a rubrica exata por trás da <a href="/pt/eval.html" style="color:var(--cyan)">demo ao vivo</a>.</p>
+        <div class="matrix-wrap">
+          <div class="matrix-scroll" tabindex="0" role="region" aria-label="Tabela comparativa — role horizontalmente">
+            <table class="doc">
+              <caption>Rubrica de avaliação — dimensão × falha capturada × método de pontuação</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Dimensão</th>
+                  <th scope="col">O que ela captura</th>
+                  <th scope="col">Como é pontuada</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Grounding</th>
+                  <td>Respostas que se afastam da fonte de verdade — afirmações que o contexto fornecido não sustenta de fato.</td>
+                  <td><b>LLM-como-juiz</b> contra a fonte fornecida, mais uma <span class="score">verificação determinística de citações</span>: toda afirmação precisa remeter a um trecho.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Alucinação</th>
+                  <td>Invenção com confiança — fatos fabricados, números falsos ou citações a fontes que nunca foram dadas.</td>
+                  <td><span class="score">Diff determinístico</span> afirmação-vs-contexto expõe declarações sem suporte; o juiz classifica a gravidade.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Segurança &amp; injeção</th>
+                  <td>Obediência a prompt-injection, instruções de sistema vazadas e saídas inseguras ou fora de política.</td>
+                  <td>Verificações determinísticas de <span class="score">padrão &amp; recusa</span> em entradas adversárias; uma falha aqui pode bloquear o release de vez.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Qualidade da resposta</th>
+                  <td>Respostas tecnicamente fundamentadas mas inúteis — fora da intenção, incompletas ou que ignoram a pergunta real.</td>
+                  <td><b>LLM-como-juiz</b> em relevância, completude e objetividade, pontuado contra uma rubrica escrita.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="/pt/eval.html#byo">▸ cole a resposta da sua IA &amp; veja ela ser avaliada</a>
+          <span class="verified">a demo roda esta rubrica em input real, ao vivo</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE METHODOLOGY / SVG DIAGRAM -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">A metodologia · golden set → juiz → gate</div>
+        <h3>Como uma regressão é capturada antes de ir para produção.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">Uma mudança de modelo ou prompt entra no CI. Ela roda contra um <b>golden set</b> curado de casos representativos. Cada saída é pontuada pelo LLM juiz <em>e</em> pelas verificações determinísticas. Se qualquer dimensão cair abaixo de seu piso, o gate bloqueia o merge — a mudança nunca chega aos usuários. Se tudo passa, vai para produção.</p>
+
+        <figure class="flow">
+          <svg viewBox="0 0 900 260" role="img" aria-labelledby="flow-title flow-desc" preserveAspectRatio="xMidYMid meet">
+            <title id="flow-title">Fluxo do gate de avaliação de LLM</title>
+            <desc id="flow-desc">Uma mudança e seu golden set alimentam uma etapa de avaliação que combina um LLM juiz e verificações determinísticas, produzindo notas que chegam a um gate de CI; mudanças aprovadas vão para produção, mudanças reprovadas são bloqueadas.</desc>
+            <defs>
+              <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                <path d="M0 0 L9 4.5 L0 9 Z" fill="#8E8882"></path>
+              </marker>
+            </defs>
+            <!-- Stage 1: inputs -->
+            <rect x="14" y="52" width="150" height="52" rx="9" fill="#0C0C0E" stroke="#2A2826"></rect>
+            <text x="89" y="76" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="13">Modelo / prompt</text>
+            <text x="89" y="93" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="11">mudança → CI</text>
+
+            <rect x="14" y="150" width="150" height="52" rx="9" fill="#0C0C0E" stroke="#2A2826"></rect>
+            <text x="89" y="174" text-anchor="middle" fill="#22d3ee" font-family="'JetBrains Mono',monospace" font-size="13">Golden set</text>
+            <text x="89" y="191" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="11">casos curados</text>
+
+            <!-- Stage 2: eval -->
+            <rect x="260" y="72" width="190" height="112" rx="10" fill="#0C0C0E" stroke="#a78bfa"></rect>
+            <text x="355" y="98" text-anchor="middle" fill="#a78bfa" font-family="'JetBrains Mono',monospace" font-size="12">AVALIAR</text>
+            <line x1="278" y1="112" x2="432" y2="112" stroke="#2A2826"></line>
+            <text x="355" y="134" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="11.5">LLM-como-juiz</text>
+            <text x="355" y="154" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="11">+</text>
+            <text x="355" y="172" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="11.5">verificações determinísticas</text>
+
+            <!-- Stage 3: gate (diamond) -->
+            <polygon points="600,128 655,90 710,128 655,166" fill="#0C0C0E" stroke="#F59E0B"></polygon>
+            <text x="655" y="124" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="12">GATE</text>
+            <text x="655" y="141" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="10">nota ≥ piso?</text>
+
+            <!-- Stage 4: outcomes -->
+            <rect x="770" y="42" width="116" height="48" rx="9" fill="#07130d" stroke="#10b981"></rect>
+            <text x="828" y="63" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="12.5">PRODUÇÃO ✓</text>
+            <text x="828" y="80" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="10">todos os pisos atingidos</text>
+
+            <rect x="770" y="166" width="116" height="48" rx="9" fill="#160809" stroke="#f43f5e"></rect>
+            <text x="828" y="187" text-anchor="middle" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="12.5">BLOQUEADO ✕</text>
+            <text x="828" y="204" text-anchor="middle" fill="#8E8882" font-family="'JetBrains Mono',monospace" font-size="10">regressão</text>
+
+            <!-- connectors -->
+            <line x1="164" y1="78" x2="256" y2="108" stroke="#8E8882" marker-end="url(#arw)"></line>
+            <line x1="164" y1="176" x2="256" y2="146" stroke="#8E8882" marker-end="url(#arw)"></line>
+            <line x1="450" y1="128" x2="596" y2="128" stroke="#8E8882" marker-end="url(#arw)"></line>
+            <circle class="flow-packet" r="3.2" cy="112" fill="#22d3ee"><animate attributeName="cx" values="278;432" dur="2.2s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.2s" repeatCount="indefinite"></animate></circle>
+            <circle class="flow-packet" r="3.2" cy="128" fill="#10b981"><animate attributeName="cx" values="450;596" dur="2.2s" begin="1.1s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.2s" begin="1.1s" repeatCount="indefinite"></animate></circle>
+            <line x1="710" y1="112" x2="766" y2="72" stroke="#10b981" marker-end="url(#arw)"></line>
+            <line x1="710" y1="144" x2="766" y2="184" stroke="#f43f5e" marker-end="url(#arw)"></line>
+          </svg>
+          <div class="flow-legend" aria-hidden="true">
+            <span><i style="background:#a78bfa"></i>avaliar</span>
+            <span><i style="background:#F59E0B"></i>gate</span>
+            <span><i style="background:#10b981"></i>produção</span>
+            <span><i style="background:#f43f5e"></i>bloqueado</span>
+          </div>
+          <figcaption>O gate é a entrega. Sem ele, evals são um dashboard que ninguém lê; com ele, uma mudança ruim fisicamente não consegue dar merge.</figcaption>
+        </figure>
+      </article>
+    </section>
+
+    <!-- THE PROOF -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">A prova · este gate já bloqueou um release</div>
+        <h3>Uma história vermelho → verde com os comprovantes que eu posso te mostrar.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">Na minha própria plataforma de QA, <b>nexural-qa-os</b>, o gate fez exatamente o que um gate deve fazer: capturou <b>15 CVEs altas/críticas</b> e <b>bloqueou seu próprio release</b>. No mesmo dia, os problemas foram corrigidos e o sistema ficou verde — <b>3.759 testes passando, 13 de 13 gates limpos</b>. A evidência são duas execuções capturadas, antes e depois.</p>
+        <div class="grid" style="margin-top:20px">
+          <div class="blk">
+            <div class="h" style="color:var(--rose)">Antes — release bloqueado</div>
+            <ul>
+              <li><b>15 CVEs altas/críticas</b> detectadas</li>
+              <li>O gate se recusou a aprovar o build</li>
+              <li>Nada foi para produção</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h" style="color:var(--green)">Depois — no mesmo dia, verde</div>
+            <ul>
+              <li><b>3.759 testes</b> passando</li>
+              <li><b>13 / 13</b> gates limpos</li>
+              <li>Corrigido, re-executado, entregue</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">Por que isso importa para você</div>
+            <p>Um gate só conquista confiança no dia em que barra o <em>seu próprio</em> release. Este barrou — e eu guardei as capturas em vez de apenas afirmar isso.</p>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--rose)" href="captures/nexural-qa-os.html">▸ a execução bloqueada</a>
+          <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">▸ a execução verde</a>
+          <span class="verified">duas execuções capturadas · antes &amp; depois · mesmo dia</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- CORROBORATING TRACK RECORD -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">Prova adjacente · a mesma disciplina, em outros lugares</div>
+        <h3>O rigor de eval é uma faceta de como eu testo.</h3>
+        <div class="grid" style="margin-top:20px">
+          <div class="blk">
+            <div class="h">Suítes determinísticas</div>
+            <p>Uma suíte pública de regressão SDET: <b>37/37 specs, 0 flakes, 15,3s</b>. Verde significa verde.</p>
+            <div class="stack"><a class="chip" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener"><b>ver o repositório</b> &nearr;</a></div>
+          </div>
+          <div class="blk">
+            <div class="h">Flakiness sob controle (fintech)</div>
+            <p>HighStrike (um cargo full-time anterior, dados autodeclarados): taxa de flakiness reduzida de <b>10% para menos de 1%</b> em mais de <b>500 testes</b> em fluxos de trading ao vivo.</p>
+          </div>
+          <div class="blk">
+            <div class="h">Escala (Fortune 50)</div>
+            <p>The Home Depot: um framework Selenium para mais de <b>2.300 lojas</b>; regressão reduzida de <b>4h para 75min</b>.</p>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="/pt/case-studies.html">▸ os estudos de caso completos</a>
+          <span class="verified">e sim — este site roda seu próprio QA: mais de 100 checagens, limpo no axe</span>
+        </div>
+      </article>
+    </section>
+
+
+    <section style="padding-top:0">
+      <div class="kick" style="color:var(--faint)">Relacionados &middot; mais sobre testar IA</div>
+      <div class="proofrow" style="border-top:none;padding-top:14px"><a href="/pt/hire-ai-qa-engineer.html" class="plink" style="--ac:var(--cyan)">Contratar um Engenheiro de QA de IA &rarr;</a><a href="/pt/rag-evaluation-guide.html" class="plink" style="--ac:var(--cyan)">Avaliação de RAG &rarr;</a><a href="/pt/ai-agent-testing.html" class="plink" style="--ac:var(--cyan)">Teste de Agentes de IA &rarr;</a><a href="/pt/reduce-test-flakiness.html" class="plink" style="--ac:var(--cyan)">Reduzir Flakiness de Testes &rarr;</a></div>
+    </section>
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Preocupado com uma funcionalidade de IA específica?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Avalie ao vivo em 30 segundos, ou agende uma conversa e definimos juntos o golden set, a rubrica e o gate que a protege.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/pt/book.html" class="cta" data-evt="llmeval-book">Agendar uma conversa &rarr;</a>
+        <a href="/pt/eval.html#byo" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">&#9654; testar o juiz ao vivo</a>
+        <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">o serviço completo &rarr;</a>
+      </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">perguntas frequentes</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Dúvidas, respondidas.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">O que é uma avaliação de LLM, na prática?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Uma forma repetível de pontuar a saída do seu modelo — precisão, fidelidade, segurança — contra casos comprovadamente corretos, para que uma mudança de prompt ou de modelo que piore as coisas seja detectada antes de ir para produção.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">De quantos casos de teste você precisa para começar?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Geralmente de 50 a 200 casos representativos — sinal suficiente para servir de gate — expandidos à medida que modos de falha reais aparecem em produção.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Você consegue aplicar um gate no nosso CI com base nos resultados da eval?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sim. A eval roda no CI e bloqueia o merge se algum limite regride (cobertura de citações, taxa de alucinação, resistência a injeção). Vermelho antes da produção, não depois.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Quais frameworks e modelos você usa?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Independente de provedor — Promptfoo, DeepEval e Pytest contra uma interface padrão de chat-completions, usando seus modelos e suas contas sempre que possível.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Qual precisa ser o tamanho do golden dataset para ser útil?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Algumas dezenas de casos bem escolhidos superam centenas de casos aleatórios. Comece pelos modos de falha que de fato te prejudicam — prompts reais de usuários, casos de borda, incidentes passados — e faça o conjunto crescer conforme novas falhas surgem.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">A pontuação por LLM-como-juiz é confiável o bastante para servir de gate?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Não sozinha. Os prompts do juiz são validados contra casos rotulados por humanos, e o gate se apoia em verificações determinísticas — correspondência exata, presença de citação, schema, detecção de recusa — sempre que a resposta permite, reservando o juiz para os julgamentos genuinamente subjetivos.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como o gate de eval se encaixa no CI que eu já rodo?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Ele roda como mais uma verificação no seu pipeline existente — um passo no GitHub Actions ou no que você usar — que aprova ou reprova o build. Nenhuma plataforma nova para adotar; a eval fica ao lado dos seus testes unitários e bloqueia o merge no mesmo X vermelho.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">O que acontece com o gate quando eu troco de modelo ou edito um prompt?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">É exatamente para isso que ele serve. Qualquer troca de modelo ou edição de prompt re-executa a suíte completa, e uma mudança que regride grounding, segurança ou qualidade da resposta deixa o build vermelho antes de chegar aos usuários.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Você constrói isso no meu repositório ou em uma ferramenta separada?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">No seu repositório. A suíte, o golden set e a configuração de CI ficam versionados junto ao seu código, então você é dono dele, roda e estende sem depender de mim nem de um dashboard hospedado.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Quanto tempo até o primeiro quality gate estar no ar?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">O primeiro gate funcional — um pequeno golden set conectado ao CI e bloqueando em um limite real — chega cedo, e a suíte se aprofunda a partir daí. Você vê um build ficar vermelho em uma mudança ruim antes do fim do projeto, não um slide sobre isso.</div>
+      </details>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Redes sociais" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="E-mail" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academy &#8599;</a> · <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> · <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a> · <a href="/pt/demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="/pt/what-i-build.html" class="dim-link" style="color:inherit">o que eu construo</a></span>
+    <span>tipografia em Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>todo número rotulado como verificado ou estimado. sem verde falso.</span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js?v=20260913a"></script>
+<script defer src="/assets/nav.js?v=20260910a"></script>
+<script defer src="/assets/transitions.js?v=20260912a"></script>
+
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+<script defer src="/assets/ga.js?v=3"></script>
+</body>
+</html>

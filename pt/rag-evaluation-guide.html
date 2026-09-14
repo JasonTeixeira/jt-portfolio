@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avaliação de RAG: Cobertura de Citações e Fundamentação</title>
+<meta name="description" content="Como testar um sistema RAG: cobertura de citações, precisão de recuperação, fundamentação e abster-se quando não há evidência — um checklist concreto a partir de um build 100% citado.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/pt/rag-evaluation-guide.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Avaliação de RAG: Cobertura de Citações e Fundamentação">
+<meta property="og:description" content="Um checklist concreto para testar RAG: cobertura de citações, precisão de recuperação, fundamentação, abster-se quando não há evidência, latência e custo por consulta.">
+<meta property="og:url" content="https://agency.sageideas.dev/pt/rag-evaluation-guide.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og-rag-evaluation-guide.png">
+<meta property="og:site_name" content="Sage Ideas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SageideasAI">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260909a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  /* metric strip */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr)); gap:1px; margin-top:34px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--line); }
+  .stat { background:var(--card); padding:22px clamp(14px,2.4vw,24px); }
+  .stat .n { font-family:var(--serif); font-size:clamp(1.9rem,4.4vw,2.6rem); letter-spacing:-0.02em; color:var(--ac); line-height:1; }
+  .stat .l { font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); margin-top:9px; line-height:1.5; text-transform:uppercase; }
+
+  /* content blocks */
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .stack { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chip { font-family:var(--mono); font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .chip b { color:var(--ac); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* doc table (matrix) */
+  table.doc { width:100%; border-collapse:collapse; margin-top:22px; font-size:13.5px; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  table.doc caption { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); padding-bottom:10px; }
+  table.doc th, table.doc td { text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; }
+  table.doc thead th { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan); background:#0A0A0C; }
+  table.doc tbody tr:last-child td { border-bottom:none; }
+  table.doc td b { color:var(--ink); font-weight:600; }
+  table.doc td.chk { font-family:var(--mono); color:var(--green); white-space:nowrap; }
+  .tscroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  /* svg diagram */
+  .diagram { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(20px,3vw,32px); margin-top:20px; }
+  .diagram svg { width:100%; height:auto; display:block; }
+  .diagram .cap { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* checklist */
+  .check { list-style:none; margin:18px 0 0; padding:0; display:grid; gap:12px; }
+  .check li { display:flex; gap:12px; align-items:flex-start; font-size:14px; line-height:1.65; color:var(--dim); }
+  .check li .b { font-family:var(--mono); font-size:12px; color:var(--green); flex:0 0 auto; margin-top:1px; }
+  .check li b { color:var(--ink); font-weight:600; }
+  @media (prefers-reduced-motion: reduce) { .flow-packet { display:none; } }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"Avaliação de RAG: Cobertura de Citações e Fundamentação","about":"Uma metodologia concreta para testar sistemas de geração aumentada por recuperação: cobertura de citações, precisão de recuperação, fundamentação, abstenção e latência.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/rag-evaluation-guide.html","image":"https://agency.sageideas.dev/assets/og-rag-evaluation-guide.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Serviços","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Guia de Avaliação de RAG","item":"https://agency.sageideas.dev/rag-evaluation-guide.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Como testar RAG é diferente de testar um LLM puro?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "RAG tem duas superfícies de falha: recuperação (buscou o contexto certo?) e geração (respondeu com fidelidade e citou a fonte?). Você precisa medir ambas — uma resposta confiante a partir do trecho errado continua errada."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Como você mede fidelidade e alucinação?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cada resposta é pontuada contra o contexto recuperado com LLM-as-judge mais verificações determinísticas de citação, de modo que uma resposta que não esteja fundamentada em uma fonte real falha mesmo quando parece bem escrita."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "A avaliação de RAG pode rodar em CI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. A suíte bloqueia merges — uma mudança de recuperação ou de prompt que reduza a cobertura de citações fica vermelha antes de entrar em produção."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "O que recebemos no final?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Uma suíte de avaliação de RAG classificada no seu repositório, um painel com pontuações, um portão de CI e um runbook que sua equipe pode operar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Qual é a diferença entre cobertura de citações e fundamentação?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cobertura de citações pergunta se a resposta cita suas fontes; fundamentação pergunta se essas fontes citadas realmente sustentam cada afirmação. Uma resposta pode citar um trecho e ainda assim interpretá-lo mal — por isso os dois são pontuados separadamente."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quais métricas de recuperação você mede — precisão e recall de contexto?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Precisão de contexto (os trechos recuperados eram pertinentes?) e recall de contexto (a recuperação deixou de fora um trecho que a resposta precisava?). Ambas rodam contra um conjunto de perguntas rotulado, de modo que uma mudança no retriever move um número em vez de uma sensação."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Você conserta o pipeline de recuperação ou só o mede?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A medição vem primeiro, mas a avaliação aponta direto para a correção — chunking, embeddings, reranking ou o prompt. Posso implementar essas mudanças e rodar a suíte novamente para comprovar o ganho."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Como você impede o modelo de inventar fatos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cada afirmação é verificada contra o contexto recuperado, e respostas sem nenhuma fonte de apoio falham na avaliação. Combinado com um teste de abstenção, o sistema é pontuado por dizer “não sei” em vez de chutar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Isso funciona com meu banco de dados vetorial e meu modelo de embedding?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim — a avaliação fica acima da sua stack e trata a recuperação como caixa-preta, então qualquer banco de dados vetorial ou modelo de embedding funciona. Trocar qualquer um deles vira um experimento mensurável em vez de uma mudança às cegas."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quais entregáveis eu recebo de uma avaliação de RAG?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Uma suíte de avaliação classificada no seu repositório, um painel com pontuações cobrindo recuperação e fundamentação, um portão de CI que bloqueia regressões e um runbook que sua equipe pode operar sem mim."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/rag-evaluation-guide.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/rag-evaluation-guide.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/rag-evaluation-guide.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/rag-evaluation-guide.html">
+<meta property="og:locale" content="pt_BR">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/rag-evaluation-guide.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><a href="/es/rag-evaluation-guide.html" style="color:#8E8882;text-decoration:none">ES</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">PT</span></div>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/pt/index.html" class="site-nav-brand" aria-label="Jason Teixeira — início">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/pt/approach.html" class="site-nav-link">Abordagem</a>
+      <a href="/pt/services.html" class="site-nav-link">Serviços</a>
+      <a href="/pt/case-studies.html" class="site-nav-link">Trabalhos</a>
+      <a href="/pt/proof.html" class="site-nav-link">Provas</a>
+      <a href="/pt/resources.html" class="site-nav-link">Recursos</a>
+      <a href="/pt/lab.html" class="site-nav-link">Lab</a>
+      <a href="/pt/build.html" class="site-nav-link">Definir um projeto</a>
+      <a href="/pt/docs.html" class="site-nav-link">Docs</a>
+      <a href="/automations/" class="site-nav-link" data-evt="nav-automations">Automações</a>
+      <a href="/pt/field-notes.html" class="site-nav-link">Notas de Campo</a>
+      <span class="nav-social" aria-label="Redes sociais" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="E-mail" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="/pt/book.html" class="btn-solid green site-nav-cta" data-evt="nav-book">Agendar uma chamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Guia de campo · avaliação de RAG</div>
+    <h1 style="margin-top:20px;max-width:18ch">Como de fato <em style="color:var(--cyan)">testar</em> um sistema RAG.</h1>
+    <p class="lede" style="margin-top:22px">A maioria das demos de geração aumentada por recuperação é avaliada no feeling: alguém lê três respostas, elas parecem plausíveis, entra em produção. Isso não é avaliação — é otimismo. Um sistema RAG falha de maneiras específicas e testáveis: cita o trecho errado, inventa um fato que o contexto recuperado nunca disse ou responde com confiança quando deveria ter dito "não tenho essa informação". Cada um desses modos de falha tem uma verificação que o pega. Este é o checklist, e ele está fundamentado em um painel que construí no qual <b style="color:var(--green)">a cobertura de citações é 100% por construção</b> — não existe caminho de código capaz de gerar uma frase sem citação.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--green)" href="/pt/case-studies.html"><span class="dot" style="background:var(--green)"></span>Prova: <b>o build 100% citado</b> &rarr;</a>
+      <a class="pill link" style="--ac:var(--cyan)" href="/pt/eval.html"><span class="dot" style="background:var(--cyan)"></span>Experimente a <b>demo de avaliação ao vivo</b> &rarr;</a>
+      <span class="pill"><span class="dot" style="background:var(--purple)"></span>Certificado: <b>ISTQB CT-AI</b></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- THE FIVE DIMENSIONS -->
+    <section style="padding-bottom:0">
+      <div class="stats" style="--ac:var(--cyan)">
+        <div class="stat"><div class="n">5</div><div class="l">dimensões que toda avaliação de RAG precisa cobrir</div></div>
+        <div class="stat"><div class="n">100%</div><div class="l">cobertura de citações no build de referência</div></div>
+        <div class="stat"><div class="n">0</div><div class="l">caminhos de geração sem citação (por construção)</div></div>
+        <div class="stat"><div class="n">1</div><div class="l">demo ao vivo que você pode avaliar por conta própria</div></div>
+      </div>
+      <p class="note">O número de 100% é estrutural, não uma pontuação de benchmark: o pipeline não consegue emitir uma frase de resposta que não esteja atrelada a uma fonte recuperada. Verifique no build em <span class="mono">case-studies.html</span>.</p>
+    </section>
+
+    <!-- THE CHECKLIST -->
+    <section>
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">O checklist · o que uma avaliação de RAG de verdade mede</div>
+        <h3>Cinco coisas, ou você está chutando.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">Uma bateria de avaliação de RAG com resultado aprovado/reprovado precisa pontuar todas as cinco em um conjunto fixo de perguntas — idealmente um golden set com fontes corretas conhecidas — e bloquear a release com base nos resultados. Pule uma e você deixou uma classe inteira de falhas sem teste.</p>
+        <ul class="check">
+          <li><span class="b">01</span><span><b>Cobertura de citações.</b> Que fração das afirmações da resposta carrega uma citação que realmente as sustenta? Não "tem uma nota de rodapé" — o trecho citado precisa conter a afirmação. Meta: toda frase que sustenta a resposta é rastreável até uma fonte recuperada.</span></li>
+          <li><span class="b">02</span><span><b>Precisão e recall de recuperação.</b> O retriever trouxe os trechos que contêm a resposta (recall) e quanto ruído veio junto (precisão)? Um gerador perfeito não salva um retriever que nunca buscou a passagem certa.</span></li>
+          <li><span class="b">03</span><span><b>Fundamentação / fidelidade.</b> Cada afirmação é acarretada pelo contexto recuperado, ou o modelo acrescentou "conhecimento" do pré-treinamento que não está nas fontes? É aqui que a alucinação se esconde mesmo quando há citações presentes.</span></li>
+          <li><span class="b">04</span><span><b>Abster-se quando não há evidência.</b> Quando o corpus genuinamente não contém a resposta, o sistema diz isso — ou fabula? Teste com perguntas fora do corpus e exija uma resposta explícita de "evidência insuficiente".</span></li>
+          <li><span class="b">05</span><span><b>Latência e custo por consulta.</b> Recuperação + rerank + geração somam milissegundos e tokens cada um. Meça a latência p50/p95 e o custo por consulta, porque um sistema preciso que ninguém consegue pagar para rodar ainda é um sistema que falhou.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- THE DIAGRAM -->
+    <section style="padding-top:0">
+      <div class="diagram">
+        <svg viewBox="0 0 900 300" role="img" aria-labelledby="ragflow-title ragflow-desc" preserveAspectRatio="xMidYMid meet">
+          <title id="ragflow-title">Fluxo de avaliação de RAG</title>
+          <desc id="ragflow-desc">Uma consulta de usuário flui para a recuperação, que retorna trechos ranqueados. Um portão de fundamentação então produz uma resposta fundamentada e citada quando a evidência é suficiente, ou se abstém quando não é.</desc>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#8E8882"></path>
+            </marker>
+          </defs>
+          <!-- Query -->
+          <rect x="16" y="118" width="150" height="64" rx="12" fill="#0C0C0E" stroke="#22d3ee" stroke-width="1.5"></rect>
+          <text x="91" y="146" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600">Consulta</text>
+          <text x="91" y="166" text-anchor="middle" fill="#A8A29E" font-family="'JetBrains Mono',monospace" font-size="10">pergunta do usuário</text>
+          <!-- Retrieval -->
+          <rect x="216" y="118" width="160" height="64" rx="12" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5"></rect>
+          <text x="296" y="146" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600">Recuperação</text>
+          <text x="296" y="166" text-anchor="middle" fill="#A8A29E" font-family="'JetBrains Mono',monospace" font-size="10">embed + busca</text>
+          <!-- Ranked chunks -->
+          <rect x="426" y="118" width="160" height="64" rx="12" fill="#0C0C0E" stroke="#a78bfa" stroke-width="1.5"></rect>
+          <text x="506" y="146" text-anchor="middle" fill="#F4F2EF" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600">Trechos ranqueados</text>
+          <text x="506" y="166" text-anchor="middle" fill="#A8A29E" font-family="'JetBrains Mono',monospace" font-size="10">rerank top-k</text>
+          <!-- Gate (diamond) -->
+          <polygon points="686,150 726,110 766,150 726,190" fill="#0C0C0E" stroke="#F59E0B" stroke-width="1.5"></polygon>
+          <text x="726" y="146" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600">Portão de</text>
+          <text x="726" y="160" text-anchor="middle" fill="#F59E0B" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600">evidência</text>
+          <!-- Grounded answer -->
+          <rect x="806" y="34" width="86" height="60" rx="12" fill="#0C0C0E" stroke="#10b981" stroke-width="1.5"></rect>
+          <text x="849" y="58" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Fundamentada</text>
+          <text x="849" y="76" text-anchor="middle" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="11">+ citada</text>
+          <!-- Abstain -->
+          <rect x="806" y="206" width="86" height="60" rx="12" fill="#0C0C0E" stroke="#f43f5e" stroke-width="1.5"></rect>
+          <text x="849" y="230" text-anchor="middle" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Abstém-se</text>
+          <text x="849" y="248" text-anchor="middle" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="10">sem evidência</text>
+          <!-- arrows -->
+          <line x1="166" y1="150" x2="212" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#arrow)"></line>
+            <circle class="flow-packet" r="3.2" cy="150" fill="#22d3ee"><animate attributeName="cx" values="150;700" dur="2.4s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" repeatCount="indefinite"></animate></circle>
+            <circle class="flow-packet" r="3.2" cy="150" fill="#10b981"><animate attributeName="cx" values="150;700" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate></circle>
+          <line x1="376" y1="150" x2="422" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#arrow)"></line>
+          <line x1="586" y1="150" x2="682" y2="150" stroke="#8E8882" stroke-width="1.5" marker-end="url(#arrow)"></line>
+          <path d="M760,132 Q800,100 806,72" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow)"></path>
+          <path d="M760,168 Q800,200 806,228" fill="none" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrow)"></path>
+          <text x="782" y="96" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="10">suficiente</text>
+          <text x="778" y="210" fill="#f43f5e" font-family="'JetBrains Mono',monospace" font-size="10">insuficiente</text>
+        </svg>
+        <p class="cap">O portão é o jogo todo. Respostas só entram em produção quando a evidência recuperada sustenta cada afirmação; caso contrário, o sistema se abstém em vez de fabular. Remover o ramo de abstenção é a causa mais comum de RAG "confiantemente errado".</p>
+      </div>
+    </section>
+
+    <!-- THE MATRIX -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">A matriz · modo de falha &rarr; a verificação que o pega</div>
+        <h3>Toda forma de o RAG quebrar, e seu teste.</h3>
+        <div class="tscroll" tabindex="0" role="region" aria-label="Tabela comparativa — role horizontalmente">
+          <table class="doc">
+            <caption>Modos de falha de RAG mapeados para a verificação de avaliação que pega cada um</caption>
+            <thead>
+              <tr><th scope="col">Modo de falha</th><th scope="col">O que o usuário vê</th><th scope="col">A verificação que o pega</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Afirmação sem citação</b></td><td>Uma frase confiante sem fonte que você possa verificar.</td><td class="chk">Cobertura de citações</td></tr>
+              <tr><td><b>Citação do trecho errado</b></td><td>Uma nota de rodapé que aponta para uma passagem que não sustenta a afirmação.</td><td class="chk">Acarretamento citação → afirmação</td></tr>
+              <tr><td><b>Recuperação falha</b></td><td>"Não sei" quando a resposta estava no corpus o tempo todo.</td><td class="chk">Recall de recuperação</td></tr>
+              <tr><td><b>Recuperação ruidosa</b></td><td>A resposta desvia porque trechos irrelevantes lotaram a janela de contexto.</td><td class="chk">Precisão de recuperação</td></tr>
+              <tr><td><b>Fato alucinado</b></td><td>Um detalhe plausível que as fontes nunca de fato continham.</td><td class="chk">Fundamentação / fidelidade</td></tr>
+              <tr><td><b>Fabulação confiante</b></td><td>Uma resposta completa a uma pergunta que o corpus não consegue sustentar.</td><td class="chk">Abster-se quando não há evidência</td></tr>
+              <tr><td><b>Índice desatualizado</b></td><td>A resposta de ontem para o documento de hoje.</td><td class="chk">Verificação de frescor / reindexação</td></tr>
+              <tr><td><b>Precisão inviável</b></td><td>Respostas corretas que levam 8 segundos e custam dinheiro de verdade cada uma.</td><td class="chk">Latência e custo por consulta</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Uma bateria séria roda toda essa matriz em um golden set fixo a cada mudança e reprova o build quando qualquer linha regride — a mesma disciplina de bloquear-na-regressão que está por trás do meu trabalho de QA.</p>
+      </article>
+    </section>
+
+    <!-- THE PROOF -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">A prova · cobertura de citações por construção</div>
+        <h3>100% citado, porque não há outro caminho.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">A decisão de design</div>
+            <p>Em vez de gerar prosa e torcer para que as citações se anexem, o pipeline vincula cada segmento de resposta emitido ao trecho recuperado do qual ele veio. Se uma afirmação não tem trecho de apoio, ela não é escrita — o sistema se abstém nesse ponto em vez de inventar um.</p>
+          </div>
+          <div class="blk">
+            <div class="h">Por que é estrutural</div>
+            <p>Cobertura de citações não é uma pontuação que ajustei — é uma propriedade do caminho de código. Não há rota de geração sem citação para regredir. Essa é a diferença entre "geralmente citamos" e "não conseguimos não citar".</p>
+          </div>
+          <div class="blk">
+            <div class="h">Veja rodando</div>
+            <p>O estudo de caso do painel de pesquisa percorre o build. E a própria <a href="/pt/eval.html" style="color:var(--cyan)">demo de avaliação ao vivo</a> do site permite colar uma resposta de IA e vê-la ser avaliada contra o mesmo tipo de verificações em tempo real.</p>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="/pt/case-studies.html">▸ veja o build 100% citado</a>
+          <a class="plink" style="--ac:var(--cyan)" href="/pt/eval.html">▸ experimente a demo de avaliação ao vivo</a>
+          <span class="verified">a cobertura é estrutural · verifique você mesmo</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- CREDIBILITY -->
+    <section style="padding-top:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">Por que aceitar este checklist de mim</div>
+        <h3>Eu bloqueio minhas próprias releases com base em evidências.</h3>
+        <p class="subtle" style="margin-top:12px;max-width:66ch">A disciplina de abster-se-e-citar acima não é teoria. Meu QA OS pegou <b>15 CVEs altas/críticas</b> em seu próprio conjunto de dependências, <b>bloqueou sua própria release</b> e foi corrigido no mesmo dia para <b>3.759 testes passando em 13 de 13 portões</b>. Minha suíte de regressão SDET roda <b>37 de 37 specs, zero flakes, em 15,3 segundos</b>. Este site inteiro roda seu próprio QA — <b>mais de 100 verificações, limpo no axe</b> — e traz uma demo de avaliação ao vivo que você mesmo pode quebrar.</p>
+        <div class="stack" style="margin-top:18px">
+          <span class="chip"><b>15</b> CVEs pegas, release bloqueada</span>
+          <span class="chip"><b>3.759</b> testes · 13/13 portões</span>
+          <span class="chip"><b>37/37</b> specs · 0 flakes · 15,3s</span>
+          <span class="chip">ISTQB <b>CT-AI</b></span>
+          <span class="chip">ISTQB <b>Test Automation Engineer</b></span>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os.html">▸ as CVEs pegas</a>
+          <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">▸ a correção no mesmo dia</a>
+          <a class="plink" style="--ac:var(--purple)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">▸ a suíte 37/37 &nearr;</a>
+        </div>
+      </article>
+    </section>
+
+
+    <section style="padding-top:0">
+      <div class="kick" style="color:var(--faint)">Relacionado &middot; mais sobre testar IA</div>
+      <div class="proofrow" style="border-top:none;padding-top:14px"><a href="/pt/hire-ai-qa-engineer.html" class="plink" style="--ac:var(--cyan)">Contrate um Engenheiro de QA de IA &rarr;</a><a href="/pt/llm-evaluation-consultant.html" class="plink" style="--ac:var(--cyan)">Consultor de Avaliação de LLM &rarr;</a><a href="/pt/ai-agent-testing.html" class="plink" style="--ac:var(--cyan)">Teste de Agentes de IA &rarr;</a><a href="/pt/reduce-test-flakiness.html" class="plink" style="--ac:var(--cyan)">Reduza Flakiness de Testes &rarr;</a></div>
+    </section>
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>Preocupado que seu sistema RAG esteja chutando?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Agende uma chamada e eu construo para você uma bateria de avaliação que pontua todas as cinco dimensões e bloqueia suas releases — ou avalie a resposta da sua IA ao vivo, agora mesmo.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/pt/book.html" class="cta" data-evt="rag-book">Agendar uma chamada &rarr;</a>
+        <a href="/pt/eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--cyan)">experimente a demo de avaliação ao vivo &rarr;</a>
+        <a href="/pt/case-studies.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">veja o build 100% citado &rarr;</a>
+      </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label" style="color:var(--cyan)">exemplo prático</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 8px">O que o portão de fato pega.</h2>
+      <p class="lede" style="margin:0 0 20px">Uma falha real de RAG não é um crash — é uma resposta confiante e errada que parece boa. Aqui está uma que a avaliação pega:</p>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:clamp(18px,3vw,26px)">
+        <div style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)">Consulta</div>
+        <p style="font-size:15px;color:var(--ink);margin:6px 0 18px">"Qual é a nossa janela de reembolso para planos enterprise?"</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="border:1px solid color-mix(in oklab,var(--rose) 40%,var(--line));border-radius:10px;padding:14px 16px;background:color-mix(in oklab,var(--rose) 7%,transparent)">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--rose)">✕ recuperou o trecho errado</div>
+            <p style="font-size:13px;color:var(--dim);line-height:1.6;margin:8px 0 0">O melhor match foi a política de <b style="color:var(--ink)">consumidor</b> ("30 dias com garantia de reembolso"). O modelo respondeu <b style="color:var(--ink)">"Sim — 30 dias"</b> — fluente, confiante e errado para enterprise. Um humano dá uma olhada e coloca em produção.</p>
+          </div>
+          <div style="border:1px solid color-mix(in oklab,var(--green) 40%,var(--line));border-radius:10px;padding:14px 16px;background:color-mix(in oklab,var(--green) 7%,transparent)">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--green)">✓ o portão pega, e então corrige</div>
+            <p style="font-size:13px;color:var(--dim);line-height:1.6;margin:8px 0 0">A pontuação de fidelidade sinaliza que a resposta não está fundamentada em uma fonte <b style="color:var(--ink)">enterprise</b> — <b style="color:var(--ink)">reprova no portão de citação</b>. A recuperação é ajustada para buscar os termos do formulário de pedido; a resposta corrigida cita a cláusula certa.</p>
+          </div>
+        </div>
+        <p style="font-family:var(--mono);font-size:11.5px;color:var(--faint);margin:16px 0 0">O ponto: a resposta errada parecia <em>idêntica</em> em qualidade à certa. Só uma verificação de fundamentação as distinguiu.</p>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">perguntas frequentes</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Perguntas, respondidas.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como testar RAG é diferente de testar um LLM puro?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">RAG tem duas superfícies de falha: recuperação (buscou o contexto certo?) e geração (respondeu com fidelidade e citou a fonte?). Você precisa medir ambas — uma resposta confiante a partir do trecho errado continua errada.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como você mede fidelidade e alucinação?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Cada resposta é pontuada contra o contexto recuperado com LLM-as-judge mais verificações determinísticas de citação, de modo que uma resposta que não esteja fundamentada em uma fonte real falha mesmo quando parece bem escrita.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">A avaliação de RAG pode rodar em CI?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sim. A suíte bloqueia merges — uma mudança de recuperação ou de prompt que reduza a cobertura de citações fica vermelha antes de entrar em produção.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">O que recebemos no final?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Uma suíte de avaliação de RAG classificada no seu repositório, um painel com pontuações, um portão de CI e um runbook que sua equipe pode operar.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Qual é a diferença entre cobertura de citações e fundamentação?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Cobertura de citações pergunta se a resposta cita suas fontes; fundamentação pergunta se essas fontes citadas realmente sustentam cada afirmação. Uma resposta pode citar um trecho e ainda assim interpretá-lo mal — por isso os dois são pontuados separadamente.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Quais métricas de recuperação você mede — precisão e recall de contexto?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Precisão de contexto (os trechos recuperados eram pertinentes?) e recall de contexto (a recuperação deixou de fora um trecho que a resposta precisava?). Ambas rodam contra um conjunto de perguntas rotulado, de modo que uma mudança no retriever move um número em vez de uma sensação.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Você conserta o pipeline de recuperação ou só o mede?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">A medição vem primeiro, mas a avaliação aponta direto para a correção — chunking, embeddings, reranking ou o prompt. Posso implementar essas mudanças e rodar a suíte novamente para comprovar o ganho.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como você impede o modelo de inventar fatos?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Cada afirmação é verificada contra o contexto recuperado, e respostas sem nenhuma fonte de apoio falham na avaliação. Combinado com um teste de abstenção, o sistema é pontuado por dizer “não sei” em vez de chutar.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Isso funciona com meu banco de dados vetorial e meu modelo de embedding?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sim — a avaliação fica acima da sua stack e trata a recuperação como caixa-preta, então qualquer banco de dados vetorial ou modelo de embedding funciona. Trocar qualquer um deles vira um experimento mensurável em vez de uma mudança às cegas.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Quais entregáveis eu recebo de uma avaliação de RAG?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Uma suíte de avaliação classificada no seu repositório, um painel com pontuações cobrindo recuperação e fundamentação, um portão de CI que bloqueia regressões e um runbook que sua equipe pode operar sem mim.</div>
+      </details>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Redes sociais" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="E-mail" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academy &#8599;</a> · <a href="/pt/privacy.html" class="dim-link" style="color:inherit">privacidade</a> · <a href="/pt/terms.html" class="dim-link" style="color:inherit">termos</a> · <a href="/pt/demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="/pt/what-i-build.html" class="dim-link" style="color:inherit">o que eu construo</a></span>
+    <span>tipografia em Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>todo número rotulado como verificado ou estimado. sem verde falso.</span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js?v=20260913a"></script>
+<script defer src="/assets/nav.js?v=20260910a"></script>
+<script defer src="/assets/transitions.js?v=20260912a"></script>
+
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+<script defer src="/assets/ga.js?v=3"></script>
+</body>
+</html>

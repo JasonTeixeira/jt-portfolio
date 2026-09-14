@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testing de agentes de IA: qué falla en producción</title>
+<meta name="description" content="Los modos de fallo que los tests unitarios no detectan en agentes de IA: deriva multiturno, errores de llamada a herramientas, inyección de prompts, no determinismo — y las sondas que los atrapan.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/es/ai-agent-testing.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Testing de agentes de IA: qué falla en producción">
+<meta property="og:description" content="Las evaluaciones de un solo turno pasan por alto los errores multiturno. La superficie de fallo de los sistemas agénticos — y las sondas golden, la batería de red-team y los chequeos de robustez que atrapan cada uno.">
+<meta property="og:url" content="https://agency.sageideas.dev/es/ai-agent-testing.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og-ai-agent-testing.png">
+<meta property="og:site_name" content="Sage Ideas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@SageideasAI">
+<link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=20260909a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1000px; margin:0 auto; padding:0 clamp(16px,4vw,40px); }
+  .kick { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.4rem,6vw,4rem); line-height:1.05; letter-spacing:-0.02em; margin:0; }
+  h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.6rem,3.2vw,2.2rem); letter-spacing:-0.015em; margin:0; }
+  .mono { font-family:var(--mono); }
+  .subtle { color:var(--dim); font-size:15px; line-height:1.72; }
+  .cred { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .cred .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:22px; padding:8px 15px; font-family:var(--mono); font-size:11.5px; color:var(--dim); background:var(--card); }
+  .cred .pill b { color:var(--ink); font-weight:600; }
+  .cred .pill.link { transition:border-color .2s; } .cred .pill.link:hover { border-color:var(--ac); }
+  .cred .dot { width:6px; height:6px; border-radius:50%; }
+
+  .case { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(24px,4vw,40px); margin-top:20px; position:relative; overflow:hidden; }
+  .case .tag { font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ac); }
+  .case h3 { font-family:var(--serif); font-weight:400; font-size:clamp(1.5rem,3vw,2rem); letter-spacing:-0.015em; margin:10px 0 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:20px 32px; margin-top:18px; }
+  .blk .h { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--faint); margin-bottom:8px; }
+  .blk p { margin:0; font-size:13.5px; line-height:1.68; color:var(--dim); }
+  .blk ul { margin:0; padding-left:18px; }
+  .blk li { font-size:13px; line-height:1.7; color:var(--dim); margin-bottom:5px; }
+  .blk li b { color:var(--ink); font-weight:600; }
+  .proofrow { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); align-items:center; }
+  .plink { display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--ac); border:1px solid var(--line); border-radius:8px; padding:9px 14px; transition:border-color .2s; }
+  .plink:hover { border-color:var(--ac); }
+  .verified { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .cta { display:inline-flex; align-items:center; gap:9px; background:var(--green); color:#052e22; border:none; border-radius:26px; padding:14px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  section { padding:clamp(36px,5vw,56px) 0; }
+  .rule { border-top:1px solid var(--line); }
+  .lede { font-size:clamp(1.02rem,1.7vw,1.18rem); line-height:1.7; color:var(--ink); max-width:60ch; }
+  .note { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:14px; line-height:1.6; }
+
+  /* comparison matrix */
+  table.doc { width:100%; border-collapse:collapse; margin-top:22px; font-size:13px; }
+  table.doc caption { text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); padding-bottom:12px; }
+  table.doc th, table.doc td { text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; }
+  table.doc thead th { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); font-weight:500; border-bottom:1px solid var(--line); }
+  table.doc tbody th { font-family:var(--mono); font-size:12px; font-weight:600; color:var(--ink); white-space:nowrap; }
+  table.doc td.miss { color:var(--dim); }
+  table.doc td.catch { color:var(--ink); }
+  table.doc td.catch b { color:var(--green); font-weight:600; }
+  .tscroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  /* svg diagram frame */
+  .diagram { border:1px solid var(--line); border-radius:18px; background:var(--card); padding:clamp(20px,3.5vw,34px); margin-top:20px; }
+  .diagram figcaption { font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:16px; line-height:1.6; }
+  .agent-svg { width:100%; height:auto; display:block; }
+  .agent-svg text { font-family:'JetBrains Mono',monospace; }
+  @media (prefers-reduced-motion: reduce) { .flow-packet { display:none; } }
+</style>
+  <script defer src="/_vercel/insights/script.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","datePublished":"2026-09-05","dateModified":"2026-09-06","name":"Testing de agentes de IA: qué falla en producción","about":"Modos de fallo de los sistemas agénticos de IA que los tests unitarios pasan por alto — deriva multiturno, errores de llamada a herramientas, inyección de prompts entre turnos, no determinismo — y las sondas golden multiturno, la batería de red-team y los chequeos de robustez que los atrapan.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"publisher":{"@type":"Person","name":"Jason Teixeira"},"url":"https://agency.sageideas.dev/ai-agent-testing.html","image":"https://agency.sageideas.dev/assets/og-ai-agent-testing.png","dateCreated":"2026-09-05"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Servicios","item":"https://agency.sageideas.dev/services.html"},{"@type":"ListItem","position":3,"name":"Testing de agentes de IA","item":"https://agency.sageideas.dev/ai-agent-testing.html"}]}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Por qué es más difícil testear agentes que un solo prompt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ejecutan acciones de múltiples pasos con herramientas y memoria, así que los fallos se acumulan a lo largo de los pasos y la misma entrada puede seguir caminos distintos. Se testea la trayectoria completa, no solo la respuesta final."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué verifica usted realmente en un agente?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La corrección de las llamadas a herramientas, el comportamiento de bucle y terminación, el cumplimiento de las barreras de protección, el coste y la latencia, y la recuperación tras un mal paso — además del resultado de extremo a extremo."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Funciona esto con LangGraph o con un bucle personalizado?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. Las mismas familias de chequeos aplican ya sea LangGraph, un bucle de agente personalizado u otro framework; conecto el harness a su implementación."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Puede bloquear los despliegues según las evaluaciones del agente?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. La evaluación del agente se ejecuta en CI y bloquea cualquier lanzamiento que regrese en las trayectorias que importan."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué frameworks de agentes soporta — LangGraph, CrewAI o un bucle personalizado?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Todos ellos. Los chequeos apuntan a la trayectoria del agente, no al framework, así que LangGraph, CrewAI y los bucles hechos a mano se conectan de la misma manera. Adapto el harness a cualquier runtime que ya esté ejecutando."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo bloquea un despliegue según el comportamiento del agente sin bloquear cada lanzamiento?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La evaluación se ejecuta en CI contra un conjunto fijo de trayectorias golden y solo bloquea cuando el comportamiento regresa en esas. El no determinismo se maneja con bandas de tolerancia y ejecuciones repetidas, de modo que un lanzamiento sano se publica y una regresión real lo detiene."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo es la línea de tiempo de un encargo típico?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Comienza con una fase corta de alcance para mapear las trayectorias críticas de su agente, luego una fase de construcción de las sondas golden y la batería de red-team, y después la entrega con el harness conectado a CI. El trabajo se concentra al inicio; el harness sigue funcionando después de que me voy."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Qué recibo realmente al final del encargo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Un harness de tests funcionando en su repositorio — sondas golden, una batería de red-team y bloqueo en CI — más un informe escrito de los modos de fallo encontrados y cómo se atrapa ahora cada uno. Todo es suyo para ejecutar y ampliar sin mí."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo testea agentes que llaman a herramientas y APIs externas?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Las llamadas a herramientas se ejercitan contra fakes controlados y fixtures grabados para que los tests sigan siendo deterministas, y luego se verifican puntualmente contra la integración en vivo. Eso atrapa las llamadas malformadas, los argumentos incorrectos y los errores de herramienta mal gestionados antes de que lleguen a producción."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo se define el alcance y se cotiza un encargo de testing de agentes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "El alcance sigue la superficie de su agente — el número de trayectorias, herramientas y barreras de protección que necesitan cobertura — y el precio es una cotización fija por alcance acordado. Usted recibe la estimación antes de que comience cualquier trabajo, sin un contador por horas abierto."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.sageideas.dev/#organization","name":"Sage Ideas","legalName":"Sage Ideas LLC","url":"https://www.sageideas.dev","logo":"https://www.sageideas.dev/brand/sage-mark.svg","sameAs":["https://www.youtube.com/@SageideasAI"]},{"@type":"WebSite","@id":"https://agency.sageideas.dev/#website","name":"Sage Ideas","url":"https://agency.sageideas.dev/","publisher":{"@id":"https://www.sageideas.dev/#organization"}}]}</script>
+
+<link rel="alternate" hreflang="en" href="https://agency.sageideas.dev/ai-agent-testing.html">
+<link rel="alternate" hreflang="es" href="https://agency.sageideas.dev/es/ai-agent-testing.html">
+<link rel="alternate" hreflang="pt" href="https://agency.sageideas.dev/pt/ai-agent-testing.html">
+<link rel="alternate" hreflang="x-default" href="https://agency.sageideas.dev/ai-agent-testing.html">
+<meta property="og:locale" content="es_ES">
+</head>
+<body>
+<div data-i18n="1" role="navigation" aria-label="Language" style="position:fixed;left:16px;bottom:16px;z-index:90;display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:0.08em;background:rgba(9,9,11,0.85);backdrop-filter:blur(6px);border:1px solid #2A2826;border-radius:999px;padding:7px 12px"><a href="/ai-agent-testing.html" style="color:#8E8882;text-decoration:none">EN</a><span style="color:#3D3A37">·</span><span aria-current="true" style="color:#10b981;font-weight:600">ES</span><span style="color:#3D3A37">·</span><a href="/pt/ai-agent-testing.html" style="color:#8E8882;text-decoration:none">PT</a></div>
+<div id="jt-pt" aria-hidden="true"><div class="jt-pt-mark"><span style="color:#22d3ee">J</span><span style="color:#a78bfa">T</span></div></div>
+<div style="min-height:100vh;background:var(--bg)">
+  <nav class="site-nav">
+    <a href="/es/index.html" class="site-nav-brand" aria-label="Jason Teixeira — inicio">
+      <span class="site-nav-mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span>
+      <span class="site-nav-nm">jason.teixeira<span style="color:var(--green)">()</span></span>
+    </a>
+    <button type="button" class="site-nav-burger" id="site-nav-burger" aria-label="Menú" aria-expanded="false" aria-controls="site-nav-panel">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="site-nav-links" id="site-nav-panel">
+      <a href="/es/approach.html" class="site-nav-link">Enfoque</a>
+      <a href="/es/services.html" class="site-nav-link">Servicios</a>
+      <a href="/es/case-studies.html" class="site-nav-link">Trabajo</a>
+      <a href="/es/proof.html" class="site-nav-link">Pruebas</a>
+      <a href="/es/resources.html" class="site-nav-link">Recursos</a>
+      <a href="/es/lab.html" class="site-nav-link">Lab</a>
+      <a href="/es/build.html" class="site-nav-link">Definir un proyecto</a>
+      <a href="/es/docs.html" class="site-nav-link">Docs</a>
+      <a href="/automations/" class="site-nav-link" data-evt="nav-automations">Automatizaciones</a>
+      <a href="/es/field-notes.html" class="site-nav-link">Notas de campo</a>
+      <span class="nav-social" aria-label="Enlaces sociales" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding-left:14px;border-left:1px solid #26231F"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Correo" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+      <a href="/es/book.html" class="btn-solid green site-nav-cta" data-evt="nav-book">Reservar una llamada &rarr;</a>
+    </div>
+  </nav>
+
+  <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
+    <div class="kick" style="color:var(--cyan)">Testing de agentes de IA · cómo testear LangGraph y sistemas agénticos</div>
+    <h1 style="margin-top:20px;max-width:22ch">Testing de agentes de IA: qué falla <em style="color:var(--cyan)">en producción.</em></h1>
+    <p class="lede" style="margin-top:22px">Los agentes no fallan como fallan las funciones. Un test unitario compara una entrada contra una salida; un agente planifica, llama a herramientas, recuerda y entra en bucle — así que los errores viven <em>entre</em> turnos, en la frontera de las herramientas y en las partes que no son deterministas. Esta página mapea la superficie de fallo que los tests unitarios no pueden ver, y las sondas que atrapan cada una antes que sus usuarios.</p>
+    <div class="cred">
+      <a class="pill link" style="--ac:var(--green)" href="/es/eval.html"><span class="dot" style="background:var(--green)"></span>Demo de eval en vivo: <b>califica una respuesta</b> &rarr;</a>
+      <a class="pill link" style="--ac:var(--purple)" href="services/llm-evaluation-qa.html"><span class="dot" style="background:var(--purple)"></span>Servicio: <b>Evaluación y QA de LLM</b> &rarr;</a>
+      <span class="pill"><span class="dot" style="background:var(--cyan)"></span>ISTQB <b>CT-AI</b> + Test Automation Engineer</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- THE REAL LESSON -->
+    <section style="padding-bottom:0">
+      <article class="case" style="--ac:var(--cyan)">
+        <div class="tag">La lección · por qué las evaluaciones de un solo turno no bastan</div>
+        <h3>Una suite de un solo turno en verde ocultaba un 502 en cada respuesta de seguimiento.</h3>
+        <p class="subtle" style="margin-top:14px;max-width:66ch">En un build, un chatbot de definición de alcance pasaba sus chequeos de un solo turno limpiamente: haces una pregunta, obtienes una buena respuesta, aserción en verde. Pero en el momento en que un usuario enviaba un <em>segundo</em> mensaje en la misma conversación, el endpoint devolvía un <span class="mono" style="color:var(--rose)">502</span> — todas las veces. El testing de un solo turno no puede ver eso, porque nunca envía el turno dos. Una <b>sonda golden multiturno</b> — una conversación con guion que reproduce varios turnos y hace aserciones sobre toda la trayectoria — lo atrapó de inmediato. Ese es el núcleo del testing de agentes: testeas la <em>conversación</em> y el <em>bucle</em>, no una sola llamada.</p>
+        <div class="proofrow">
+          <span class="verified">Lección real de un build ya lanzado · ninguna métrica reclamada más allá del propio fallo</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE FAILURE SURFACE MATRIX -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <div class="kick" style="color:var(--purple)">La superficie de fallo</div>
+      <h2 style="margin-top:12px">Lo que los tests unitarios pasan por alto — y lo que lo atrapa.</h2>
+      <p class="subtle" style="margin-top:12px;max-width:64ch">Cada fila es un modo de fallo que un test unitario de un solo turno estructuralmente no puede observar, emparejado con la sonda que sí lo hace.</p>
+      <div class="tscroll" tabindex="0" role="region" aria-label="Tabla comparativa — desplaza horizontalmente">
+        <table class="doc">
+          <caption>Superficie de fallo del agente → cómo un test unitario lo pasa por alto → la sonda que lo atrapa</caption>
+          <thead>
+            <tr>
+              <th scope="col">Modo de fallo</th>
+              <th scope="col">Cómo lo pasa por alto un test unitario</th>
+              <th scope="col">La sonda que lo atrapa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Deriva multiturno</th>
+              <td class="miss">Hace aserciones sobre un par de entrada/salida; la conversación nunca llega al turno dos, así que el estado que solo se corrompe entre turnos es invisible.</td>
+              <td class="catch"><b>Sonda golden multiturno</b> — una conversación con guion de N turnos que hace aserciones sobre la trayectoria completa, no sobre una respuesta.</td>
+            </tr>
+            <tr>
+              <th scope="row">Errores de llamada a herramientas</th>
+              <td class="miss">Simula la herramienta y verifica el camino feliz; nunca ejercita argumentos malformados, selección de herramienta incorrecta o una herramienta que devuelve un error.</td>
+              <td class="catch"><b>Aserciones en la frontera de herramientas</b> — verifican que el agente elige la herramienta correcta, con argumentos válidos, y se recupera cuando la herramienta falla.</td>
+            </tr>
+            <tr>
+              <th scope="row">Inyección de prompts entre turnos</th>
+              <td class="miss">Testea solo entradas confiables; el contenido hostil plantado en el turno uno que secuestra el turno tres queda fuera de alcance.</td>
+              <td class="catch"><b>Batería de red-team</b> — payloads inyectados en la salida de herramientas y en el historial, verificando que el agente rechace y se mantenga en política.</td>
+            </tr>
+            <tr>
+              <th scope="row">No determinismo e inestabilidad</th>
+              <td class="miss">Una sola pasada se ve en verde; la misma entrada produce en silencio un camino distinto e incorrecto en la siguiente ejecución.</td>
+              <td class="catch"><b>Ejecuciones de repetición / robustez</b> — la misma sonda ejecutada K veces, puntuada según la tasa de aciertos, con chequeos de paráfrasis y reintento.</td>
+            </tr>
+            <tr>
+              <th scope="row">Fallos de bucle y terminación</th>
+              <td class="miss">No se ejecuta ningún bucle, así que los bucles de herramientas desbocados, las salidas prematuras y los planes atascados nunca salen a la luz.</td>
+              <td class="catch"><b>Límites de trayectoria</b> — verifican el número de pasos, la terminación y que el agente alcance un estado de parada válido.</td>
+            </tr>
+            <tr>
+              <th scope="row">Salida sin fundamento / sin citas</th>
+              <td class="miss">Verifica que el texto se lea bien, no si cada afirmación se remonta a una fuente recuperada.</td>
+              <td class="catch"><b>Barrera de cobertura de citas</b> — cada afirmación generada debe mapear a una fuente, exigido por construcción.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Método, no dependencia de un proveedor. Las mismas tres familias — sondas golden multiturno, una batería de red-team y ejecuciones de repetición/robustez — aplican a LangGraph, a un bucle personalizado o a un framework de agentes listo para usar.</p>
+    </section>
+
+    <!-- THE DIAGRAM -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <div class="kick" style="color:var(--green)">El bucle, instrumentado</div>
+      <h2 style="margin-top:12px">Dónde se enganchan las sondas.</h2>
+      <p class="subtle" style="margin-top:12px;max-width:60ch">Un agente es un bucle: recibir entrada, planificar, llamar a una herramienta, responder — y a menudo repetir. Cada arista de ese bucle es un lugar donde se engancha una sonda. La barrera al final decide publicar o bloquear.</p>
+      <figure class="diagram" style="margin:0;margin-top:20px">
+        <svg class="agent-svg" viewBox="0 0 860 400" role="img" aria-labelledby="loop-title loop-desc">
+          <title id="loop-title">Bucle del agente con puntos de enganche de sondas</title>
+          <desc id="loop-desc">La entrada fluye hacia Planificar, luego Llamada a herramienta, luego Responder, y vuelve a Planificar para el siguiente turno. Las sondas golden multiturno se enganchan entre turnos, las aserciones en la frontera de herramientas se enganchan en la llamada a la herramienta, y una batería de red-team inyecta en la entrada y en la salida de la herramienta. La trayectoria se puntúa contra una barrera de evaluación que publica o bloquea el lanzamiento.</desc>
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#8E8882"></path>
+            </marker>
+            <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#10b981"></path>
+            </marker>
+          </defs>
+
+          <!-- loop nodes -->
+          <g>
+            <rect x="24" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#2A2826"></rect>
+            <text x="89" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Entrada</text>
+            <text x="89" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">turno del usuario</text>
+          </g>
+          <g>
+            <rect x="234" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#22d3ee"></rect>
+            <text x="299" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Planificar</text>
+            <text x="299" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">elegir siguiente paso</text>
+          </g>
+          <g>
+            <rect x="444" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#a78bfa"></rect>
+            <text x="509" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Llamada a herramienta</text>
+            <text x="509" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">actuar sobre el mundo</text>
+          </g>
+          <g>
+            <rect x="654" y="150" width="130" height="64" rx="12" fill="#0C0C0E" stroke="#2A2826"></rect>
+            <text x="719" y="178" text-anchor="middle" font-size="14" fill="#F4F2EF">Responder</text>
+            <text x="719" y="197" text-anchor="middle" font-size="10.5" fill="#8E8882">responder / continuar</text>
+          </g>
+
+          <!-- forward edges -->
+          <line x1="154" y1="182" x2="228" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
+            <circle class="flow-packet" r="3.2" cy="182" fill="#22d3ee"><animate attributeName="cx" values="140;660" dur="2.4s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" repeatCount="indefinite"></animate></circle>
+            <circle class="flow-packet" r="3.2" cy="182" fill="#10b981"><animate attributeName="cx" values="140;660" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate></circle>
+          <line x1="364" y1="182" x2="438" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
+          <line x1="574" y1="182" x2="648" y2="182" stroke="#8E8882" stroke-width="1.5" marker-end="url(#ah)"></line>
+
+          <!-- loop-back edge: Respond -> Plan (next turn) -->
+          <path d="M719 214 L719 268 L299 268 L299 218" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah)"></path>
+          <text x="509" y="286" text-anchor="middle" font-size="11" fill="#22d3ee">siguiente turno — donde se esconde la deriva multiturno</text>
+
+          <!-- probe labels above -->
+          <text x="509" y="112" text-anchor="middle" font-size="11" fill="#a78bfa">aserciones en la frontera de herramientas</text>
+          <line x1="509" y1="120" x2="509" y2="146" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#ah)"></line>
+
+          <text x="89" y="112" text-anchor="middle" font-size="11" fill="#f43f5e">inyección red-team</text>
+          <line x1="89" y1="120" x2="89" y2="146" stroke="#f43f5e" stroke-width="1.2" marker-end="url(#ah)"></line>
+
+          <!-- trajectory -> gate -->
+          <path d="M719 214 L719 330 L300 330" fill="none" stroke="#8E8882" stroke-width="1.2"></path>
+          <text x="470" y="322" text-anchor="middle" font-size="10.5" fill="#8E8882">trayectoria puntuada</text>
+
+          <!-- eval gate -->
+          <g>
+            <rect x="150" y="308" width="150" height="66" rx="12" fill="#0C0C0E" stroke="#10b981"></rect>
+            <text x="225" y="336" text-anchor="middle" font-size="13" fill="#10b981">Barrera de eval</text>
+            <text x="225" y="355" text-anchor="middle" font-size="10.5" fill="#8E8882">tasa de aciertos + red-team</text>
+          </g>
+          <line x1="300" y1="330" x2="304" y2="330" stroke="#8E8882" stroke-width="1.2"></line>
+
+          <!-- ship / block -->
+          <line x1="150" y1="330" x2="96" y2="330" stroke="#10b981" stroke-width="1.5" marker-end="url(#ahg)"></line>
+          <text x="60" y="326" text-anchor="middle" font-size="11" fill="#10b981">publicar</text>
+          <text x="60" y="342" text-anchor="middle" font-size="9.5" fill="#8E8882">barreras superadas</text>
+
+          <line x1="225" y1="308" x2="225" y2="238" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah)"></line>
+          <text x="225" y="230" text-anchor="middle" font-size="11" fill="#f43f5e">bloquear — falla → de vuelta a corregir</text>
+        </svg>
+        <figcaption>El bucle es la unidad bajo prueba. Las sondas se enganchan en cada arista; la barrera de evaluación convierte una trayectoria puntuada en una decisión de publicar-o-bloquear — la misma disciplina que permitió a mi QA OS bloquear su propio lanzamiento cuando encontró 15 CVEs high/critical.</figcaption>
+      </figure>
+    </section>
+
+    <!-- THE METHOD -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <article class="case" style="--ac:var(--purple)">
+        <div class="tag">El método · tres familias de sonda</div>
+        <h3>Sondas golden multiturno + una batería de red-team + robustez.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">1 · Sondas golden multiturno</div>
+            <p>Conversaciones con guion que reproducen varios turnos y hacen aserciones sobre la trayectoria completa — elección de herramienta, estado y respuesta final. Esta es la capa que habría atrapado el 502 del segundo turno el primer día.</p>
+          </div>
+          <div class="blk">
+            <div class="h">2 · Batería de red-team</div>
+            <ul>
+              <li>Inyección plantada en la <b>salida de herramientas</b> y el <b>historial</b>, no solo en el prompt</li>
+              <li>Verificar que el agente <b>rechace</b> y se mantenga en política</li>
+              <li>Casos de jailbreak, exfiltración y escape de alcance ejecutados en cada build</li>
+            </ul>
+          </div>
+          <div class="blk">
+            <div class="h">3 · Reintento / robustez</div>
+            <ul>
+              <li>Ejecutar cada sonda <b>K veces</b>, puntuar según la tasa de aciertos — inestable ≠ aprobado</li>
+              <li>Parafrasear la misma intención; el agente debe mantenerse</li>
+              <li>Acotar los pasos del bucle y verificar una terminación limpia</li>
+            </ul>
+          </div>
+        </div>
+        <div class="proofrow">
+          <a class="plink" style="--ac:var(--purple)" href="services/llm-evaluation-qa.html">▸ cómo lo ejecuto como servicio</a>
+          <a class="plink" style="--ac:var(--green)" href="/es/eval.html">▸ prueba la demo de eval en vivo</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- THE PROOF -->
+    <section style="padding-top:clamp(28px,4vw,40px);padding-bottom:0">
+      <article class="case" style="--ac:var(--green)">
+        <div class="tag">La prueba · no afirmaciones, recibos</div>
+        <h3>Esto no es teoría — es como ya trabajo.</h3>
+        <div class="grid" style="margin-top:22px">
+          <div class="blk">
+            <div class="h">Una barrera que bloqueó su propio lanzamiento</div>
+            <p>Mi QA OS atrapó <b>15 CVEs high/critical</b>, bloqueó el lanzamiento, y fue parcheado a <b>3.759 tests / 13 de 13 barreras</b> el mismo día. Una barrera que no puede decir «no» no es una barrera.</p>
+            <div class="proofrow" style="margin-top:16px;padding-top:14px">
+              <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os.html">▸ captura del bloqueo</a>
+              <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">▸ captura corregida</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Fundamentado por construcción</div>
+            <p>Un dashboard de investigación RAG con <b>100 % de cobertura de citas</b> — no existe ningún camino para generar una afirmación sin cita. La barrera de citas es estructural, no una esperanza.</p>
+            <div class="proofrow" style="margin-top:16px;padding-top:14px">
+              <a class="plink" style="--ac:var(--green)" href="/es/case-studies.html">▸ caso de estudio</a>
+            </div>
+          </div>
+          <div class="blk">
+            <div class="h">Suites deterministas que se mantienen</div>
+            <p>Una suite pública de regresión SDET: <b>37/37 specs, 0 inestabilidades, 15,3 s</b>. En flujos de trabajo fintech en vivo llevé la tasa de inestabilidad del <b>10 % a menos del 1 %</b> en más de 500 tests.</p>
+            <div class="proofrow" style="margin-top:16px;padding-top:14px">
+              <a class="plink" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener">▸ la suite en GitHub &nearr;</a>
+            </div>
+          </div>
+        </div>
+        <div class="proofrow">
+          <span class="verified">Las cifras públicas enlazan a un recibo; las cifras de HighStrike son de un rol anterior, autoinformadas · este sitio ejecuta su propio QA (más de 100 chequeos, limpio con axe)</span>
+        </div>
+      </article>
+    </section>
+
+
+    <section style="padding-top:0">
+      <div class="kick" style="color:var(--faint)">Relacionado &middot; más sobre testing de IA</div>
+      <div class="proofrow" style="border-top:none;padding-top:14px"><a href="/es/hire-ai-qa-engineer.html" class="plink" style="--ac:var(--cyan)">Contratar a un ingeniero de QA de IA &rarr;</a><a href="/es/llm-evaluation-consultant.html" class="plink" style="--ac:var(--cyan)">Consultor de evaluación de LLM &rarr;</a><a href="/es/rag-evaluation-guide.html" class="plink" style="--ac:var(--cyan)">Evaluación de RAG &rarr;</a><a href="/es/reduce-test-flakiness.html" class="plink" style="--ac:var(--cyan)">Reducir la inestabilidad de tests &rarr;</a></div>
+    </section>
+    <!-- CTA -->
+    <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
+      <h2>¿Preocupado por que un agente específico se lance roto?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Reserva una llamada y definiremos el alcance de una suite de sondas para tu agente — o pega la respuesta de tu IA en la demo de eval en vivo y observa cómo se califica ahora mismo.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <a href="/es/book.html" class="cta" data-evt="agent-book">Reservar una llamada &rarr;</a>
+        <a href="/es/eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">▸ prueba la demo de eval en vivo</a>
+        <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">Evaluación y QA de LLM &rarr;</a>
+      </div>
+    </section>
+    <section class="wrap" style="padding:clamp(40px,6vw,72px) 0 0">
+      <div class="sec-rule"><span class="sec-label">preguntas frecuentes</span><span class="line"></span></div>
+      <h2 style="font-family:var(--serif,'Instrument Serif',Georgia,serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.6rem);margin:14px 0 22px">Preguntas, respondidas.</h2>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Por qué es más difícil testear agentes que un solo prompt?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Ejecutan acciones de múltiples pasos con herramientas y memoria, así que los fallos se acumulan a lo largo de los pasos y la misma entrada puede seguir caminos distintos. Se testea la trayectoria completa, no solo la respuesta final.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué verifica usted realmente en un agente?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">La corrección de las llamadas a herramientas, el comportamiento de bucle y terminación, el cumplimiento de las barreras de protección, el coste y la latencia, y la recuperación tras un mal paso — además del resultado de extremo a extremo.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Funciona esto con LangGraph o con un bucle personalizado?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sí. Las mismas familias de chequeos aplican ya sea LangGraph, un bucle de agente personalizado u otro framework; conecto el harness a su implementación.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Puede bloquear los despliegues según las evaluaciones del agente?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sí. La evaluación del agente se ejecuta en CI y bloquea cualquier lanzamiento que regrese en las trayectorias que importan.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué frameworks de agentes soporta — LangGraph, CrewAI o un bucle personalizado?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Todos ellos. Los chequeos apuntan a la trayectoria del agente, no al framework, así que LangGraph, CrewAI y los bucles hechos a mano se conectan de la misma manera. Adapto el harness a cualquier runtime que ya esté ejecutando.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo bloquea un despliegue según el comportamiento del agente sin bloquear cada lanzamiento?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">La evaluación se ejecuta en CI contra un conjunto fijo de trayectorias golden y solo bloquea cuando el comportamiento regresa en esas. El no determinismo se maneja con bandas de tolerancia y ejecuciones repetidas, de modo que un lanzamiento sano se publica y una regresión real lo detiene.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo es la línea de tiempo de un encargo típico?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Comienza con una fase corta de alcance para mapear las trayectorias críticas de su agente, luego una fase de construcción de las sondas golden y la batería de red-team, y después la entrega con el harness conectado a CI. El trabajo se concentra al inicio; el harness sigue funcionando después de que me voy.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué recibo realmente al final del encargo?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Un harness de tests funcionando en su repositorio — sondas golden, una batería de red-team y bloqueo en CI — más un informe escrito de los modos de fallo encontrados y cómo se atrapa ahora cada uno. Todo es suyo para ejecutar y ampliar sin mí.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo testea agentes que llaman a herramientas y APIs externas?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Las llamadas a herramientas se ejercitan contra fakes controlados y fixtures grabados para que los tests sigan siendo deterministas, y luego se verifican puntualmente contra la integración en vivo. Eso atrapa las llamadas malformadas, los argumentos incorrectos y los errores de herramienta mal gestionados antes de que lleguen a producción.</div>
+      </details>
+      <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo se define el alcance y se cotiza un encargo de testing de agentes?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">El alcance sigue la superficie de su agente — el número de trayectorias, herramientas y barreras de protección que necesitan cobertura — y el precio es una cotización fija por alcance acordado. Usted recibe la estimación antes de que comience cualquier trabajo, sin un contador por horas abierto.</div>
+      </details>
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid #2A2826;padding:22px clamp(18px,4vw,40px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;color:#837D77">
+    <span class="foot-social" aria-label="Enlaces sociales" style="display:inline-flex;align-items:center;gap:4px"><a href="https://github.com/JasonTeixeira" target="_blank" rel="noopener" aria-label="GitHub" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.3 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.05.78 2.12v3.15c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg></a><a href="https://www.linkedin.com/in/jason-teixeira" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.2.8 24 1.77 24h20.45c.98 0 1.78-.8 1.78-1.75V1.75C24 .78 23.2 0 22.22 0z"/></svg></a><a href="https://www.youtube.com/@SageideasAI" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a><a href="mailto:hello@sageideas.dev" aria-label="Correo" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;color:#6E6862;transition:color .18s ease,background .18s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6l9 6 9-6"/></svg></a></span>
+    <span>© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC &middot; <a href="https://sageideas.dev/academy" class="dim-link" style="color:inherit" target="_blank" rel="noopener">academia &#8599;</a> · <a href="/es/privacy.html" class="dim-link" style="color:inherit">privacidad</a> · <a href="/es/terms.html" class="dim-link" style="color:inherit">términos</a> · <a href="/es/demos.html" class="dim-link" style="color:inherit">demos</a> &middot; <a href="/es/what-i-build.html" class="dim-link" style="color:inherit">lo que construyo</a></span>
+    <span>compuesto en Instrument Serif · Plus Jakarta Sans · JetBrains Mono</span>
+    <span>cada número etiquetado como verificado o estimado. sin verde falso.</span>
+  </footer>
+</div>
+<script defer src="/assets/agent.js?v=20260913a"></script>
+<script defer src="/assets/nav.js?v=20260910a"></script>
+<script defer src="/assets/transitions.js?v=20260912a"></script>
+
+<script>document.querySelectorAll("[data-year]").forEach(function(n){n.textContent=new Date().getFullYear()});</script>
+<script defer src="/assets/ga.js?v=3"></script>
+</body>
+</html>
