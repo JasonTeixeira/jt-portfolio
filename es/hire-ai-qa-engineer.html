@@ -220,7 +220,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
     <div class="kick" style="color:var(--cyan)">Contratación · Ingeniería de calidad de IA</div>
     <h1 style="margin-top:20px;max-width:22ch">Contrate a un ingeniero de QA de IA <em style="color:var(--cyan)">antes de que su LLM salga sin probar.</em></h1>
-    <p class="lede" style="margin-top:22px">Una función de IA que se lanza sin pruebas no se cae — falla <em>en silencio</em>. Alucina una política, cita una fuente que no existe, filtra un prompt o le da con total confianza el número equivocado a un cliente. Nadie recibe un stack trace. Se entera por una captura de pantalla en redes sociales. Yo soy el ingeniero que incorpora <em>antes</em> de que eso ocurra: construyo las suites de evaluación, los gates de juez y la disciplina de regresión en CI que atrapan una mala respuesta mientras todavía está en su pipeline — no frente a sus clientes.</p>
+    <p class="lede" style="margin-top:22px">Una función de IA que se lanza sin pruebas no se cae — falla <em>en silencio</em>. Alucina una política, cita una fuente que no existe, filtra un prompt o, con total confianza, le da a un cliente el número equivocado. Nadie recibe un stack trace. Se entera por una captura de pantalla en redes sociales. Yo soy el ingeniero que incorpora <em>antes</em> de que eso ocurra: construyo las suites de evaluación, los gates de juez y la disciplina de regresión en CI que detectan una mala respuesta mientras todavía está en su pipeline — no frente a sus clientes.</p>
     <div class="cred">
       <span class="pill" style="--ac:var(--green)"><span class="dot" style="background:var(--green)"></span>ISTQB <b>CT-AI</b></span>
       <span class="pill" style="--ac:var(--cyan)"><span class="dot" style="background:var(--cyan)"></span>ISTQB <b>Test Automation Engineer</b></span>
@@ -245,7 +245,7 @@
       <article class="case" style="--ac:var(--rose)">
         <div class="tag">El riesgo · por qué existe este rol</div>
         <h3>Quienes construyen la función son las personas equivocadas para demostrar que funciona.</h3>
-        <p class="subtle" style="margin-top:14px;max-width:66ch">Quien escribió el prompt ya cree que funciona — ese es exactamente el sesgo que QA existe para romper. Una función de LLM tiene modos de fallo que el software ordinario no tiene: es no determinista, se degrada en silencio cuando un modelo o un prompt cambia aguas arriba, y "parece correcto" no es lo mismo que "es correcto". Probarla requiere una disciplina que se sitúa <em>entre</em> construir IA y el QA tradicional. Esa es la brecha que yo cubro.</p>
+        <p class="subtle" style="margin-top:14px;max-width:66ch">Quien escribió el prompt ya cree que funciona — ese es exactamente el sesgo que QA existe para romper. Una función de LLM tiene modos de fallo que el software ordinario no tiene: es no determinista, se degrada en silencio cuando un modelo o un prompt cambia aguas arriba, y "parece correcto" no es lo mismo que "es correcto". Probarla requiere una disciplina que se sitúa <em>entre</em> la construcción de IA y el QA tradicional. Esa es la brecha que yo cubro.</p>
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">Lo que se lanza sin probar</div>
@@ -283,7 +283,7 @@
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">La brecha de capacidades · quién hace qué</div>
         <h3>Un constructor de IA, un ingeniero de QA y yo no somos la misma contratación.</h3>
-        <p class="subtle" style="margin-top:14px;max-width:64ch">La mayoría de los equipos ya tienen a alguien que puede construir una función de LLM, y quizá a alguien que puede escribir pruebas de UI. Ninguno de los dos, por sí solo, cierra el ciclo de la calidad de la IA. Aquí está la división honesta.</p>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">La mayoría de los equipos ya tienen a alguien que puede construir una función de LLM, y quizá a alguien que puede escribir pruebas de UI. Ninguno de los dos, por sí solo, cierra el ciclo de la calidad de la IA. Esta es la división honesta.</p>
         <div class="matrix-wrap" tabindex="0" role="region" aria-label="Comparación de capacidades: constructor de IA vs QA generalista vs ingeniero de QA de IA">
           <table class="matrix">
             <caption class="mono" style="text-align:left;padding:12px 16px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)">Comparación de capacidades</caption>
@@ -329,7 +329,7 @@
             </tbody>
           </table>
         </div>
-        <p class="mcap"><span class="yes">Sí</span> = fortaleza principal &middot; <span class="partial">Parcial / Varía</span> = depende de la persona &middot; <span class="no">No / Rara vez</span> = no es el rol. Valorado con honestidad — existe un constructor de IA que también construye gates de evaluación, pero no es lo habitual.</p>
+        <p class="mcap"><span class="yes">Sí</span> = fortaleza principal &middot; <span class="partial">Parcial / Varía</span> = depende de la persona &middot; <span class="no">No / Rara vez</span> = no es el rol. Valorado con honestidad — hay constructores de IA que también crean gates de evaluación, pero no es lo habitual.</p>
       </article>
     </section>
 
@@ -338,7 +338,7 @@
       <article class="case" style="--ac:var(--green)">
         <div class="tag">El mecanismo · el gate de evaluación</div>
         <h3>Cada respuesta de IA supera una prueba de fuego antes de que un cliente la vea.</h3>
-        <p class="subtle" style="margin-top:14px;max-width:64ch">Esta es la forma del sistema que construyo. La salida de su IA no se lanza por fe — se puntúa contra comprobaciones de seguridad y calidad, y un gate de CI toma una decisión binaria: lanzarla, o bloquear la versión y decirle exactamente qué comprobación falló.</p>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Esta es la forma del sistema que construyo. La salida de su IA no se lanza a ciegas — se puntúa contra comprobaciones de seguridad y calidad, y un gate de CI toma una decisión binaria: lanzarla, o bloquear la versión y decirle exactamente qué comprobación falló.</p>
         <div class="diagram">
           <svg viewBox="0 0 900 300" role="img" aria-labelledby="dg-title dg-desc" preserveAspectRatio="xMidYMid meet">
             <title id="dg-title">El flujo del gate de evaluación de IA</title>
@@ -382,7 +382,7 @@
             <text x="788" y="231" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#A8A29E">versión retenida</text>
           </svg>
         </div>
-        <p class="dgcap">La misma disciplina de gate ejecuta este mismo sitio. ¿Quiere ver una comprobación puntuar una respuesta real? Pegue la salida de su IA en la demo en vivo y véala calificarse.</p>
+        <p class="dgcap">La misma disciplina de gate hace funcionar este propio sitio. ¿Quiere ver cómo una comprobación puntúa una respuesta real? Pegue la salida de su IA en la demo en vivo y vea cómo se califica.</p>
         <div class="proofrow">
           <a class="plink" style="--ac:var(--green)" href="/es/eval.html#byo">&#9656; califique su propia IA, en vivo</a>
           <span class="verified">evaluación real &middot; se ejecuta en su navegador &middot; sin registro</span>
@@ -395,10 +395,10 @@
       <article class="case" style="--ac:var(--amber)">
         <div class="tag">Guía del comprador · cómo distinguir una contratación real de una tienda que revende Zapier</div>
         <h3>No todos los que venden "QA de IA" están probando IA.</h3>
-        <p class="subtle" style="margin-top:14px;max-width:64ch">Muchas ofertas de "QA de IA" son un flujo de Zapier con un chatbot atornillado. Aquí está cómo notar la diferencia antes de firmar nada.</p>
+        <p class="subtle" style="margin-top:14px;max-width:64ch">Muchas ofertas de "QA de IA" son un flujo de Zapier con un chatbot pegado encima. Así se nota la diferencia antes de firmar nada.</p>
         <div class="flags">
           <div class="flag red"><div class="lbl">&#9873; Señal de alerta</div><p>Muestra un chatbot respondiendo preguntas y llama a eso "probado".</p></div>
-          <div class="flag green"><div class="lbl">&#10003; Buena señal</div><p>Le muestra una evaluación que <b>falla</b> y la comprobación exacta que la atrapó.</p></div>
+          <div class="flag green"><div class="lbl">&#10003; Buena señal</div><p>Le muestra una evaluación que <b>falla</b> y la comprobación exacta que la detectó.</p></div>
 
           <div class="flag red"><div class="lbl">&#9873; Señal de alerta</div><p>Cita una cifra de precisión sin un golden set que la respalde.</p></div>
           <div class="flag green"><div class="lbl">&#10003; Buena señal</div><p>Le entrega un <b>golden set versionado</b> que usted posee y puede volver a ejecutar.</p></div>
@@ -416,7 +416,7 @@
     <section style="padding-top:0">
       <article class="case" style="--ac:var(--purple)">
         <div class="tag">La prueba · afirmaciones que puedo respaldar</div>
-        <h3>La tesis entera de este sitio: pruebas por encima de promesas.</h3>
+        <h3>Toda la tesis de este sitio: pruebas por encima de promesas.</h3>
         <p class="subtle" style="margin-top:14px;max-width:64ch">Cada cifra aquí está enlazada a su evidencia. Si no puedo mostrarlo, no lo digo.</p>
         <div class="grid" style="margin-top:22px">
           <div class="blk">

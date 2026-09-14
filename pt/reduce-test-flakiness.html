@@ -116,7 +116,7 @@
       "name": "Vocês vão reconstruir toda a nossa suíte?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Raramente. Manter sua suíte existente e torná-la confiável é mais rápido e mais barato; uma reconstrução é o último recurso, não o primeiro movimento."
+        "text": "Raramente. Manter sua suíte existente e torná-la confiável é mais rápido e mais barato; uma reconstrução é o último recurso, não o primeiro passo."
       }
     },
     {
@@ -132,7 +132,7 @@
       "name": "Como você mede nossa taxa real de flake antes de começar?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Eu re-executo sua suíte em muitas passagens de CI sobre código inalterado e conto os testes que alternam entre passar e falhar. Isso dá uma taxa real de flake e uma lista ranqueada dos piores infratores antes de eu tocar em qualquer coisa."
+        "text": "Eu re-executo sua suíte em várias rodadas de CI sobre o mesmo código, sem alterações, e conto os testes que alternam entre passar e falhar. Isso dá uma taxa real de flake e uma lista ranqueada dos piores culpados antes de eu tocar em qualquer coisa."
       }
     },
     {
@@ -156,7 +156,7 @@
       "name": "Isso funciona com nossa suíte existente ou exige uma reescrita?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Funciona com sua suíte existente. Seja usando Playwright, Pytest ou outro framework, eu estabilizo o que você já tem em vez de começar do zero — uma reconstrução é o último recurso."
+        "text": "Funciona com sua suíte existente. Seja com Playwright, Pytest ou outro framework, eu estabilizo o que você já tem em vez de começar do zero — uma reconstrução é o último recurso."
       }
     },
     {
@@ -164,7 +164,7 @@
       "name": "Como você encontra a causa raiz de um teste instável?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Eu isolo o teste que falha, executo dentro e fora de ordem e inspeciono estado compartilhado, timing e fixtures até a falha reproduzir sob demanda. Um flake que você consegue reproduzir é um bug que você consegue corrigir."
+        "text": "Eu isolo o teste que falha, executo na ordem e fora dela e inspeciono estado compartilhado, timing e fixtures até a falha se reproduzir sob demanda. Um flake que você consegue reproduzir é um bug que você consegue corrigir."
       }
     },
     {
@@ -218,7 +218,7 @@
   <header class="wrap" style="padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(8px,2vw,20px)">
     <div class="kick" style="color:var(--cyan)">Automação de testes · protocolo anti-flake</div>
     <h1 style="margin-top:20px;max-width:22ch">Uma suíte instável é pior que <em style="color:var(--rose)">nenhuma suíte.</em></h1>
-    <p class="lede" style="margin-top:22px">Quando um run vermelho é só ruído, os engenheiros param de lê-lo — e na única vez em que o vermelho significava uma regressão real, ela passa direto para a produção. A instabilidade não é um incômodo; é a falha de todo o portão. Este é o protocolo que uso para levar uma suíte de vermelho-como-ruído para vermelho-como-sinal: diagnosticar as fontes, colocar em quarentena e definir uma política de retry, corrigir o isolamento — e manter os testes que você já escreveu.</p>
+    <p class="lede" style="margin-top:22px">Quando um run vermelho é só ruído, os engenheiros param de olhar para ele — e na única vez em que o vermelho significa uma regressão real, ela passa direto para produção. A instabilidade não é um incômodo; é a falha do portão inteiro. Este é o protocolo que uso para levar uma suíte de vermelho-como-ruído para vermelho-como-sinal: diagnosticar as fontes, colocar em quarentena e definir uma política de retry, corrigir o isolamento — e manter os testes que você já escreveu.</p>
     <div class="cred">
       <a class="pill link" style="--ac:var(--green)" href="https://github.com/JasonTeixeira/playwright-sdet-regression-suite" target="_blank" rel="noopener"><span class="dot" style="background:var(--green)"></span>Prova: <b>37/37, 0 flakes, 15,3s</b> &nearr;</a>
       <a class="pill link" style="--ac:var(--cyan)" href="/pt/eval.html"><span class="dot" style="background:var(--cyan)"></span>Este site roda seu <b>próprio QA</b> &nearr;</a>
@@ -244,7 +244,7 @@
         <div class="stat"><div class="n">37&nbsp;/&nbsp;37</div><div class="l">specs verdes · 0 flakes · 15,3s (suíte pública)</div></div>
         <div class="stat"><div class="n">4h &rarr; 75min</div><div class="l">Regressão Home Depot, 2.300+ lojas</div></div>
       </div>
-      <p class="note">Cada número aqui vem de trabalho real. Os públicos apontam para o comprovante — a suíte Playwright está no <span class="mono">GitHub</span> e o próprio QA deste site roda ao vivo em <a href="/pt/eval.html" style="color:var(--cyan)">eval.html</a>; os números da HighStrike &amp; Home Depot são de cargos full-time anteriores e são auto-reportados. Sem números de demo arredondados para cima.</p>
+      <p class="note">Cada número aqui vem de trabalho real. Os números públicos apontam para o comprovante — a suíte Playwright está no <span class="mono">GitHub</span> e o próprio QA deste site roda ao vivo em <a href="/pt/eval.html" style="color:var(--cyan)">eval.html</a>; os números da HighStrike &amp; Home Depot vêm de cargos full-time anteriores e são auto-reportados. Sem números de demo arredondados para cima.</p>
     </section>
 
     <!-- WHY FLAKINESS IS THE FAILURE -->
@@ -259,11 +259,11 @@
           </div>
           <div class="blk">
             <div class="h">O imposto de velocidade</div>
-            <p>Cada vermelho instável é uma troca de contexto: investigar, descartar, re-executar, esperar. Multiplique isso por uma equipe e por um dia, e a suíte que você construiu para ir mais rápido é a coisa que desacelera cada merge.</p>
+            <p>Cada vermelho instável é uma troca de contexto: investigar, descartar, re-executar, esperar. Multiplique isso por uma equipe e por um dia, e a suíte que você construiu para ir mais rápido acaba sendo o que desacelera cada merge.</p>
           </div>
           <div class="blk">
             <div class="h">O portão que não é portão</div>
-            <p>Um portão de CI só protege você se o vermelho for acreditado. Uma vez que ele é ruído, o portão é decorativo — você está entregando na esperança, com um dashboard esverdeado que dá falsa confiança.</p>
+            <p>Um portão de CI só protege você se o vermelho tiver credibilidade. Assim que ele vira ruído, o portão é decorativo — você entrega na base da esperança, com um painel todo verde que passa uma falsa confiança.</p>
           </div>
         </div>
       </article>
@@ -359,7 +359,7 @@
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">O diagnóstico · fonte do flake &rarr; correção</div>
         <h3>A maior parte da instabilidade vem de quatro lugares.</h3>
-        <p class="subtle" style="margin-top:12px;max-width:62ch">A instabilidade raramente é aleatória — é um sintoma com uma fonte. O protocolo começa nomeando qual delas você tem, porque a correção é diferente para cada uma. Este é o mapa a partir do qual eu trabalho.</p>
+        <p class="subtle" style="margin-top:12px;max-width:62ch">A instabilidade raramente é aleatória — é um sintoma com uma fonte. O protocolo começa nomeando qual delas você tem, porque a correção é diferente para cada uma. É o mapa que eu uso como base.</p>
         <div class="matrix-scroll" tabindex="0" role="region" aria-label="Tabela comparativa — role horizontalmente">
           <table class="matrix">
             <caption>Fonte do flake → sinal &rarr; correção</caption>
@@ -369,12 +369,12 @@
             <tbody>
               <tr>
                 <th scope="row">Timing &amp; corridas</th>
-                <td>Passa localmente, falha em CI; falha sob carga; "resolvido" adicionando um <span class="tell mono">sleep()</span>.</td>
+                <td>Passa localmente, falha no CI; falha sob carga; "resolvido" adicionando um <span class="tell mono">sleep()</span>.</td>
                 <td>Substitua esperas fixas por <b>esperas baseadas em estado</b> (web-first assertions, poll-until-condition). Nunca espere pelo relógio — espere pela aplicação.</td>
               </tr>
               <tr>
                 <th scope="row">Estado compartilhado</th>
-                <td>Só falha quando executado <span class="tell">junto</span> com outros testes; um registro "envenenado" de um teste anterior vaza para dentro.</td>
+                <td>Só falha quando executado <span class="tell">junto</span> com outros testes; um registro "envenenado" deixado por um teste anterior acaba vazando.</td>
                 <td><b>Isole cada teste</b>: fixtures novas, dados únicos por run, teardown que realmente limpa. Nenhum teste deve depender de outro ter rodado.</td>
               </tr>
               <tr>
@@ -384,8 +384,8 @@
               </tr>
               <tr>
                 <th scope="row">Ambiente &amp; dados</th>
-                <td>Depende de um terceiro ao vivo, de uma linha semeada, de uma hora do dia ou do clima da rede.</td>
-                <td><b>Controle a fronteira</b>: seeds determinísticos, externos mockados ou testados por contrato, relógios congelados onde o comportamento é sensível ao tempo.</td>
+                <td>Depende de um terceiro ao vivo, de um registro pré-populado, da hora do dia ou das condições da rede.</td>
+                <td><b>Controle a fronteira</b>: seeds determinísticos, serviços externos mockados ou testados por contrato, relógios congelados onde o comportamento é sensível ao tempo.</td>
               </tr>
             </tbody>
           </table>
@@ -419,7 +419,7 @@
           <div class="blk">
             <div class="h">3 · Correções de isolamento</div>
             <ul>
-              <li>Trabalhe a faixa de quarentena para baixo, fonte por fonte, usando a matriz acima</li>
+              <li>Reduza a faixa de quarentena, fonte por fonte, usando a matriz acima</li>
               <li>Cada spec corrigida <b>volta à ativa</b> na suíte bloqueante, comprovadamente estável</li>
               <li>Você termina com a <b>mesma cobertura</b> com que começou — agora confiável</li>
             </ul>
@@ -447,7 +447,7 @@
           </div>
           <div class="blk">
             <div class="h">Este site faz o QA de si mesmo</div>
-            <p>O site que você está lendo roda seu próprio QA — 100+ verificações, acessibilidade axe-clean — e hospeda uma <b>demo de eval ao vivo</b>. Prova acima de alegações é a tese inteira, então a prova está a um clique de distância, não em um PDF de estudo de caso.</p>
+            <p>O site que você está lendo roda seu próprio QA — 100+ verificações, acessibilidade axe-clean — e hospeda uma <b>demo de eval ao vivo</b>. Prova acima de alegações é toda a tese, então a prova está a um clique de distância, não em um PDF de estudo de caso.</p>
             <div class="stack">
               <span class="chip">100+ verificações</span><span class="chip">axe-clean</span><span class="chip"><b>demo ao vivo</b></span>
             </div>
@@ -487,7 +487,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Vocês vão reconstruir toda a nossa suíte?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Raramente. Manter sua suíte existente e torná-la confiável é mais rápido e mais barato; uma reconstrução é o último recurso, não o primeiro movimento.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Raramente. Manter sua suíte existente e torná-la confiável é mais rápido e mais barato; uma reconstrução é o último recurso, não o primeiro passo.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Que resultado posso esperar?</summary>
@@ -495,7 +495,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como você mede nossa taxa real de flake antes de começar?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Eu re-executo sua suíte em muitas passagens de CI sobre código inalterado e conto os testes que alternam entre passar e falhar. Isso dá uma taxa real de flake e uma lista ranqueada dos piores infratores antes de eu tocar em qualquer coisa.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Eu re-executo sua suíte em várias rodadas de CI sobre o mesmo código, sem alterações, e conto os testes que alternam entre passar e falhar. Isso dá uma taxa real de flake e uma lista ranqueada dos piores culpados antes de eu tocar em qualquer coisa.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Qual é a política de quarentena — testes instáveis são desabilitados?</summary>
@@ -507,11 +507,11 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Isso funciona com nossa suíte existente ou exige uma reescrita?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Funciona com sua suíte existente. Seja usando Playwright, Pytest ou outro framework, eu estabilizo o que você já tem em vez de começar do zero — uma reconstrução é o último recurso.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Funciona com sua suíte existente. Seja com Playwright, Pytest ou outro framework, eu estabilizo o que você já tem em vez de começar do zero — uma reconstrução é o último recurso.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">Como você encontra a causa raiz de um teste instável?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Eu isolo o teste que falha, executo dentro e fora de ordem e inspeciono estado compartilhado, timing e fixtures até a falha reproduzir sob demanda. Um flake que você consegue reproduzir é um bug que você consegue corrigir.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Eu isolo o teste que falha, executo na ordem e fora dela e inspeciono estado compartilhado, timing e fixtures até a falha se reproduzir sob demanda. Um flake que você consegue reproduzir é um bug que você consegue corrigir.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">O que ficamos ao final que impede o flake de voltar?</summary>

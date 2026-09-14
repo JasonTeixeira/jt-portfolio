@@ -103,7 +103,7 @@
       "name": "¿Funciona esto con LangGraph o con un bucle personalizado?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sí. Las mismas familias de chequeos aplican ya sea LangGraph, un bucle de agente personalizado u otro framework; conecto el harness a su implementación."
+        "text": "Sí. Las mismas familias de chequeos valen para LangGraph, para un bucle de agente personalizado o para otro framework; conecto el harness a su implementación."
       }
     },
     {
@@ -111,15 +111,15 @@
       "name": "¿Puede bloquear los despliegues según las evaluaciones del agente?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sí. La evaluación del agente se ejecuta en CI y bloquea cualquier lanzamiento que regrese en las trayectorias que importan."
+        "text": "Sí. La evaluación del agente se ejecuta en CI y bloquea cualquier lanzamiento que provoque una regresión en las trayectorias que importan."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Qué frameworks de agentes soporta — LangGraph, CrewAI o un bucle personalizado?",
+      "name": "¿Qué frameworks de agentes admite — LangGraph, CrewAI o un bucle personalizado?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Todos ellos. Los chequeos apuntan a la trayectoria del agente, no al framework, así que LangGraph, CrewAI y los bucles hechos a mano se conectan de la misma manera. Adapto el harness a cualquier runtime que ya esté ejecutando."
+        "text": "Todos ellos. Los chequeos apuntan a la trayectoria del agente, no al framework, así que LangGraph, CrewAI y los bucles hechos a mano se conectan de la misma manera. Adapto el harness a cualquier runtime que ya tenga en marcha."
       }
     },
     {
@@ -127,15 +127,15 @@
       "name": "¿Cómo bloquea un despliegue según el comportamiento del agente sin bloquear cada lanzamiento?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "La evaluación se ejecuta en CI contra un conjunto fijo de trayectorias golden y solo bloquea cuando el comportamiento regresa en esas. El no determinismo se maneja con bandas de tolerancia y ejecuciones repetidas, de modo que un lanzamiento sano se publica y una regresión real lo detiene."
+        "text": "La evaluación se ejecuta en CI contra un conjunto fijo de trayectorias golden y solo bloquea cuando el comportamiento sufre una regresión en ellas. El no determinismo se maneja con bandas de tolerancia y ejecuciones repetidas, de modo que un lanzamiento en buen estado se publica y una regresión real lo detiene."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Cómo es la línea de tiempo de un encargo típico?",
+      "name": "¿Cómo son los plazos de un encargo típico?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Comienza con una fase corta de alcance para mapear las trayectorias críticas de su agente, luego una fase de construcción de las sondas golden y la batería de red-team, y después la entrega con el harness conectado a CI. El trabajo se concentra al inicio; el harness sigue funcionando después de que me voy."
+        "text": "Comienza con una fase corta de alcance para mapear las trayectorias críticas de su agente, luego una fase de construcción de las sondas golden y la batería de red-team, y después la entrega con el harness conectado a CI. El trabajo se concentra al inicio; el harness sigue funcionando cuando yo ya no estoy."
       }
     },
     {
@@ -159,7 +159,7 @@
       "name": "¿Cómo se define el alcance y se cotiza un encargo de testing de agentes?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "El alcance sigue la superficie de su agente — el número de trayectorias, herramientas y barreras de protección que necesitan cobertura — y el precio es una cotización fija por alcance acordado. Usted recibe la estimación antes de que comience cualquier trabajo, sin un contador por horas abierto."
+        "text": "El alcance se ajusta a la superficie de su agente — el número de trayectorias, herramientas y barreras de protección que necesitan cobertura — y el precio es una cotización fija por alcance acordado. Usted recibe la estimación antes de que comience cualquier trabajo, sin un contador de horas en marcha."
       }
     }
   ]
@@ -206,7 +206,7 @@
     <h1 style="margin-top:20px;max-width:22ch">Testing de agentes de IA: qué falla <em style="color:var(--cyan)">en producción.</em></h1>
     <p class="lede" style="margin-top:22px">Los agentes no fallan como fallan las funciones. Un test unitario compara una entrada contra una salida; un agente planifica, llama a herramientas, recuerda y entra en bucle — así que los errores viven <em>entre</em> turnos, en la frontera de las herramientas y en las partes que no son deterministas. Esta página mapea la superficie de fallo que los tests unitarios no pueden ver, y las sondas que atrapan cada una antes que sus usuarios.</p>
     <div class="cred">
-      <a class="pill link" style="--ac:var(--green)" href="/es/eval.html"><span class="dot" style="background:var(--green)"></span>Demo de eval en vivo: <b>califica una respuesta</b> &rarr;</a>
+      <a class="pill link" style="--ac:var(--green)" href="/es/eval.html"><span class="dot" style="background:var(--green)"></span>Demo de eval en vivo: <b>califique una respuesta</b> &rarr;</a>
       <a class="pill link" style="--ac:var(--purple)" href="services/llm-evaluation-qa.html"><span class="dot" style="background:var(--purple)"></span>Servicio: <b>Evaluación y QA de LLM</b> &rarr;</a>
       <span class="pill"><span class="dot" style="background:var(--cyan)"></span>ISTQB <b>CT-AI</b> + Test Automation Engineer</span>
     </div>
@@ -219,7 +219,7 @@
       <article class="case" style="--ac:var(--cyan)">
         <div class="tag">La lección · por qué las evaluaciones de un solo turno no bastan</div>
         <h3>Una suite de un solo turno en verde ocultaba un 502 en cada respuesta de seguimiento.</h3>
-        <p class="subtle" style="margin-top:14px;max-width:66ch">En un build, un chatbot de definición de alcance pasaba sus chequeos de un solo turno limpiamente: haces una pregunta, obtienes una buena respuesta, aserción en verde. Pero en el momento en que un usuario enviaba un <em>segundo</em> mensaje en la misma conversación, el endpoint devolvía un <span class="mono" style="color:var(--rose)">502</span> — todas las veces. El testing de un solo turno no puede ver eso, porque nunca envía el turno dos. Una <b>sonda golden multiturno</b> — una conversación con guion que reproduce varios turnos y hace aserciones sobre toda la trayectoria — lo atrapó de inmediato. Ese es el núcleo del testing de agentes: testeas la <em>conversación</em> y el <em>bucle</em>, no una sola llamada.</p>
+        <p class="subtle" style="margin-top:14px;max-width:66ch">En un build, un chatbot de definición de alcance pasaba sus chequeos de un solo turno limpiamente: se hace una pregunta, se obtiene una buena respuesta, aserción en verde. Pero en el momento en que un usuario enviaba un <em>segundo</em> mensaje en la misma conversación, el endpoint devolvía un <span class="mono" style="color:var(--rose)">502</span> — todas las veces. El testing de un solo turno no puede ver eso, porque nunca envía el turno dos. Una <b>sonda golden multiturno</b> — una conversación con guion que reproduce varios turnos y hace aserciones sobre toda la trayectoria — lo atrapó de inmediato. Ese es el núcleo del testing de agentes: se testea la <em>conversación</em> y el <em>bucle</em>, no una sola llamada.</p>
         <div class="proofrow">
           <span class="verified">Lección real de un build ya lanzado · ninguna métrica reclamada más allá del propio fallo</span>
         </div>
@@ -270,12 +270,12 @@
             <tr>
               <th scope="row">Salida sin fundamento / sin citas</th>
               <td class="miss">Verifica que el texto se lea bien, no si cada afirmación se remonta a una fuente recuperada.</td>
-              <td class="catch"><b>Barrera de cobertura de citas</b> — cada afirmación generada debe mapear a una fuente, exigido por construcción.</td>
+              <td class="catch"><b>Barrera de cobertura de citas</b> — cada afirmación generada debe mapear a una fuente, exigido por diseño.</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="note">Método, no dependencia de un proveedor. Las mismas tres familias — sondas golden multiturno, una batería de red-team y ejecuciones de repetición/robustez — aplican a LangGraph, a un bucle personalizado o a un framework de agentes listo para usar.</p>
+      <p class="note">Método, no dependencia de un proveedor. Las mismas tres familias — sondas golden multiturno, una batería de red-team y ejecuciones de repetición/robustez — se aplican a LangGraph, a un bucle personalizado o a un framework de agentes listo para usar.</p>
     </section>
 
     <!-- THE DIAGRAM -->
@@ -389,7 +389,7 @@
         </div>
         <div class="proofrow">
           <a class="plink" style="--ac:var(--purple)" href="services/llm-evaluation-qa.html">▸ cómo lo ejecuto como servicio</a>
-          <a class="plink" style="--ac:var(--green)" href="/es/eval.html">▸ prueba la demo de eval en vivo</a>
+          <a class="plink" style="--ac:var(--green)" href="/es/eval.html">▸ pruebe la demo de eval en vivo</a>
         </div>
       </article>
     </section>
@@ -402,15 +402,15 @@
         <div class="grid" style="margin-top:22px">
           <div class="blk">
             <div class="h">Una barrera que bloqueó su propio lanzamiento</div>
-            <p>Mi QA OS atrapó <b>15 CVEs high/critical</b>, bloqueó el lanzamiento, y fue parcheado a <b>3.759 tests / 13 de 13 barreras</b> el mismo día. Una barrera que no puede decir «no» no es una barrera.</p>
+            <p>Mi QA OS atrapó <b>15 CVEs high/critical</b>, bloqueó el lanzamiento y se parcheó el mismo día hasta <b>3.759 tests / 13 de 13 barreras</b>. Una barrera que no puede decir «no» no es una barrera.</p>
             <div class="proofrow" style="margin-top:16px;padding-top:14px">
               <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os.html">▸ captura del bloqueo</a>
               <a class="plink" style="--ac:var(--green)" href="captures/nexural-qa-os-fixed.html">▸ captura corregida</a>
             </div>
           </div>
           <div class="blk">
-            <div class="h">Fundamentado por construcción</div>
-            <p>Un dashboard de investigación RAG con <b>100 % de cobertura de citas</b> — no existe ningún camino para generar una afirmación sin cita. La barrera de citas es estructural, no una esperanza.</p>
+            <div class="h">Fundamentado por diseño</div>
+            <p>Un dashboard de investigación RAG con <b>100 % de cobertura de citas</b> — no hay forma de generar una afirmación sin cita. La barrera de citas es estructural, no un simple deseo.</p>
             <div class="proofrow" style="margin-top:16px;padding-top:14px">
               <a class="plink" style="--ac:var(--green)" href="/es/case-studies.html">▸ caso de estudio</a>
             </div>
@@ -436,11 +436,11 @@
     </section>
     <!-- CTA -->
     <section class="rule" style="text-align:center;max-width:640px;margin:0 auto">
-      <h2>¿Preocupado por que un agente específico se lance roto?</h2>
-      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Reserva una llamada y definiremos el alcance de una suite de sondas para tu agente — o pega la respuesta de tu IA en la demo de eval en vivo y observa cómo se califica ahora mismo.</p>
+      <h2>¿Le preocupa que un agente específico se lance roto?</h2>
+      <p class="subtle" style="margin:14px auto 0;max-width:48ch">Reserve una llamada y definiremos el alcance de una suite de sondas para su agente — o pegue la respuesta de su IA en la demo de eval en vivo y observe cómo se califica ahora mismo.</p>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap">
         <a href="/es/book.html" class="cta" data-evt="agent-book">Reservar una llamada &rarr;</a>
-        <a href="/es/eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">▸ prueba la demo de eval en vivo</a>
+        <a href="/es/eval.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--green)">▸ pruebe la demo de eval en vivo</a>
         <a href="services/llm-evaluation-qa.html" class="mono" style="display:inline-flex;align-items:center;padding:14px 8px;font-size:13px;color:var(--purple)">Evaluación y QA de LLM &rarr;</a>
       </div>
     </section>
@@ -457,23 +457,23 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Funciona esto con LangGraph o con un bucle personalizado?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sí. Las mismas familias de chequeos aplican ya sea LangGraph, un bucle de agente personalizado u otro framework; conecto el harness a su implementación.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sí. Las mismas familias de chequeos valen para LangGraph, para un bucle de agente personalizado o para otro framework; conecto el harness a su implementación.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Puede bloquear los despliegues según las evaluaciones del agente?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sí. La evaluación del agente se ejecuta en CI y bloquea cualquier lanzamiento que regrese en las trayectorias que importan.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Sí. La evaluación del agente se ejecuta en CI y bloquea cualquier lanzamiento que provoque una regresión en las trayectorias que importan.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
-        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué frameworks de agentes soporta — LangGraph, CrewAI o un bucle personalizado?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Todos ellos. Los chequeos apuntan a la trayectoria del agente, no al framework, así que LangGraph, CrewAI y los bucles hechos a mano se conectan de la misma manera. Adapto el harness a cualquier runtime que ya esté ejecutando.</div>
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué frameworks de agentes admite — LangGraph, CrewAI o un bucle personalizado?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Todos ellos. Los chequeos apuntan a la trayectoria del agente, no al framework, así que LangGraph, CrewAI y los bucles hechos a mano se conectan de la misma manera. Adapto el harness a cualquier runtime que ya tenga en marcha.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo bloquea un despliegue según el comportamiento del agente sin bloquear cada lanzamiento?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">La evaluación se ejecuta en CI contra un conjunto fijo de trayectorias golden y solo bloquea cuando el comportamiento regresa en esas. El no determinismo se maneja con bandas de tolerancia y ejecuciones repetidas, de modo que un lanzamiento sano se publica y una regresión real lo detiene.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">La evaluación se ejecuta en CI contra un conjunto fijo de trayectorias golden y solo bloquea cuando el comportamiento sufre una regresión en ellas. El no determinismo se maneja con bandas de tolerancia y ejecuciones repetidas, de modo que un lanzamiento en buen estado se publica y una regresión real lo detiene.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
-        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo es la línea de tiempo de un encargo típico?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Comienza con una fase corta de alcance para mapear las trayectorias críticas de su agente, luego una fase de construcción de las sondas golden y la batería de red-team, y después la entrega con el harness conectado a CI. El trabajo se concentra al inicio; el harness sigue funcionando después de que me voy.</div>
+        <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo son los plazos de un encargo típico?</summary>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">Comienza con una fase corta de alcance para mapear las trayectorias críticas de su agente, luego una fase de construcción de las sondas golden y la batería de red-team, y después la entrega con el harness conectado a CI. El trabajo se concentra al inicio; el harness sigue funcionando cuando yo ya no estoy.</div>
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Qué recibo realmente al final del encargo?</summary>
@@ -485,7 +485,7 @@
       </details>
       <details class="lp-faq-item" style="border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:9px">
         <summary style="cursor:pointer;padding:15px 18px;font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink)">¿Cómo se define el alcance y se cotiza un encargo de testing de agentes?</summary>
-        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">El alcance sigue la superficie de su agente — el número de trayectorias, herramientas y barreras de protección que necesitan cobertura — y el precio es una cotización fija por alcance acordado. Usted recibe la estimación antes de que comience cualquier trabajo, sin un contador por horas abierto.</div>
+        <div style="padding:0 18px 16px;color:var(--dim);font-size:14px;line-height:1.72">El alcance se ajusta a la superficie de su agente — el número de trayectorias, herramientas y barreras de protección que necesitan cobertura — y el precio es una cotización fija por alcance acordado. Usted recibe la estimación antes de que comience cualquier trabajo, sin un contador de horas en marcha.</div>
       </details>
     </section>
   </main>
