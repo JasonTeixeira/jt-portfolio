@@ -69,7 +69,7 @@
       var email = (emailEl.value || '').trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { emailEl.style.borderColor = '#f43f5e'; emailEl.focus(); return; }
       var btn = form.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'sending…';
-      if (w.plausible) { try { w.plausible('exit-intent-submit'); } catch (e) { /* ignore */ } }
+      try { if (typeof w.va === 'function') w.va('event', { name: 'exit-intent-submit' }); } catch (e) { /* ignore */ }
       fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, feature: (urlEl.value || '').trim(), name: '', source: 'exit-intent' }) })
         .then(function (r) { return r && r.ok; }).catch(function () { return false; })
         .then(function (ok) {

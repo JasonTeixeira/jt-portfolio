@@ -892,7 +892,7 @@
       meEmail.style.borderColor = '#2A2826';
       var btn = meForm.querySelector('button[type=submit]');
       btn.disabled = true; btn.textContent = 'sending…';
-      if (window.plausible) { try { window.plausible('mini-eval-submit'); } catch (e) {} }
+      try { if (typeof window.va === 'function') window.va('event', { name: 'mini-eval-submit' }); } catch (e) {}
       fetch('/api/lead', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, feature: (meUrl.value || '').trim(), name: '', source: 'mini-eval' })
