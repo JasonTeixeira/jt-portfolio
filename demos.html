@@ -328,7 +328,7 @@
   // Resolve the live/demo badge on load (a cheap /api/health read) so it never hangs
   // on 'connecting…' for a visitor who doesn't type. A real chat still upgrades it to live.
   fetch('/api/health').then(function(r){ return r.ok ? r.json() : null; }).then(function(h){
-    if (realAI === null) { realAI = !!(h && h.llm); setTag(); }
+    if (realAI === null) { realAI = !!(h && h.subsystems && h.subsystems.llm); setTag(); }
   }).catch(function(){ if (realAI === null) { realAI = false; setTag(); } });
 
   /* ===== CHAT ===== */
