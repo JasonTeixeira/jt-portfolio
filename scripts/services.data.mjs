@@ -15,7 +15,7 @@ export const SERVICES = [
     video: 'svc-llm-eval',
     color: '#a78bfa',
     keyword: 'LLM evaluation & AI quality',
-    title: 'LLM Evaluation Consultant — Eval Suites, Hallucination Testing & CI Quality Gates',
+    title: 'LLM Evaluation & QA Service — Hallucination Testing & CI Quality Gates',
     metaDescription: 'Freelance LLM evaluation and AI QA engineer. Golden datasets, LLM-as-judge scoring, hallucination and prompt-injection testing with Promptfoo/DeepEval — wired into your CI so quality regressions block the deploy.',
     h1: 'Your LLM feature, under real evaluation.',
     sub: 'Golden datasets, LLM-as-judge scoring, and safety runners — hallucination, injection, toxicity, PII — wired into your CI. A prompt change that makes things worse stops at the gate, not in production.',
