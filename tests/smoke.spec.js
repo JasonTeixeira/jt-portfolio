@@ -726,11 +726,12 @@ test.describe('portfolio — lead magnet + concierge', () => {
     await expect(panel).toBeVisible();
     // greeting + starter chips render
     await expect(panel.getByText('Nadine', { exact: false }).first()).toBeVisible();
-    // send a pricing question; offline it must use the scripted brain and never invent a price
+    // send a pricing question; offline it uses the scripted brain and cites the published
+    // fixed prices ($497 audit / from $4,997 / from $299/mo) without inventing a project-specific quote
     await panel.locator('input[aria-label="Message Nadine"]').fill('how much does it cost?');
     await panel.locator('button[aria-label="Send"]').click();
-    await expect(panel).toContainText('no fixed price list', { timeout: 6000 });
-    await expect(panel).not.toContainText('$');
+    await expect(panel).toContainText('fixed price', { timeout: 6000 });
+    await expect(panel).toContainText('$497');
     // contextual action chips appear (mini-eval / book)
     await expect(panel.getByRole('button', { name: /mini-eval|Book a call/ }).first()).toBeVisible();
   });

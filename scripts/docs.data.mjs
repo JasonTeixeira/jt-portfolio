@@ -3,7 +3,7 @@
  * build-docs.mjs renders NAV (the sidebar) + PAGES (generated docs pages) into
  * a consistent, sidebar-navigated documentation experience.
  *
- * Brand rules baked into the copy: quote-first (never a dollar figure), proof
+ * Brand rules baked into the copy: fixed-price packages for common needs plus custom quotes (dollar figures are fine and must match services.html), proof
  * over promises (link real artifacts), engineer-to-engineer, no invented
  * clients or metrics beyond what the site already verifies.
  *
@@ -248,7 +248,7 @@ export const PAGES = {
         'Nothing is retained after handoff; access is scoped to the engagement.',
         'If the scoping shows I can’t help, I say so and it costs nothing.',
       ]],
-      ['note', 'There is no fixed price list — scope varies too much for one to be honest. Every engagement is scoped and quoted after a short call, so you pay for your problem, not a package. See <a href="docs-pricing.html">Pricing</a>.'],
+      ['note', 'Fixed prices for the common paths — a $497 AI Quality Audit, packaged builds from $4,997, monthly care from $299/mo — plus a custom quote via the <a href="build.html">Scope Studio</a> for anything larger. See <a href="docs-pricing.html">Pricing</a>.'],
       ['cta', 'Scope your path', 'Book a call and we’ll figure out which stage you actually need.'],
     ],
   },
@@ -523,19 +523,31 @@ export const PAGES = {
   pricing: {
     title: 'Pricing',
     cat: 'Working together',
-    desc: 'How pricing works: quote-first, no fixed price list. Every engagement is scoped and quoted after a short call so you pay for your problem, not a package.',
-    lead: 'There is no fixed price list — and that’s a deliberate, honest choice, not a dodge.',
+    desc: 'How pricing works: fixed-price packages for common needs — a $497 audit, builds from $4,997, care from $299/mo — plus a custom quote via the Scope Studio for anything larger.',
+    lead: 'Most common needs have a fixed price — a $497 AI Quality Audit, packaged builds from $4,997, and monthly care from $299/mo. Larger or unusual builds are scoped and quoted after a short call, or in two minutes with the <a href="build.html">Scope Studio</a> — with honest bands below either way.',
     blocks: [
-      ['h', 'Why quote-first'],
-      ['p', 'Scope varies too much between a one-workflow automation and a full eval battery for a single price list to be honest. A menu price is either padded to cover the worst case or a bait number that balloons later. Instead, every engagement is scoped and quoted in writing after a short call — fixed scope, never open-ended hours — so you pay for your specific problem, not a package.'],
+      ['h', 'How pricing works'],
+      ['p', 'Common, repeatable work has a fixed price, listed on the <a href="services.html">Services</a> page: the $497 AI Quality Audit (credited into your build), the $4,997 “Ship an AI Feature Safely” package, and the $12,000+ Launch-Ready Build, plus a monthly retainer ladder from $299/mo. Anything larger or unusual is scoped and quoted in writing after a short call — fixed scope, never open-ended hours — so you pay for your specific problem, not a padded package. The <a href="build.html">Scope Studio</a> gives you an indicative number in two minutes, no call required.'],
       ['h', 'How to get a real number, fast'],
       ['ol', [
-        'Start with a <b>free mini-eval</b> or a 15-minute call — both end with a concrete plan.',
-        'The <b>audit</b> (about a week) produces a prioritized plan and a firm quote for the build, which is credited into the build if you continue.',
+        'Use the <b><a href="build.html">Scope Studio</a></b> (about 2 minutes) for an indicative number on the spot — no call required.',
+        'Or start with a <b>free mini-eval</b> or a 15-minute call — both end with a concrete plan.',
+        'The <b>$497 AI Quality Audit</b> (about a week) produces a prioritized plan and a firm quote for the build, credited into the build if you continue.',
         'Everything is quoted in writing before work starts, with a 50% deposit on builds.',
       ]],
+      ['h', 'What it actually costs'],
+      ['p', 'Here’s the whole picture — fixed prices for the common paths, and honest bands for custom builds so you can tell whether we’re in the same ballpark before you book.'],
+      ['html', `<div style="border:1px solid #2A2826;border-radius:12px;overflow:hidden;margin:20px 0;font-family:'JetBrains Mono',monospace">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Free mini-eval</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Real adversarial probes on your live AI feature, findings emailed back. No call.</div></div><div style="color:#10b981;font-size:14px;font-weight:700;white-space:nowrap">$0</div></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">AI Quality Audit</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">~1 week. A prioritized plan + a firm build quote you own. Credited 100% into the build if you continue.</div></div><div style="color:#10b981;font-size:14px;font-weight:700;white-space:nowrap">$497</div></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Ship an AI Feature Safely</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Fixed package. Golden-set eval + safety battery + a CI quality gate on one feature. ~2–3 weeks.</div></div><div style="color:#10b981;font-size:14px;font-weight:700;white-space:nowrap">$4,997</div></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Launch-Ready Build</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Fixed scope, 50% deposit. The whole product — app or agent + AI feature + eval/guardrail layer. Scoped after the audit.</div></div><div style="color:#10b981;font-size:14px;font-weight:700;white-space:nowrap">from $12,000</div></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:15px 18px;border-bottom:1px solid #211F1C;flex-wrap:wrap"><div><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Retainer — Light Care → Full System</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">Post-launch upkeep to a fully-managed operation: monitoring, eval runs, CI gates, and a monthly proof report.</div></div><div style="color:#10b981;font-size:14px;font-weight:700;white-space:nowrap">$299–$4,000/mo</div></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:15px 18px;flex-wrap:wrap"><div><div style="color:#F4F2EF;font-weight:700;font-size:13.5px">Fractional AI / QA lead</div><div style="color:#8E8882;font-size:11.5px;margin-top:3px;line-height:1.5">A few days a week embedded with your team — architecture, evals, and the quality bar.</div></div><div style="color:#10b981;font-size:14px;font-weight:700;white-space:nowrap">from $6,000/mo</div></div>
+</div>`],
+      ['p', 'Larger or multi-system programs are scoped individually. Every number is fixed in writing before work starts — no open-ended hourly billing, ever.'],
       ['note', 'Want to size the upside first? The <a href="roi.html">ROI calculator</a> estimates what an unreliable AI feature is costing you per year.'],
-      ['cta', 'Get your quote', 'Book a call and you’ll leave with a real number either way.'],
+      ['cta', 'Get your quote', 'Scope it in 2 minutes, or book a call — you’ll leave with a real number either way.'],
     ],
   },
 
@@ -551,7 +563,7 @@ export const PAGES = {
       ['h', 'Do you work in our stack or yours?'],
       ['p', 'Yours. Your repo, your CI, your conventions. Every engagement ends with a runbook and a walkthrough — the deliverable is a system your team runs without me.'],
       ['h', 'What does it cost?'],
-      ['p', 'There’s no fixed price list because scope varies too much for one to be honest. Every engagement is quoted in writing after a short scoping call. See <a href="docs-pricing.html">Pricing</a>.'],
+      ['p', 'Fixed prices for the common paths — a $497 AI Quality Audit, packaged builds from $4,997, and monthly care from $299/mo — plus a custom quote (2-minute <a href="build.html">Scope Studio</a>) for anything larger. See <a href="docs-pricing.html">Pricing</a>.'],
       ['h', 'How fast can you start, and how long does it take?'],
       ['p', 'Booking one engagement at a time — check the availability chip on the site. The audit is about a week; sprints run ~2–3 weeks; full builds ~4–8 depending on scope. Something visible ships in the first two weeks.'],
       ['h', 'What if the evals show our AI is fine?'],
