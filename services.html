@@ -180,7 +180,13 @@
     <h2 style="margin-top:12px;max-width:22ch">Designed to continue as a monthly retainer.</h2>
     <p class="subtle lead" style="margin-top:16px">A build is where we start — the <em style="color:var(--ink);font-style:normal">retainer is where the value compounds</em>. Every month I keep your systems healthy, ship <b style="color:var(--ink)">one new automation</b>, and send a <b style="color:var(--ink)">proof report</b> showing exactly what it recovered. You own everything; I run it.</p>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:16px;margin-top:30px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:16px;margin-top:30px">
+      <div style="border:1px solid var(--line);border-radius:16px;background:var(--card);padding:26px;display:flex;flex-direction:column">
+        <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#94a3b8">Light Care</div>
+        <div style="font-family:var(--serif);font-size:2rem;line-height:1;margin:12px 0 2px">$299<span style="font-size:0.9rem;color:var(--faint)">/mo</span></div>
+        <p class="subtle" style="font-size:13px;margin:10px 0 14px">Post-launch upkeep for one shipped system — kept alive, patched, and watched, without a full retainer.</p>
+        <div style="font-size:12.5px;line-height:2;color:var(--dim);margin-top:auto"><div>&middot; Uptime + error monitoring</div><div>&middot; Security patches &amp; dependency bumps</div><div>&middot; Small fixes — a few hours/mo</div><div>&middot; Email support</div></div>
+      </div>
       <div style="border:1px solid var(--line);border-radius:16px;background:var(--card);padding:26px;display:flex;flex-direction:column">
         <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan)">Starter</div>
         <div style="font-family:var(--serif);font-size:2rem;line-height:1;margin:12px 0 2px">$1,500<span style="font-size:0.9rem;color:var(--faint)">/mo</span></div>
@@ -232,6 +238,45 @@
     </div>
     <div class="jt-guarantee"><span class="g-mk">&check;</span><span>Every engagement is quoted in writing before work starts: fixed scope, never open-ended hours. The <b>audit fee credits straight into the build</b> if you continue. Your repo, your CI, nothing retained after handoff. If scoping shows I can't help, I'll say so and it costs nothing.</span></div>
     <span class="jt-capacity"><span class="dot"></span>one engagement at a time — currently booking Q4 2026</span>
+  </div></section>
+
+  <!-- FIXED-PRICE STARTING POINTS — productized on-ramps with real numbers -->
+  <section><div class="wrap">
+    <div class="kick" style="color:var(--green)">or start with a fixed price</div>
+    <h2 style="margin-top:12px;max-width:24ch">Three ways to start for a known number.</h2>
+    <p class="subtle lead" style="margin-top:16px">Most builds are scoped to your problem — but the first steps don't have to be. These three are <b style="color:var(--ink)">productized</b>: same scope, same price, every time. Start today, no call required.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(270px,100%),1fr));gap:16px;margin-top:30px;align-items:stretch">
+
+      <div style="border:1px solid var(--line);border-radius:16px;background:var(--card);padding:26px;display:flex;flex-direction:column">
+        <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan)">Entry &middot; fixed price</div>
+        <div style="font-family:var(--serif);font-size:2rem;line-height:1;margin:12px 0 2px">$497</div>
+        <div style="font-family:var(--serif);font-size:1.15rem;margin:8px 0 2px">AI Quality Audit</div>
+        <p class="subtle" style="font-size:13px;margin:10px 0 14px">I map your highest-leverage AI, QA, or automation gap and hand you a prioritized plan and a concrete quote you own.</p>
+        <div style="font-size:12.5px;line-height:2;color:var(--dim)"><div>&middot; ~1 week, remote</div><div>&middot; Prioritized findings + plan</div><div style="color:var(--ink)">&middot; <b>Credits 100% into your build</b></div></div>
+        <a href="book.html" class="btn-solid green" data-evt="pkg-audit" style="margin-top:18px;padding:11px 18px;text-align:center">Book the audit &rarr;</a>
+      </div>
+
+      <div style="border:1.5px solid var(--green);border-radius:16px;background:linear-gradient(180deg,rgba(16,185,129,0.08),var(--card));padding:26px;display:flex;flex-direction:column;position:relative;box-shadow:0 20px 50px -24px rgba(16,185,129,0.5)">
+        <div class="mono" style="position:absolute;top:-10px;left:26px;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#04120d;background:var(--green);padding:3px 9px;border-radius:5px;font-weight:700">Best first build</div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--green)">Core &middot; fixed price</div>
+        <div style="font-family:var(--serif);font-size:2rem;line-height:1;margin:12px 0 2px">$4,997</div>
+        <div style="font-family:var(--serif);font-size:1.15rem;margin:8px 0 2px">Ship an AI Feature Safely</div>
+        <p class="subtle" style="font-size:13px;margin:10px 0 14px">The part almost nobody has: proof your AI feature works, and a gate that blocks the change that would break it.</p>
+        <div style="font-size:12.5px;line-height:2;color:var(--dim)"><div>&middot; Golden-set eval + LLM-as-judge scoring</div><div>&middot; Safety battery: injection, PII, jailbreak</div><div>&middot; CI quality gate wired into your pipeline</div><div>&middot; ~2–3 weeks &middot; runbook + handoff</div></div>
+        <a href="services/llm-evaluation-qa.html" class="btn-solid green" data-evt="pkg-eval" style="margin-top:18px;padding:11px 18px;text-align:center">See what's included &rarr;</a>
+      </div>
+
+      <div style="border:1px solid var(--line);border-radius:16px;background:var(--card);padding:26px;display:flex;flex-direction:column">
+        <div class="mono" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--purple)">Full build &middot; from</div>
+        <div style="font-family:var(--serif);font-size:2rem;line-height:1;margin:12px 0 2px">$12,000<span style="font-size:0.9rem;color:var(--faint)">+</span></div>
+        <div style="font-family:var(--serif);font-size:1.15rem;margin:8px 0 2px">Launch-Ready Build</div>
+        <p class="subtle" style="font-size:13px;margin:10px 0 14px">The whole thing — the app or agent, the AI feature, and the eval + guardrail layer — shipped and owned by your team.</p>
+        <div style="font-size:12.5px;line-height:2;color:var(--dim)"><div>&middot; Frontend, backend, auth, data</div><div>&middot; AI feature + eval + CI gate</div><div>&middot; Scoped &amp; quoted after the audit</div></div>
+        <a href="build.html" data-evt="pkg-build" style="margin-top:18px;padding:11px 8px;text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--purple)">Scope it — 2 min &rarr;</a>
+      </div>
+
+    </div>
+    <div class="jt-guarantee" style="margin-top:16px"><span class="g-mk">&check;</span><span>Fixed price means fixed scope, agreed in writing before we start. The <b>$497 audit credits straight into your build</b> if you continue — so the real cost of starting is nothing. Bigger or unusual work is custom-scoped: <a href="build.html" style="color:var(--cyan);text-decoration:underline;text-underline-offset:2px">get a 2-minute estimate &rarr;</a></span></div>
   </div></section>
 
   <!-- FLAGSHIP -->
