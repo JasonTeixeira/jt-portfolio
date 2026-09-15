@@ -7,7 +7,7 @@
 import { withObserve } from '../lib/observe.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { userFromRequest, isAdminEmail } from '../lib/auth-user.mjs';
-import { isEnabled, listClientProjectsByEmail, contractSummariesForProposals } from '../lib/portal-db.mjs';
+import { isEnabled, listClientProjectsByEmail, contractSummariesForProposals, deliveredMilestonesByProjects, unreadClientMessagesByProjects } from '../lib/portal-db.mjs';
 
 // Client dashboard only cares about a contract they can act on or have signed.
 const VISIBLE_CONTRACT_STATUSES = new Set(['sent', 'accepted']);
@@ -34,11 +34,28 @@ async function handler(req, res) {
     }
   }
 
+  // Attention-band counts, batched over the client's own project ids (the internal
+  // project id is used only here — it is never returned to the client).
+  const projectIds = rows.map((p) => p.id).filter(Boolean);
+  const [msR, unreadR] = await Promise.all([
+    projectIds.length ? deliveredMilestonesByProjects(projectIds) : { ok: true, data: [] },
+    projectIds.length ? unreadClientMessagesByProjects(projectIds) : { ok: true, data: [] },
+  ]);
+  const tally = (r) => {
+    const m = {};
+    if (r.ok) for (const row of r.data) { const k = row.project_id; if (k) m[k] = (m[k] || 0) + 1; }
+    return m;
+  };
+  const awaitingByProject = tally(msR);
+  const unreadByProject = tally(unreadR);
+
   const projects = rows.map((p) => {
     const prop = p.scope_proposals || {};
     return {
       portalToken: p.portal_token, status: p.status, created_at: p.created_at,
       contract: contractByProposal[prop.id] || null,
+      awaitingApproval: awaitingByProject[p.id] || 0,
+      unreadMessages: unreadByProject[p.id] || 0,
       plan: {
         keys: Array.isArray(prop.keys) ? prop.keys : [], segment: prop.segment || null,
         firm_cents: prop.firm_cents, deposit_cents: prop.deposit_cents,

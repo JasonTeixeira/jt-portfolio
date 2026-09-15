@@ -49,6 +49,79 @@ function wireSearch(search, grid, docsWrap, noResults) {
   });
 }
 
+// "Needs your attention" band — the client's mission-control, aggregated across their
+// projects from the counts /api/my-projects now returns. Each item deep-links to the
+// portal where the action lives. Rendered only when something actually needs action.
+function renderAttention(root, projects) {
+  let awaiting = 0, unread = 0, balanceDue = 0, contracts = 0;
+  let awaitingTok = null, unreadTok = null, balanceTok = null, contractTok = null;
+  for (const p of projects) {
+    const plan = p.plan || {};
+    if (p.awaitingApproval > 0) { awaiting += p.awaitingApproval; awaitingTok = awaitingTok || p.portalToken; }
+    if (p.unreadMessages > 0) { unread += p.unreadMessages; unreadTok = unreadTok || p.portalToken; }
+    if (plan.balance_cents > 0 && !plan.balance_paid_at) { balanceDue += plan.balance_cents; balanceTok = balanceTok || p.portalToken; }
+    if (p.contract && p.contract.status === 'sent') { contracts += 1; contractTok = contractTok || p.portalToken; }
+  }
+  if (!(awaiting || unread || balanceDue || contracts)) return;
+  const band = el('div');
+  band.style.cssText = 'border:1px solid color-mix(in oklab,#22d3ee 40%,var(--line));background:color-mix(in oklab,#22d3ee 7%,var(--card,#0F0F13));border-radius:14px;padding:16px 20px;margin:6px 0 22px';
+  const hd = el('div', null, 'Needs your attention');
+  hd.style.cssText = 'font-family:var(--mono,monospace);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#22d3ee;margin-bottom:12px';
+  band.appendChild(hd);
+  const items = el('div'); items.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px';
+  const addItem = (label, tok, accent) => {
+    const a = document.createElement('a');
+    a.href = `portal.html?id=${encodeURIComponent(tok)}`;
+    a.style.cssText = 'display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;color:var(--ink);text-decoration:none;background:var(--card,#0F0F13)';
+    const dot = el('span'); dot.style.cssText = `width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${accent}`;
+    a.appendChild(dot); a.appendChild(document.createTextNode(label)); items.appendChild(a);
+  };
+  if (contracts) addItem(`${contracts} agreement${contracts > 1 ? 's' : ''} to sign`, contractTok, '#a78bfa');
+  if (awaiting) addItem(`${awaiting} milestone${awaiting > 1 ? 's' : ''} awaiting your approval`, awaitingTok, '#10b981');
+  if (balanceDue) addItem(`Balance due: ${money(balanceDue)}`, balanceTok, '#f59e0b');
+  if (unread) addItem(`${unread} new message${unread > 1 ? 's' : ''}`, unreadTok, '#22d3ee');
+  band.appendChild(items);
+  root.appendChild(band);
+}
+
+// Onboarding progress — surfaces the getting-started checklist on the dashboard home so a
+// new client sees it on first login (it used to live only on resources.html). Two steps are
+// derived from real data; the four manual steps + toggling live on the resources checklist,
+// which this links to (single source of truth — no duplicated toggle logic to drift).
+function renderOnboarding(root, projects, accessToken) {
+  const agreementAccepted = projects.some((p) => p.contract && p.contract.status === 'accepted');
+  const depositPaid = projects.some((p) => (p.plan || {}).paid_at);
+  const MANUAL = ['repo_access', 'shared_feature', 'kickoff_booked', 'billing_contact'];
+  const MANUAL_LABEL = { repo_access: 'Grant repo / environment access', shared_feature: 'Share the AI feature + where it breaks', kickoff_booked: 'Book the kickoff call', billing_contact: 'Confirm your billing contact' };
+  const card = el('div');
+  card.style.cssText = 'border:1px solid var(--line);background:var(--card,#0F0F13);border-radius:14px;padding:16px 20px;margin:0 0 22px';
+  root.appendChild(card);
+  (async () => {
+    let steps = {};
+    try { const r = await fetch('/api/client-onboarding', { headers: { Authorization: `Bearer ${accessToken}` } }); if (r.ok) { const j = await r.json(); if (j.ok) steps = j.steps || {}; } } catch { /* leave empty */ }
+    const all = [
+      { label: 'Agreement accepted', done: agreementAccepted },
+      { label: 'Deposit paid', done: depositPaid },
+      ...MANUAL.map((id) => ({ label: MANUAL_LABEL[id], done: steps[id] === true })),
+    ];
+    const done = all.filter((s) => s.done).length;
+    if (done === all.length) { card.remove(); return; } // fully onboarded → no card
+    const hd = el('div', null, `Getting started — ${done} of ${all.length} done`);
+    hd.style.cssText = 'font-family:var(--mono,monospace);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:12px';
+    card.appendChild(hd);
+    const list = el('div'); list.style.cssText = 'display:grid;gap:7px';
+    for (const s of all) {
+      const row = el('div'); row.style.cssText = `display:flex;align-items:center;gap:10px;font-size:13.5px;color:${s.done ? 'var(--faint)' : 'var(--ink)'}`;
+      const box = el('span', null, s.done ? '✓' : '○'); box.style.cssText = `width:16px;text-align:center;color:${s.done ? '#10b981' : 'var(--faint)'}`;
+      row.append(box, el('span', null, s.label + (s.done ? '' : '')));
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+    const link = el('a', null, 'Complete setup →'); link.href = 'resources.html'; link.style.cssText = 'display:inline-block;margin-top:14px;font-family:var(--mono,monospace);font-size:12px;color:var(--cyan);text-decoration:none';
+    card.appendChild(link);
+  })();
+}
+
 export function initDashboard() {
   const root = document.getElementById('root');
   if (!root) return;
@@ -110,6 +183,10 @@ export function initDashboard() {
       }
       root.appendChild(e); return;
     }
+
+    // Mission-control: what needs the client's attention, then their onboarding progress.
+    renderAttention(root, projects);
+    if (!data.admin) renderOnboarding(root, projects, s.access_token);
 
     const grid = el('div', 'cx-grid');
     for (const p of projects) {
