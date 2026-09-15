@@ -83,9 +83,12 @@
     f.addEventListener('submit', async (e) => {
       e.preventDefault();
       btn.disabled = true; lbl.textContent = 'Sending…';
-      await sendAuthEmail(document.getElementById('email').value.trim(), 'recovery');
+      // Result is intentionally not branched on for enumeration safety — the message is
+      // identical whether or not the address has an account. But we always surface a
+      // recovery path so a genuinely failed send (network/provider) is never a silent dead end.
+      try { await sendAuthEmail(document.getElementById('email').value.trim(), 'recovery'); } catch { /* neutral */ }
       msg.className = 'auth-msg ok';
-      msg.textContent = '// if that email has an account, a reset link is on its way.';
+      msg.textContent = "// if that email has an account, a reset link is on its way. didn't arrive within 5 minutes? email hello@sageideas.dev";
       lbl.textContent = 'Sent';
     });
   }

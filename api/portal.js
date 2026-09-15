@@ -7,6 +7,7 @@ import { getProposalById, updateProposal } from '../lib/proposal-db.mjs';
 import { sendOperator } from '../lib/notify.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { createCheckoutSession, retrieveSession, isEnabled as stripeEnabled, webhookConfigured } from '../lib/stripe.mjs';
+import { signSession, verifySession, maskEmail } from '../lib/portal-session.mjs';
 
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
@@ -88,6 +89,14 @@ async function handler(req, res) {
       listMessages(project.id),
     ]);
     const proposal = proposalR.ok ? proposalR.data : null;
+    // Email gate: if this project has a client email on file, the caller must present a
+    // verified portal session (proof they entered that email). A leaked/forwarded link
+    // therefore reveals NOTHING until the email is proven. No email on file → token-only
+    // (back-compat for older proposals). Short-circuits before any read-marking or file signing.
+    const gateEmail = proposal && proposal.client_email ? String(proposal.client_email) : null;
+    if (gateEmail && !verifySession(token, String(req.query.s || ''))) {
+      return res.status(200).json({ ok: true, locked: true, emailHint: maskEmail(gateEmail) });
+    }
     const milestones = milestonesR.ok ? milestonesR.data : [];
     const messages = messagesR.ok ? messagesR.data : [];
     // client is looking at the thread now — mark operator messages read (fire-and-forget)
@@ -109,6 +118,39 @@ async function handler(req, res) {
   // email per call, so a leaked/forwarded portal token must not be able to email-bomb.
   if (await rateLimited(clientIp(req), 20, 'portal-post')) return res.status(429).json({ ok: false, error: 'slow_down' });
   const body = req.body || {};
+
+  // client proves the email this magic-link was sent to → issue a short-lived portal session.
+  // This is the ONLY ungated POST — it's how a caller becomes verified. Returns a neutral
+  // mismatch reason (never reveals whether the token or the email was wrong).
+  if (body.action === 'verify_email') {
+    if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
+    const vt = typeof body.portalToken === 'string' ? body.portalToken.trim() : '';
+    const given = String(body.email || '').trim().toLowerCase();
+    if (!vt || !given) return res.status(400).json({ ok: false, error: 'portalToken and email required' });
+    const pR = await getProjectByPortalToken(vt);
+    if (!pR.ok || !pR.data) return res.status(200).json({ ok: false, reason: 'email_mismatch' });
+    const propR = await getProposalById(pR.data.proposal_id);
+    const email = propR.ok && propR.data && propR.data.client_email ? String(propR.data.client_email).toLowerCase() : null;
+    if (!email || given !== email) return res.status(200).json({ ok: false, reason: 'email_mismatch' });
+    return res.status(200).json({ ok: true, session: signSession(vt) });
+  }
+
+  // Gate every sensitive action behind the verified session (when the project has a client
+  // email on file). verify_email above is exempt; token-only proposals (no client_email)
+  // stay open for back-compat. One project+proposal lookup, reused by the action below.
+  {
+    const gToken = typeof body.portalToken === 'string' ? body.portalToken.trim() : '';
+    if (gToken && isEnabled()) {
+      const gpR = await getProjectByPortalToken(gToken);
+      if (gpR.ok && gpR.data) {
+        const gpropR = await getProposalById(gpR.data.proposal_id);
+        const gEmail = gpropR.ok && gpropR.data && gpropR.data.client_email;
+        if (gEmail && !verifySession(gToken, String(body.session || ''))) {
+          return res.status(200).json({ ok: false, reason: 'locked' });
+        }
+      }
+    }
+  }
 
   // client posts a message to the project thread
   if (body.action === 'message') {
