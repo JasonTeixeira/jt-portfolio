@@ -135,7 +135,7 @@ function buildMilestoneRow(m, portalToken) {
       fetch('/api/portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ portalToken, action: 'approve_milestone', milestoneId: m.id, name }),
+        body: JSON.stringify({ portalToken, action: 'approve_milestone', milestoneId: m.id, name, session: getSess(portalToken) }),
       })
         .then((res) => res.json().catch(() => null))
         .then((data) => {
@@ -219,7 +219,7 @@ function buildMessagesCard(view, portalToken) {
   const poll = setInterval(async () => {
     if (!document.body.contains(card)) { clearInterval(poll); return; } // stop if navigated away
     try {
-      const r = await fetch(`/api/portal?id=${encodeURIComponent(portalToken)}`);
+      const r = await fetch(`/api/portal?id=${encodeURIComponent(portalToken)}${getSess(portalToken) ? `&s=${encodeURIComponent(getSess(portalToken))}` : ``}`);
       const j = r.ok ? await r.json().catch(() => null) : null;
       const list = j && j.ok && Array.isArray(j.messages) ? j.messages : null;
       if (list && list.length > shown) {
@@ -237,7 +237,7 @@ function buildMessagesCard(view, portalToken) {
     const text = (ta.value || '').trim();
     if (text.length < 1) return;
     btn.disabled = true; clear(status); status.appendChild(document.createTextNode(t('msg.sending')));
-    fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'message', portalToken, body: text }) })
+    fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'message', portalToken, body: text, session: getSess(portalToken) }) })
       .then((r) => r.json().catch(() => null)).then((d) => {
         btn.disabled = false; clear(status);
         if (d && d.ok) { if (thread.contains(empty)) clear(thread); addBubble({ sender: 'client', body: text, created_at: new Date().toISOString() }); shown += 1; ta.value = ''; }
@@ -409,8 +409,10 @@ function renderPortal(root, view, portalToken, opts = {}) {
     const payBtn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:14px;padding:11px 20px;font-size:14px' }, t('billing.pay', { amount: money(plan.balance_cents) }));
     const payStatus = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
     payBtn.addEventListener('click', () => {
+      // Confirm before sending the client to a real payment page (sensitive action).
+      if (!window.confirm(`Continue to secure checkout for the remaining balance of ${money(plan.balance_cents)}?`)) return;
       payBtn.disabled = true; clear(payStatus); payStatus.appendChild(document.createTextNode(t('billing.opening')));
-      fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay_balance', portalToken }) })
+      fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay_balance', portalToken, session: getSess(portalToken) }) })
         .then((r) => r.json().catch(() => null)).then((d) => {
           if (d && d.ok && d.url) { window.location.href = d.url; return; }
           if (d && d.alreadyPaid) { window.location.reload(); return; }
@@ -441,42 +443,88 @@ function renderPortal(root, view, portalToken, opts = {}) {
   }
 }
 
-async function init() {
-  const root = document.getElementById('portal-root');
-  if (!root) return;
+// ── portal session (proof the visitor entered the email this link was sent to) ──
+// Stored per-token in localStorage; the server signs it and enforces the 7-day expiry,
+// so a stale/forged value just fails verification server-side and re-locks the portal.
+export function sessKey(id) { return `portal_sess_${id}`; }
+export function getSess(id) { try { return localStorage.getItem(sessKey(id)) || ''; } catch { return ''; } }
+export function setSess(id, s) { try { if (s) localStorage.setItem(sessKey(id), s); } catch { /* private mode */ } }
 
-  const params = new URLSearchParams(location.search);
-  const id = (params.get('id') || '').trim();
-  if (!id) { renderUnavailable(root); return; }
+// The email-verification gate shown when the server returns { locked:true }.
+function renderVerify(root, id, emailHint, onVerified) {
+  clear(root);
+  const status = h('div', { class: 'portal-approve-status', role: 'status', 'aria-live': 'polite', style: 'min-height:20px;margin-top:10px' });
+  const emailInput = h('input', { type: 'email', required: 'required', autocomplete: 'email', inputmode: 'email',
+    placeholder: 'you@company.com', 'aria-label': 'The email this link was sent to',
+    style: 'width:100%;max-width:340px;background:#0F0F13;border:1px solid var(--line);border-radius:9px;padding:11px 13px;font-size:14px;color:var(--ink);font-family:inherit;outline:none' });
+  const btn = h('button', { type: 'submit', class: 'btn-solid green', style: 'padding:11px 20px;font-size:13px;margin-top:12px' }, 'Open my project →');
+  const form = h('form', { style: 'margin-top:18px' },
+    h('label', { for: '', style: 'display:block' }, h('span', { class: 'lbl-text', style: 'display:block;font-size:12.5px;color:var(--dim);margin-bottom:6px' }, 'Enter the email this link was sent to'), emailInput),
+    btn, status);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email) return;
+    btn.disabled = true; emailInput.disabled = true; btn.textContent = 'Checking…';
+    clear(status);
+    try {
+      const r = await fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify_email', portalToken: id, email }) });
+      const j = r.ok ? await r.json().catch(() => null) : null;
+      if (j && j.ok && j.session) { setSess(id, j.session); onVerified(); return; }
+      status.appendChild(document.createTextNode("That email doesn't match this project. Use the address the link was sent to, or email hello@sageideas.dev."));
+    } catch {
+      status.appendChild(document.createTextNode('Could not verify right now — check your connection and try again.'));
+    }
+    btn.disabled = false; emailInput.disabled = false; btn.textContent = 'Open my project →';
+  });
+  root.appendChild(h('section', { class: 'wrap', style: 'max-width:520px;padding-top:10vh' },
+    h('div', { class: 'mono', style: 'font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan)' }, 'Private project portal'),
+    h('h1', { class: 'portal-title', style: 'font-size:clamp(1.6rem,3.5vw,2.2rem);margin:12px 0 0' }, 'Verify it’s you'),
+    h('p', { class: 'subtle', style: 'margin-top:12px;max-width:52ch' }, emailHint
+      ? `This link opens a private project workspace. Confirm the email it was sent to (${emailHint}) to continue.`
+      : 'This link opens a private project workspace. Confirm the email it was sent to to continue.'),
+    form));
+}
 
-  // Immediate placeholder inside the reserved min-height so the fetch->render
-  // transition does not shift the page (keeps CLS ~0).
-  root.appendChild(h('p', { class: 'subtle', style: 'padding-top:8vh;text-align:center' }, t('portal.loading')));
-
+async function loadPortal(root, id, justPaid) {
   let json = null;
   try {
-    const res = await fetch(`/api/portal?id=${encodeURIComponent(id)}`);
+    const s = getSess(id);
+    const res = await fetch(`/api/portal?id=${encodeURIComponent(id)}${s ? `&s=${encodeURIComponent(s)}` : ''}`);
     if (res.ok) json = await res.json().catch(() => null);
-  } catch {
-    // network error (e.g. static host with no API route) — fall through to unavailable
-  }
+  } catch { /* network error → unavailable */ }
 
+  // Locked = valid token but no verified session yet → show the email gate, then reload.
+  if (json && json.ok && json.locked) { renderVerify(root, id, json.emailHint, () => loadPortal(root, id, justPaid)); return; }
   // Covers no id, {ok:false} (not found / bad request), and dormant ({ok:false, reason:'not_configured'}).
   if (!json || !json.ok) { renderUnavailable(root); return; }
-  // Stripe returns from balance checkout with ?balance=paid. If the webhook hasn't
-  // marked the balance paid yet, we must NOT re-show the Pay button (double-charge guard).
-  const justPaid = params.get('balance') === 'paid';
+
+  clear(root);
   renderPortal(root, json, id, { justPaid });
   // Give the webhook a moment, then refresh once to pick up the confirmed payment.
   if (justPaid && json.plan && !json.plan.balance_paid_at) {
     setTimeout(async () => {
       try {
-        const r = await fetch(`/api/portal?id=${encodeURIComponent(id)}`);
+        const s = getSess(id);
+        const r = await fetch(`/api/portal?id=${encodeURIComponent(id)}${s ? `&s=${encodeURIComponent(s)}` : ''}`);
         const j = r.ok ? await r.json().catch(() => null) : null;
-        if (j && j.ok) { clear(root); renderPortal(root, j, id, { justPaid }); }
+        if (j && j.ok && !j.locked) { clear(root); renderPortal(root, j, id, { justPaid }); }
       } catch { /* keep the confirming state */ }
     }, 4000);
   }
+}
+
+async function init() {
+  const root = document.getElementById('portal-root');
+  if (!root) return;
+  const params = new URLSearchParams(location.search);
+  const id = (params.get('id') || '').trim();
+  if (!id) { renderUnavailable(root); return; }
+  // Immediate placeholder inside the reserved min-height so the fetch->render
+  // transition does not shift the page (keeps CLS ~0).
+  root.appendChild(h('p', { class: 'subtle', style: 'padding-top:8vh;text-align:center' }, t('portal.loading')));
+  await loadPortal(root, id, params.get('balance') === 'paid');
 }
 
 init().catch(() => {
