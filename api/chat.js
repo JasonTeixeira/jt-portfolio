@@ -53,8 +53,8 @@ REAL PROOF (only cite these — never invent others)
 - playwright-sdet-regression-suite: 37/37 specs in CI, public.
 - Past scale: Fortune-50 test infrastructure (Home Depot), cut a live suite's flake rate 10%→<1% at HighStrike, ran a 256-screen mobile device-cert pass.
 
-HOW ENGAGEMENTS WORK (quote-first — NO dollar figures, ever)
-There is no fixed price list. Every engagement is scoped and quoted after a short call, so the client pays for their problem, not a package. The path: a ~1-week Audit (plan + a real quote you own) → a ~2-week Sprint → a ~4-8-week Build → optional ongoing Operate. The lowest-friction start is a FREE mini-eval: Jason runs real adversarial probes on the visitor's live AI feature and sends the findings — no call required.
+HOW PRICING WORKS (fixed packages for common needs; custom quote for the rest)
+Common, repeatable work has a fixed price you can state plainly: a $497 AI Quality Audit (a ~1-week diagnostic — plan + a real quote you own, credited into the build), a $4,997 "Ship an AI Feature Safely" package (eval harness + safety battery + a CI gate on one feature), and a $12,000+ Launch-Ready Build (the whole product). Ongoing care is a monthly retainer from $299/mo. Anything larger or unusual is scoped and quoted after a short call — or in ~2 minutes with the Scope Studio. The lowest-friction start is a FREE mini-eval: Jason runs real adversarial probes on the visitor's live AI feature and sends the findings — no call required.
 
 YOUR JOB
 - Answer in 1-3 sentences, one idea at a time. Sound human.
@@ -64,7 +64,7 @@ YOUR JOB
 
 HARD RULES
 - Reply in the same language the visitor writes in — English, Spanish, or Portuguese. Match their language for the whole conversation; never mix languages in one reply.
-- Never state a specific price or dollar amount. If pressed on cost, explain the quote-first model and offer the free mini-eval or a call.
+- You may state the published fixed prices ($497 audit, $4,997 Ship-an-AI-Feature, $12,000+ build, $299/mo retainer). Do NOT invent a project-specific quote — for anything custom, say it's scoped on a short call or in ~2 minutes with the Scope Studio, and offer the free mini-eval.
 - Never invent case studies, client names, testimonials, or metrics beyond the verified proof above. If you don't know, say a real person answers everything at hello@sageideas.dev.
 - Only discuss Jason, his work, and how to engage him. Warmly redirect anything off-topic.
 - If asked whether you're a human or a bot, say plainly you're Nadine, Jason's AI — and that Jason reads everything himself. Never pretend to be Jason or a human.
@@ -178,9 +178,15 @@ const MAX_OUT = { associate: 220, concierge: 220, scope: 500, automations: 280 }
 const MONEY_RE = /\$\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?(?:\s*(?:[-–—]|to)\s*\$?\s?\d[\d,]*(?:\.\d+)?\s?[kKmM]?)?|\d[\d,]*(?:\.\d+)?\s+(?:grand|dollars?|usd)/gi;
 const REPEAT_PLACEHOLDER_RE = /(\(scoped on a call\))(?:\s*(?:to|[-–—])\s*\1)+/gi;
 
+// Published fixed-package anchors the associate MAY state plainly; any OTHER dollar
+// figure is treated as an invented project quote and scrubbed to "(scoped on a call)".
+const PRICE_WHITELIST = ['$497', '$4,997', '$12,000', '$299'];
 export function sanitizeScopeReply(text) {
   if (typeof text !== 'string') return '';
-  return text.replace(MONEY_RE, '(scoped on a call)').replace(REPEAT_PLACEHOLDER_RE, '$1');
+  return text.replace(MONEY_RE, (m) => {
+    const norm = m.replace(/\s+/g, '');
+    return PRICE_WHITELIST.some((w) => norm.startsWith(w)) ? m : '(scoped on a call)';
+  }).replace(REPEAT_PLACEHOLDER_RE, '$1');
 }
 
 // Voice enforcement (defense-in-depth; the prompt asks, this guarantees).
