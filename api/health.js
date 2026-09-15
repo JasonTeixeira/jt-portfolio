@@ -37,6 +37,10 @@ async function handler(req, res) {
     admin: Boolean(process.env.SCOPE_ADMIN_TOKEN),
     nurture: process.env.NURTURE_ENABLED === 'true' && Boolean(process.env.CRON_SECRET),
     site_url: Boolean(process.env.SITE_URL),
+    // Production-readiness (ops) signals — booleans only, no secret values.
+    sentry: Boolean(process.env.SENTRY_DSN), // error monitoring live (lib/observe.mjs)
+    rate_limit_backed: Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN), // false → in-mem fallback only (weak on serverless)
+    email_domain: Boolean(process.env.RESEND_FROM) && !/onboarding@resend\.dev/i.test(process.env.RESEND_FROM || ''), // false → sending from Resend sandbox (delivers only to account owner)
     frontdesk_sms: smsEnabled(),
     frontdesk_owner_alert: Boolean(process.env.FRONTDESK_DEMO_OWNER_PHONE),
   };
