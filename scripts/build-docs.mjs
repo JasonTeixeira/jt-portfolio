@@ -54,7 +54,7 @@ function renderBlock(b) {
   if (t === 'cards') return `<div class="d-cards">${b[1].map(([tt, dd]) => `<div class="d-card"><h3>${esc(tt)}</h3><p>${esc(dd)}</p></div>`).join('')}</div>`;
   if (t === 'proof') return `<div class="d-proof">${b[1].map(([lbl, h]) => `<a href="${h}" class="d-plink"${h.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${esc(lbl)} <span>→</span></a>`).join('')}</div>`;
   if (t === 'code') return `<figure class="d-codewrap"><figcaption class="d-codecap"><span>${esc(b[1] || 'code')}</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="${esc(b[1] || 'code')} code sample"><code>${escCode(b[2])}</code></pre></figure>`;
-  if (t === 'cta') return `<div class="d-cta"><div><div class="d-cta-h">${esc(b[1] || 'Ready to start?')}</div><div class="d-cta-s">${esc(b[2] || '')}</div></div><a href="book.html" class="d-cta-btn" data-evt="docs-cta">Book a call →</a></div>`;
+  if (t === 'cta') return `<div class="d-cta"><div><div class="d-cta-h">${esc(b[1] || 'Ready to start?')}</div><div class="d-cta-s">${esc(b[2] || '')}</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div>`;
   if (t === 'html') return b[1]; // raw markup (e.g. a code-native diagram figure) — trusted, authored in docs.data.mjs
   return '';
 }

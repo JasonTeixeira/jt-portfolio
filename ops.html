@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* operator-only cockpit — synchronous gate before paint. Client-side (parity with the dashboard); sensitive GTM content, so gated on operator identity, not just any session. Verify the operator email below matches your login. */
+(function(){try{var s=JSON.parse(localStorage.getItem("jt_auth")||"null");if(!s||!s.access_token){location.replace("/login.html?next=ops.html");return;}var OPS=["sageideass@gmail.com"];if(OPS.indexOf(String(s.email||"").toLowerCase())===-1){location.replace("/index.html");return;}}catch(e){location.replace("/login.html?next=ops.html");}})();
+</script>
 <meta name="robots" content="noindex, nofollow">
 <title>Operator Cockpit — Sage Ideas</title>
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
