@@ -1,11 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computePlan } from '../../assets/scope-core.mjs';
+import { computePlan, RATE_CARD } from '../../assets/scope-core.mjs';
 
 test('sums bands and counts items', () => {
   const p = computePlan(['llm-eval', 'ci-gate']);
   assert.equal(p.count, 2);
-  assert.deepEqual(p.totalBand, [3500 + 2500, 9000 + 6000]); // [6000, 15000]
+  // derive the expected total from the catalog so this survives rate-card tuning
+  const band = (k) => RATE_CARD.find((c) => c.key === k).band;
+  assert.deepEqual(p.totalBand, [band('llm-eval')[0] + band('ci-gate')[0], band('llm-eval')[1] + band('ci-gate')[1]]);
 });
 
 test('drops unknown keys (anti-hallucination gate)', () => {
