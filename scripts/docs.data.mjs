@@ -655,7 +655,7 @@ export const PAGES = {
       ['h', 'The lowest-friction ways to start'],
       ['p', 'Whichever row you landed on, there are three doors in, ordered by commitment. Most people start with the first — it costs nothing and does real work.'],
       ['cards', [
-        ['1 · Free mini-eval', 'Point me at your live AI feature and I run a batch of real adversarial probes — injection, hallucination, scope, PII, tone — and send verbatim pass/fail findings. No call, no cost. See the <a href="sample.html">sample report</a> first.'],
+        ['1 · Free mini-eval', 'Point me at your live AI feature and I run a batch of real adversarial probes — injection, hallucination, scope, PII, tone — and send verbatim pass/fail findings. No call, no cost. See the sample report first.'],
         ['2 · The audit', 'A short, focused engagement (about a week) that maps your highest-leverage failure surface and hands you a prioritized plan you own plus a concrete quote. If I can’t help, I say so and it costs nothing.'],
         ['3 · A 15-minute call', 'Describe the problem and I tell you honestly which of these it needs, what it takes, and roughly what it costs — or that it doesn’t need me at all. You leave with a plan either way.'],
       ]],

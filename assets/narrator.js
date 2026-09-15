@@ -23,7 +23,7 @@
   }
   var CAPTIONS = {
     home: "Welcome to Sage Ideas. Jason builds AI features for teams, and then proves they actually work — with evals, tests, and gates you can see. Everything on this page links to real evidence.",
-    services: "Here's everything Jason builds — AI features, automations, data pipelines, web apps, and the quality layer that proves it all works. Most clients keep him on a monthly retainer.",
+    services: "Here's everything Jason builds — AI features, automations, data pipelines, web apps, and the quality layer that proves it all works. The work is designed to continue as a monthly retainer once it is live.",
     work: "These are real systems Jason has shipped and runs himself — a live trading platform and a full learning product, built solo. The strongest proof isn't a testimonial; it's software in production.",
     proof: "This is the part most agencies skip. This very site runs its own quality checks, in public — no fake green, not even Jason's. Every claim links to a real, reproducible run.",
     'lead-audit': "Let's find the money you're leaving on the table. See what slow lead response is costing you, then hear the AI front desk that answers every lead instantly.",
