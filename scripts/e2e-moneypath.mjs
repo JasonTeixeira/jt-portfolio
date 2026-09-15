@@ -104,7 +104,10 @@ if (!args.adminToken) {
   process.exit(1);
 }
 
-const prospectId = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+// Must be a real UUID — scope_prospects.id and scope_proposals.prospect_id are uuid
+// columns (the live client sends crypto.randomUUID()). A non-UUID id is silently
+// dropped by the fire-and-forget /api/scope write and hard-rejected by the proposal insert.
+const prospectId = crypto.randomUUID();
 let publicId = null;
 let proposalRowId = null;
 
