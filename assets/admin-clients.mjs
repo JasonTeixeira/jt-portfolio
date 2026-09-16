@@ -159,5 +159,6 @@ export function renderClients(root, key, deps) {
     });
   }
 
-  drawList();
+  // Deep-link from the ⌘K palette opens a specific client's 360 straight away.
+  if (deps.openId) drawDetail(deps.openId); else drawList();
 }

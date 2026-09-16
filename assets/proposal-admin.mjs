@@ -12,6 +12,7 @@ import { renderContent as renderContentView } from './admin-content.mjs';
 import { renderClients as renderClientsView } from './admin-clients.mjs';
 import { renderGTM as renderGTMView } from './admin-gtm.mjs';
 import { renderInbox as renderInboxView } from './admin-inbox.mjs';
+import { createCommandPalette } from './admin-command.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -143,7 +144,7 @@ async function apiGet(path) {
   return { status: res.status, json };
 }
 
-function renderList(root, list, key) {
+function renderList(root, list, key, autoOpenId) {
   clear(root);
 
   const counts = { [PROPOSAL_STATUS.DRAFT]: 0, [PROPOSAL_STATUS.APPROVED]: 0, [PROPOSAL_STATUS.PAID]: 0 };
@@ -190,6 +191,11 @@ function renderList(root, list, key) {
 
   wrap.appendChild(detailMount);
   root.appendChild(wrap);
+  // Deep-link from the ⌘K palette: auto-open a specific proposal and scroll to it.
+  if (autoOpenId && list.some((p) => p.id === autoOpenId)) {
+    openDetail(detailMount, autoOpenId, key);
+    try { detailMount.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* ignore */ }
+  }
 }
 
 async function openDetail(mount, id, key) {
@@ -919,7 +925,7 @@ function renderContent(root, key) {
   renderContentView(mount, key, { h, clear, authHeaders, renderNotAuthorized });
 }
 
-function renderProposals(root, key) {
+function renderProposals(root, key, openId) {
   apiGet('/api/proposal-admin?list=1', key).then((r) => {
     if (r.unauthorized) { renderNotAuthorized(root); return; }
     if (!r.json || !r.json.ok) { renderUnconfigured(root); return; }
@@ -928,7 +934,7 @@ function renderProposals(root, key) {
     const listMount = h('div', {});
     shell.appendChild(listMount);
     root.appendChild(shell);
-    renderList(listMount, Array.isArray(r.json.list) ? r.json.list : [], key);
+    renderList(listMount, Array.isArray(r.json.list) ? r.json.list : [], key, openId);
   }).catch(() => renderServerError(root));
 }
 
@@ -990,8 +996,8 @@ function renderOverview(root) {
 }
 
 // Client 360 hub — one client's whole world (see admin-clients.mjs).
-function renderClientsSection(root, key) {
-  renderClientsView(root, key, { h, clear, authHeaders, renderNotAuthorized, money });
+function renderClientsSection(root, key, openId) {
+  renderClientsView(root, key, { h, clear, authHeaders, renderNotAuthorized, money, openId });
 }
 
 function renderGTM(root, key) {
@@ -1040,7 +1046,9 @@ const SECTIONS = [
 ];
 let ADMIN_KEY = '';
 
-function navigate(id) {
+// navigate(id) switches section; navigate(id, arg) also deep-links to a specific item
+// (a client id, a proposal id) so the ⌘K palette can jump straight to a record.
+function navigate(id, arg) {
   const sec = SECTIONS.find((s) => s.id === id) || SECTIONS[0];
   const root = document.getElementById('admin-root');
   const nav = document.getElementById('ax-nav');
@@ -1048,8 +1056,8 @@ function navigate(id) {
   const title = document.getElementById('ax-top-title');
   if (title) title.textContent = sec.label;
   clear(root);
-  try { location.hash = sec.id; } catch { /* ignore */ }
-  sec.fn(root, ADMIN_KEY);
+  try { location.hash = arg ? `${sec.id}/${encodeURIComponent(arg)}` : sec.id; } catch { /* ignore */ }
+  sec.fn(root, ADMIN_KEY, arg);
 }
 
 function buildShell(email) {
@@ -1092,8 +1100,40 @@ async function init() {
   if (!result.json || !result.json.ok) { renderUnconfigured(root); return; }
   buildShell(session && session.email);
   refreshInboxBadge();
-  const start = (location.hash || '').replace(/^#/, '');
-  navigate(SECTIONS.some((s) => s.id === start) ? start : 'overview');
+  mountCommandPalette();
+  // Hash can be "#section" or "#section/<deep-link-arg>" (from the ⌘K palette).
+  const [start, ...rest] = (location.hash || '').replace(/^#/, '').split('/');
+  const arg = rest.length ? decodeURIComponent(rest.join('/')) : undefined;
+  navigate(SECTIONS.some((s) => s.id === start) ? start : 'overview', arg);
+}
+
+// ── ⌘K command palette ───────────────────────────────────────────────────────
+function mountCommandPalette() {
+  const actions = [
+    { label: 'Security & two-factor', run: () => { location.href = 'security.html'; } },
+    { label: 'Client resources & onboarding', run: () => { location.href = 'resources.html'; } },
+    { label: 'Sign out', run: () => { const b = document.getElementById('ax-logout'); if (b) b.click(); } },
+  ];
+  const palette = createCommandPalette({ h, authHeaders, navigate, sections: SECTIONS, actions, money });
+  document.body.appendChild(palette.el);
+
+  // ⌘K / Ctrl+K toggles; ignore when typing in a field unless the palette is what's focused.
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      palette.isOpen() ? palette.close() : palette.open();
+    }
+  });
+
+  // Discoverability: a ⌘K hint button in the top bar opens the palette.
+  const right = document.querySelector('.ax-top-right');
+  if (right) {
+    const hint = h('button', { type: 'button', class: 'ax-logout', title: 'Search & commands (⌘K)',
+      style: 'display:inline-flex;align-items:center;gap:6px' },
+      h('span', {}, 'Search'), h('span', { class: 'mono', style: 'opacity:.6' }, '⌘K'));
+    hint.addEventListener('click', () => palette.open());
+    right.insertBefore(hint, right.firstChild);
+  }
 }
 
 init().catch(() => {
