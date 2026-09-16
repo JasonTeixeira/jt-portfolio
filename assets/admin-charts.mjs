@@ -29,6 +29,78 @@ export function deltaBadge(now, prev, { fmt } = {}) {
   return span;
 }
 
+// Vertical bar chart for categorical series (AR-aging buckets, per-month totals).
+// data: [{label, value, color?}]. opts: { height, color, format }. Value on each bar,
+// category label below, max gridline, hover emphasis. Returns a responsive <div>.
+export function barChart(data, opts = {}) {
+  const { height = 172, color = '#22d3ee', format = (v) => String(v) } = opts;
+  const pts = (data || []).map((d) => ({ label: d.label, value: Number(d.value) || 0, color: d.color || color }));
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'width:100%;position:relative';
+  if (!pts.length) return wrap;
+  const W = 760; const H = height; const padX = 12; const padTop = 22; const padBot = 34;
+  const innerW = W - padX * 2; const innerH = H - padTop - padBot;
+  const max = Math.max(...pts.map((p) => p.value), 1);
+  const band = innerW / pts.length; const barW = Math.min(band * 0.62, 96);
+  const y = (v) => padTop + innerH - (innerH * v) / max;
+
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: String(H), preserveAspectRatio: 'none', style: 'display:block;overflow:visible' });
+  svg.appendChild(s('line', { x1: padX, y1: y(0), x2: W - padX, y2: y(0), stroke: '#26262c', 'stroke-width': '1' }));
+  svg.appendChild(s('line', { x1: padX, y1: y(max), x2: W - padX, y2: y(max), stroke: '#1c1c22', 'stroke-width': '1', 'stroke-dasharray': '3 4' }));
+  pts.forEach((p, i) => {
+    const bx = padX + band * i + (band - barW) / 2;
+    const by = y(p.value); const bh = Math.max(0, y(0) - by);
+    const rect = s('rect', { x: bx, y: by, width: barW, height: bh, rx: '3', fill: p.color, opacity: p.value ? '0.92' : '0.25' });
+    rect.addEventListener('mouseenter', () => rect.setAttribute('opacity', '1'));
+    rect.addEventListener('mouseleave', () => rect.setAttribute('opacity', p.value ? '0.92' : '0.25'));
+    svg.appendChild(rect);
+    if (p.value) svg.appendChild(s('text', { x: bx + barW / 2, y: by - 6, 'text-anchor': 'middle', fill: 'var(--faint,#8E8882)', 'font-size': '11', 'font-family': 'var(--mono,monospace)' }, format(p.value)));
+    svg.appendChild(s('text', { x: bx + barW / 2, y: H - 14, 'text-anchor': 'middle', fill: 'var(--faint,#8E8882)', 'font-size': '11', 'font-family': 'var(--mono,monospace)' }, p.label));
+  });
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+// Horizontal funnel / distribution bars (DOM, not SVG — crisper for labelled rows).
+// data: [{label, value, color?}]. opts: { format, showConversion } — conversion is % of the
+// FIRST row (funnel drop-off). Returns a <div>.
+export function funnelBars(data, opts = {}) {
+  const { format = (v) => String(v), showConversion = true, color = '#22d3ee' } = opts;
+  const wrap = document.createElement('div');
+  const pts = (data || []).map((d) => ({ label: d.label, value: Number(d.value) || 0, color: d.color || color }));
+  const max = Math.max(...pts.map((p) => p.value), 1);
+  const first = pts.length ? pts[0].value : 0;
+  for (const p of pts) {
+    const pct = Math.round((p.value / max) * 100);
+    const conv = first ? Math.round((p.value / first) * 100) : 0;
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;margin:8px 0';
+    const label = document.createElement('span');
+    label.style.cssText = 'flex:none;width:96px;font-size:12.5px;color:var(--dim,#A8A29E);text-transform:capitalize';
+    label.textContent = p.label;
+    const track = document.createElement('div');
+    track.style.cssText = 'flex:1;height:22px;background:#0F0F13;border-radius:6px;overflow:hidden;position:relative';
+    const fill = document.createElement('div');
+    fill.style.cssText = `height:100%;width:${pct}%;background:${p.color};opacity:.9;border-radius:6px;min-width:2px;transition:width .3s var(--ease-out,ease)`;
+    track.appendChild(fill);
+    const val = document.createElement('span');
+    val.className = 'mono';
+    val.style.cssText = 'flex:none;width:40px;text-align:right;font-size:12.5px;font-weight:600';
+    val.textContent = format(p.value);
+    row.appendChild(label); row.appendChild(track); row.appendChild(val);
+    if (showConversion) {
+      const c = document.createElement('span');
+      c.className = 'mono';
+      c.style.cssText = 'flex:none;width:44px;text-align:right;font-size:11px;color:var(--faint,#8E8882)';
+      c.textContent = `${conv}%`;
+      c.title = `${conv}% of ${pts[0] ? pts[0].label : 'top'}`;
+      row.appendChild(c);
+    }
+    wrap.appendChild(row);
+  }
+  return wrap;
+}
+
 // Area chart. data: [{label, value}]. opts: { height, color, format(value)->string }.
 // Returns a responsive <div> wrapping the SVG (scales to container width).
 export function areaChart(data, opts = {}) {

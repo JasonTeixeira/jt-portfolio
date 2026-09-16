@@ -1,5 +1,6 @@
 // Money command center body (cockpit) — real figures from /api/revenue.
 // Rendered into a mount below the admin tab bar; DOM via shared `h`/`clear`.
+import { areaChart, barChart } from './admin-charts.mjs';
 
 export function renderMoneyBody(mount, deps) {
   const { h, clear, money, apiGet, renderNotAuthorized } = deps;
@@ -21,18 +22,18 @@ export function renderMoneyBody(mount, deps) {
     statMount.appendChild(stat(String(v.wonCount), 'Deals won'));
     statMount.appendChild(stat(money(v.avgDealCents), 'Avg deal'));
     clear(detail);
-    const months = Object.keys(v.monthly || {}).sort().slice(-6);
-    if (months.length) {
+    // ── Collected revenue, last 6 months (zero-filled) as an area chart ──
+    const monthly = v.monthly || {};
+    const now = new Date();
+    const series = [];
+    for (let i = 5; i >= 0; i -= 1) {
+      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+      series.push({ label: d.toLocaleString('en', { month: 'short' }), value: monthly[d.toISOString().slice(0, 7)] || 0 });
+    }
+    if (series.some((p) => p.value > 0)) {
       const card = h('div', { class: 'admin-card', style: 'margin-top:16px' });
-      card.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'collected by month'), h('span', { class: 'line' })));
-      const max = Math.max(...months.map((m) => v.monthly[m]));
-      for (const m of months) {
-        const cents = v.monthly[m]; const pct = max ? Math.round((cents / max) * 100) : 0;
-        card.appendChild(h('div', { style: 'display:flex;align-items:center;gap:12px;margin:8px 0' },
-          h('span', { class: 'mono', style: 'font-size:11px;color:var(--faint);width:64px' }, m),
-          h('div', { style: 'flex:1;height:8px;border-radius:4px;background:#0F0F13;overflow:hidden' }, h('div', { style: `height:100%;width:${pct}%;background:var(--green)` })),
-          h('span', { class: 'mono', style: 'font-size:12px;width:96px;text-align:right' }, money(cents))));
-      }
+      card.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'collected · last 6 months'), h('span', { class: 'line' })));
+      card.appendChild(areaChart(series, { height: 160, color: '#10b981', format: (c) => money(c) }));
       detail.appendChild(card);
     }
 
@@ -43,15 +44,10 @@ export function renderMoneyBody(mount, deps) {
       card2.appendChild(h('div', { class: 'sec-rule' },
         h('span', { class: 'sec-label', style: 'color:#F59E0B' }, 'balance owed · aging'),
         h('span', { class: 'line' })));
-      const BUCKETS = [['current', '0–30 days', '#10b981'], ['d30', '31–60', '#22d3ee'], ['d60', '61–90', '#F59E0B'], ['d90', '91–120', '#f97316'], ['older', '120+ days', '#f43f5e']];
-      const row = h('div', { class: 'stat-row' });
-      for (const [k, label, color] of BUCKETS) {
-        const cents = (aging.buckets && aging.buckets[k]) || 0;
-        row.appendChild(h('div', { class: 'stat' },
-          h('div', { class: 'n', style: `color:${cents > 0 ? color : 'var(--faint)'}` }, money(cents)),
-          h('div', { class: 'l' }, label)));
-      }
-      card2.appendChild(row);
+      const BUCKETS = [['current', '0–30d', '#10b981'], ['d30', '31–60', '#22d3ee'], ['d60', '61–90', '#F59E0B'], ['d90', '91–120', '#f97316'], ['older', '120+', '#f43f5e']];
+      card2.appendChild(barChart(
+        BUCKETS.map(([k, label, color]) => ({ label, value: (aging.buckets && aging.buckets[k]) || 0, color })),
+        { height: 170, format: (c) => money(c) }));
       // The individual overdue lines — oldest first — so nothing rots unseen.
       const overdue = (aging.items || []).filter((it) => it.bucket !== 'current');
       if (overdue.length) {

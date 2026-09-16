@@ -2,6 +2,7 @@
 // Manual-assist: surfaces who needs a touch + a copy-ready opener; the operator
 // sends and logs the touch (via /api/prospects). No auto cold-emailing.
 import { rankLeads } from './lead-score.mjs';
+import { funnelBars } from './admin-charts.mjs';
 
 const TIER = { hot: { c: '#f43f5e', t: '🔥 HOT' }, warm: { c: '#F59E0B', t: 'WARM' }, cool: { c: '#8E8882', t: 'cool' } };
 
@@ -123,9 +124,11 @@ export function renderMarketing(mount, key, deps) {
     mount.appendChild(importPanel());
     const statMount = h('div', { class: 'stat-row' });
     const nurtureMount = h('div', {});
+    const distMount = h('div', {});
     const listMount = h('div', { style: 'margin-top:18px' });
     mount.appendChild(statMount);
     mount.appendChild(nurtureMount);
+    mount.appendChild(distMount);
     mount.appendChild(listMount);
     const stat = (n, l, color) => h('div', { class: 'stat' }, h('div', { class: 'n', style: color ? `color:${color}` : '' }, n), h('div', { class: 'l' }, l));
 
@@ -154,6 +157,20 @@ export function renderMarketing(mount, key, deps) {
       if (!leads.length) { listMount.appendChild(h('p', { class: 'subtle' }, 'No open leads yet — they appear here as prospects come in and go stale.')); return; }
       // ranked by close-intent (engagement + recency), hottest first
       const ordered = rankLeads(leads);
+      // Close-intent distribution — how many hot / warm / cool leads are open right now.
+      clear(distMount);
+      const tiers = { hot: 0, warm: 0, cool: 0 };
+      for (const l of ordered) { const t = (l._score && l._score.tier) || 'cool'; if (tiers[t] != null) tiers[t] += 1; }
+      if (ordered.length) {
+        const card = h('div', { class: 'admin-card', style: 'margin-top:14px' });
+        card.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#f43f5e' }, 'close-intent · open leads'), h('span', { class: 'line' })));
+        card.appendChild(funnelBars([
+          { label: 'Hot', value: tiers.hot, color: '#f43f5e' },
+          { label: 'Warm', value: tiers.warm, color: '#F59E0B' },
+          { label: 'Cool', value: tiers.cool, color: '#22d3ee' },
+        ], { showConversion: false, format: (n) => String(n) }));
+        distMount.appendChild(card);
+      }
       for (const lead of ordered) listMount.appendChild(leadRow(lead));
     });
 
