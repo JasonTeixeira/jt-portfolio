@@ -15,6 +15,7 @@ import {
 } from '../lib/portal-db.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
+import { messageEmail } from '../lib/email-templates.mjs';
 
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
@@ -47,8 +48,8 @@ async function handler(req, res) {
       if (email) {
         const tok = await ensurePortalToken(projectId);
         const link = tok.ok && tok.token ? `${SITE}/portal.html?id=${tok.token}` : `${SITE}`;
-        await sendClient({ to: email, subject: 'New message about your project',
-          text: `Jason sent you a message about your project:\n\n"${text.slice(0, 800)}"\n\nRead and reply in your project portal: ${link}\n` });
+        const mail = messageEmail({ body: text, link });
+        await sendClient({ to: email, subject: mail.subject, text: mail.text, html: mail.html });
       }
     } catch (e) { console.error('[messages] notify send failed', (e && e.message) || e); }
     return res.status(200).json({ ok: true, sent: true });

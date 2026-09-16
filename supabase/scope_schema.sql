@@ -325,3 +325,16 @@ create table if not exists scope_invoices (
 create index if not exists idx_scope_invoices_proposal on scope_invoices (proposal_id);
 create index if not exists idx_scope_invoices_status on scope_invoices (status);
 alter table scope_invoices enable row level security;
+
+-- ── Email suppression list (2026-09-16): fed by the Resend bounce/complaint webhook ──
+-- Address-keyed; blocks ALL mail to a hard-bounced or spam-complained address. Distinct
+-- from prospect-level marketing unsubscribe. Service-role only, RLS deny-all.
+create table if not exists scope_email_suppressions (
+  email text primary key,
+  reason text not null check (reason in ('bounce','complaint','manual')),
+  detail jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_scope_suppressions_reason on scope_email_suppressions (reason);
+alter table scope_email_suppressions enable row level security;
