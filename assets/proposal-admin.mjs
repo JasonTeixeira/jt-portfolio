@@ -13,7 +13,7 @@ import { renderClients as renderClientsView } from './admin-clients.mjs';
 import { renderGTM as renderGTMView } from './admin-gtm.mjs';
 import { renderInbox as renderInboxView } from './admin-inbox.mjs';
 import { createCommandPalette } from './admin-command.mjs';
-import { areaChart, deltaBadge } from './admin-charts.mjs';
+import { areaChart, deltaBadge, funnelBars } from './admin-charts.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -802,8 +802,10 @@ function renderPipeline(root, key) {
   wrap.appendChild(h('h1', { class: 'sec-title' }, 'Pipeline'));
 
   const statMount = h('div', { class: 'stat-row' });
+  const distCard = h('div', {});
   const tbody = h('tbody');
   wrap.appendChild(statMount);
+  wrap.appendChild(distCard);
 
   // Outbound: log a cold-reached lead straight into the pipeline.
   const inEmail = h('input', { type: 'email', placeholder: 'email *', maxlength: '200', style: 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:7px 10px;min-width:180px' });
@@ -850,6 +852,14 @@ function renderPipeline(root, key) {
           h('div', { class: 'n', style: `color:${STAGE_META[s].color}` }, String(counts[s] || 0)),
           h('div', { class: 'l' }, STAGE_META[s].label),
         ));
+      }
+      // Stage distribution (current occupancy — honest, not a fabricated conversion funnel).
+      clear(distCard);
+      if (STAGE_ORDER.some((s) => (counts[s] || 0) > 0)) {
+        const card = h('div', { class: 'admin-card', style: 'margin:12px 0 14px' });
+        card.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, 'prospects by stage'), h('span', { class: 'line' })));
+        card.appendChild(funnelBars(STAGE_ORDER.map((s) => ({ label: STAGE_META[s].label, value: counts[s] || 0, color: STAGE_META[s].color })), { showConversion: false, format: (n) => String(n) }));
+        distCard.appendChild(card);
       }
       clear(tbody);
       if (!prospects.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects yet — they appear here the moment someone uses the scope studio.'))); return; }
