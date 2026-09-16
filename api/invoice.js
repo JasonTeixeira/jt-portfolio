@@ -53,6 +53,14 @@ async function handler(req, res) {
       if (!propR.ok || !propR.data) return res.status(404).json({ ok: false, error: 'not_found' });
       const amount = amountForKind(propR.data, kind);
       if (!(amount > 0)) return res.status(400).json({ ok: false, error: 'no_amount' });
+      // Idempotency: a proposal only needs one live invoice per kind. If one already
+      // exists (any non-void status), return it instead of minting a confusing duplicate
+      // number — a double-click or list-lag can't spam the client with two invoices.
+      const existingR = await listInvoicesForProposal(proposalId);
+      if (existingR.ok) {
+        const dup = existingR.data.find((i) => i.kind === kind && i.status !== 'void');
+        if (dup) return res.status(200).json({ ok: true, invoice: { ...dup, paid: isInvoicePaid(propR.data, kind) }, existing: true });
+      }
       const r = await createInvoice(proposalId, kind, amount, propR.data.currency || 'usd');
       if (!r.ok) { console.error('[invoice] generate failed', r.error); return res.status(400).json({ ok: false, error: 'save_failed' }); }
       return res.status(200).json({ ok: true, invoice: { ...r.data, paid: isInvoicePaid(propR.data, kind) } });

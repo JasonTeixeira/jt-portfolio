@@ -37,17 +37,31 @@ export function renderGTM(mount, key, deps) {
   function scheduleSave() {
     savedTag.textContent = 'saving…';
     if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(doSave, 600);
+    // Snapshot the week + a deep copy of the data at edit time. If the operator switches
+    // weeks before this fires, the pending save still writes the RIGHT week's data —
+    // it can never bleed week A's edits onto week B's row (the async model reassign in
+    // load() cannot race it).
+    const w = week;
+    const snapshot = JSON.parse(JSON.stringify(model));
+    saveTimer = setTimeout(() => doSave(w, snapshot), 600);
   }
-  async function doSave() {
+  async function doSave(w, data) {
     try {
       const res = await fetch('/api/gtm', { method: 'POST',
         headers: authHeaders({ 'content-type': 'application/json' }),
-        body: JSON.stringify({ week_of: week, data: model }) });
+        body: JSON.stringify({ week_of: w, data }) });
       if (res.status === 401) { renderNotAuthorized(mount.parentNode || mount); return; }
       const j = await res.json().catch(() => null);
-      savedTag.textContent = j && j.ok ? 'saved' : 'save failed';
-    } catch { savedTag.textContent = 'save failed'; }
+      // Only reflect status if we're still looking at the week we just saved.
+      if (w === week) savedTag.textContent = j && j.ok ? 'saved' : 'save failed';
+    } catch { if (w === week) savedTag.textContent = 'save failed'; }
+  }
+  // Before leaving a week, fire any pending debounced save immediately so a later edit
+  // on the next week can't cancel it and lose this week's last change.
+  function flushSave() {
+    if (!saveTimer) return;
+    clearTimeout(saveTimer); saveTimer = null;
+    doSave(week, JSON.parse(JSON.stringify(model)));
   }
 
   function draw() {
@@ -58,7 +72,7 @@ export function renderGTM(mount, key, deps) {
       h('label', { class: 'subtle', style: 'font-size:12px' }, 'Week of'),
       (() => {
         const inp = h('input', { type: 'date', value: week, style: 'padding:6px 10px;border-radius:8px' });
-        inp.addEventListener('change', () => { if (inp.value) { week = inp.value; load(); } });
+        inp.addEventListener('change', () => { if (inp.value) { flushSave(); week = inp.value; load(); } });
         return inp;
       })(),
       savedTag);
@@ -139,7 +153,7 @@ export function renderGTM(mount, key, deps) {
       const collected = (w.data && w.data.metrics && w.data.metrics.collected) || '—';
       const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'display:flex;justify-content:space-between;width:100%;padding:6px 8px;font-size:12px;margin:2px 0' },
         h('span', { class: 'mono' }, w.week_of), h('span', { style: 'color:var(--green)' }, String(collected)));
-      btn.addEventListener('click', () => { week = w.week_of; load(); });
+      btn.addEventListener('click', () => { flushSave(); week = w.week_of; load(); });
       historyBody.appendChild(btn);
     }
   }
