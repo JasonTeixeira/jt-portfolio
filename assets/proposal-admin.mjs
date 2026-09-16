@@ -192,7 +192,9 @@ function renderList(root, list, key, autoOpenId) {
   wrap.appendChild(detailMount);
   root.appendChild(wrap);
   // Deep-link from the ⌘K palette: auto-open a specific proposal and scroll to it.
-  if (autoOpenId && list.some((p) => p.id === autoOpenId)) {
+  // openDetail fetches by id directly (works for any proposal, not just this recent-100
+  // window) and renders "Couldn't load that proposal." if it's genuinely gone.
+  if (autoOpenId) {
     openDetail(detailMount, autoOpenId, key);
     try { detailMount.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch { /* ignore */ }
   }
@@ -1114,7 +1116,8 @@ function mountCommandPalette() {
     { label: 'Client resources & onboarding', run: () => { location.href = 'resources.html'; } },
     { label: 'Sign out', run: () => { const b = document.getElementById('ax-logout'); if (b) b.click(); } },
   ];
-  const palette = createCommandPalette({ h, authHeaders, navigate, sections: SECTIONS, actions, money });
+  const palette = createCommandPalette({ h, authHeaders, navigate, sections: SECTIONS, actions, money,
+    onUnauthorized: () => renderNotAuthorized(document.getElementById('admin-root')) });
   document.body.appendChild(palette.el);
 
   // ⌘K / Ctrl+K toggles; ignore when typing in a field unless the palette is what's focused.
