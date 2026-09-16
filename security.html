@@ -102,14 +102,38 @@
       el('p', {}, 'Sign-in now requires a code from your authenticator. Keep a backup of your setup key somewhere safe — if you lose your device, use the break-glass admin key to regain access.'),
     );
     const off = el('button', { class: 'danger' }, 'Turn off two-factor');
-    off.addEventListener('click', async () => {
-      if (!window.confirm('Turn off two-factor authentication? Your account will be protected by password only.')) return;
-      const f = (fac.factors || [])[0];
-      if (f) await unenrollFactor(token(), f.id);
+    off.addEventListener('click', () => renderDisable(fac));
+    root.append(off);
+  }
+
+  // Disabling MFA requires proving possession of the authenticator RIGHT NOW (a fresh
+  // challenge+verify), so a stolen session token alone can't strip MFA off the account.
+  function renderDisable(fac) {
+    clear();
+    root.append(
+      el('h2', {}, 'Confirm it’s you'),
+      el('p', {}, 'Enter a current code from your authenticator to turn two-factor off.'),
+    );
+    const f = (fac.factors || [])[0];
+    const code = el('input', { class: 'auth-cell code', inputmode: 'numeric', autocomplete: 'one-time-code', maxlength: '6', placeholder: '123456' });
+    const confirm = el('button', { class: 'danger' }, 'Verify & turn off');
+    const cancel = el('button', { class: 'btn-ghost', style: 'padding:9px 16px;cursor:pointer' }, 'Keep it on');
+    const status = el('span', { class: 'muted' }, '');
+    cancel.addEventListener('click', () => renderOn(fac));
+    confirm.addEventListener('click', async () => {
+      if (!f) { renderOff(); return; }
+      status.textContent = 'Verifying…';
+      const ch = await challengeFactor(token(), f.id);
+      if (!ch.ok || !ch.data || !ch.data.id) { status.textContent = 'Could not verify — try again.'; return; }
+      const v = await verifyFactor(token(), f.id, ch.data.id, code.value);
+      if (!v.ok) { status.textContent = 'That code isn’t right — try again.'; code.value = ''; code.focus(); return; }
+      // Only after a live code checks out do we strip the factor.
+      await unenrollFactor(token(), f.id);
       const re = await listFactors(token());
       re.verified ? renderOn(re) : renderOff();
     });
-    root.append(off);
+    root.append(el('div', { class: 'row' }, code, confirm, cancel), el('div', { style: 'margin-top:8px' }, status));
+    code.focus();
   }
 
   function renderError(m) { clear(); root.append(el('p', { style: 'color:#F59E0B' }, m)); }

@@ -58,6 +58,10 @@
   // Only redirect an already-signed-in visitor once the session is VALIDATED. Redirecting
   // on mere token presence caused a login<->dashboard loop when the stored session was
   // stale or partial (the destination requires a valid user; login used to skip that check).
+  // NOTE: this does NOT re-check aal / re-prompt MFA — it is a convenience redirect, not a
+  // security gate. The real MFA enforcement is server-side (authorizeAdmin requires aal2
+  // when ADMIN_REQUIRE_MFA is on), so an aal1 session reaching `next` still can't touch
+  // protected admin data. Don't repurpose this branch as an access control.
   if (getSession()) { currentUser().then((u) => { if (u) location.replace(next); else clearSession(); }).catch(() => clearSession()); }
   const f = document.getElementById('f'), msg = document.getElementById('msg'), btn = document.getElementById('btn'), lbl = document.getElementById('lbl');
   f.addEventListener('submit', async (e) => {
