@@ -3,6 +3,7 @@
 // across Overview + Money. All values are numbers; labels/formatting come from the caller.
 
 const NS = 'http://www.w3.org/2000/svg';
+let _gradSeq = 0; // guarantees a document-unique gradient id per chart (no value-hash collisions)
 function s(tag, attrs, ...kids) {
   const n = document.createElementNS(NS, tag);
   for (const k in (attrs || {})) if (attrs[k] != null) n.setAttribute(k, attrs[k]);
@@ -17,9 +18,10 @@ export function deltaBadge(now, prev, { fmt } = {}) {
   span.className = 'mono';
   span.style.cssText = 'font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;white-space:nowrap';
   const d = (now || 0) - (prev || 0);
-  if (!prev && !now) { span.textContent = '—'; span.style.color = 'var(--faint,#8E8882)'; return span; }
-  const pct = prev ? Math.round((d / prev) * 100) : (now ? 100 : 0);
-  const up = d >= 0;
+  // Flat is flat — a zero change (incl. equal non-zero weeks) must never read as growth.
+  if (d === 0) { span.textContent = '—'; span.style.color = 'var(--faint,#8E8882)'; return span; }
+  const pct = prev ? Math.round((d / prev) * 100) : 100; // prev=0 & now>0 → brand-new, 100%
+  const up = d > 0;
   span.textContent = `${up ? '↑' : '↓'} ${Math.abs(pct)}%`;
   span.style.color = up ? '#10b981' : '#f43f5e';
   span.style.background = up ? 'rgba(16,185,129,.10)' : 'rgba(244,63,94,.10)';
@@ -44,7 +46,7 @@ export function areaChart(data, opts = {}) {
 
   const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: String(H), preserveAspectRatio: 'none',
     style: 'display:block;overflow:visible' });
-  const gid = `ag${Math.round(pts.reduce((a, p) => a + p.value, 0)) % 100000}`;
+  const gid = `ag${++_gradSeq}`;
   const grad = s('linearGradient', { id: gid, x1: '0', y1: '0', x2: '0', y2: '1' },
     s('stop', { offset: '0', 'stop-color': color, 'stop-opacity': '0.28' }),
     s('stop', { offset: '1', 'stop-color': color, 'stop-opacity': '0' }));
