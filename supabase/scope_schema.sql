@@ -286,3 +286,42 @@ create table if not exists public.scope_client_onboarding (
   created_at timestamptz not null default now()
 );
 alter table public.scope_client_onboarding enable row level security;
+
+-- ── Admin Foundation (2026-09-16): GTM weekly tracker + invoices ─────────────
+-- All service-role only, RLS deny-all (operator cockpit surfaces).
+
+-- Weekly GTM scoreboard — replaces the browser-localStorage ops.html sheet with a
+-- server-persisted, history-keeping record. One row per week; `data` holds the
+-- metric inputs, retro note, and mini-eval queue as a flexible jsonb blob.
+create table if not exists scope_gtm_weeks (
+  id uuid primary key default gen_random_uuid(),
+  week_of date not null unique,
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_scope_gtm_week on scope_gtm_weeks (week_of desc);
+alter table scope_gtm_weeks enable row level security;
+
+-- Invoices — real numbered records for deposit / balance / full amounts. Payment
+-- status is derived from the proposal ledger (paid_at / balance_paid_at), so an
+-- invoice never disagrees with what Stripe actually collected. Human-readable
+-- number comes from a dedicated sequence (INV-1001, INV-1002, …).
+create sequence if not exists scope_invoice_seq start 1001;
+create table if not exists scope_invoices (
+  id uuid primary key default gen_random_uuid(),
+  invoice_no bigint not null default nextval('scope_invoice_seq'),
+  proposal_id uuid not null references scope_proposals(id) on delete cascade,
+  kind text not null check (kind in ('deposit','balance','full')),
+  amount_cents integer not null check (amount_cents >= 0),
+  currency text not null default 'usd',
+  status text not null default 'draft' check (status in ('draft','sent','void')),
+  issued_at timestamptz not null default now(),
+  sent_at timestamptz,
+  due_at date,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_scope_invoices_proposal on scope_invoices (proposal_id);
+create index if not exists idx_scope_invoices_status on scope_invoices (status);
+alter table scope_invoices enable row level security;
