@@ -978,6 +978,9 @@ function renderOverview(root) {
   const wrap = h('div', {});
   wrap.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'cockpit · overview'), h('span', { class: 'line' })));
   wrap.appendChild(h('h1', { class: 'sec-title' }, 'Overview'));
+  // ── Act now: computed next-best-actions + at-risk + weighted forecast (intelligence) ──
+  const intelMount = h('div', {});
+  wrap.appendChild(intelMount);
   const heroMount = h('div', { class: 'admin-card', style: 'margin-top:8px' }, h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'));
   const statMount = h('div', { class: 'stat-row', style: 'margin-top:16px' });
   const grid = h('div', { class: 'ax-grid', style: 'margin-top:22px' });
@@ -1022,6 +1025,33 @@ function renderOverview(root) {
       statMount.appendChild(stat('—', 'No revenue yet'));
     }
   }).catch(() => { clear(heroMount); heroMount.appendChild(h('p', { class: 'subtle', style: 'color:#F59E0B;font-size:13px' }, "Couldn't load revenue — refresh to retry.")); });
+
+  // ── Act now: intelligence (next-best-actions + at-risk + weighted forecast) ──
+  const SEV = { high: '#f43f5e', med: '#F59E0B', low: '#8E8882' };
+  const INTEL_NAV = { balance: 'money', expiring: 'proposals', cold: 'marketing' };
+  apiGet('/api/intel').then((r) => {
+    if (r.unauthorized || r.status >= 500) return; // stay quiet on failure — this is an overlay signal
+    const j = r.json && r.json.ok ? r.json : null;
+    const actions = (j && j.actions) || [];
+    if (!actions.length && !(j && j.forecastCents)) return; // nothing to surface
+    const card = h('div', { class: 'admin-card', style: 'margin-top:8px;border:1px solid rgba(244,63,94,.22)' });
+    card.appendChild(h('div', { style: 'display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px' },
+      h('span', { class: 'sec-label', style: 'color:#f43f5e' }, 'act now'),
+      j && j.atRiskCount ? h('span', { class: 'mono', style: 'font-size:11px;color:#f43f5e' }, `${j.atRiskCount} at risk`) : null,
+      j && j.forecastCents ? h('span', { class: 'subtle', style: 'font-size:11.5px;color:var(--faint);margin-left:auto' }, `weighted forecast ${money(j.forecastCents)} · est.`) : null));
+    if (!actions.length) { card.appendChild(h('p', { class: 'subtle', style: 'font-size:13px' }, 'Nothing at risk right now — pipeline is healthy.')); }
+    for (const a of actions.slice(0, 6)) {
+      const rowBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;margin:3px 0;border-radius:9px' },
+        h('span', { style: `flex:none;width:8px;height:8px;border-radius:50%;background:${SEV[a.severity] || '#8E8882'}` }),
+        h('span', { style: 'flex:1;min-width:0' },
+          h('span', { style: 'display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' }, a.label),
+          h('span', { class: 'subtle', style: 'display:block;font-size:11.5px;color:var(--faint)' }, a.sublabel || '')),
+        a.cents ? h('span', { class: 'mono', style: 'flex:none;font-size:12px;color:var(--faint)' }, money(a.cents)) : null);
+      rowBtn.addEventListener('click', () => navigate(INTEL_NAV[a.kind] || 'pipeline'));
+      card.appendChild(rowBtn);
+    }
+    intelMount.appendChild(card);
+  }).catch(() => {});
 
   // ── Recent activity feed + new-leads WoW delta ──
   const act = panel('Recent activity', 6); const actL = h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'); act.appendChild(actL);

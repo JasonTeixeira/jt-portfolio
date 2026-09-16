@@ -60,7 +60,7 @@ export function renderClients(root, key, deps) {
       clear(mount);
       if (r.status === 404) { mount.appendChild(h('p', { class: 'subtle' }, 'Client not found.')); return; }
       if (!r.json || !r.json.ok) { mount.appendChild(h('p', { class: 'subtle', style: 'color:#F59E0B' }, "Couldn't load this client — refresh to retry.")); return; }
-      const { prospect, proposals, projects, contracts, files, events, money: m } = r.json.client;
+      const { prospect, proposals, projects, contracts, files, events, plans, conversations, money: m } = r.json.client;
 
       mount.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'client · 360'), h('span', { class: 'line' })));
       mount.appendChild(h('div', { style: 'display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-top:4px' },
@@ -88,6 +88,38 @@ export function renderClients(root, key, deps) {
           h('span', { class: 'mono', style: 'font-size:11px;color:var(--faint)' }, paidTxt)));
       }
       mount.appendChild(dealsP);
+
+      // what they scoped (scope_plans — dormant intelligence, finally surfaced). total_lo/hi
+      // are DOLLARS (the scope-studio quote band), not cents.
+      if (plans && plans.length) {
+        const usd = (n) => '$' + Number(n || 0).toLocaleString();
+        const sp = panel('what they scoped');
+        for (const pl of plans) {
+          const band = (pl.total_lo != null && pl.total_hi != null) ? `${usd(pl.total_lo)}–${usd(pl.total_hi)}` : '';
+          sp.appendChild(h('div', { style: 'display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:8px 0;border-top:1px solid #17171d' },
+            h('span', { style: 'font-size:13.5px;flex:1;min-width:160px' }, (Array.isArray(pl.keys) ? pl.keys.join(', ') : '') || '—'),
+            band ? h('span', { class: 'mono', style: 'font-size:12px;color:#10b981' }, band) : null,
+            h('span', { class: 'mono', style: 'font-size:11px;color:var(--faint)' }, `${pl.segment ? pl.segment + ' · ' : ''}${fmtDay(pl.created_at)}`)));
+        }
+        mount.appendChild(sp);
+      }
+
+      // scope studio conversation (scope_conversations — the transcript, collapsed).
+      const conv = conversations && conversations[0];
+      if (conv && Array.isArray(conv.transcript) && conv.transcript.length) {
+        const cv = panel('scope studio conversation');
+        const det = h('details', {});
+        det.appendChild(h('summary', { style: 'cursor:pointer;font-size:13px;color:#e5e5ea' }, `${conv.transcript.length} messages · ${fmtDay(conv.created_at)}${conv.mode ? ' · ' + conv.mode : ''}`));
+        for (const turn of conv.transcript.slice(0, 40)) {
+          const role = (turn && turn.role) || 'msg';
+          const text = (turn && (turn.content || turn.text)) || (typeof turn === 'string' ? turn : '');
+          det.appendChild(h('div', { style: 'padding:6px 0;font-size:12.5px' },
+            h('span', { class: 'mono', style: `color:${role === 'user' ? '#22d3ee' : '#10b981'};margin-right:8px` }, role),
+            h('span', { style: 'color:var(--dim);white-space:pre-wrap;word-break:break-word' }, String(text).slice(0, 600))));
+        }
+        cv.appendChild(det);
+        mount.appendChild(cv);
+      }
 
       // projects + deliverables
       const projP = panel('projects & deliverables');
