@@ -13,6 +13,7 @@ import { renderClients as renderClientsView } from './admin-clients.mjs';
 import { renderGTM as renderGTMView } from './admin-gtm.mjs';
 import { renderInbox as renderInboxView } from './admin-inbox.mjs';
 import { createCommandPalette } from './admin-command.mjs';
+import { areaChart, deltaBadge } from './admin-charts.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -941,18 +942,43 @@ function renderProposals(root, key, openId) {
 }
 
 // Mission-control home — at-a-glance across money, pipeline, work, and schedule.
+// Map a raw scope_events type to a feed glyph, label, and accent.
+const ACTIVITY_META = {
+  deposit_paid: ['$', 'Deposit paid', '#10b981'],
+  balance_paid: ['$', 'Paid in full', '#10b981'],
+  proposal_approved: ['▤', 'Proposal approved', '#22d3ee'],
+  proposal_accepted: ['✓', 'Proposal accepted', '#22d3ee'],
+  dispute_opened: ['!', 'Payment dispute', '#f43f5e'],
+  inbound: ['↓', 'New inbound lead', '#a78bfa'],
+  started: ['◷', 'Started scoping', '#a78bfa'],
+  questioned: ['?', 'Answered scope questions', '#a78bfa'],
+  plan_built: ['◈', 'Built a scope plan', '#22d3ee'],
+  proposal_written: ['▤', 'Proposal drafted', '#22d3ee'],
+  touch_email: ['✉', 'Emailed', '#8E8882'],
+  touch_call: ['☎', 'Called', '#8E8882'],
+  touch_dm: ['✎', 'Sent a DM', '#8E8882'],
+  touch_meeting: ['▦', 'Meeting', '#8E8882'],
+  touch_note: ['✎', 'Logged a note', '#8E8882'],
+  touch_follow_up: ['↻', 'Follow-up', '#8E8882'],
+};
+function activityMeta(type) { return ACTIVITY_META[type] || ['·', String(type || 'event').replace(/_/g, ' '), '#8E8882']; }
+
 function renderOverview(root) {
   clear(root);
   const wrap = h('div', {});
   wrap.appendChild(h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#10b981' }, 'cockpit · overview'), h('span', { class: 'line' })));
   wrap.appendChild(h('h1', { class: 'sec-title' }, 'Overview'));
-  const statMount = h('div', { class: 'stat-row' });
+  const heroMount = h('div', { class: 'admin-card', style: 'margin-top:8px' }, h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'));
+  const statMount = h('div', { class: 'stat-row', style: 'margin-top:16px' });
   const grid = h('div', { class: 'ax-grid', style: 'margin-top:22px' });
+  wrap.appendChild(heroMount);
   wrap.appendChild(statMount);
   wrap.appendChild(grid);
   root.appendChild(wrap);
 
-  const stat = (n, l, color) => h('div', { class: 'stat' }, h('div', { class: 'n', style: color ? `color:${color}` : '' }, n), h('div', { class: 'l' }, l));
+  const stat = (n, l, color, badge) => h('div', { class: 'stat' },
+    h('div', { style: 'display:flex;align-items:baseline;gap:8px;flex-wrap:wrap' }, h('div', { class: 'n', style: color ? `color:${color}` : '' }, n), badge || null),
+    h('div', { class: 'l' }, l));
   const panel = (title, span) => { const p = h('div', { class: 'ax-panel', style: `grid-column:span ${span}` }, h('h3', {}, title)); grid.appendChild(p); return p; };
   const line = (a, b, color) => h('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid #17171d;font-size:13px' }, h('span', { style: 'min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' }, a), h('span', { class: 'mono', style: `font-size:11px;flex:none;color:${color || 'var(--faint)'}` }, b));
   const moreBtn = (label, id, mount) => { const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:12px;padding:6px 12px;font-size:12px' }, label); btn.addEventListener('click', () => navigate(id)); mount.appendChild(btn); };
@@ -961,13 +987,49 @@ function renderOverview(root) {
     if (r.unauthorized) { renderNotAuthorized(root); return; }
     clear(statMount);
     const v = r.json && r.json.ok && r.json.revenue ? r.json.revenue : null;
+    // ── Hero: collected, last 12 weeks, with a real week-over-week delta + area chart ──
+    clear(heroMount);
     if (v) {
-      statMount.appendChild(stat(money(v.collectedCents), 'Collected', '#10b981'));
+      const wowFmt = (cents) => money(cents);
+      heroMount.appendChild(h('div', { style: 'display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px' },
+        h('span', { class: 'sec-label', style: 'color:#10b981' }, 'collected · last 12 weeks'),
+        h('span', { style: 'font-family:var(--serif,Georgia);font-size:2rem;line-height:1' }, money(v.collectedCents)),
+        deltaBadge(v.thisWeekCents, v.prevWeekCents, { fmt: wowFmt }),
+        h('span', { class: 'subtle', style: 'font-size:11.5px;color:var(--faint)' }, `${money(v.thisWeekCents || 0)} this week`)));
+      const series = (v.weekly || []).map((w) => ({ label: (() => { const d = new Date(w.week); return Number.isNaN(d.getTime()) ? w.week : `${d.getUTCMonth() + 1}/${d.getUTCDate()}`; })(), value: w.cents }));
+      if (series.length >= 2 && series.some((p) => p.value > 0)) heroMount.appendChild(areaChart(series, { height: 150, color: '#10b981', format: (c) => money(c) }));
+      else heroMount.appendChild(h('p', { class: 'subtle', style: 'font-size:12.5px;margin:8px 0 0' }, 'The revenue trend fills in here as deposits and balances get paid.'));
+      statMount.appendChild(stat(money(v.collectedCents), 'Collected', '#10b981', deltaBadge(v.thisWeekCents, v.prevWeekCents, { fmt: wowFmt })));
       statMount.appendChild(stat(money(v.outstandingCents), 'Outstanding', '#F59E0B'));
       statMount.appendChild(stat(money(v.pipelineCents), 'Open pipeline', '#22d3ee'));
       statMount.appendChild(stat(String(v.wonCount), 'Deals won'));
-    } else { statMount.appendChild(stat('$0', 'Collected', '#10b981')); statMount.appendChild(stat('—', 'No revenue yet')); }
-  }).catch(() => {});
+    } else {
+      heroMount.appendChild(h('p', { class: 'subtle', style: 'font-size:13px' }, 'No revenue yet — this becomes your money command center as deals close.'));
+      statMount.appendChild(stat('$0', 'Collected', '#10b981'));
+      statMount.appendChild(stat('—', 'No revenue yet'));
+    }
+  }).catch(() => { clear(heroMount); heroMount.appendChild(h('p', { class: 'subtle', style: 'color:#F59E0B;font-size:13px' }, "Couldn't load revenue — refresh to retry.")); });
+
+  // ── Recent activity feed + new-leads WoW delta ──
+  const act = panel('Recent activity', 6); const actL = h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'); act.appendChild(actL);
+  apiGet('/api/activity').then((r) => {
+    actL.remove(); if (r.unauthorized) return;
+    const j = r.json && r.json.ok ? r.json : null;
+    if (j && j.leadsWeek) {
+      const h3 = act.querySelector('h3');
+      if (h3) h3.appendChild(deltaBadge(j.leadsWeek.now, j.leadsWeek.prev, { fmt: (n) => `${n} lead${n === 1 ? '' : 's'}` }));
+    }
+    const items = (j && j.activity) || [];
+    if (!items.length) { act.appendChild(h('p', { class: 'subtle', style: 'font-size:13px' }, 'Activity shows up here as things happen — payments, leads, proposals.')); return; }
+    for (const e of items.slice(0, 8)) {
+      const [ico, label, color] = activityMeta(e.type);
+      const who = (e.scope_prospects && (e.scope_prospects.name || e.scope_prospects.email)) || '';
+      act.appendChild(h('div', { style: 'display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #17171d;font-size:13px' },
+        h('span', { class: 'mono', style: `flex:none;width:16px;text-align:center;color:${color}` }, ico),
+        h('span', { style: 'flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' }, who ? `${label} · ${who}` : label),
+        h('span', { class: 'mono', style: 'flex:none;font-size:11px;color:var(--faint)' }, formatAge(e.created_at))));
+    }
+  }).catch(() => { actL.remove(); act.appendChild(h('p', { class: 'subtle', style: 'font-size:13px;color:#F59E0B' }, "Couldn't load activity.")); });
 
   const needs = panel('Needs you now', 6); const needsL = h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'); needs.appendChild(needsL);
   apiGet('/api/marketing').then((r) => {
