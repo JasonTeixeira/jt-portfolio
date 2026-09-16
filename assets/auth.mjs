@@ -72,6 +72,38 @@ export async function currentUser() {
   if (!r.ok) { if (r.status === 401) clearSession(); return null; }
   return r.json().catch(() => null);
 }
+// ── Multi-factor auth (TOTP) ────────────────────────────────────────────────
+// Raw Supabase MFA REST. A factor is enrolled (unverified) then verified once with a
+// live code; after that, sign-in requires a code to reach aal2. All calls carry the
+// user's access token as Bearer.
+async function authFetch(path, method, token, body) {
+  const headers = { ...H, Authorization: `Bearer ${token}` };
+  const r = await fetch(`${SUPA_URL}/auth/v1${path}`, { method, headers, ...(body ? { body: JSON.stringify(body) } : {}) });
+  return { ok: r.ok, status: r.status, data: await r.json().catch(() => ({})) };
+}
+
+// Verified TOTP factors on the current user (read from the user object).
+export async function listFactors(token) {
+  const r = await fetch(`${SUPA_URL}/auth/v1/user`, { headers: { ...H, Authorization: `Bearer ${token}` } });
+  if (!r.ok) return { ok: false, factors: [] };
+  const u = await r.json().catch(() => ({}));
+  const all = (u && u.factors) || [];
+  return { ok: true, factors: all.filter((f) => f.factor_type === 'totp'), verified: all.some((f) => f.factor_type === 'totp' && f.status === 'verified') };
+}
+export const enrollTotp = (token, friendlyName) => authFetch('/factors', 'POST', token, { factor_type: 'totp', friendly_name: friendlyName || 'Authenticator' });
+export const challengeFactor = (token, factorId) => authFetch(`/factors/${factorId}/challenge`, 'POST', token);
+export async function verifyFactor(token, factorId, challengeId, code) {
+  const r = await authFetch(`/factors/${factorId}/verify`, 'POST', token, { challenge_id: challengeId, code: String(code || '').trim() });
+  // A successful verify during sign-in returns a fresh aal2 session — persist it, keeping
+  // the existing email if the response omits the user object.
+  if (r.ok && r.data && r.data.access_token) {
+    const cur = getSession();
+    saveSession({ ...r.data, user: r.data.user || { email: cur && cur.email } });
+  }
+  return r;
+}
+export const unenrollFactor = (token, factorId) => authFetch(`/factors/${factorId}`, 'DELETE', token);
+
 export async function signOut() {
   const s = getSession();
   if (s && s.access_token) { try { await post(`/logout`, {}, s.access_token); } catch { /* ignore */ } }

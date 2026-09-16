@@ -50,7 +50,7 @@
   </div>
 </main>
 <script type="module">
-  import { signIn, getSession, currentUser, clearSession } from './assets/auth.mjs';
+  import { signIn, getSession, currentUser, clearSession, listFactors, challengeFactor, verifyFactor } from './assets/auth.mjs';
   const params = new URLSearchParams(location.search);
   // Only allow redirecting to a LOCAL page (prevents open-redirect via ?next=//evil.com).
   const raw = params.get('next') || 'dashboard.html';
@@ -65,11 +65,36 @@
     msg.className = 'auth-msg'; msg.textContent = '';
     btn.disabled = true; lbl.textContent = 'Authenticating…';
     const r = await signIn(document.getElementById('email').value.trim(), document.getElementById('password').value);
-    if (r.ok && r.data.access_token) { location.replace(next); return; }
+    if (r.ok && r.data.access_token) {
+      // If this account has a verified authenticator, require a 6-digit code (aal2) before
+      // proceeding. Accounts without MFA go straight through — no behavior change for them.
+      let fac;
+      try { fac = await listFactors(r.data.access_token); } catch { fac = { verified: false }; }
+      if (fac && fac.verified) { await promptMfa(r.data.access_token, fac.factors.find((x) => x.status === 'verified').id); return; }
+      location.replace(next); return;
+    }
     btn.disabled = false; lbl.textContent = 'Log in';
     msg.className = 'auth-msg err';
     msg.textContent = r.status === 400 ? '// that email or password isn’t right.' : ('// ' + (r.data.msg || r.data.error_description || 'couldn’t log in. try again.'));
   });
+
+  // Swap the password form for a 6-digit code prompt, challenge the factor, and verify.
+  async function promptMfa(token, factorId) {
+    const ch = await challengeFactor(token, factorId);
+    if (!ch.ok || !ch.data || !ch.data.id) { clearSession(); btn.disabled = false; lbl.textContent = 'Log in'; msg.className = 'auth-msg err'; msg.textContent = '// couldn’t start two-factor. try again.'; return; }
+    f.style.display = 'none';
+    const box = document.createElement('form');
+    box.innerHTML = '<label class="auth-field"><span>Authenticator code</span><input id="mfacode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456" required></label><button class="btn-solid green" type="submit" style="width:100%;margin-top:10px">Verify</button>';
+    f.parentNode.insertBefore(box, f.nextSibling);
+    const codeEl = box.querySelector('#mfacode'); codeEl.focus();
+    box.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      msg.className = 'auth-msg'; msg.textContent = '';
+      const v = await verifyFactor(token, factorId, ch.data.id, codeEl.value);
+      if (v.ok && v.data && v.data.access_token) { location.replace(next); return; }
+      msg.className = 'auth-msg err'; msg.textContent = '// that code isn’t right. try again.'; codeEl.value = ''; codeEl.focus();
+    });
+  }
 </script>
 <script defer src="/assets/ga.js?v=4"></script>
 </body>
