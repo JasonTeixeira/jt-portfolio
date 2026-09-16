@@ -79,13 +79,20 @@ async function handler(req, res) {
   try {
     const type = event && event.type;
     const data = (event && event.data) || {};
-    if (type === 'email.bounced' && isHardBounce(data)) {
-      for (const email of recipients(data)) {
-        await suppress(email, 'bounce', { email_id: data.email_id || null, at: event.created_at || null });
+    // A suppress() that fails must NOT be silent — the address would keep receiving mail.
+    // Log + report so a broken suppression surfaces instead of quietly dropping a bounce.
+    const doSuppress = async (email, reason) => {
+      const r = await suppress(email, reason, { email_id: data.email_id || null, at: event.created_at || null });
+      if (r && r.ok === false && !r.skipped) {
+        console.error('[resend-webhook] suppress failed', reason, r.error);
+        captureError(new Error(`suppress_failed:${r.error || 'unknown'}`), { route: '/api/resend-webhook', kind: 'suppress_failed', reason });
       }
+    };
+    if (type === 'email.bounced' && isHardBounce(data)) {
+      for (const email of recipients(data)) await doSuppress(email, 'bounce');
     } else if (type === 'email.complained') {
       const list = recipients(data);
-      for (const email of list) await suppress(email, 'complaint', { email_id: data.email_id || null, at: event.created_at || null });
+      for (const email of list) await doSuppress(email, 'complaint');
       // A spam complaint is a reputation event — the operator should see it.
       try {
         await sendOperator({ subject: 'Spam complaint on a sent email',

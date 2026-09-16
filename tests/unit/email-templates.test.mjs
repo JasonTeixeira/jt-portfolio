@@ -42,6 +42,17 @@ test('a malicious link cannot break out of the href attribute', () => {
   assert.match(b.html, /&quot;&gt;&lt;script&gt;/);
 });
 
+test('a non-http CTA link never becomes a clickable button (no javascript:/data: URIs)', () => {
+  const b = resetEmail({ link: 'javascript:alert(1)' });
+  assert.ok(!b.html.includes('javascript:'), 'the non-http link never reaches the HTML at all');
+  assert.ok(!/<a [^>]*href=/i.test(b.html), 'no CTA anchor rendered for a non-http link');
+});
+
+test('a normal https CTA still renders a clickable button', () => {
+  const b = resetEmail({ link: 'https://agency.sageideas.dev/reset.html#t=1' });
+  assert.match(b.html, /<a [^>]*href="https:\/\/agency\.sageideas\.dev\/reset\.html/);
+});
+
 test('receiptEmail distinguishes deposit vs paid-in-full', () => {
   const dep = receiptEmail({ kind: 'deposit', amountCents: 30000, totalCents: 70000, link: 'https://x' });
   assert.match(dep.subject, /Deposit received/);
