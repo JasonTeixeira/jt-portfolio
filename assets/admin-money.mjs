@@ -28,7 +28,9 @@ export function renderMoneyBody(mount, deps) {
     const series = [];
     for (let i = 5; i >= 0; i -= 1) {
       const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
-      series.push({ label: d.toLocaleString('en', { month: 'short' }), value: monthly[d.toISOString().slice(0, 7)] || 0 });
+      // timeZone:'UTC' is REQUIRED — d is UTC-midnight on the 1st; without it a
+      // negative-offset (US) browser formats the label as the PRIOR month.
+      series.push({ label: d.toLocaleString('en', { month: 'short', timeZone: 'UTC' }), value: monthly[d.toISOString().slice(0, 7)] || 0 });
     }
     if (series.some((p) => p.value > 0)) {
       const card = h('div', { class: 'admin-card', style: 'margin-top:16px' });
