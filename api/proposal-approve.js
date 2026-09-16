@@ -2,8 +2,9 @@ import { withObserve } from '../lib/observe.mjs';
 import { isEnabled, getProposalById, updateProposal } from '../lib/proposal-db.mjs';
 import { appendEvent } from '../lib/scope-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
+import { proposalReadyEmail } from '../lib/email-templates.mjs';
 import { authorizeAdmin } from '../lib/admin-auth.mjs';
-import { clampFirmCents, depositCents, balanceCents, money, DEPOSIT_PCT_DEFAULT, PROPOSAL_STATUS } from '../assets/proposal-core.mjs';
+import { clampFirmCents, depositCents, balanceCents, DEPOSIT_PCT_DEFAULT, PROPOSAL_STATUS } from '../assets/proposal-core.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
 async function handler(req, res) {
@@ -30,9 +31,8 @@ async function handler(req, res) {
   appendEvent({ prospect_id: row.prospect_id, type: 'proposal_approved', meta: { id, firm_cents: firm } }).catch(() => {});
   if (row.client_email) {
     try {
-      await sendClient({ to: row.client_email,
-        subject: 'Your project proposal is ready',
-        text: `Hi,\n\nYour proposal is ready to review. It has the scope, the price, and the terms in one place.\n\nSee it here: ${SITE}/proposal.html?id=${row.public_id}\n\nDeposit to start: ${money(dep)}. If anything looks off, just reply and we'll sort it out.\n\n— Jason\n` });
+      const mail = proposalReadyEmail({ link: `${SITE}/proposal.html?id=${row.public_id}`, depositCents: dep });
+      await sendClient({ to: row.client_email, subject: mail.subject, text: mail.text, html: mail.html });
     } catch {}
   }
   return res.status(200).json({ ok: true, publicId: row.public_id });

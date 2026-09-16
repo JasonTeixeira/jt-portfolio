@@ -3,6 +3,7 @@ import { withObserve } from '../lib/observe.mjs';
 import { authorizeAdmin } from '../lib/admin-auth.mjs';
 import { isEnabled, sendContract } from '../lib/portal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
+import { contractEmail } from '../lib/email-templates.mjs';
 
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
@@ -19,11 +20,8 @@ async function handler(req, res) {
   const row = r.data;
   if (row.client_email) {
     try {
-      await sendClient({
-        to: row.client_email,
-        subject: 'Your agreement is ready',
-        text: `Hi,\n\nYour agreement is ready to review and sign.\n\nView it here: ${SITE}/contract.html?id=${row.public_id}\n\nIf anything looks off, just reply and we'll sort it out.\n\n— Jason\n`,
-      });
+      const mail = contractEmail({ link: `${SITE}/contract.html?id=${row.public_id}` });
+      await sendClient({ to: row.client_email, subject: mail.subject, text: mail.text, html: mail.html });
     } catch {}
   }
   return res.status(200).json({ ok: true, publicId: row.public_id });

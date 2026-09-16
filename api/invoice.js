@@ -13,7 +13,7 @@ import { authorizeAdmin } from '../lib/admin-auth.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
-import { money } from '../assets/proposal-core.mjs';
+import { invoiceEmail } from '../lib/email-templates.mjs';
 import {
   isEnabled, KINDS, amountForKind, isInvoicePaid,
   listInvoicesForProposal, createInvoice, markInvoiceSent, getInvoice,
@@ -84,9 +84,8 @@ async function handler(req, res) {
       const sent = await markInvoiceSent(id);
       if (!sent.ok) { console.error('[invoice] mark sent failed', sent.error); return res.status(400).json({ ok: false, error: 'save_failed' }); }
       try {
-        await sendClient({ to: proposal.client_email,
-          subject: `Invoice INV-${inv.invoice_no} — ${money(inv.amount_cents)} ${inv.kind === 'balance' ? 'balance due' : inv.kind === 'deposit' ? 'deposit' : 'due'}`,
-          text: `Hi,\n\nHere's invoice INV-${inv.invoice_no} for ${money(inv.amount_cents)} (${inv.kind}).\n\nYou can review and pay securely in your project portal:\n${link}\n\nThank you,\nJason\n` });
+        const mail = invoiceEmail({ invoiceNo: inv.invoice_no, amountCents: inv.amount_cents, kind: inv.kind, link });
+        await sendClient({ to: proposal.client_email, subject: mail.subject, text: mail.text, html: mail.html });
       } catch (e) { console.error('[invoice] notify send failed', (e && e.message) || e); }
       return res.status(200).json({ ok: true, invoice: { ...sent.data, paid: isInvoicePaid(proposal, sent.data.kind) } });
     }

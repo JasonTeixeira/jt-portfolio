@@ -11,7 +11,8 @@
  */
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
-import { sendClient, isEnabled as mailEnabled } from '../lib/notify.mjs';
+import { sendClient, sendOperator, isEnabled as mailEnabled } from '../lib/notify.mjs';
+import { resetEmail, confirmEmail } from '../lib/email-templates.mjs';
 
 const SUPA = process.env.SUPABASE_URL;
 const SKEY = process.env.SUPABASE_SERVICE_KEY;
@@ -21,19 +22,6 @@ const TYPES = { signup: 'signup', recovery: 'recovery' };
 const FLOOR_MS = 650; // constant-time floor: hide the exists-vs-not timing difference
 function allowedType(t) { return Object.prototype.hasOwnProperty.call(TYPES, t) ? TYPES[t] : null; }
 const sleep = (ms) => new Promise((r) => { setTimeout(r, ms); });
-
-const COPY = {
-  signup: {
-    subject: 'Confirm your account · Sage Ideas',
-    intro: 'Welcome — confirm your email to activate your account and open your project portal. This link expires shortly and can be used once.',
-    cta: 'Confirm your account:',
-  },
-  recovery: {
-    subject: 'Reset your password · Sage Ideas',
-    intro: 'Use the secure link below to set a new password. It expires shortly and can be used once.',
-    cta: 'Reset your password:',
-  },
-};
 
 async function handler(req, res) {
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method not allowed' }); }
@@ -67,9 +55,17 @@ async function handler(req, res) {
     const data = await r.json().catch(() => null);
     const link = data && (data.action_link || (data.properties && data.properties.action_link));
     if (!link) return done();
-    const c = COPY[type];
-    await sendClient({ to: email, subject: c.subject,
-      text: `${c.intro}\n\n${c.cta}\n${link}\n\nIf you didn’t request this, you can safely ignore this email.\n\n— Jason · Sage Ideas` });
+    const mail = type === 'recovery' ? resetEmail({ link }) : confirmEmail({ link });
+    const sent = await sendClient({ to: email, subject: mail.subject, text: mail.text, html: mail.html });
+    // Client always gets a generic 200 (anti-enumeration), but a REAL delivery failure —
+    // not "suppressed" and not "unconfigured" — means a user who exists can't reset. That
+    // must not vanish into console logs, so alert the operator.
+    if (sent && sent.ok === false && !sent.skipped) {
+      try {
+        await sendOperator({ subject: `Auth email FAILED to send (${type})`,
+          text: `A ${type} email could not be delivered to a real account.\nError: ${sent.error || 'unknown'}\n\nThe user saw a generic success message and may be stuck — follow up or check Resend.\n` });
+      } catch (e) { console.error('[auth-email] operator alert failed', (e && e.message) || e); }
+    }
     return done();
   } catch (e) {
     console.error('[auth-email]', (e && e.message) || e);

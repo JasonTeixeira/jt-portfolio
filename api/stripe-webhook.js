@@ -2,6 +2,7 @@ import { markPaidIfUnpaid, markBalancePaidIfUnpaid, createProjectOnce, getPropos
 import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs';
 import { appendEvent, setProspectStage } from '../lib/scope-db.mjs';
 import { sendOperator, sendClient } from '../lib/notify.mjs';
+import { receiptEmail } from '../lib/email-templates.mjs';
 import { constructEvent } from '../lib/stripe.mjs';
 import { captureError } from '../lib/observe.mjs';
 import { money } from '../assets/proposal-core.mjs';
@@ -9,16 +10,15 @@ import { money } from '../assets/proposal-core.mjs';
 export const config = { api: { bodyParser: false } };
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
-// Best-effort: resolve the project's portal token so the receipt email can link to it.
-// Never throws — a missing/failed lookup just means the email goes out without the line.
-async function portalLinkLine(proposalId) {
+// Best-effort: resolve the project's portal URL for the receipt CTA. Never throws — a
+// missing/failed lookup just falls back to the site root.
+async function portalUrl(proposalId) {
   try {
     const projGot = await getProjectByProposalId(proposalId);
-    if (!projGot.ok || !projGot.data) return '';
+    if (!projGot.ok || !projGot.data) return SITE;
     const tok = await ensurePortalToken(projGot.data.id);
-    if (!tok.ok || !tok.token) return '';
-    return `\n\nTrack your project here: ${SITE}/portal.html?id=${tok.token}\n`;
-  } catch { return ''; }
+    return tok.ok && tok.token ? `${SITE}/portal.html?id=${tok.token}` : SITE;
+  } catch { return SITE; }
 }
 
 export async function collectRaw(stream) {
@@ -60,11 +60,9 @@ export default async function handler(req, res) {
           } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
           // Client receipt — the balance payment previously sent the client nothing.
           if (row && row.client_email) {
-            const portalLine = await portalLinkLine(proposalId);
             try {
-              await sendClient({ to: row.client_email,
-                subject: 'Payment received — paid in full',
-                text: `Thank you — your balance payment of ${money(row.balance_cents)} came through and your project is now paid in full (total ${money(row.firm_cents)}).\n\nYour itemized receipt is in your project portal, where you can print or save it as a PDF.\n\n— Jason\n${portalLine}` });
+              const mail = receiptEmail({ kind: 'balance', amountCents: row.balance_cents, totalCents: row.firm_cents, link: await portalUrl(proposalId) });
+              await sendClient({ to: row.client_email, subject: mail.subject, text: mail.text, html: mail.html });
             } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
           }
         }
@@ -86,11 +84,9 @@ export default async function handler(req, res) {
                 text: `A client just paid their deposit.\nProposal: ${proposalId}\nEmail: ${row ? row.client_email : '?'}\nAccepted by: ${row ? row.accepted_name : '?'}\n` });
             } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
             if (row && row.client_email) {
-              const portalLine = await portalLinkLine(proposalId);
               try {
-                await sendClient({ to: row.client_email,
-                  subject: 'Deposit received. We\'re starting.',
-                  text: `Thanks. Your deposit came through and the work is booked.\n\nHere's what happens next: I'll reach out within one business day to line up the kickoff and access I need. The balance (${money(row.balance_cents)}) is invoiced on delivery.\n\n— Jason\n${portalLine}` });
+                const mail = receiptEmail({ kind: 'deposit', amountCents: row.deposit_cents, totalCents: row.balance_cents, link: await portalUrl(proposalId) });
+                await sendClient({ to: row.client_email, subject: mail.subject, text: mail.text, html: mail.html });
               } catch (e) { console.error('[stripe-webhook] notify send failed', (e && e.message) || e); }
             }
           }
