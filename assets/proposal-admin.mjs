@@ -985,6 +985,9 @@ function renderOverview(root) {
 
   apiGet('/api/revenue').then((r) => {
     if (r.unauthorized) { renderNotAuthorized(root); return; }
+    // A real backend failure (502) must read as an error, not the "no revenue yet" empty
+    // state — otherwise a broken query looks like a brand-new business with zero deals.
+    if (r.status >= 500) { clear(heroMount); clear(statMount); heroMount.appendChild(h('p', { class: 'subtle', style: 'color:#F59E0B;font-size:13px' }, "Couldn't load revenue right now — refresh to retry.")); return; }
     clear(statMount);
     const v = r.json && r.json.ok && r.json.revenue ? r.json.revenue : null;
     // ── Hero: collected, last 12 weeks, with a real week-over-week delta + area chart ──
@@ -1014,6 +1017,7 @@ function renderOverview(root) {
   const act = panel('Recent activity', 6); const actL = h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'); act.appendChild(actL);
   apiGet('/api/activity').then((r) => {
     actL.remove(); if (r.unauthorized) return;
+    if (r.status >= 500) { act.appendChild(h('p', { class: 'subtle', style: 'font-size:13px;color:#F59E0B' }, "Couldn't load activity — refresh to retry.")); return; }
     const j = r.json && r.json.ok ? r.json : null;
     if (j && j.leadsWeek) {
       const h3 = act.querySelector('h3');
