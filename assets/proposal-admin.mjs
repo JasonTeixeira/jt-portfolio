@@ -10,6 +10,8 @@ import { renderMoneyBody } from './admin-money.mjs';
 import { renderMarketing as renderMarketingView } from './admin-marketing.mjs';
 import { renderContent as renderContentView } from './admin-content.mjs';
 import { renderClients as renderClientsView } from './admin-clients.mjs';
+import { renderGTM as renderGTMView } from './admin-gtm.mjs';
+import { renderInbox as renderInboxView } from './admin-inbox.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -508,9 +510,82 @@ function renderDetail(mount, row, key, project, milestones, contracts) {
   ));
 
   mount.appendChild(renderContractsCard(row, key, contracts));
+  mount.appendChild(renderInvoicesCard(row, key));
   mount.appendChild(renderMilestonesCard(project, milestones, key));
   mount.appendChild(renderDeliverablesCard(project, key));
   mount.appendChild(renderMessagesCard(project, key));
+}
+
+// ---- Invoices (generate numbered invoices + email the client the pay link) --
+function renderInvoicesCard(row, key) {
+  const card = h('div', { class: 'admin-card', style: 'margin-top:16px' });
+  card.appendChild(h('h2', { class: 'sec-title', style: 'font-size:1.5rem;margin-top:0' }, 'Invoices'));
+  const listEl = h('div', { id: 'invoices-list' }, h('p', { class: 'subtle' }, 'Loading…'));
+  card.appendChild(listEl);
+
+  const invChip = (inv) => {
+    const meta = inv.paid ? { label: 'Paid', color: '#10b981' }
+      : inv.status === 'sent' ? { label: 'Sent', color: '#22d3ee' }
+      : inv.status === 'void' ? { label: 'Void', color: '#8E8882' }
+      : { label: 'Draft', color: '#F59E0B' };
+    return h('span', { class: 'chip', style: `color:${meta.color};border-color:${meta.color}44` },
+      h('span', { class: 'dot', style: `background:${meta.color}` }), meta.label);
+  };
+
+  async function post(action, extra) {
+    const res = await fetch('/api/invoice', { method: 'POST',
+      headers: authHeaders({ 'content-type': 'application/json' }),
+      body: JSON.stringify({ action, ...extra }) });
+    if (res.status === 401) { renderNotAuthorized(document.getElementById('admin-root')); return null; }
+    return res.json().catch(() => null);
+  }
+
+  function draw(invoices) {
+    clear(listEl);
+    if (!invoices.length) listEl.appendChild(h('p', { class: 'subtle', style: 'margin:0 0 8px' }, 'No invoices yet.'));
+    for (const inv of invoices) {
+      const rowEl = h('div', { style: 'display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line,#26262c)' },
+        h('span', { class: 'mono', style: 'font-size:12px;color:var(--faint)' }, 'INV-' + inv.invoice_no),
+        h('span', { style: 'font-size:12px;text-transform:capitalize' }, inv.kind),
+        h('span', { class: 'mono', style: 'font-weight:600' }, money(inv.amount_cents)),
+        invChip(inv));
+      if (!inv.paid) {
+        const sendBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:4px 12px;font-size:12px;margin-left:auto' }, inv.status === 'sent' ? 'Resend' : 'Send to client');
+        sendBtn.addEventListener('click', async () => {
+          sendBtn.disabled = true; sendBtn.textContent = 'sending…';
+          const j = await post('send', { id: inv.id });
+          if (j && j.ok) load(); else { sendBtn.disabled = false; sendBtn.textContent = 'send failed'; }
+        });
+        rowEl.appendChild(sendBtn);
+      }
+      listEl.appendChild(rowEl);
+    }
+  }
+
+  // Only offer invoice kinds the proposal actually carries an amount for.
+  const gen = h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-top:12px' });
+  const kinds = [['deposit', row.deposit_cents], ['balance', row.balance_cents], ['full', row.firm_cents]];
+  for (const [kind, cents] of kinds) {
+    if (!(cents > 0)) continue;
+    const b = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:6px 12px;font-size:12px' }, `+ ${kind} invoice`);
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      const j = await post('generate', { proposalId: row.id, kind });
+      b.disabled = false;
+      if (j && j.ok) load();
+    });
+    gen.appendChild(b);
+  }
+  card.appendChild(gen);
+
+  function load() {
+    apiGet(`/api/invoice?proposal=${encodeURIComponent(row.id)}`, key).then((r) => {
+      if (r.unauthorized) { renderNotAuthorized(document.getElementById('admin-root')); return; }
+      draw((r.json && r.json.invoices) || []);
+    }).catch(() => { clear(listEl); listEl.appendChild(h('p', { class: 'subtle', style: 'color:#F59E0B' }, "Couldn't load invoices.")); });
+  }
+  load();
+  return card;
 }
 
 // ---- Deliverable files (operator: upload / list / delete) -------------------
@@ -919,9 +994,40 @@ function renderClientsSection(root, key) {
   renderClientsView(root, key, { h, clear, authHeaders, renderNotAuthorized, money });
 }
 
+function renderGTM(root, key) {
+  const mount = h('div', {}); root.appendChild(mount);
+  renderGTMView(mount, key, { h, clear, authHeaders, renderNotAuthorized });
+}
+
+function renderInbox(root, key) {
+  const mount = h('div', {}); root.appendChild(mount);
+  renderInboxView(mount, key, { h, clear, authHeaders, renderNotAuthorized, onRead: refreshInboxBadge });
+}
+
+// Nav badge: total unread client messages, shown on the Inbox nav item + refreshed
+// on boot and whenever a thread is opened (read). Fail-quiet — a badge is not load-bearing.
+function refreshInboxBadge() {
+  fetch('/api/inbox', { headers: authHeaders() })
+    .then((res) => (res.ok ? res.json() : null))
+    .then((j) => {
+      const total = j && j.ok ? (j.total | 0) : 0;
+      const nav = document.getElementById('ax-nav');
+      if (!nav) return;
+      const item = nav.querySelector('.ax-navitem[data-id="inbox"]');
+      if (!item) return;
+      let badge = item.querySelector('.ax-badge');
+      if (total > 0) {
+        if (!badge) { badge = h('span', { class: 'ax-badge', style: 'margin-left:auto;font-size:11px;background:#22d3ee;color:#04121a;border-radius:10px;padding:0 7px;font-weight:700' }); item.appendChild(badge); }
+        badge.textContent = String(total);
+      } else if (badge) { badge.remove(); }
+    })
+    .catch(() => {});
+}
+
 // ── App-shell navigation ────────────────────────────────────────────────────
 const SECTIONS = [
   { id: 'overview', label: 'Overview', ico: '◱', fn: renderOverview },
+  { id: 'inbox', label: 'Inbox', ico: '✉', fn: renderInbox },
   { id: 'clients', label: 'Clients', ico: '◕', fn: renderClientsSection },
   { id: 'pipeline', label: 'Pipeline', ico: '⇉', fn: renderPipeline },
   { id: 'calendar', label: 'Calendar', ico: '▦', fn: renderCalendar },
@@ -930,6 +1036,7 @@ const SECTIONS = [
   { id: 'content', label: 'Content', ico: '✎', fn: renderContent },
   { id: 'money', label: 'Money', ico: '$', fn: renderMoney },
   { id: 'proposals', label: 'Proposals', ico: '▤', fn: renderProposals },
+  { id: 'gtm', label: 'GTM', ico: '◈', fn: renderGTM },
 ];
 let ADMIN_KEY = '';
 
@@ -984,6 +1091,7 @@ async function init() {
   if (result.unauthorized) { renderNotAuthorized(root); return; }
   if (!result.json || !result.json.ok) { renderUnconfigured(root); return; }
   buildShell(session && session.email);
+  refreshInboxBadge();
   const start = (location.hash || '').replace(/^#/, '');
   navigate(SECTIONS.some((s) => s.id === start) ? start : 'overview');
 }
