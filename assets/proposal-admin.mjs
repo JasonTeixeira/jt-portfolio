@@ -1209,6 +1209,7 @@ async function init() {
   buildShell(session && session.email);
   refreshInboxBadge();
   mountCommandPalette();
+  startLive();
   // Hash can be "#section" or "#section/<deep-link-arg>" (from the ⌘K palette).
   const [start, ...rest] = (location.hash || '').replace(/^#/, '').split('/');
   const arg = rest.length ? decodeURIComponent(rest.join('/')) : undefined;
@@ -1242,6 +1243,36 @@ function mountCommandPalette() {
       h('span', {}, 'Search'), h('span', { class: 'mono', style: 'opacity:.6' }, '⌘K'));
     hint.addEventListener('click', () => palette.open());
     right.insertBefore(hint, right.firstChild);
+  }
+}
+
+// ── Live layer ───────────────────────────────────────────────────────────────
+// Browser holds only the anon key and every scope_* table is RLS deny-all, so Supabase
+// Realtime can't stream to the client. The honest equivalent: visibility-aware polling —
+// the nav badge refreshes on a cadence, and a glance-level dashboard (Overview/Inbox, at the
+// top of the page) re-pulls fresh numbers, so a payment or message shows up on its own.
+const LIVE_MS = 25000;
+function startLive() {
+  const dot = document.querySelector('.ax-live-dot');
+  const tick = () => {
+    if (document.visibilityState !== 'visible') return;
+    refreshInboxBadge();
+    // Only auto-re-render when the operator is glancing (scrolled to top) at a live screen,
+    // so a background refresh never yanks the page out from under active work.
+    if (window.scrollY < 48) {
+      const cur = (location.hash || '').replace(/^#/, '').split('/')[0] || 'overview';
+      if (cur === 'overview' || cur === 'inbox') navigate(cur);
+    }
+    if (dot) { dot.style.opacity = '1'; setTimeout(() => { dot.style.opacity = '0.5'; }, 600); }
+  };
+  setInterval(tick, LIVE_MS);
+  // Coming back to the tab always refreshes immediately (fresh data on return).
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshInboxBadge(); });
+  const right = document.querySelector('.ax-top-right');
+  if (right) {
+    const live = h('span', { class: 'ax-live-dot', title: 'Live — updates automatically',
+      style: 'width:7px;height:7px;border-radius:50%;background:#10b981;opacity:.5;transition:opacity .4s;flex:none;margin-right:2px' });
+    right.insertBefore(live, right.firstChild);
   }
 }
 
