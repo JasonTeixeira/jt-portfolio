@@ -4,7 +4,7 @@
 // goes through textContent (client-editable data). Self-contained; styles inline.
 
 export function createCommandPalette(deps) {
-  const { h, authHeaders, navigate, sections, actions, money } = deps;
+  const { h, authHeaders, navigate, sections, actions, money, onUnauthorized } = deps;
 
   const input = h('input', {
     type: 'text', placeholder: 'Search clients, proposals, or jump to…', 'aria-label': 'Command palette',
@@ -89,6 +89,9 @@ export function createCommandPalette(deps) {
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { headers: authHeaders() });
       if (seq !== reqSeq) return; // a newer query superseded this one
+      // A dead/expired session must not look like "no matches" — bounce to the auth prompt,
+      // matching how every other admin data call in the cockpit handles 401.
+      if (res.status === 401) { close(); if (typeof onUnauthorized === 'function') onUnauthorized(); return; }
       const j = await res.json().catch(() => null);
       const clients = (j && j.clients) || [];
       const proposals = (j && j.proposals) || [];
