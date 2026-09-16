@@ -49,7 +49,10 @@ async function handler(req, res) {
     const r = await fetch(`${SUPA}/auth/v1/admin/generate_link`, {
       method: 'POST',
       headers: { apikey: SKEY, Authorization: `Bearer ${SKEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type, email, options: { redirect_to } }),
+      // redirect_to MUST be top-level for the raw GoTrue admin endpoint — nesting it under
+      // `options` (the supabase-js SDK shape) makes GoTrue silently ignore it and fall back
+      // to the Site URL, so the reset link never lands on reset.html. Verified against prod.
+      body: JSON.stringify({ type, email, redirect_to }),
     });
     if (!r.ok) return done(); // no such user / already confirmed → stay generic (no email)
     const data = await r.json().catch(() => null);
