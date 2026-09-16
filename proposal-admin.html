@@ -63,6 +63,10 @@
   .ax-content button:focus-visible, .ax-content a:focus-visible, .ax-content input:focus-visible, .ax-content select:focus-visible, .ax-content textarea:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
   /* dense overview grid */
   .ax-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:16px; }
+  /* Loading skeletons — a shimmer beats a bare "Loading…" for perceived speed. */
+  .skel { background:linear-gradient(90deg,#141418 25%,#1c1c22 37%,#141418 63%); background-size:400% 100%; border-radius:7px; animation:skel 1.3s ease infinite; }
+  @keyframes skel { 0%{background-position:100% 0} 100%{background-position:0 0} }
+  @media (prefers-reduced-motion: reduce){ .skel { animation:none; } }
   .ax-panel { border:1px solid var(--line); background:var(--card); border-radius:14px; padding:18px 20px; }
   .ax-panel h3 { margin:0 0 12px; font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); font-weight:400; }
   @media (max-width:820px) {

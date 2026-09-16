@@ -14,6 +14,7 @@ import { renderGTM as renderGTMView } from './admin-gtm.mjs';
 import { renderInbox as renderInboxView } from './admin-inbox.mjs';
 import { createCommandPalette } from './admin-command.mjs';
 import { areaChart, deltaBadge, funnelBars } from './admin-charts.mjs';
+import { renderSettings as renderSettingsView } from './admin-settings.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -65,6 +66,10 @@ function h(tag, props, ...children) {
 }
 
 function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+// Loading skeletons — a shimmer placeholder instead of bare "Loading…" text.
+function skel(width, height, extra) { return h('div', { class: 'skel', style: `width:${width};height:${height};${extra || ''}` }); }
+function skelBlock() { return h('div', {}, skel('40%', '16px', 'margin-bottom:14px'), skel('100%', '120px'), h('div', { style: 'display:flex;gap:10px;margin-top:12px' }, skel('30%', '12px'), skel('30%', '12px'))); }
 
 function copyButton(text) {
   const btn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:5px 10px;font-size:11.5px' }, 'Copy');
@@ -829,7 +834,15 @@ function renderPipeline(root, key) {
     h('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap' }, inEmail, inCompany, inName, inSeg, addBtn, addMsg),
   ));
 
+  // Filter bar: narrow the table by stage and/or a free-text match (client-side over the
+  // loaded list — instant, no round-trip).
+  const inpStyle = 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:7px 10px';
+  const fStage = h('select', { style: inpStyle + ';min-width:130px' }, h('option', { value: '' }, 'All stages'), ...STAGE_ORDER.map((s) => h('option', { value: s }, STAGE_META[s].label)));
+  const fText = h('input', { type: 'search', placeholder: 'Filter name / company / email…', style: inpStyle + ';flex:1;min-width:200px' });
+  const countTag = h('span', { class: 'mono', style: 'font-size:11px;color:var(--faint);align-self:center' }, '');
+  const filterBar = h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px' }, fStage, fText, countTag);
   wrap.appendChild(h('div', { class: 'admin-card' },
+    filterBar,
     h('div', { style: 'overflow-x:auto' },
       h('table', { class: 'admin-table' },
         h('thead', {}, h('tr', {}, h('th', {}, 'Stage'), h('th', {}, 'Company'), h('th', {}, 'Email'), h('th', {}, 'Segment'), h('th', {}, 'Last touch'), h('th', {}, ''))),
@@ -838,6 +851,20 @@ function renderPipeline(root, key) {
     ),
   ));
   root.appendChild(wrap);
+
+  let allProspects = [];
+  function renderRows() {
+    const stage = fStage.value; const q = (fText.value || '').trim().toLowerCase();
+    const rows = allProspects.filter((p) => (!stage || p.stage === stage)
+      && (!q || [p.name, p.company, p.email, p.segment].some((v) => String(v || '').toLowerCase().includes(q))));
+    clear(tbody);
+    countTag.textContent = q || stage ? `${rows.length} of ${allProspects.length}` : `${allProspects.length}`;
+    if (!allProspects.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects yet — they appear here the moment someone uses the scope studio.'))); return; }
+    if (!rows.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects match this filter.'))); return; }
+    for (const p of rows) { const [row, tl] = prospectRow(p, key, load); tbody.appendChild(row); tbody.appendChild(tl); }
+  }
+  fStage.addEventListener('change', renderRows);
+  fText.addEventListener('input', renderRows);
 
   function load() {
     const errRow = (msg) => h('tr', {}, h('td', { colspan: '6', class: 'subtle', style: 'color:#F59E0B' }, msg));
@@ -861,9 +888,8 @@ function renderPipeline(root, key) {
         card.appendChild(funnelBars(STAGE_ORDER.map((s) => ({ label: STAGE_META[s].label, value: counts[s] || 0, color: STAGE_META[s].color })), { showConversion: false, format: (n) => String(n) }));
         distCard.appendChild(card);
       }
-      clear(tbody);
-      if (!prospects.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects yet — they appear here the moment someone uses the scope studio.'))); return; }
-      for (const p of prospects) { const [row, tl] = prospectRow(p, key, load); tbody.appendChild(row); tbody.appendChild(tl); }
+      allProspects = prospects;
+      renderRows();
     }).catch(() => { clear(tbody); tbody.appendChild(errRow('Couldn’t reach the server — refresh to retry.')); });
   }
   load();
@@ -981,7 +1007,7 @@ function renderOverview(root) {
   // ── Act now: computed next-best-actions + at-risk + weighted forecast (intelligence) ──
   const intelMount = h('div', {});
   wrap.appendChild(intelMount);
-  const heroMount = h('div', { class: 'admin-card', style: 'margin-top:8px' }, h('p', { class: 'subtle', style: 'font-size:13px' }, 'Loading…'));
+  const heroMount = h('div', { class: 'admin-card', style: 'margin-top:8px' }, skelBlock());
   const statMount = h('div', { class: 'stat-row', style: 'margin-top:16px' });
   const grid = h('div', { class: 'ax-grid', style: 'margin-top:22px' });
   wrap.appendChild(heroMount);
@@ -1113,6 +1139,10 @@ function renderGTM(root, key) {
   renderGTMView(mount, key, { h, clear, authHeaders, renderNotAuthorized });
 }
 
+function renderSettings(root, key) {
+  renderSettingsView(root, key, { h, clear, authHeaders, renderNotAuthorized });
+}
+
 function renderInbox(root, key) {
   const mount = h('div', {}); root.appendChild(mount);
   renderInboxView(mount, key, { h, clear, authHeaders, renderNotAuthorized, onRead: refreshInboxBadge });
@@ -1151,6 +1181,7 @@ const SECTIONS = [
   { id: 'money', label: 'Money', ico: '$', fn: renderMoney },
   { id: 'proposals', label: 'Proposals', ico: '▤', fn: renderProposals },
   { id: 'gtm', label: 'GTM', ico: '◈', fn: renderGTM },
+  { id: 'settings', label: 'Settings', ico: '⚙', fn: renderSettings },
 ];
 let ADMIN_KEY = '';
 
