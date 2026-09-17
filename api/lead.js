@@ -1,6 +1,6 @@
 /**
  * /api/lead — lead-magnet capture for the sample eval report, and the
- * general lead-capture endpoint for the Atlas chat + Scope Studio handoffs.
+ * general lead-capture endpoint for the Nadine chat + Scope Studio handoffs.
  *
  * On submit: (1) always emails YOU the new lead (works now via onboarding@
  * resend.dev → your account inbox), (2) adds the contact to a Resend Audience
