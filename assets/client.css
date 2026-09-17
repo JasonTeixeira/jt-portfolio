@@ -66,6 +66,7 @@ body { background:var(--bg,#09090B); }
 .cx-card:hover { border-color:color-mix(in oklab,var(--cyan,#22d3ee) 45%,var(--line,#2A2826)); transform:translateY(-2px); }
 .cx-card:hover::before { opacity:.9; }
 .cx-card .st { font-family:var(--mono,monospace); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan,#22d3ee); }
+.cx-card .cx-card-name { font-size:15px; font-weight:600; color:var(--ink,#F4F2EF); margin-top:8px; line-height:1.25; }
 .cx-card .amt { font-family:var(--serif,'Instrument Serif',Georgia,serif); font-size:2rem; margin:10px 0 2px; line-height:1; }
 .cx-card .pay { font-family:var(--mono,monospace); font-size:11.5px; color:var(--faint,#8E8882); margin-top:8px; }
 .cx-card .flag { display:inline-block; font-family:var(--mono,monospace); font-size:10.5px; margin-top:12px; padding:4px 9px; border-radius:999px; border:1px solid; }

@@ -167,3 +167,15 @@ export function keysFromAnswers(answers) {
   }
   return [...out];
 }
+
+// A human project name from the plan the client bought — the lead capability's real name
+// (e.g. "Conversational assistant"), "+ N more" when there are several, or the segment
+// label as a fallback. Replaces anonymous "Project 1 / Project 2" labels.
+export function projectDisplayName(plan) {
+  const keys = Array.isArray(plan && plan.keys) ? plan.keys : [];
+  const names = keys.map((k) => { const c = CARD_BY_KEY.get(k); return c ? c.name : null; }).filter(Boolean);
+  if (names.length === 1) return names[0];
+  if (names.length > 1) return `${names[0]} + ${names.length - 1} more`;
+  const seg = plan && plan.segment && SEGMENTS[plan.segment];
+  return seg ? `${seg.label} project` : 'Your project';
+}
