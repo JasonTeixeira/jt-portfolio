@@ -160,5 +160,11 @@ for (const t of TUTORIALS) {
   const pid = String(TUTORIAL_PILLARS[t.slug] || '').replace(/^learn-/, '').replace(/\.html$/, '');
   if (LIBRARY[pid]) LIBRARY[pid].push({ title: t.title.replace(/^How to /, ''), href: `docs-${t.slug}.html`, type: 'tutorial', desc: t.summary });
 }
+// Auto-surface the supporting articles in their pillars.
+import { ARTICLES, ARTICLE_PILLARS } from './articles.data.mjs';
+for (const a of ARTICLES) {
+  const pid = String(ARTICLE_PILLARS[a.slug] || '').replace(/^learn-/, '').replace(/\.html$/, '');
+  if (LIBRARY[pid]) LIBRARY[pid].push({ title: a.title, href: `docs-${a.slug}.html`, type: 'guide', desc: a.summary });
+}
 
 export const LEARN_SLUGS = PILLARS.map((p) => p.id);

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passing Tests Is Not Proof: What Done Means for an AI Feature — Documentation · Jason Teixeira</title>
+<meta name="description" content="Why a green test suite is a necessary but weak signal for AI, and what a real definition of done looks like.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/docs-passing-tests-isnt-proof.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Passing Tests Is Not Proof: What Done Means for an AI Feature — Documentation">
+<meta property="og:description" content="Why a green test suite is a necessary but weak signal for AI, and what a real definition of done looks like.">
+<meta property="og:url" content="https://agency.sageideas.dev/docs-passing-tests-isnt-proof.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Passing Tests Is Not Proof: What Done Means for an AI Feature","description":"Why a green test suite is a necessary but weak signal for AI, and what a real definition of done looks like.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/docs-passing-tests-isnt-proof.html"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"Shipping AI Safely"},{"@type":"ListItem","position":4,"name":"Passing Tests Is Not Proof: What Done Means for an AI Feature","item":"https://agency.sageideas.dev/docs-passing-tests-isnt-proof.html"}]}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .d-top { position:sticky; top:0; z-index:60; display:flex; align-items:center; gap:12px; flex-wrap:nowrap; padding:11px clamp(14px,3vw,28px); background:rgba(9,9,11,0.9); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+  .d-brand { display:inline-flex; align-items:center; gap:9px; flex-shrink:0; }
+  .d-brand .mk { width:24px; height:24px; border:1px solid var(--line); border-radius:6px; display:grid; place-items:center; font-family:var(--mono); font-size:10px; font-weight:700; background:var(--card); }
+  .d-brand .nm { font-family:var(--mono); font-size:12.5px; font-weight:600; white-space:nowrap; }
+  .d-badge { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); border:1px solid var(--line); border-radius:5px; padding:3px 8px; }
+  .d-search { margin-left:auto; display:inline-flex; align-items:center; gap:10px; background:#111114; border:1px solid var(--line); border-radius:9px; padding:8px 12px; color:var(--faint); font-size:12.5px; cursor:pointer; min-width:180px; }
+  .d-search:hover { border-color:#38342e; color:var(--dim); }
+  .d-search kbd { margin-left:auto; font-family:var(--mono); font-size:10px; border:1px solid var(--line); border-radius:4px; padding:1px 5px; color:var(--faint); }
+  .d-top-cta { display:flex; gap:12px; align-items:center; font-family:var(--mono); font-size:12px; flex-shrink:0; }
+  .d-menu-btn { display:none; background:transparent; border:1px solid var(--line); color:var(--ink); border-radius:8px; padding:7px 10px; font-family:var(--mono); font-size:12px; cursor:pointer; flex-shrink:0; }
+
+  .d-layout { display:grid; grid-template-columns:262px minmax(0,1fr) 210px; max-width:1320px; margin:0 auto; }
+  .d-sidebar { position:sticky; top:48px; align-self:start; height:calc(100vh - 48px); overflow-y:auto; padding:24px 14px 60px; border-right:1px solid var(--line); }
+  .d-group { margin-top:22px; }
+  .d-grouphead { font-family:var(--mono); font-size:9.5px; letter-spacing:0.13em; text-transform:uppercase; color:var(--faint); padding:0 10px 8px; }
+  .d-navitem { display:block; padding:7px 10px; border-radius:7px; font-size:13.5px; color:var(--dim); line-height:1.4; }
+  .d-navitem:hover { color:var(--ink); background:rgba(255,255,255,0.03); }
+  .d-navitem.d-on { color:var(--ink); background:rgba(16,185,129,0.08); box-shadow:inset 2px 0 0 var(--green); }
+  .d-navitem.d-home { color:var(--ink); font-weight:600; margin-bottom:6px; }
+  .d-ext { color:var(--faint); }
+  .d-extmark { font-size:10px; opacity:0.7; }
+
+  .d-main { padding:clamp(28px,4vw,48px) clamp(18px,3.5vw,52px) 80px; min-width:0; }
+  .d-crumb { font-family:var(--mono); font-size:11px; color:var(--faint); margin-bottom:18px; }
+  .d-crumb a:hover { color:var(--ink); }
+  .d-kicker { font-family:var(--mono); font-size:11px; letter-spacing:0.13em; text-transform:uppercase; color:var(--green); }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.1rem,4.6vw,3.1rem); line-height:1.06; letter-spacing:-0.02em; margin:12px 0 0; }
+  .d-lead { color:var(--dim); font-size:16px; line-height:1.7; margin:18px 0 8px; max-width:70ch; }
+  .d-body { max-width:70ch; }
+  .d-h2 { font-family:var(--serif); font-weight:400; font-size:clamp(1.4rem,2.6vw,1.8rem); letter-spacing:-0.015em; margin:40px 0 14px; scroll-margin-top:70px; position:relative; }
+  .d-anchor { position:absolute; left:-1.1em; color:var(--faint); opacity:0; font-family:var(--mono); font-size:0.8em; padding-right:0.3em; }
+  .d-h2:hover .d-anchor { opacity:1; }
+  .d-p { font-size:15px; line-height:1.75; color:var(--dim); margin:0 0 16px; }
+  .d-p b, .d-ul b, .d-ol b, .d-note b { color:var(--ink); font-weight:600; }
+  .d-p a, .d-ul a, .d-ol a, .d-note a, .d-lead a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .d-ul, .d-ol { margin:0 0 18px; padding-left:22px; }
+  .d-ul li, .d-ol li { font-size:14.5px; line-height:1.72; color:var(--dim); margin-bottom:9px; }
+  .d-note { display:flex; gap:12px; border:1px solid var(--line); border-left:2px solid var(--green); background:rgba(16,185,129,0.04); border-radius:0 10px 10px 0; padding:16px 18px; margin:22px 0; font-size:14px; line-height:1.65; color:var(--dim); }
+  .d-note-i { color:var(--green); font-family:var(--mono); }
+  .d-p code, .d-ul code, .d-ol code, .d-note code, .d-dd code { font-family:var(--mono); font-size:0.88em; color:var(--cyan); background:rgba(34,211,238,0.08); padding:1px 5px; border-radius:4px; }
+  .d-note-warn { border-left-color:var(--amber); background:rgba(245,158,11,0.05); } .d-note-warn .d-note-i { color:var(--amber); }
+  .d-note-security { border-left-color:var(--cyan); background:rgba(34,211,238,0.05); } .d-note-security .d-note-i { color:var(--cyan); }
+  .d-tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin:22px 0; }
+  .d-table { width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px; }
+  .d-table th, .d-table td { text-align:left; padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; color:var(--dim); }
+  .d-table thead th { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan); font-weight:500; background:#0A0A0C; }
+  .d-table td.d-th { font-weight:600; color:var(--ink); }
+  .d-table td b, .d-table td a { color:var(--ink); } .d-table td a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .d-table tbody tr:last-child td { border-bottom:none; }
+  .d-deflist { margin:22px 0; }
+  .d-dt { font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); margin-top:20px; scroll-margin-top:90px; }
+  .d-dd { margin:6px 0 0; font-size:14px; line-height:1.7; color:var(--dim); }
+  .d-dd a, .d-dd .d-see { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .d-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); gap:14px; margin:20px 0; }
+  .d-card { border:1px solid var(--line); background:var(--card); border-radius:12px; padding:18px; }
+  .d-card h3 { font-family:var(--serif); font-weight:400; font-size:1.15rem; margin:0 0 7px; }
+  .d-card p { margin:0; font-size:13px; line-height:1.6; color:var(--dim); }
+  .d-codewrap { margin:22px 0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#0B0B0D; }
+  .d-codecap { display:flex; align-items:center; justify-content:space-between; padding:8px 14px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:10.5px; color:var(--faint); background:#0E0E11; }
+  .d-copy { background:transparent; border:1px solid var(--line); border-radius:5px; color:var(--faint); font-family:var(--mono); font-size:10px; padding:3px 8px; cursor:pointer; }
+  .d-copy:hover { color:var(--ink); border-color:#38342e; }
+  .d-code { margin:0; padding:16px 18px; overflow-x:auto; }
+  .d-code code { font-family:var(--mono); font-size:12.5px; line-height:1.7; color:#CFEBDC; white-space:pre; }
+  .d-proof { display:flex; flex-direction:column; gap:2px; margin:18px 0; }
+  .d-plink { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:13px; color:var(--ink); }
+  .d-plink span { color:var(--cyan); }
+  .d-plink:hover { color:var(--cyan); }
+  .d-cta { display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between; border:1px solid var(--line); background:linear-gradient(180deg,rgba(16,185,129,0.06),transparent); border-radius:14px; padding:22px 24px; margin:34px 0 8px; }
+  .d-cta-h { font-family:var(--serif); font-size:1.35rem; letter-spacing:-0.01em; }
+  .d-cta-s { font-size:13.5px; color:var(--dim); margin-top:4px; max-width:52ch; }
+  .d-cta-btn { background:var(--green); color:#052e22; border-radius:24px; padding:12px 22px; font-size:14px; font-weight:700; white-space:nowrap; }
+  .d-prevnext { display:flex; gap:14px; margin-top:44px; border-top:1px solid var(--line); padding-top:24px; }
+  .d-pn { flex:1; border:1px solid var(--line); border-radius:12px; padding:16px 18px; transition:border-color .2s; }
+  .d-pn:hover { border-color:#38342e; }
+  .d-pn .l { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); }
+  .d-pn .t { font-family:var(--serif); font-size:1.15rem; margin-top:5px; }
+  .d-pn.next { text-align:right; }
+  .d-help { margin-top:26px; font-family:var(--mono); font-size:11px; color:var(--faint); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .d-help a { color:var(--cyan); }
+  .d-foot { max-width:70ch; margin-top:30px; font-family:var(--mono); font-size:11px; color:var(--faint); }
+
+  /* code-native inline-SVG diagrams */
+  .d-diagram { margin:26px 0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#0B0B0D; max-width:none; }
+  .d-diagram-cap { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); background:#0E0E11; }
+  .d-diagram-body { padding:22px clamp(10px,3vw,26px); overflow-x:auto; }
+  .d-diagram-body svg { display:block; }
+  .d-diagram-note { padding:11px 16px 15px; border-top:1px solid var(--line); font-family:var(--mono); font-size:11px; line-height:1.6; color:var(--faint); }
+  .d-diagram-note b { color:var(--dim); font-weight:600; }
+
+  /* right-rail on-this-page */
+  .d-rail { position:sticky; top:48px; align-self:start; height:calc(100vh - 48px); overflow-y:auto; padding:34px 18px 40px 4px; }
+  .d-toc-h { font-family:var(--mono); font-size:9.5px; letter-spacing:0.13em; text-transform:uppercase; color:var(--faint); margin-bottom:10px; }
+  .d-toc-link { display:block; padding:5px 10px; font-size:12px; line-height:1.4; color:var(--faint); border-left:1px solid var(--line); }
+  .d-toc-link:hover { color:var(--ink); }
+  .d-toc-link.on { color:var(--ink); border-left-color:var(--green); }
+
+  /* search modal */
+  .d-modal { position:fixed; inset:0; z-index:120; display:none; align-items:flex-start; justify-content:center; padding-top:12vh; background:rgba(0,0,0,0.6); }
+  .d-modal.open { display:flex; }
+  .d-modal-box { width:min(560px,92vw); background:#0D0D10; border:1px solid #2A2826; border-radius:14px; overflow:hidden; box-shadow:0 40px 90px -20px rgba(0,0,0,0.9); }
+  .d-modal input { width:100%; background:transparent; border:none; border-bottom:1px solid #2A2826; padding:16px 18px; font-size:15px; color:var(--ink); font-family:inherit; outline:none; }
+  .d-results { max-height:52vh; overflow-y:auto; padding:8px; }
+  .d-res { display:block; padding:11px 13px; border-radius:9px; }
+  .d-res:hover, .d-res.sel { background:rgba(16,185,129,0.08); }
+  .d-res .rt { font-size:14px; color:var(--ink); }
+  .d-res .rc { font-family:var(--mono); font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; }
+  .d-res .rd { font-size:12px; color:var(--dim); margin-top:3px; }
+  .d-empty { padding:22px; text-align:center; color:var(--faint); font-size:13px; }
+
+  @media (max-width:1120px){ .d-layout { grid-template-columns:262px minmax(0,1fr); } .d-rail { display:none; } }
+  @media (max-width:860px){
+    .d-layout { grid-template-columns:1fr; }
+    .d-menu-btn { display:inline-block; }
+    .d-badge { display:none; }
+    .d-search { min-width:0; padding:8px; }
+    .d-search .d-search-lbl, .d-search kbd { display:none; }
+    .d-top-cta { display:none; } /* was overflowing the header ≤384px; Book CTAs remain in the drawer + content */
+    .d-navitem { padding-top:11px; padding-bottom:11px; } /* ≥44px touch target */
+    .d-sidebar { position:fixed; top:48px; left:0; width:min(300px,84vw); height:calc(100vh - 48px); background:var(--bg); z-index:70; transform:translateX(-102%); transition:transform .25s ease; border-right:1px solid var(--line); }
+    body.d-navopen .d-sidebar { transform:none; box-shadow:0 30px 80px rgba(0,0,0,0.6); }
+    body.d-navopen::after { content:''; position:fixed; inset:48px 0 0; background:rgba(0,0,0,0.5); z-index:65; }
+    .d-prevnext { flex-direction:column; }
+  }
+  @media (prefers-reduced-motion:reduce){ .d-sidebar { transition:none; } }
+</style>
+</head>
+<body>
+  <div class="d-top">
+    <button class="d-menu-btn" id="d-menu" aria-label="Toggle documentation menu" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <a href="index.html" class="d-brand"><span class="mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span><span class="nm">jason.teixeira<span style="color:var(--green)">()</span></span></a>
+    <span class="d-badge">Docs</span>
+    <button class="d-search" id="d-search-btn" aria-label="Search documentation"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="d-search-lbl">Search the docs…</span><kbd>⌘K</kbd></button>
+    <div class="d-top-cta">
+      <a href="services.html" class="dim-link">services</a>
+      <a href="book.html" class="btn-solid green" style="padding:8px 15px;font-size:12px;white-space:nowrap">Book a call →</a>
+    </div>
+  </div>
+  <div class="d-layout">
+    <aside class="d-sidebar" id="d-sidebar">
+    <a href="docs.html" class="d-navitem d-home">Documentation home</a>
+    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-choose-your-path.html" class="d-navitem">Choose your path</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a><a href="docs-how-this-site-works.html" class="d-navitem">How this site works</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a><a href="docs-stack-integrations.html" class="d-navitem">Stack &amp; integrations</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="docs-llm-evaluation-metrics.html" class="d-navitem">LLM Evaluation Metrics Explained</a><a href="docs-rag-evaluation-metrics.html" class="d-navitem">RAG Evaluation Metrics Explained</a><a href="docs-eval-gates-ci.html" class="d-navitem">Eval Gates: The Missing CI Step for AI Features</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div><div class="d-group"><div class="d-grouphead">How-to guides</div><a href="docs-build-llm-eval-gate-ci.html" class="d-navitem">Build an LLM Eval Gate in CI with Promptfoo</a><a href="docs-build-golden-set.html" class="d-navitem">Build a Golden Set for LLM Regression Testing</a><a href="docs-add-human-approval-checkpoint.html" class="d-navitem">Add a Human-Approval Checkpoint to an AI Pipeline</a><a href="docs-write-adversarial-probes.html" class="d-navitem">Write Adversarial Probes for Prompt Injection Testing</a><a href="docs-evaluate-rag-pipeline.html" class="d-navitem">Evaluate a RAG Pipeline End-to-End with RAGAS</a><a href="docs-nightly-llm-regression-github-actions.html" class="d-navitem">Set Up a Nightly LLM Regression Suite in GitHub Actions</a><a href="docs-version-golden-datasets.html" class="d-navitem">Version Golden Datasets Like Code</a><a href="docs-test-tool-call-accuracy.html" class="d-navitem">Build a Tool-Call Accuracy Test Harness for AI Agents</a><a href="docs-test-multi-turn-conversations.html" class="d-navitem">Test Multi-Turn Agent Conversations</a><a href="docs-add-llm-observability.html" class="d-navitem">Add Open-Source LLM Observability (Langfuse or Phoenix)</a><a href="docs-build-quality-ratchet.html" class="d-navitem">Build a Quality Ratchet That Blocks Regressions</a><a href="docs-playwright-ai-generated-ui.html" class="d-navitem">Run Playwright Tests Against an AI-Generated UI</a><a href="docs-detect-hallucinations-production.html" class="d-navitem">Detect Hallucinations Automatically in Production Logs</a><a href="docs-red-team-chatbot-suite.html" class="d-navitem">Build a Red-Team Test Suite for a Customer-Facing Chatbot</a><a href="docs-wire-eval-gate-deploy.html" class="d-navitem">Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</a><a href="docs-structure-ai-monorepo.html" class="d-navitem">Structure a Monorepo for an AI Product Plus Eval Suite</a></div>
+    <div class="d-group"><div class="d-grouphead">More</div>
+      <a href="services.html" class="d-navitem d-ext">Services matrix <span class="d-extmark">↗</span></a>
+      <a href="case-studies.html" class="d-navitem d-ext">Case studies <span class="d-extmark">↗</span></a>
+      <a href="index.html" class="d-navitem d-ext">← Portfolio</a>
+    </div>
+  </aside>
+    <main class="d-main">
+      <div class="d-crumb"><a href="index.html">Home</a> / <a href="docs.html">Docs</a> / Shipping AI Safely / <span style="color:var(--dim)">Passing Tests Is Not Proof: What Done Means for an AI Feature</span></div>
+      
+    <div class="d-kicker">Shipping AI Safely</div>
+    <h1>Passing Tests Is Not Proof: What Done Means for an AI Feature</h1>
+    <p class="d-lead">Green tests mean the code ran, not that the feature is good. For AI, done needs a higher bar.</p>
+    <div class="d-body"><p class="d-p">A green test suite tells you the code did what you told it to do. It says nothing about whether the feature is good. For normal software those two things stay close, because the behavior is deterministic and you can pin it down with assertions. For an AI feature they split apart, because the output is a probability distribution over language and "correct" is a range instead of a value. Ship on green alone and you have proven the plumbing works while the actual product quality goes untested.</p>
+<h2 id="what-a-passing-test-actually-proves" class="d-h2"><a href="#what-a-passing-test-actually-proves" class="d-anchor" aria-label="Link to this section">#</a>What a passing test actually proves</h2>
+<p class="d-p">A unit test asserts that a specific input produces a specific output. That works when the answer is fixed. <code>add(2, 2)</code> returns 4 or it does not. The assertion is exact because the behavior is exact.</p>
+<p class="d-p">An AI feature has no fixed value. Ask a summarizer the same question twice and you get two different paragraphs, both possibly fine. So people write the only test that can pass reliably: assert the call did not throw, the response is non-empty, the JSON parses. That test goes green forever. It checks that the pipe is connected, not that anything worth drinking came out. The model could return a fluent, confident, wrong answer on every single call and your suite would stay green through all of it.</p>
+<h2 id="plumbing-versus-behavior" class="d-h2"><a href="#plumbing-versus-behavior" class="d-anchor" aria-label="Link to this section">#</a>Plumbing versus behavior</h2>
+<p class="d-p">Split your checks into two buckets and keep them apart. Plumbing tests cover the deterministic shell around the model: the prompt gets built, the API gets called, retries fire, the output validates against a schema, malformed responses get caught. These should be exact assertions and they should be green. You need them.</p>
+<p class="d-p">Behavior evaluation covers what the model actually said. Is the summary accurate. Does the answer use the retrieved context. Did it refuse when it should have. This cannot be a pass/fail assertion on one run. It is a graded score across a set of cases, and it moves every time you change the prompt or swap the model. Teams get burned when a green plumbing suite stands in for behavior nobody measured. Passing the first bucket tells you nothing about the second.</p>
+<h2 id="a-definition-of-done-you-can-act-on" class="d-h2"><a href="#a-definition-of-done-you-can-act-on" class="d-anchor" aria-label="Link to this section">#</a>A definition of done you can act on</h2>
+<p class="d-p">Done for an AI feature needs four things the test suite will not hand you. An eval set: 30 to 100 real cases with a known or graded good answer, run on every change so you watch quality move. A floor you agreed on before shipping, like "answers stay grounded in context on at least 90 percent of the retrieval set," so good enough is a number instead of a mood. A look at the failures and not just the average, because a feature at 92 percent that whiffs on the highest-value questions is not done and the mean hides it. And a plan for when the model is wrong, because it will be: a fallback, a human checkpoint on the expensive actions, or an undo.</p>
+<p class="d-p">Take a support-answer bot. Green tests prove it returns a reply and logs the ticket. Done means you graded 50 real tickets, it stayed factual on 46, the 4 misses were low-stakes, and anything touching a refund waits for a human. That is a claim you can defend. "All tests pass" is not.</p>
+<div class="d-note d-note-note"><span class="d-note-i">▸</span><div>Green tests prove the code around the model runs. They do not prove the model's output is good. Done for an AI feature means a graded eval set clearing an agreed floor, the failure cases actually read, and a fallback for when the model is wrong.</div></div>
+<h2 id="the-bottom-line" class="d-h2"><a href="#the-bottom-line" class="d-anchor" aria-label="Link to this section">#</a>The bottom line</h2>
+<p class="d-p">Keep the plumbing tests. They are real and they should stay green. Just stop letting them impersonate a quality they never measured. The honest version of done is more work. You have to build the eval set, pick the number, and read the failures nobody wants to read. Do it anyway, because the alternative is shipping on a green light that was only ever wired to the code.</p>
+<div class="d-proof"><a href="checklist.html" class="d-plink">AI feature launch checklist <span>→</span></a><a href="learn-shipping-ai.html" class="d-plink">Shipping AI Safely pillar <span>→</span></a><a href="learn.html" class="d-plink">The Learn library <span>→</span></a></div>
+<div class="d-cta"><div><div class="d-cta-h">Want this on your product, not just in theory?</div><div class="d-cta-s">Get a free mini-eval on your live AI feature, or book a call to talk it through.</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div></div>
+    <div class="d-help"><span>Was this helpful?</span><a href="book.html" data-evt="docs-help-yes">Book a call →</a><a href="sample.html" data-evt="docs-help-eval">Get a free mini-eval →</a></div>
+    <div class="d-prevnext"><div class="d-pn" style="visibility:hidden"></div><div class="d-pn" style="visibility:hidden"></div></div>
+    <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a> · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a></div>
+    <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
+    </main>
+    <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#what-a-passing-test-actually-proves" class="d-toc-link" data-target="what-a-passing-test-actually-proves">What a passing test actually proves</a><a href="#plumbing-versus-behavior" class="d-toc-link" data-target="plumbing-versus-behavior">Plumbing versus behavior</a><a href="#a-definition-of-done-you-can-act-on" class="d-toc-link" data-target="a-definition-of-done-you-can-act-on">A definition of done you can act on</a><a href="#the-bottom-line" class="d-toc-link" data-target="the-bottom-line">The bottom line</a></nav></div>
+  </div>
+
+  <div class="d-modal" id="d-modal" role="dialog" aria-label="Search documentation" aria-modal="true">
+    <div class="d-modal-box">
+      <input id="d-q" type="text" placeholder="Search the documentation…" autocomplete="off" aria-label="Search query">
+      <div class="d-results" id="d-results"></div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var b=document.getElementById('d-menu');
+      if(b){ b.addEventListener('click',function(){ var o=document.body.classList.toggle('d-navopen'); b.setAttribute('aria-expanded',o?'true':'false'); }); }
+      document.querySelectorAll('.d-sidebar a').forEach(function(a){ a.addEventListener('click',function(){ document.body.classList.remove('d-navopen'); }); });
+      document.querySelectorAll('.d-copy').forEach(function(btn){ btn.addEventListener('click',function(){ var c=btn.closest('.d-codewrap').querySelector('code'); navigator.clipboard&&navigator.clipboard.writeText(c.innerText); var o=btn.textContent; btn.textContent='copied'; setTimeout(function(){btn.textContent=o;},1200); }); });
+      // scroll-spy for the on-this-page rail
+      var links=[].slice.call(document.querySelectorAll('.d-toc-link'));
+      if(links.length){
+        var map={}; links.forEach(function(l){ var el=document.getElementById(l.getAttribute('data-target')); if(el) map[l.getAttribute('data-target')]=l; });
+        var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(x){x.classList.remove('on');}); var l=map[e.target.id]; if(l)l.classList.add('on'); } }); },{rootMargin:'-64px 0px -70% 0px'});
+        Object.keys(map).forEach(function(id){ io.observe(document.getElementById(id)); });
+      }
+    })();
+  </script>
+  <script defer src="assets/docs-search.js"></script>
+  <script defer src="assets/agent.js"></script>
+</body>
+</html>

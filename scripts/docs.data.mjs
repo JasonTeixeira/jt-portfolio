@@ -30,6 +30,10 @@
 // How-to tutorials render through this same docs pipeline (code blocks, TOC, HowTo
 // schema). They are authored in tutorials.data.mjs and merged into PAGES + NAV below.
 import { TUTORIAL_PAGES, TUTORIAL_NAV_ITEMS } from './tutorials.data.mjs';
+// Supporting cluster articles render through this pipeline too, but are NOT added to the
+// docs sidebar (too many). They generate, get search + TechArticle schema, and are reached
+// from their Learn pillar + internal links.
+import { ARTICLE_PAGES } from './articles.data.mjs';
 
 const DIAG = {
   ink: '#F4F2EF', dim: '#A8A29E', faint: '#8E8882', line: '#211F1C', rail: '#2A2826', bg: '#09090B',
@@ -955,6 +959,8 @@ export const PAGES = {
 // Merge the how-to tutorials in as their own docs category before slugs are computed.
 Object.assign(PAGES, TUTORIAL_PAGES);
 NAV.push({ cat: 'How-to guides', items: TUTORIAL_NAV_ITEMS });
+// Merge the supporting articles into PAGES only (searchable + generated, not in the sidebar).
+Object.assign(PAGES, ARTICLE_PAGES);
 
 export const DOC_SLUGS = NAV.flatMap((g) => g.items.filter((i) => i.slug).map((i) => i.slug));
 export { BOOK };
