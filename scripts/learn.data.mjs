@@ -95,6 +95,7 @@ export const PILLARS = [
 // Real, LIVE pages mapped into each pillar. Every href resolves to an existing file.
 export const LIBRARY = {
   'llm-evaluation': [
+    { title: 'LLM evaluation metrics explained', href: 'docs-llm-evaluation-metrics.html', type: 'reference', desc: 'The cornerstone field guide: the four metric families, when to reach for each, and how they become a gate.' },
     { title: 'The eval gate, explained', href: 'guide-eval-gate.html', type: 'guide', desc: 'Animated walkthrough of the gate that blocks a regression before it ships.' },
     { title: 'Golden sets, explained', href: 'guide-golden-set.html', type: 'guide', desc: 'What a golden set is and why it is the backbone of LLM regression testing.' },
     { title: 'Adversarial probes, explained', href: 'guide-probes.html', type: 'guide', desc: 'How probes surface prompt-injection and jailbreak failures on purpose.' },
