@@ -87,10 +87,73 @@
       panel.appendChild(out);
     } else {
       panel.appendChild(link(L.login, 'login.html'));
-      panel.appendChild(link(L.signup, 'signup.html', 'btn-solid green site-nav-cta'));
+      // Sign up stays a plain link so "Book a call" is the single primary (green) CTA.
+      panel.appendChild(link(L.signup, 'signup.html'));
     }
   }
 
+  // ── Group the flat nav into a few dropdown menus (desktop) / labeled sections (mobile).
+  // The static HTML keeps every link (SEO + no-JS fallback); this reorganizes them into
+  // three clear groups so the bar reads as a menu, not a wall of 14 equal links.
+  var NAV_GROUPS = [
+    { label: 'Services', items: [
+      ['Approach', 'approach.html'], ['Services', 'services.html'],
+      ['Automations', '/automations/'], ['Scope a project', 'build.html'] ] },
+    { label: 'Work', items: [
+      ['Case studies', 'case-studies.html'], ['Proof', 'proof.html'], ['Lab', 'lab.html'] ] },
+    { label: 'Learn', items: [
+      ['Learn library', 'learn.html'], ['Docs', 'docs.html'], ['Glossary', 'glossary.html'],
+      ['Tool comparisons', 'compare.html'], ['Field notes', 'field-notes.html'], ['Resources', 'resources.html'] ] },
+  ];
+  function baseName(href) { return String(href || '').split('#')[0].split('?')[0].replace(/\/$/, '').split('/').pop() || 'index.html'; }
+  function closeAllGroups(panel, except) {
+    panel.querySelectorAll('.nav-group.open').forEach(function (o) {
+      if (o === except) return;
+      o.classList.remove('open');
+      var b = o.querySelector('.nav-group-btn'); if (b) b.setAttribute('aria-expanded', 'false');
+    });
+  }
+  function groupNav(nav) {
+    var panel = nav.querySelector('.site-nav-links');
+    if (!panel || panel.getAttribute('data-grouped')) return;
+    var existing = {};
+    panel.querySelectorAll('a.site-nav-link').forEach(function (a) { existing[baseName(a.getAttribute('href'))] = a; });
+    var cta = panel.querySelector('.site-nav-cta');
+    var cur = baseName(location.pathname);
+    panel.querySelectorAll('a.site-nav-link').forEach(function (a) { if (a !== cta) a.remove(); });
+
+    var frag = document.createDocumentFragment();
+    NAV_GROUPS.forEach(function (g) {
+      var group = document.createElement('div'); group.className = 'nav-group';
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'nav-group-btn';
+      btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML = g.label + '<span class="nav-caret" aria-hidden="true">▾</span>';
+      var dd = document.createElement('div'); dd.className = 'nav-dropdown';
+      var active = false;
+      g.items.forEach(function (it) {
+        var bn = baseName(it[1]);
+        var a = existing[bn] || document.createElement('a');
+        a.textContent = it[0]; a.setAttribute('href', it[1]); a.className = 'nav-dd-link';
+        if (bn === cur) { a.setAttribute('aria-current', 'page'); active = true; }
+        dd.appendChild(a);
+      });
+      if (active) group.classList.add('nav-group-active');
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = group.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        closeAllGroups(panel, group);
+      });
+      group.appendChild(btn); group.appendChild(dd);
+      frag.appendChild(group);
+    });
+    if (cta) panel.insertBefore(frag, cta); else panel.appendChild(frag);
+    panel.setAttribute('data-grouped', '1');
+
+    document.addEventListener('click', function (e) { if (!nav.contains(e.target)) closeAllGroups(panel); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllGroups(panel); });
+  }
+
   var navs = document.querySelectorAll('.site-nav');
-  for (var i = 0; i < navs.length; i++) { initNav(navs[i]); injectAuth(navs[i]); }
+  for (var i = 0; i < navs.length; i++) { initNav(navs[i]); groupNav(navs[i]); injectAuth(navs[i]); }
 })();
