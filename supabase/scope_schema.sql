@@ -375,3 +375,24 @@ alter table scope_messages
   add column if not exists attachment_name text,
   add column if not exists attachment_size integer,
   add column if not exists attachment_type text;
+
+-- ── Newsletter broadcasts (2026-09-17): operator-sent broadcasts to field-notes subscribers.
+-- scope_broadcasts = one row per broadcast; scope_broadcast_sends = per-recipient dedupe/audit.
+-- Service-role only, RLS deny-all (subscribers live in scope_prospects source='newsletter').
+create table if not exists scope_broadcasts (
+  id uuid primary key default gen_random_uuid(),
+  subject text not null,
+  heading text,
+  recipient_count int not null default 0,
+  sent_count int not null default 0,
+  created_at timestamptz not null default now()
+);
+alter table scope_broadcasts enable row level security;
+
+create table if not exists scope_broadcast_sends (
+  broadcast_id uuid not null references scope_broadcasts(id) on delete cascade,
+  email text not null,
+  sent_at timestamptz not null default now(),
+  primary key (broadcast_id, email)
+);
+alter table scope_broadcast_sends enable row level security;
