@@ -217,11 +217,20 @@ function buildDeliverablesCard(view) {
   card.appendChild(h('h2', { class: 'portal-card-title' }, t('files.title')));
   const wrap = h('div', { style: 'display:flex;flex-direction:column;gap:8px' });
   for (const f of files) {
-    wrap.appendChild(h('div', { style: 'display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:10px;padding:10px 14px' },
+    const isImg = /^image\//i.test(f.content_type || '');
+    const isPdf = /pdf/i.test(f.content_type || '') || /\.pdf$/i.test(f.name || '');
+    const item = h('div', { style: 'border:1px solid var(--line);border-radius:10px;padding:10px 14px' });
+    // Inline image preview — a real visual, not just a filename. Click opens full size.
+    if (isImg && f.url) {
+      item.appendChild(h('a', { href: f.url, target: '_blank', rel: 'noopener', style: 'display:block;margin-bottom:8px' },
+        h('img', { src: f.url, alt: f.name, loading: 'lazy', style: 'max-width:100%;max-height:220px;border-radius:8px;display:block' })));
+    }
+    item.appendChild(h('div', { style: 'display:flex;align-items:center;justify-content:space-between;gap:12px' },
       h('div', { style: 'min-width:0' },
         f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', style: 'color:#22d3ee;font-size:14px;word-break:break-word' }, f.name) : h('span', { style: 'font-size:14px' }, f.name),
         h('div', { style: 'font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px' }, fmtBytes(f.size_bytes))),
-      f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', class: 'btn-ghost', style: 'padding:5px 12px;font-size:12px' }, t('files.download')) : null));
+      f.url ? h('a', { href: f.url, target: '_blank', rel: 'noopener', class: 'btn-ghost', style: 'padding:5px 12px;font-size:12px' }, (isImg || isPdf) ? t('files.preview') : t('files.download')) : null));
+    wrap.appendChild(item);
   }
   card.appendChild(wrap);
   return card;

@@ -16,6 +16,7 @@ import {
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
 import { messageEmail } from '../lib/email-templates.mjs';
+import { clientWantsUpdates } from '../lib/client-prefs-db.mjs';
 
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
@@ -45,7 +46,7 @@ async function handler(req, res) {
       const projR = await getProjectById(projectId);
       const proposal = projR.ok && projR.data ? await getProposalById(projR.data.proposal_id) : null;
       const email = proposal && proposal.ok && proposal.data ? proposal.data.client_email : null;
-      if (email) {
+      if (email && await clientWantsUpdates(email)) {
         const tok = await ensurePortalToken(projectId);
         const link = tok.ok && tok.token ? `${SITE}/portal.html?id=${tok.token}` : `${SITE}`;
         const mail = messageEmail({ body: text, link });
