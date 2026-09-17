@@ -836,14 +836,27 @@ function renderPipeline(root, key) {
   ));
 
   // Filter bar: narrow the table by stage and/or a free-text match (client-side over the
-  // loaded list — instant, no round-trip).
+  // loaded list — instant, no round-trip). Plus quick-filter presets, a bulk stage-move over
+  // the currently-filtered set, and load-more pagination.
   const inpStyle = 'background:#0F0F13;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px;padding:7px 10px';
   const fStage = h('select', { style: inpStyle + ';min-width:130px' }, h('option', { value: '' }, 'All stages'), ...STAGE_ORDER.map((s) => h('option', { value: s }, STAGE_META[s].label)));
-  const fText = h('input', { type: 'search', placeholder: 'Filter name / company / email…', style: inpStyle + ';flex:1;min-width:200px' });
+  const fText = h('input', { type: 'search', placeholder: 'Filter name / company / email…', style: inpStyle + ';flex:1;min-width:180px' });
   const countTag = h('span', { class: 'mono', style: 'font-size:11px;color:var(--faint);align-self:center' }, '');
-  const filterBar = h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px' }, fStage, fText, countTag);
+  // Bulk stage-move applies to whatever is currently filtered — pair it with a filter to act
+  // on a set (e.g. filter "engaged" + text, then move them all).
+  const bulkStage = h('select', { style: inpStyle }, h('option', { value: '' }, 'Bulk move →'), ...STAGE_ORDER.map((s) => h('option', { value: s }, STAGE_META[s].label)));
+  const bulkBtn = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:7px 12px;font-size:12px' }, 'Apply');
+  const bulkMsg = h('span', { class: 'mono', style: 'font-size:11px;color:var(--faint);align-self:center' }, '');
+  const filterBar = h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px' }, fStage, fText, bulkStage, bulkBtn, bulkMsg, countTag);
+  // Preset chips
+  const chipRow = h('div', { style: 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px' });
+  for (const [label, st] of [['All', ''], ['New', 'new'], ['Engaged', 'engaged'], ['Won', 'won'], ['Lost', 'lost']]) {
+    const chip = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:5px 11px;font-size:12px' }, label);
+    chip.addEventListener('click', () => { fStage.value = st; fText.value = ''; shown = PAGE; renderRows(); });
+    chipRow.appendChild(chip);
+  }
   wrap.appendChild(h('div', { class: 'admin-card' },
-    filterBar,
+    filterBar, chipRow,
     h('div', { style: 'overflow-x:auto' },
       h('table', { class: 'admin-table' },
         h('thead', {}, h('tr', {}, h('th', {}, 'Stage'), h('th', {}, 'Company'), h('th', {}, 'Email'), h('th', {}, 'Segment'), h('th', {}, 'Last touch'), h('th', {}, ''))),
@@ -854,18 +867,37 @@ function renderPipeline(root, key) {
   root.appendChild(wrap);
 
   let allProspects = [];
+  let filtered = [];
+  const PAGE = 50;
+  let shown = PAGE;
   function renderRows() {
     const stage = fStage.value; const q = (fText.value || '').trim().toLowerCase();
-    const rows = allProspects.filter((p) => (!stage || p.stage === stage)
+    filtered = allProspects.filter((p) => (!stage || p.stage === stage)
       && (!q || [p.name, p.company, p.email, p.segment].some((v) => String(v || '').toLowerCase().includes(q))));
     clear(tbody);
-    countTag.textContent = q || stage ? `${rows.length} of ${allProspects.length}` : `${allProspects.length}`;
+    countTag.textContent = q || stage ? `${filtered.length} of ${allProspects.length}` : `${allProspects.length}`;
     if (!allProspects.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects yet — they appear here the moment someone uses the scope studio.'))); return; }
-    if (!rows.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects match this filter.'))); return; }
-    for (const p of rows) { const [row, tl] = prospectRow(p, key, load); tbody.appendChild(row); tbody.appendChild(tl); }
+    if (!filtered.length) { tbody.appendChild(h('tr', {}, h('td', { colspan: '6', class: 'subtle' }, 'No prospects match this filter.'))); return; }
+    for (const p of filtered.slice(0, shown)) { const [row, tl] = prospectRow(p, key, load); tbody.appendChild(row); tbody.appendChild(tl); }
+    if (filtered.length > shown) {
+      const more = h('button', { type: 'button', class: 'btn-ghost', style: 'width:100%;padding:9px;font-size:12px' }, `Load ${Math.min(PAGE, filtered.length - shown)} more · showing ${shown} of ${filtered.length}`);
+      more.addEventListener('click', () => { shown += PAGE; renderRows(); });
+      tbody.appendChild(h('tr', {}, h('td', { colspan: '6', style: 'padding:8px 0' }, more)));
+    }
   }
-  fStage.addEventListener('change', renderRows);
-  fText.addEventListener('input', renderRows);
+  bulkBtn.addEventListener('click', async () => {
+    const st = bulkStage.value;
+    if (!st || !filtered.length) return;
+    if (!window.confirm(`Move ${filtered.length} prospect${filtered.length === 1 ? '' : 's'} to "${STAGE_META[st].label}"?`)) return;
+    bulkBtn.disabled = true; bulkMsg.textContent = 'moving…';
+    let done = 0;
+    for (const p of filtered.slice()) { try { const d = await setStage(p.id, st, key); if (d && d.ok) done += 1; } catch { /* skip */ } }
+    bulkMsg.textContent = `moved ${done}/${filtered.length}`;
+    bulkBtn.disabled = false; bulkStage.value = '';
+    load();
+  });
+  fStage.addEventListener('change', () => { shown = PAGE; renderRows(); });
+  fText.addEventListener('input', () => { shown = PAGE; renderRows(); });
 
   function load() {
     const errRow = (msg) => h('tr', {}, h('td', { colspan: '6', class: 'subtle', style: 'color:#F59E0B' }, msg));
