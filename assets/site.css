@@ -1029,3 +1029,9 @@ html.jt-pt-out #jt-pt .jt-pt-mark{animation:jt-ptflip 520ms cubic-bezier(0.16,1,
   .foot-cols { grid-template-columns: repeat(2, 1fr); gap: 24px; }
   .foot-bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
+
+/* Scope Studio: reveal the email ask only once a plan exists (value-first capture). */
+#scope-root:not([data-state="plan"]) #scope-handoff { display: none; }
+#scope-root[data-state="plan"] #scope-handoff { animation: scopeReveal .45s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes scopeReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #scope-root[data-state="plan"] #scope-handoff { animation: none; } }

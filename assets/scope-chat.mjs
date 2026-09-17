@@ -20,7 +20,7 @@
 import { computePlan } from './scope-core.mjs';
 
 const GREETING =
-  "This is Jason's AI. It scopes your project so neither of us wastes time on a call that isn't a fit. Tell me what you're working on and I'll ask a few questions. Jason reads every plan it makes; you can skip straight to him anytime.";
+  "Hi, I'm Nadine — Jason's scoping assistant. Tell me what you're working on and I'll ask a couple of quick questions, then build you an itemized plan with a price range, so neither of us wastes time on a call that isn't a fit. Jason reads every plan I make, and you can skip straight to him anytime.";
 const OFFLINE_MSG = "The AI's offline right now. Use the quick questions instead; they build the exact same plan.";
 const NARRATION = "I've sketched a plan for you on the right. Tweak it or keep going.";
 const HANDOFF_COPY = "Want me to send this plan to your inbox? Jason reads every one, and he'll follow up himself.";
