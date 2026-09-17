@@ -2,7 +2,7 @@ import { withObserve } from '../lib/observe.mjs';
 import {
   isEnabled, getProjectByPortalToken, listMilestones, approveMilestone, getContractsForProposal,
   listMessages, addMessage, markMessagesRead, listDeliverables, signDeliverableDownload, signMessageUpload,
-  normalizeMessageAttachment,
+  signMessageDownload, normalizeMessageAttachment,
 } from '../lib/portal-db.mjs';
 import { getProposalById, updateProposal } from '../lib/proposal-db.mjs';
 import { listInvoicesForProposal, isInvoicePaid } from '../lib/invoice-db.mjs';
@@ -120,7 +120,7 @@ async function handler(req, res) {
     // the client view never exposes it). Index-aligned with clientView's message mapping.
     await Promise.all(messages.map(async (m, i) => {
       if (m.attachment_path && view.messages[i] && view.messages[i].attachment) {
-        const s = await signDeliverableDownload(m.attachment_path, 300);
+        const s = await signMessageDownload(m.attachment_path, 300);
         view.messages[i].attachment.url = s.ok ? s.url : null;
       }
     }));
@@ -173,8 +173,10 @@ async function handler(req, res) {
     }
   }
 
-  // client asks for a one-time signed upload URL for a message attachment (≤25MB). Path is
-  // server-built under this project's msg/ prefix — the caller never chooses it.
+  // client asks for a one-time signed upload URL for a message attachment. Path is server-built
+  // under this project's msg/ prefix — the caller never chooses it. The 25MB cap is enforced for
+  // real by the message-uploads bucket's file_size_limit (this check is an advisory early-reject;
+  // a client can under-report size, so storage is the true backstop).
   if (body.action === 'sign_upload') {
     const pt = typeof body.portalToken === 'string' ? body.portalToken.trim() : '';
     const filename = typeof body.filename === 'string' ? body.filename : '';

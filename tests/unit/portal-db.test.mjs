@@ -20,6 +20,7 @@ test('normalizeMessageAttachment rejects cross-project, arbitrary, and traversal
   assert.equal(normalizeMessageAttachment(pid, { path: 'proj-123/x.pdf', name: 'x' }), null); // deliverables prefix, not msg/
   assert.equal(normalizeMessageAttachment(pid, { path: '../../secrets', name: 'x' }), null);
   assert.equal(normalizeMessageAttachment(pid, { path: `msg/${pid}`, name: 'x' }), null); // no trailing slash → not under prefix
+  assert.equal(normalizeMessageAttachment(pid, { path: `msg/${pid}/../other-proj/x`, name: 'x' }), null); // traversal after valid prefix
   assert.equal(normalizeMessageAttachment(pid, {}), null);
   assert.equal(normalizeMessageAttachment(pid, null), null);
   assert.equal(normalizeMessageAttachment('', { path: 'msg//x' }), null);

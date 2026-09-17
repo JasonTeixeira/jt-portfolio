@@ -177,6 +177,13 @@ insert into storage.buckets (id, name, public, file_size_limit)
 values ('deliverables', 'deliverables', false, 52428800)
 on conflict (id) do nothing;
 
+-- Client message attachments: a SEPARATE private bucket with a hard 25MB ceiling,
+-- enforced by storage itself (the app's own size check is client-reported and advisory).
+-- Isolated from 'deliverables' so a casual client upload can never collide with an operator file.
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('message-uploads', 'message-uploads', false, 26214400)
+on conflict (id) do update set file_size_limit = excluded.file_size_limit;
+
 create table if not exists scope_deliverable_files (
   id uuid primary key default gen_random_uuid(),
   project_id uuid not null references scope_projects(id) on delete cascade,
