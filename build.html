@@ -73,13 +73,32 @@
       <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">scope studio &middot; build your plan</span><span class="line"></span></div>
       <h1 class="sec-title" style="max-width:20ch;margin-top:12px">Tell me what you need. I&rsquo;ll scope it.</h1>
       <p class="subtle" style="margin-top:12px;max-width:56ch">A few questions, and you&rsquo;ll get an itemized plan with an indicative range. No signup, no call required. This is Jason&rsquo;s tool. Jason reads every plan it makes.</p>
-      <div class="scope-mode-toggle" role="group" aria-label="How do you want to scope this?">
-        <button type="button" id="scope-mode-chat" class="scope-mode-btn" aria-pressed="false">Talk it through</button>
-        <button type="button" id="scope-mode-quick" class="scope-mode-btn" aria-pressed="true">Quick questions</button>
+      <div class="scope-entry" id="scope-entry" role="group" aria-label="How do you want to scope this?">
+        <p class="scope-entry-lead" id="scope-entry-lead">Two ways to get your plan. Pick whichever feels right &mdash; you can switch anytime.</p>
+        <div class="scope-entry-cards">
+          <button type="button" id="scope-mode-quick" class="scope-entry-card" aria-pressed="false">
+            <span class="se-top">
+              <span class="se-ico se-ico-q" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg></span>
+              <span class="se-eyebrow">Fastest &middot; ~2 min</span>
+            </span>
+            <span class="se-title">Answer 3 quick questions</span>
+            <span class="se-desc">Tap through three questions. Watch your plan and indicative range assemble live &mdash; no signup.</span>
+            <span class="se-go">Start<svg class="se-ar" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </button>
+          <button type="button" id="scope-mode-chat" class="scope-entry-card" aria-pressed="false">
+            <span class="se-top">
+              <span class="se-ico se-ico-c" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6A8.5 8.5 0 0 1 4 11.5 8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg></span>
+              <span class="se-eyebrow">Conversational</span>
+            </span>
+            <span class="se-title">Talk it through with Nadine</span>
+            <span class="se-desc">Describe it in your own words. Nadine asks the right questions and scopes it with you.</span>
+            <span class="se-go">Start<svg class="se-ar" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </button>
+        </div>
       </div>
       <div class="tf-grid scope-grid" style="margin-top:20px">
         <div id="scope-primary">
-          <div id="scope-questions"></div>
+          <div id="scope-questions" hidden></div>
           <div id="scope-chat" class="scope-chat" hidden>
             <div class="sc-voice-bar">
               <button type="button" id="scope-voice-toggle" class="sc-voice-toggle-btn" aria-pressed="false" aria-controls="scope-voice-panel">
