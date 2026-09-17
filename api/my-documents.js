@@ -11,6 +11,7 @@ import { withObserve } from '../lib/observe.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { userFromRequest } from '../lib/auth-user.mjs';
 import { isEnabled, listClientProjectsByEmail, contractSummariesForProposals, getProjectByPortalToken, listDeliverables, signDeliverableDownload } from '../lib/portal-db.mjs';
+import { projectDisplayName } from '../assets/scope-core.mjs';
 
 const VISIBLE_CONTRACT = new Set(['sent', 'accepted']);
 const MAX_PROJECTS = 20;
@@ -40,7 +41,8 @@ async function handler(req, res) {
     n += 1;
     const token = row.portal_token;
     const prop = row.scope_proposals || {};
-    const projectLabel = `Project ${n}`;
+    // Real project name from what they bought, falling back to "Project N" if the plan is bare.
+    const projectLabel = projectDisplayName({ keys: prop.keys, segment: prop.segment }) || `Project ${n}`;
 
     const c = contractByProp[prop.id];
     if (c && c.public_id) {

@@ -4,6 +4,7 @@
 // Every dynamic value goes through textContent — never innerHTML.
 import { getSession, currentUser, signOut } from './auth.mjs';
 import { money } from './proposal-core.mjs';
+import { projectDisplayName } from './scope-core.mjs';
 import { t, LOCALE } from './i18n.mjs';
 
 const STATUS = { kickoff: 'st.kickoff', active: 'st.active', in_progress: 'st.in_progress', delivered: 'st.delivered', complete: 'st.complete', completed: 'st.complete' };
@@ -195,6 +196,7 @@ export function initDashboard() {
       card.className = 'cx-card'; card.href = `portal.html?id=${encodeURIComponent(p.portalToken)}`;
       const statusKey = STATUS[String(p.status || 'kickoff').toLowerCase()] || 'st.active';
       card.appendChild(el('div', 'st', t(statusKey)));
+      card.appendChild(el('div', 'cx-card-name', projectDisplayName(plan)));
       card.appendChild(el('div', 'amt', money(plan.firm_cents)));
       let pay;
       if (plan.balance_paid_at) pay = t('dash.paidFull', { date: fmtDate(plan.balance_paid_at) });

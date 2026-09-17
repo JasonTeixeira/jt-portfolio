@@ -2,7 +2,7 @@
 // milestone timeline, payment summary, and agreement link — plus the milestone-approve
 // flow. Every dynamic value goes through textContent or DOM properties — never
 // innerHTML — because milestone titles/deliverables come from the operator's own input.
-import { computePlan, SEGMENTS } from './scope-core.mjs';
+import { computePlan, SEGMENTS, projectDisplayName } from './scope-core.mjs';
 import { money } from './proposal-core.mjs';
 import { deliverableTokens } from './portal-core.mjs';
 import { t, LOCALE } from './i18n.mjs';
@@ -423,7 +423,7 @@ function renderPortal(root, view, portalToken, opts = {}) {
   root.appendChild(h('div', { class: 'portal-head' },
     h('div', {},
       h('div', { class: 'sec-rule' }, h('span', { class: 'sec-label', style: 'color:#22d3ee' }, t('portal.eyebrow')), h('span', { class: 'line' })),
-      h('h1', { class: 'portal-title' }, t('portal.title')),
+      h('h1', { class: 'portal-title' }, projectDisplayName(plan)),
       segLabel ? h('p', { class: 'portal-sub' }, segLabel) : null,
     ),
     statusChip(view.project && view.project.status),
