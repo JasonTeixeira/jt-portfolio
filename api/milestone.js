@@ -1,6 +1,7 @@
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
-import { authorizeAdmin } from '../lib/admin-auth.mjs';
+import { authorizeAdmin, adminActor } from '../lib/admin-auth.mjs';
+import { logAudit } from '../lib/audit-db.mjs';
 import { isEnabled, upsertMilestone, markDelivered, getProjectById, ensurePortalToken } from '../lib/portal-db.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
@@ -47,6 +48,7 @@ async function handler(req, res) {
     const r = await markDelivered(body.id.trim());
     if (!r.ok) return res.status(200).json({ ok: false, skipped: true });
     if (r.data) notifyClientDelivered(r.data).catch(() => {}); // fire-and-forget
+    logAudit({ actor: adminActor(req), action: 'milestone_delivered', targetType: 'milestone', targetId: body.id.trim(), meta: { title: r.data && r.data.title } }).catch(() => {});
     return res.status(200).json({ ok: true, milestone: r.data });
   }
   const isEdit = typeof body.id === 'string' && Boolean(body.id.trim());

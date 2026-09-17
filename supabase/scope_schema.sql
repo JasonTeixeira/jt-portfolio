@@ -338,3 +338,17 @@ create table if not exists scope_email_suppressions (
 );
 create index if not exists idx_scope_suppressions_reason on scope_email_suppressions (reason);
 alter table scope_email_suppressions enable row level security;
+
+-- ── Operator audit log (2026-09-16): write-path accountability, service-role only ──
+create table if not exists scope_audit (
+  id uuid primary key default gen_random_uuid(),
+  actor text not null,
+  action text not null,
+  target_type text,
+  target_id text,
+  meta jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_scope_audit_created on scope_audit (created_at desc);
+create index if not exists idx_scope_audit_action on scope_audit (action);
+alter table scope_audit enable row level security;

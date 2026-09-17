@@ -10,7 +10,8 @@
  */
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
-import { authorizeAdmin } from '../lib/admin-auth.mjs';
+import { authorizeAdmin, adminActor } from '../lib/admin-auth.mjs';
+import { logAudit } from '../lib/audit-db.mjs';
 import {
   isEnabled, listProspects, getProspect, listProspectEvents,
   setProspectStage, prospectStageCounts, isValidStage,
@@ -58,6 +59,7 @@ async function handler(req, res) {
         segment: str(body.segment, 60) || null,
       });
       if (!r.ok) return res.status(200).json({ ok: false, reason: 'write_failed' });
+      logAudit({ actor: adminActor(req), action: 'prospect_created', targetType: 'prospect', targetId: email, meta: { company: str(body.company, 160) || null } }).catch(() => {});
       return res.status(200).json({ ok: true, created: Array.isArray(r.data) ? r.data[0] : r.data });
     }
 
@@ -96,6 +98,7 @@ async function handler(req, res) {
     if (!isValidStage(stage)) return res.status(400).json({ ok: false, error: 'invalid stage' });
     const r = await setProspectStage(id, stage, body.lostReason);
     if (!r.ok) return res.status(200).json({ ok: false, reason: 'write_failed' });
+    logAudit({ actor: adminActor(req), action: 'prospect_stage_changed', targetType: 'prospect', targetId: id, meta: { stage } }).catch(() => {});
     return res.status(200).json({ ok: true, updated: Array.isArray(r.data) ? r.data[0] : r.data });
   }
 

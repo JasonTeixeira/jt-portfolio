@@ -3,7 +3,8 @@ import { isEnabled, getProposalById, updateProposal } from '../lib/proposal-db.m
 import { appendEvent } from '../lib/scope-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
 import { proposalReadyEmail } from '../lib/email-templates.mjs';
-import { authorizeAdmin } from '../lib/admin-auth.mjs';
+import { authorizeAdmin, adminActor } from '../lib/admin-auth.mjs';
+import { logAudit } from '../lib/audit-db.mjs';
 import { clampFirmCents, depositCents, balanceCents, DEPOSIT_PCT_DEFAULT, PROPOSAL_STATUS } from '../assets/proposal-core.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 
@@ -29,6 +30,7 @@ async function handler(req, res) {
   const upd = await updateProposal(id, patch);
   if (!upd.ok) return res.status(200).json({ ok: false, skipped: true });
   appendEvent({ prospect_id: row.prospect_id, type: 'proposal_approved', meta: { id, firm_cents: firm } }).catch(() => {});
+  logAudit({ actor: adminActor(req), action: 'proposal_approved', targetType: 'proposal', targetId: row.public_id, meta: { firm_cents: firm } }).catch(() => {});
   if (row.client_email) {
     try {
       const mail = proposalReadyEmail({ link: `${SITE}/proposal.html?id=${row.public_id}`, depositCents: dep });
