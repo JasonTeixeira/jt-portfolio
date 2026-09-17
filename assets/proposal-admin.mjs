@@ -15,6 +15,7 @@ import { renderInbox as renderInboxView } from './admin-inbox.mjs';
 import { createCommandPalette } from './admin-command.mjs';
 import { areaChart, deltaBadge, funnelBars } from './admin-charts.mjs';
 import { renderSettings as renderSettingsView } from './admin-settings.mjs';
+import { renderBroadcast as renderBroadcastView } from './admin-broadcast.mjs';
 import { renderAudit as renderAuditView } from './admin-audit.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
@@ -1179,6 +1180,9 @@ function renderGTM(root, key) {
 function renderSettings(root, key) {
   renderSettingsView(root, key, { h, clear, authHeaders, renderNotAuthorized });
 }
+function renderBroadcast(root, key) {
+  renderBroadcastView(root, key, { h, clear, authHeaders, renderNotAuthorized });
+}
 
 function renderAudit(root, key) {
   renderAuditView(root, key, { h, clear, authHeaders, renderNotAuthorized });
@@ -1219,6 +1223,7 @@ const SECTIONS = [
   { id: 'tasks', label: 'Tasks & budgets', ico: '✓', fn: renderTasks },
   { id: 'marketing', label: 'Marketing', ico: '◎', fn: renderMarketing },
   { id: 'content', label: 'Content', ico: '✎', fn: renderContent },
+  { id: 'broadcast', label: 'Broadcast', ico: '➤', fn: renderBroadcast },
   { id: 'money', label: 'Money', ico: '$', fn: renderMoney },
   { id: 'proposals', label: 'Proposals', ico: '▤', fn: renderProposals },
   { id: 'gtm', label: 'GTM', ico: '◈', fn: renderGTM },
