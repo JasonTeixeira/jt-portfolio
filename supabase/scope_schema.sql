@@ -361,3 +361,10 @@ create table if not exists scope_client_prefs (
   created_at timestamptz not null default now()
 );
 alter table scope_client_prefs enable row level security;
+
+-- ── Message attachments (2026-09-16): optional single file per portal message ──
+alter table scope_messages
+  add column if not exists attachment_path text,
+  add column if not exists attachment_name text,
+  add column if not exists attachment_size integer,
+  add column if not exists attachment_type text;

@@ -245,11 +245,18 @@ function buildMessagesCard(view, portalToken) {
   const empty = h('p', { class: 'subtle', style: 'font-size:13px' }, t('msg.empty'));
   function addBubble(m) {
     const mine = m.sender === 'client';
-    thread.appendChild(h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:82%;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:${mine ? 'rgba(34,211,238,0.08)' : 'var(--card)'}` },
+    const bubble = h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:82%;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:${mine ? 'rgba(34,211,238,0.08)' : 'var(--card)'}` },
       h('div', { style: 'font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin-bottom:4px' }, mine ? t('msg.you') : 'Jason'),
-      h('div', { style: 'font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-wrap' }, m.body),
-      h('div', { style: 'font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:5px' }, fmtTime(m.created_at)),
-    ));
+      m.body ? h('div', { style: 'font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-wrap' }, m.body) : null);
+    // attachment (download-only, via the short-lived signed URL the server minted)
+    const a = m.attachment;
+    if (a && a.name) {
+      bubble.appendChild(h('a', { href: a.url || '#', target: '_blank', rel: 'noopener',
+        style: `display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:7px 11px;border:1px solid var(--line);border-radius:9px;color:${a.url ? '#22d3ee' : 'var(--faint)'};font-size:13px;text-decoration:none` },
+        h('span', {}, '📎'), h('span', { style: 'word-break:break-word' }, a.name), a.size ? h('span', { style: 'color:var(--faint);font-size:11px' }, fmtBytes(a.size)) : null));
+    }
+    bubble.appendChild(h('div', { style: 'font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:5px' }, fmtTime(m.created_at)));
+    thread.appendChild(bubble);
   }
   const msgs = Array.isArray(view.messages) ? view.messages : [];
   if (!msgs.length) thread.appendChild(empty); else msgs.forEach(addBubble);
@@ -275,18 +282,46 @@ function buildMessagesCard(view, portalToken) {
   const ta = h('textarea', { rows: '3', placeholder: t('msg.placeholder'), style: 'width:100%;box-sizing:border-box;background:#0F0F13;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;resize:vertical' });
   const btn = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:9px 18px;font-size:13px' }, t('msg.send'));
   const status = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:10px' }, '');
-  btn.addEventListener('click', () => {
-    const text = (ta.value || '').trim();
-    if (text.length < 1) return;
-    btn.disabled = true; clear(status); status.appendChild(document.createTextNode(t('msg.sending')));
-    fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'message', portalToken, body: text, session: getSess(portalToken) }) })
-      .then((r) => r.json().catch(() => null)).then((d) => {
-        btn.disabled = false; clear(status);
-        if (d && d.ok) { if (thread.contains(empty)) clear(thread); addBubble({ sender: 'client', body: text, created_at: new Date().toISOString() }); shown += 1; ta.value = ''; }
-        else { status.appendChild(document.createTextNode(t('msg.sendErr') + ' ')); status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL)); status.appendChild(document.createTextNode('.')); }
-      }).catch(() => { btn.disabled = false; clear(status); status.appendChild(document.createTextNode(t('msg.network'))); });
+  // Attachment (≤25MB): sign an upload URL, PUT straight to storage, then send the message
+  // with a reference. The file never passes through our function.
+  const MAX_BYTES = 25 * 1024 * 1024;
+  const fileInput = h('input', { type: 'file', style: 'display:none' });
+  const attachBtn = h('button', { type: 'button', class: 'btn-ghost', title: t('msg.attach'), 'aria-label': t('msg.attach'), style: 'margin-top:8px;padding:9px 14px;font-size:14px' }, '📎');
+  const fileTag = h('span', { class: 'subtle', style: 'font-size:12px;margin-left:8px' }, '');
+  let picked = null;
+  attachBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    picked = (fileInput.files && fileInput.files[0]) || null;
+    clear(fileTag);
+    if (picked) fileTag.appendChild(document.createTextNode(`📎 ${picked.name}`));
   });
-  card.appendChild(h('div', {}, ta, h('div', { style: 'display:flex;align-items:center' }, btn, status)));
+  const say = (msg) => { clear(status); status.appendChild(document.createTextNode(msg)); };
+  btn.addEventListener('click', async () => {
+    const text = (ta.value || '').trim();
+    if (!text && !picked) return;
+    if (picked && picked.size > MAX_BYTES) { say(t('msg.fileTooLarge')); return; }
+    btn.disabled = true;
+    let attachment = null;
+    try {
+      if (picked) {
+        say(t('msg.uploading'));
+        const sr = await fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'sign_upload', portalToken, filename: picked.name, size: picked.size, session: getSess(portalToken) }) }).then((r) => r.json().catch(() => null));
+        if (!sr || !sr.ok) { btn.disabled = false; say(t('msg.sendErr')); return; }
+        const up = await fetch(sr.signedUrl, { method: 'PUT', body: picked, headers: { 'content-type': picked.type || 'application/octet-stream' } });
+        if (!up.ok) { btn.disabled = false; say(t('msg.sendErr')); return; }
+        attachment = { path: sr.path, name: picked.name, size: picked.size, type: picked.type || null };
+      }
+      say(t('msg.sending'));
+      const d = await fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'message', portalToken, body: text, attachment, session: getSess(portalToken) }) }).then((r) => r.json().catch(() => null));
+      btn.disabled = false; clear(status);
+      if (d && d.ok) {
+        if (thread.contains(empty)) clear(thread);
+        addBubble({ sender: 'client', body: text, created_at: new Date().toISOString(), attachment: attachment ? { name: attachment.name, size: attachment.size, url: null } : null });
+        shown += 1; ta.value = ''; picked = null; fileInput.value = ''; clear(fileTag);
+      } else { status.appendChild(document.createTextNode(t('msg.sendErr') + ' ')); status.appendChild(h('a', { href: `mailto:${CONTACT_EMAIL}`, style: 'color:#22d3ee' }, CONTACT_EMAIL)); status.appendChild(document.createTextNode('.')); }
+    } catch { btn.disabled = false; say(t('msg.network')); }
+  });
+  card.appendChild(h('div', {}, ta, h('div', { style: 'display:flex;align-items:center;flex-wrap:wrap' }, btn, attachBtn, fileTag, status), fileInput));
   return card;
 }
 

@@ -11,7 +11,7 @@ import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
 import { authorizeAdmin } from '../lib/admin-auth.mjs';
 import {
-  isEnabled, listMessages, addMessage, markMessagesRead, getProjectById, ensurePortalToken,
+  isEnabled, listMessages, addMessage, markMessagesRead, getProjectById, ensurePortalToken, signDeliverableDownload,
 } from '../lib/portal-db.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
@@ -30,7 +30,18 @@ async function handler(req, res) {
     if (!projectId) return res.status(400).json({ ok: false, error: 'projectId required' });
     const r = await listMessages(projectId);
     markMessagesRead(projectId, 'operator').catch(() => {});
-    return res.status(200).json({ ok: true, messages: r.ok ? r.data : [] });
+    const raw = r.ok ? r.data : [];
+    // Sign short-lived download URLs for any attachments so the operator can open them
+    // (path never exposed; download-forcing URL neutralizes inline-rendering uploads).
+    const messages = await Promise.all(raw.map(async (m) => {
+      const out = { id: m.id, sender: m.sender, body: m.body, created_at: m.created_at, attachment: null };
+      if (m.attachment_path) {
+        const s = await signDeliverableDownload(m.attachment_path, 300);
+        out.attachment = { name: m.attachment_name, size: m.attachment_size, type: m.attachment_type, url: s.ok ? s.url : null };
+      }
+      return out;
+    }));
+    return res.status(200).json({ ok: true, messages });
   }
 
   if (req.method === 'POST') {
