@@ -283,6 +283,10 @@ body.site-nav-open { overflow: hidden; }
 .btn-ghost:hover { border-color: #3D3A37; color: #F4F2EF; }
 .btn-ghost:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
 
+/* primary emphasis — the single loudest action (scope funnel front door) */
+.btn-primary-xl { font-size: 15px; padding: 16px 32px; box-shadow: 0 0 30px rgba(16,185,129,0.28); }
+.btn-primary-xl:hover { box-shadow: 0 0 40px rgba(16,185,129,0.42); }
+
 /* ─── project rows ─── */
 .proj { transition: background 200ms ease; }
 .proj:hover { background: #0C0C0E; }
