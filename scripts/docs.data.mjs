@@ -27,6 +27,10 @@
  * Colors reuse the site's existing phase palette (see scope-studio.mjs
  * PHASE_COLOR) so these diagrams read as the same system, not a new one.
  */
+// How-to tutorials render through this same docs pipeline (code blocks, TOC, HowTo
+// schema). They are authored in tutorials.data.mjs and merged into PAGES + NAV below.
+import { TUTORIAL_PAGES, TUTORIAL_NAV_ITEMS } from './tutorials.data.mjs';
+
 const DIAG = {
   ink: '#F4F2EF', dim: '#A8A29E', faint: '#8E8882', line: '#211F1C', rail: '#2A2826', bg: '#09090B',
   green: '#10b981', cyan: '#22d3ee', purple: '#a78bfa', amber: '#F59E0B', periwinkle: '#8FA0FF', rose: '#f43f5e',
@@ -205,6 +209,39 @@ function diagramMetricCheatSheet() {
   return diagramWrap({ label: 'the LLM eval metric cheat sheet', svg, note: 'Pick the smallest set that answers "is this good enough?" for <b>your</b> feature — most teams need two or three of these, not all sixteen.' });
 }
 
+/* Diagram — the RAG pipeline and its two measurement points: after retrieval
+ * (context precision + recall) and after generation (faithfulness + answer relevancy).
+ * Shows at a glance that a wrong answer is either a retrieval bug or a generation bug. */
+function diagramRagEval() {
+  const railY = 92;
+  const st = [
+    { x: 70, t: 'QUESTION', c: DIAG.dim },
+    { x: 320, t: 'RETRIEVE', c: DIAG.purple },
+    { x: 620, t: 'GENERATE', c: DIAG.cyan },
+    { x: 900, t: 'ANSWER', c: DIAG.green },
+  ];
+  const rail = `<line x1="${st[0].x}" y1="${railY}" x2="${st[3].x}" y2="${railY}" stroke="${DIAG.rail}" stroke-width="2"/>`;
+  const stations = st.map((s) => `
+    <text x="${s.x}" y="${railY - 26}" text-anchor="middle" font-family="${DIAG.mono}" font-size="12.5" font-weight="700" letter-spacing="0.03em" fill="${s.c}">${s.t}</text>
+    <circle cx="${s.x}" cy="${railY}" r="12" fill="none" stroke="${s.c}" stroke-opacity="0.34"/>
+    <circle cx="${s.x}" cy="${railY}" r="5.5" fill="${s.c}"/>`).join('');
+  // two measurement brackets under the rail
+  const gate = (x1, x2, label, sub, c) => {
+    const mid = (x1 + x2) / 2;
+    return `
+      <path d="M${x1} ${railY + 22} L${x1} ${railY + 34} L${x2} ${railY + 34} L${x2} ${railY + 22}" fill="none" stroke="${c}" stroke-opacity="0.5"/>
+      <text x="${mid}" y="${railY + 54}" text-anchor="middle" font-family="${DIAG.mono}" font-size="11.5" font-weight="700" fill="${c}">${label}</text>
+      <text x="${mid}" y="${railY + 70}" text-anchor="middle" font-family="${DIAG.mono}" font-size="10" fill="${DIAG.faint}">${sub}</text>`;
+  };
+  const svg = `<svg viewBox="0 0 970 190" width="970" role="img" aria-label="The RAG pipeline with its two measurement points: context precision and recall after retrieval, faithfulness and answer relevancy after generation" style="max-width:100%">
+    ${rail}${stations}
+    ${gate(st[1].x, st[2].x, 'RETRIEVAL METRICS', 'context precision · context recall', DIAG.purple)}
+    ${gate(st[2].x, st[3].x, 'GENERATION METRICS', 'faithfulness · answer relevancy', DIAG.cyan)}
+  </svg>`;
+  return diagramWrap({ label: 'where a RAG pipeline is measured', svg, note: 'A wrong answer is almost always one of two bugs: retrieval never found the right context, or generation ignored it. The metrics split cleanly along that line.' });
+}
+
+export const DIAGRAM_RAG_EVAL = diagramRagEval();
 export const DIAGRAM_ENGAGEMENT_FLOW = diagramEngagementFlow();
 export const DIAGRAM_EVAL_GATE = diagramEvalGate();
 export const DIAGRAM_FUNNEL = diagramFunnel();
@@ -223,6 +260,8 @@ export const NAV = [
   { cat: 'The eval method', items: [
     { slug: 'eval-method' },
     { slug: 'llm-evaluation-metrics' },
+    { slug: 'rag-evaluation-metrics' },
+    { slug: 'eval-gates-ci' },
     { title: 'The CI eval gate', href: 'guide-eval-gate.html', ext: true },
     { title: 'Safety probes', href: 'guide-probes.html', ext: true },
     { title: 'Golden sets & judges', href: 'guide-golden-set.html', ext: true },
@@ -239,6 +278,78 @@ export const NAV = [
 const BOOK = 'book.html';
 
 export const PAGES = {
+  'eval-gates-ci': {
+    title: 'Eval Gates: The Missing CI Step for AI Features',
+    cat: 'The eval method',
+    desc: 'What an eval gate is, why AI features need one, and the anatomy of a gate that blocks a release when quality drops — the CI step most AI teams are missing.',
+    lead: 'You would never ship code without CI running your tests. Most teams ship AI features with no equivalent check at all. An eval gate is that missing step.',
+    schema: 'howto',
+    blocks: [
+      ['p', 'Every serious codebase has a gate: tests run in CI, and a red build blocks the merge. AI features usually have nothing like it. A prompt gets tweaked, it looks fine in a quick manual check, and it ships. The regression shows up later as a confused user or a support ticket. An <b>eval gate</b> closes that hole by running your feature against known cases on every change and failing the build when quality drops.'],
+      ['html', DIAGRAM_EVAL_GATE],
+      ['p', 'The idea is boring on purpose. It is a unit test for behavior that happens to be fuzzy. The value is not cleverness, it is that a machine, not a tired human on a Friday, decides whether quality is still good enough to ship.'],
+
+      ['h', 'The anatomy of a gate'],
+      ['p', 'A gate is four parts. A <a href="glossary/golden-set.html">golden set</a> of cases with known-good answers. One or more <a href="docs-llm-evaluation-metrics.html">metrics</a> that score each answer. A <b>threshold</b> that says what counts as passing. And an <b>enforcement point</b> in CI that blocks the merge when the score falls below the line. Take any one away and it stops being a gate: no golden set and you have nothing to measure, no threshold and you have a dashboard nobody reads, no enforcement and you have a suggestion.'],
+
+      ['h', 'The ratchet: quality only goes up'],
+      ['p', 'The best threshold is not a fixed number you argue about. It is a <a href="glossary/ratchet.html">ratchet</a>: the gate stores the last known-good score and refuses anything worse. Today\'s result becomes tomorrow\'s floor. This sidesteps the endless debate about whether 88 percent is good enough and replaces it with a simpler rule that a change may not make things worse without someone consciously deciding to lower the bar.'],
+
+      ['h', 'Where it goes in the pipeline'],
+      ['p', 'A gate runs where your other checks run. On every pull request for a fast subset, so feedback is quick. On a schedule overnight for the full, more expensive suite. And optionally as a hard <a href="docs-wire-eval-gate-deploy.html">deploy blocker</a> for the highest-stakes features, so a failing eval can actually stop a release. The more the model can do, the closer to the deploy the gate should sit.'],
+
+      ['h', 'The three objections, answered honestly'],
+      ['p', 'People resist eval gates for three real reasons. <b>Non-determinism:</b> the same input can score differently run to run, so a naive gate is flaky. The fix is to fix sampling where you can and run enough samples to separate real movement from noise. <b>Cost:</b> a huge suite on every commit gets expensive, so run a small fast set on each change and the full set nightly. <b>Flakiness turning into theatre:</b> if people constantly override the gate, the cases are wrong, not the people, so fix the cases. None of these are reasons to skip the gate. They are reasons to build it with a little care.'],
+
+      ['h', 'From concept to a working gate'],
+      ['p', 'This is the why and the shape. When you are ready to build one, the step-by-step version lives in the tutorial on <a href="docs-build-llm-eval-gate-ci.html">building an eval gate in CI with Promptfoo</a>, and the animated walkthrough of how a gate behaves is the <a href="guide-eval-gate.html">CI eval gate guide</a>. The whole method around it is the <a href="docs-eval-method.html">evaluation method</a>.'],
+      ['proof', [
+        ['Build an eval gate in CI (tutorial)', 'docs-build-llm-eval-gate-ci.html'],
+        ['The CI eval gate, explained (animated)', 'guide-eval-gate.html'],
+        ['No fake green — the philosophy', 'notes/no-fake-green.html'],
+        ['AI Testing in CI/CD pillar', 'learn-ai-in-ci.html'],
+      ]],
+      ['cta', 'Want an eval gate on your feature?', 'Get a free mini-eval on your live AI feature, or book a call and I\'ll wire a gate into your pipeline.'],
+    ],
+  },
+  'rag-evaluation-metrics': {
+    title: 'RAG Evaluation Metrics Explained',
+    cat: 'The eval method',
+    desc: 'A practical guide to the four core RAG evaluation metrics — faithfulness, answer relevancy, context precision, and context recall — and how they tell a retrieval bug from a generation bug.',
+    lead: 'A retrieval-augmented answer can be wrong in two very different ways. These four metrics tell you which one you are looking at, so you fix the real problem instead of guessing.',
+    schema: 'howto',
+    blocks: [
+      ['p', 'RAG is two systems wearing one coat. First a <b>retriever</b> fetches context, then a <b>generator</b> writes an answer from it. A bad answer comes from one side or the other, and the fix is completely different depending on which. Grade only the final answer and you are guessing. The four metrics below split the pipeline along its real seam so you can see where it actually broke.'],
+      ['html', DIAGRAM_RAG_EVAL],
+      ['p', 'Two of the metrics watch retrieval, two watch generation. Read them as a pair of gauges: if the generation side looks fine but answers are still wrong, your problem is upstream in retrieval, and no amount of prompt tuning will save you.'],
+
+      ['h', 'Faithfulness: did the answer stick to the sources?'],
+      ['p', '<b>Faithfulness</b> (sometimes called groundedness) asks whether every claim in the answer is actually supported by the retrieved context. An unfaithful answer adds facts from nowhere, which is a <a href="glossary/hallucination.html">hallucination</a> in a nicer outfit. You score it by splitting the answer into individual claims and checking each one against the context, usually with an <a href="glossary/llm-as-judge.html">LLM judge</a> or a natural-language-inference model. Low faithfulness means the generator is improvising instead of using what it was given.'],
+
+      ['h', 'Answer relevancy: did it actually answer the question?'],
+      ['p', '<b>Answer relevancy</b> checks the other half of a good answer: that it addresses what was asked. An answer can be perfectly faithful to the sources and still miss the point, rambling about something adjacent. This one catches the on-topic-but-useless reply. Together, faithfulness and answer relevancy pin down whether the generator did its job with the context it had.'],
+
+      ['h', 'Context precision: was the retrieved context on-topic?'],
+      ['p', '<b>Context precision</b> looks at the chunks the retriever pulled and asks how many were actually relevant. Low precision means the retriever is dragging in noise, which crowds the useful chunk out of the context window and distracts the generator. If precision is low, look at your <a href="glossary/chunking-strategy.html">chunking</a>, your embeddings, or whether you need a <a href="glossary/reranker.html">reranker</a> to push the good chunks to the top.'],
+
+      ['h', 'Context recall: was the needed chunk retrieved at all?'],
+      ['p', '<b>Context recall</b> is the one people skip, and it is often the real culprit. It asks whether the chunk that holds the answer made it into the retrieved set in the first place. If recall is low, the answer was never in front of the generator, so the model either says it does not know or invents something. A RAG system that hallucinates is usually failing recall. You cannot prompt your way out of a chunk that was never retrieved.'],
+
+      ['h', 'Reading the four together to find the bug'],
+      ['p', 'The point of measuring all four is diagnosis. Walk them in order. If <b>context recall</b> is low, fix retrieval first, because nothing downstream can be right without the source. If recall is fine but <b>context precision</b> is low, your retriever finds the answer but buries it in noise, so rerank or tighten chunks. If retrieval looks healthy but <b>faithfulness</b> is low, the generator is ignoring good context, which is a prompting or model problem. And if everything is grounded but <b>answer relevancy</b> is low, you are answering a question next to the one that was asked. Four gauges, one clear next move.'],
+      ['note', 'warn', 'Most of these metrics are themselves LLM-graded, so treat the scores as a strong signal and spot-check them against your own judgment. A metric you never calibrated is a rumor, not a measurement.'],
+
+      ['h', 'From metrics to a gate'],
+      ['p', 'Scores on a dashboard change nothing. The payoff is wiring your two or three most important RAG metrics into a <a href="guide-eval-gate.html">CI eval gate</a> with a threshold, so a change that quietly drops faithfulness or recall fails the build instead of reaching users. For the broader picture of which metrics exist across all of LLM evaluation, see the <a href="docs-llm-evaluation-metrics.html">metrics cornerstone</a>, and for the full walkthrough there is a dedicated <a href="rag-evaluation-guide.html">RAG evaluation guide</a>.'],
+      ['proof', [
+        ['The RAG evaluation guide', 'rag-evaluation-guide.html'],
+        ['LLM Evaluation Metrics Explained', 'docs-llm-evaluation-metrics.html'],
+        ['The CI eval gate, explained', 'guide-eval-gate.html'],
+        ['RAG & Retrieval Quality pillar', 'learn-rag-retrieval.html'],
+      ]],
+      ['cta', 'Not sure why your RAG answers are wrong?', 'Get a free mini-eval on your live retrieval pipeline — I\'ll show you whether it is a retrieval or a generation problem, with real numbers.'],
+    ],
+  },
   'llm-evaluation-metrics': {
     title: 'LLM Evaluation Metrics Explained',
     cat: 'The eval method',
@@ -840,6 +951,10 @@ export const PAGES = {
     ],
   },
 };
+
+// Merge the how-to tutorials in as their own docs category before slugs are computed.
+Object.assign(PAGES, TUTORIAL_PAGES);
+NAV.push({ cat: 'How-to guides', items: TUTORIAL_NAV_ITEMS });
 
 export const DOC_SLUGS = NAV.flatMap((g) => g.items.filter((i) => i.slug).map((i) => i.slug));
 export { BOOK };

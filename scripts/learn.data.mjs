@@ -107,6 +107,7 @@ export const LIBRARY = {
     { title: 'LLM evaluation & QA (service)', href: 'services/llm-evaluation-qa.html', type: 'service', desc: 'The engagement: measure, gate, and prove your AI feature works.' },
   ],
   'rag-retrieval': [
+    { title: 'RAG evaluation metrics explained', href: 'docs-rag-evaluation-metrics.html', type: 'reference', desc: 'The cornerstone: the four RAG metrics, and how they tell a retrieval bug from a generation bug.' },
     { title: 'RAG evaluation guide', href: 'rag-evaluation-guide.html', type: 'guide', desc: 'How to evaluate a retrieval-augmented pipeline end to end, metric by metric.' },
     { title: 'AI product build (service)', href: 'services/ai-product-build.html', type: 'service', desc: 'Building RAG-powered products with evaluation wired in from day one.' },
   ],
@@ -116,6 +117,7 @@ export const LIBRARY = {
     { title: 'Five pages, five agents, zero conflicts', href: 'notes/five-pages-five-agents.html', type: 'note', desc: 'Coordinating parallel agents against one design file without merge chaos.' },
   ],
   'ai-in-ci': [
+    { title: 'Eval gates: the missing CI step for AI', href: 'docs-eval-gates-ci.html', type: 'reference', desc: 'The cornerstone: what an eval gate is, its anatomy, and why AI features need one.' },
     { title: 'LLM regression testing with Promptfoo in CI', href: 'notes/promptfoo-ci-minimum-gate.html', type: 'note', desc: 'The minimum viable eval gate you can add to CI this week.' },
     { title: 'Your LLM feature needs a regression suite', href: 'notes/llm-regression-suite.html', type: 'note', desc: 'Why a regression suite beats a better prompt, every time.' },
     { title: 'Human-approval checkpoints, explained', href: 'guide-human-approval.html', type: 'guide', desc: 'Where a human belongs in an otherwise-automated AI pipeline.' },
@@ -152,4 +154,11 @@ export const LIBRARY = {
 };
 
 // Slugs for the generated pillar pages (used by the sitemap in build-notes.mjs).
+// Auto-surface the how-to tutorials in their pillars (they render via the docs pipeline).
+import { TUTORIALS, TUTORIAL_PILLARS } from './tutorials.data.mjs';
+for (const t of TUTORIALS) {
+  const pid = String(TUTORIAL_PILLARS[t.slug] || '').replace(/^learn-/, '').replace(/\.html$/, '');
+  if (LIBRARY[pid]) LIBRARY[pid].push({ title: t.title.replace(/^How to /, ''), href: `docs-${t.slug}.html`, type: 'tutorial', desc: t.summary });
+}
+
 export const LEARN_SLUGS = PILLARS.map((p) => p.id);

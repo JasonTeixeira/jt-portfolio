@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Overview — Documentation · Jason Teixeira</title>
-<meta name="description" content="What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.">
+<title>Test Multi-Turn Agent Conversations — Documentation · Jason Teixeira</title>
+<meta name="description" content="How to test a conversation over many turns, including memory and context, instead of a single request and response.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://agency.sageideas.dev/docs-overview.html">
+<link rel="canonical" href="https://agency.sageideas.dev/docs-test-multi-turn-conversations.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Overview — Documentation">
-<meta property="og:description" content="What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.">
-<meta property="og:url" content="https://agency.sageideas.dev/docs-overview.html">
+<meta property="og:title" content="Test Multi-Turn Agent Conversations — Documentation">
+<meta property="og:description" content="How to test a conversation over many turns, including memory and context, instead of a single request and response.">
+<meta property="og:url" content="https://agency.sageideas.dev/docs-test-multi-turn-conversations.html">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Overview","description":"What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/docs-overview.html"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"Getting started"},{"@type":"ListItem","position":4,"name":"Overview","item":"https://agency.sageideas.dev/docs-overview.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"Test Multi-Turn Agent Conversations","description":"How to test a conversation over many turns, including memory and context, instead of a single request and response.","step":[{"@type":"HowToStep","position":1,"name":"Before you start"},{"@type":"HowToStep","position":2,"name":"Hold the conversation in one list"},{"@type":"HowToStep","position":3,"name":"Write a test that spans turns"},{"@type":"HowToStep","position":4,"name":"Test state that should change"},{"@type":"HowToStep","position":5,"name":"Grade the fuzzy turns with a judge"},{"@type":"HowToStep","position":6,"name":"Run it"},{"@type":"HowToStep","position":7,"name":"Watch out for"},{"@type":"HowToStep","position":8,"name":"What you built"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"How-to guides"},{"@type":"ListItem","position":4,"name":"Test Multi-Turn Agent Conversations","item":"https://agency.sageideas.dev/docs-test-multi-turn-conversations.html"}]}</script>
 <style>
   :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
   * { box-sizing:border-box; }
@@ -164,7 +164,7 @@
   <div class="d-layout">
     <aside class="d-sidebar" id="d-sidebar">
     <a href="docs.html" class="d-navitem d-home">Documentation home</a>
-    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem d-on">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-choose-your-path.html" class="d-navitem">Choose your path</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a><a href="docs-how-this-site-works.html" class="d-navitem">How this site works</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a><a href="docs-stack-integrations.html" class="d-navitem">Stack &amp; integrations</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="docs-llm-evaluation-metrics.html" class="d-navitem">LLM Evaluation Metrics Explained</a><a href="docs-rag-evaluation-metrics.html" class="d-navitem">RAG Evaluation Metrics Explained</a><a href="docs-eval-gates-ci.html" class="d-navitem">Eval Gates: The Missing CI Step for AI Features</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div><div class="d-group"><div class="d-grouphead">How-to guides</div><a href="docs-build-llm-eval-gate-ci.html" class="d-navitem">Build an LLM Eval Gate in CI with Promptfoo</a><a href="docs-build-golden-set.html" class="d-navitem">Build a Golden Set for LLM Regression Testing</a><a href="docs-add-human-approval-checkpoint.html" class="d-navitem">Add a Human-Approval Checkpoint to an AI Pipeline</a><a href="docs-write-adversarial-probes.html" class="d-navitem">Write Adversarial Probes for Prompt Injection Testing</a><a href="docs-evaluate-rag-pipeline.html" class="d-navitem">Evaluate a RAG Pipeline End-to-End with RAGAS</a><a href="docs-nightly-llm-regression-github-actions.html" class="d-navitem">Set Up a Nightly LLM Regression Suite in GitHub Actions</a><a href="docs-version-golden-datasets.html" class="d-navitem">Version Golden Datasets Like Code</a><a href="docs-test-tool-call-accuracy.html" class="d-navitem">Build a Tool-Call Accuracy Test Harness for AI Agents</a><a href="docs-test-multi-turn-conversations.html" class="d-navitem">Test Multi-Turn Agent Conversations</a><a href="docs-add-llm-observability.html" class="d-navitem">Add Open-Source LLM Observability (Langfuse or Phoenix)</a><a href="docs-build-quality-ratchet.html" class="d-navitem">Build a Quality Ratchet That Blocks Regressions</a><a href="docs-playwright-ai-generated-ui.html" class="d-navitem">Run Playwright Tests Against an AI-Generated UI</a><a href="docs-detect-hallucinations-production.html" class="d-navitem">Detect Hallucinations Automatically in Production Logs</a><a href="docs-red-team-chatbot-suite.html" class="d-navitem">Build a Red-Team Test Suite for a Customer-Facing Chatbot</a><a href="docs-wire-eval-gate-deploy.html" class="d-navitem">Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</a><a href="docs-structure-ai-monorepo.html" class="d-navitem">Structure a Monorepo for an AI Product Plus Eval Suite</a></div>
+    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-choose-your-path.html" class="d-navitem">Choose your path</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a><a href="docs-how-this-site-works.html" class="d-navitem">How this site works</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a><a href="docs-stack-integrations.html" class="d-navitem">Stack &amp; integrations</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="docs-llm-evaluation-metrics.html" class="d-navitem">LLM Evaluation Metrics Explained</a><a href="docs-rag-evaluation-metrics.html" class="d-navitem">RAG Evaluation Metrics Explained</a><a href="docs-eval-gates-ci.html" class="d-navitem">Eval Gates: The Missing CI Step for AI Features</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div><div class="d-group"><div class="d-grouphead">How-to guides</div><a href="docs-build-llm-eval-gate-ci.html" class="d-navitem">Build an LLM Eval Gate in CI with Promptfoo</a><a href="docs-build-golden-set.html" class="d-navitem">Build a Golden Set for LLM Regression Testing</a><a href="docs-add-human-approval-checkpoint.html" class="d-navitem">Add a Human-Approval Checkpoint to an AI Pipeline</a><a href="docs-write-adversarial-probes.html" class="d-navitem">Write Adversarial Probes for Prompt Injection Testing</a><a href="docs-evaluate-rag-pipeline.html" class="d-navitem">Evaluate a RAG Pipeline End-to-End with RAGAS</a><a href="docs-nightly-llm-regression-github-actions.html" class="d-navitem">Set Up a Nightly LLM Regression Suite in GitHub Actions</a><a href="docs-version-golden-datasets.html" class="d-navitem">Version Golden Datasets Like Code</a><a href="docs-test-tool-call-accuracy.html" class="d-navitem">Build a Tool-Call Accuracy Test Harness for AI Agents</a><a href="docs-test-multi-turn-conversations.html" class="d-navitem d-on">Test Multi-Turn Agent Conversations</a><a href="docs-add-llm-observability.html" class="d-navitem">Add Open-Source LLM Observability (Langfuse or Phoenix)</a><a href="docs-build-quality-ratchet.html" class="d-navitem">Build a Quality Ratchet That Blocks Regressions</a><a href="docs-playwright-ai-generated-ui.html" class="d-navitem">Run Playwright Tests Against an AI-Generated UI</a><a href="docs-detect-hallucinations-production.html" class="d-navitem">Detect Hallucinations Automatically in Production Logs</a><a href="docs-red-team-chatbot-suite.html" class="d-navitem">Build a Red-Team Test Suite for a Customer-Facing Chatbot</a><a href="docs-wire-eval-gate-deploy.html" class="d-navitem">Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</a><a href="docs-structure-ai-monorepo.html" class="d-navitem">Structure a Monorepo for an AI Product Plus Eval Suite</a></div>
     <div class="d-group"><div class="d-grouphead">More</div>
       <a href="services.html" class="d-navitem d-ext">Services matrix <span class="d-extmark">↗</span></a>
       <a href="case-studies.html" class="d-navitem d-ext">Case studies <span class="d-extmark">↗</span></a>
@@ -172,25 +172,89 @@
     </div>
   </aside>
     <main class="d-main">
-      <div class="d-crumb"><a href="index.html">Home</a> / <a href="docs.html">Docs</a> / Getting started / <span style="color:var(--dim)">Overview</span></div>
+      <div class="d-crumb"><a href="index.html">Home</a> / <a href="docs.html">Docs</a> / How-to guides / <span style="color:var(--dim)">Test Multi-Turn Agent Conversations</span></div>
       
-    <div class="d-kicker">Getting started</div>
-    <h1>Overview</h1>
-    <p class="d-lead">I ship AI features and then prove they work. This documentation is the honest, complete version of what I build, how engagements run, and the method behind the proof.</p>
-    <div class="d-body"><h2 id="the-thesis" class="d-h2"><a href="#the-thesis" class="d-anchor" aria-label="Link to this section">#</a>The thesis</h2>
-<p class="d-p">Shipping an AI feature is the easy 80%. The hard 20% — the part that decides whether it survives contact with real users — is proving it behaves: that a prompt change didn’t quietly regress, that it won’t leak data or get jailbroken, that it stays in its lane. I build both halves, and I treat the proof as a first-class deliverable, not an afterthought.</p>
-<p class="d-p">The through-line on everything here is <b>proof, not vibes</b>: every capability links to a real artifact — a public repo, a verbatim test run, or a live screenshot — and this very site runs its own QA suite on every deploy.</p>
-<h2 id="who-this-is-for" class="d-h2"><a href="#who-this-is-for" class="d-anchor" aria-label="Link to this section">#</a>Who this is for</h2>
-<div class="d-cards"><div class="d-card"><h3>Teams shipping LLM features</h3><p>You have a chatbot, agent, RAG system, or generator in production (or nearly), and a wrong or unsafe answer has real cost.</p></div><div class="d-card"><h3>Teams whose releases keep breaking</h3><p>You need a regression suite and a CI gate a release manager can actually trust.</p></div><div class="d-card"><h3>Teams drowning in manual work</h3><p>You have an intake, triage, or routing workflow a well-built automation could run — safely.</p></div></div>
-<h2 id="how-this-documentation-is-organized" class="d-h2"><a href="#how-this-documentation-is-organized" class="d-anchor" aria-label="Link to this section">#</a>How this documentation is organized</h2>
-<ul class="d-ul"><li><b>What I build</b> — the capabilities, documented: what each is, what you get, and how it works.</li><li><b>The eval method</b> — the philosophy and mechanics of proving AI features (with animated deep-dive guides).</li><li><b>Working together</b> — how engagements run, how your data is handled, and how pricing works.</li><li><b>Reference</b> — FAQ, a plain-English glossary, and an index of every proof artifact.</li></ul>
-<div class="d-cta"><div><div class="d-cta-h">The fastest way to see it</div><div class="d-cta-s">Get a free mini-eval on your live AI feature — real findings, no call required.</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div></div>
+    <div class="d-kicker">How-to guides</div>
+    <h1>Test Multi-Turn Agent Conversations</h1>
+    <p class="d-lead">Test the whole conversation, not just one reply, so state and memory bugs surface before users hit them.</p>
+    <div class="d-body"><p class="d-p">A single-turn test checks one reply in isolation. But agents carry state across turns, so the bugs that hurt are the ones where turn 4 forgets what you said in turn 1. This guide builds a small Python test that drives a whole conversation and asserts on memory and state as it goes. Budget about thirty minutes.</p>
+<h2 id="before-you-start" class="d-h2"><a href="#before-you-start" class="d-anchor" aria-label="Link to this section">#</a>Before you start</h2>
+<ul class="d-ul"><li>Python 3.9 or newer with <code>pytest</code> and the <code>openai</code> package installed.</li><li>An agent you can call turn by turn (the example uses the OpenAI chat API).</li><li>An API key in an env var, for example <code>OPENAI_API_KEY</code>.</li></ul>
+<h2 id="hold-the-conversation-in-one-list" class="d-h2"><a href="#hold-the-conversation-in-one-list" class="d-anchor" aria-label="Link to this section">#</a>Hold the conversation in one list</h2>
+<p class="d-p">State lives in the message history. Keep a single list of messages and append every user turn and every reply to it, then pass the whole list back on the next call. This is the thing single-turn tests skip, and it is where memory bugs hide. Wrap it in a small helper so each test reads like a script.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>conftest.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="conftest.py code sample"><code>import os
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+class Conversation:
+    def __init__(self, system):
+        self.messages = [{"role": "system", "content": system}]
+
+    def say(self, text):
+        self.messages.append({"role": "user", "content": text})
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=self.messages,
+        )
+        reply = resp.choices[0].message.content
+        self.messages.append({"role": "assistant", "content": reply})
+        return reply</code></pre></figure>
+<h2 id="write-a-test-that-spans-turns" class="d-h2"><a href="#write-a-test-that-spans-turns" class="d-anchor" aria-label="Link to this section">#</a>Write a test that spans turns</h2>
+<p class="d-p">Give the agent a fact early, do some unrelated turns, then ask about the fact later. Assert on the later reply. The first reply does not matter here. If the agent held the state, it passes. If it dropped it, you catch the exact turn where memory failed.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>test_memory.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="test_memory.py code sample"><code>from conftest import Conversation
+
+def test_remembers_name_across_turns():
+    c = Conversation("You are a helpful assistant.")
+    c.say("Hi, my name is Dana.")
+    c.say("What is 2 plus 2?")            # distractor turn
+    reply = c.say("What is my name?")
+    assert "dana" in reply.lower()</code></pre></figure>
+<h2 id="test-state-that-should-change" class="d-h2"><a href="#test-state-that-should-change" class="d-anchor" aria-label="Link to this section">#</a>Test state that should change</h2>
+<p class="d-p">Memory is one half. The other half is state that is supposed to update. Set a value, change it, then confirm the agent uses the new value and drops the stale one. This catches the agent that latches onto the first answer and never lets go.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>test_state.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="test_state.py code sample"><code>from conftest import Conversation
+
+def test_uses_updated_preference():
+    c = Conversation("You are a travel assistant.")
+    c.say("I want a window seat.")
+    c.say("Actually, change that to an aisle seat.")
+    reply = c.say("Which seat did I ask for?")
+    text = reply.lower()
+    assert "aisle" in text
+    assert "window" not in text</code></pre></figure>
+<h2 id="grade-the-fuzzy-turns-with-a-judge" class="d-h2"><a href="#grade-the-fuzzy-turns-with-a-judge" class="d-anchor" aria-label="Link to this section">#</a>Grade the fuzzy turns with a judge</h2>
+<p class="d-p">Keyword checks work for names and seats. For open replies, use a second model call as a judge with a tight rubric. Keep the rubric specific so a correct answer in different words still passes. Return a plain yes or no so the assert stays simple.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>judge.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="judge.py code sample"><code>from conftest import client
+
+def judge(reply, rubric):
+    r = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Reply:\n{reply}\n\n"
+                f"Does it satisfy this rule? {rubric}\n"
+                "Answer only YES or NO."
+            ),
+        }],
+    )
+    return r.choices[0].message.content.strip().upper().startswith("YES")</code></pre></figure>
+<h2 id="run-it" class="d-h2"><a href="#run-it" class="d-anchor" aria-label="Link to this section">#</a>Run it</h2>
+<p class="d-p">Run pytest from the terminal. Each test drives a full conversation and fails on the turn where state or memory broke. Once green, wire it into the same CI job as the rest of your evals so a regression stops at the pull request.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>terminal</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="terminal code sample"><code>export OPENAI_API_KEY=sk-...
+pytest -v</code></pre></figure>
+<h2 id="watch-out-for" class="d-h2"><a href="#watch-out-for" class="d-anchor" aria-label="Link to this section">#</a>Watch out for</h2>
+<ul class="d-ul"><li>Multi-turn tests are non-deterministic and cost more, because each test makes several model calls. Keep the suite small and focused on the state paths that actually matter, and run the big ones nightly instead of on every commit.</li><li>A long conversation can fail for a boring reason: the early turns fell out of the context window. That is a real bug your users will hit too, but do not confuse it with a reasoning failure. Check the token length before you blame the model.</li><li>If a test passes sometimes and fails sometimes, do not paper over it with a retry. A flaky memory test usually means the behavior is genuinely unreliable, which is exactly what you wanted to find.</li></ul>
+<h2 id="what-you-built" class="d-h2"><a href="#what-you-built" class="d-anchor" aria-label="Link to this section">#</a>What you built</h2>
+<p class="d-p">You have a test harness that carries a real conversation across turns and asserts on both remembered facts and updated state. It surfaces the memory and staleness bugs that single-turn tests cannot see. Grow it from real transcripts, especially the conversations where your agent forgot something and a user noticed.</p>
+<div class="d-proof"><a href="ai-agent-testing.html" class="d-plink">AI agent testing <span>→</span></a><a href="learn.html" class="d-plink">The Learn library <span>→</span></a></div>
+<div class="d-cta"><div><div class="d-cta-h">Want this built into your pipeline?</div><div class="d-cta-s">Get a free mini-eval on your live AI feature, or book a call to have it wired in properly.</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div></div>
     <div class="d-help"><span>Was this helpful?</span><a href="book.html" data-evt="docs-help-yes">Book a call →</a><a href="sample.html" data-evt="docs-help-eval">Get a free mini-eval →</a></div>
-    <div class="d-prevnext"><div class="d-pn" style="visibility:hidden"></div><a class="d-pn next" href="docs-start-here.html"><div class="l">Next →</div><div class="t">Start here</div></a></div>
+    <div class="d-prevnext"><a class="d-pn prev" href="docs-test-tool-call-accuracy.html"><div class="l">← Previous</div><div class="t">Build a Tool-Call Accuracy Test Harness for AI Agents</div></a><a class="d-pn next" href="docs-add-llm-observability.html"><div class="l">Next →</div><div class="t">Add Open-Source LLM Observability (Langfuse or Phoenix)</div></a></div>
     <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a> · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
     </main>
-    <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#the-thesis" class="d-toc-link" data-target="the-thesis">The thesis</a><a href="#who-this-is-for" class="d-toc-link" data-target="who-this-is-for">Who this is for</a><a href="#how-this-documentation-is-organized" class="d-toc-link" data-target="how-this-documentation-is-organized">How this documentation is organized</a></nav></div>
+    <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#before-you-start" class="d-toc-link" data-target="before-you-start">Before you start</a><a href="#hold-the-conversation-in-one-list" class="d-toc-link" data-target="hold-the-conversation-in-one-list">Hold the conversation in one list</a><a href="#write-a-test-that-spans-turns" class="d-toc-link" data-target="write-a-test-that-spans-turns">Write a test that spans turns</a><a href="#test-state-that-should-change" class="d-toc-link" data-target="test-state-that-should-change">Test state that should change</a><a href="#grade-the-fuzzy-turns-with-a-judge" class="d-toc-link" data-target="grade-the-fuzzy-turns-with-a-judge">Grade the fuzzy turns with a judge</a><a href="#run-it" class="d-toc-link" data-target="run-it">Run it</a><a href="#watch-out-for" class="d-toc-link" data-target="watch-out-for">Watch out for</a><a href="#what-you-built" class="d-toc-link" data-target="what-you-built">What you built</a></nav></div>
   </div>
 
   <div class="d-modal" id="d-modal" role="dialog" aria-label="Search documentation" aria-modal="true">

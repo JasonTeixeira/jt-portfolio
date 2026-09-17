@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Overview — Documentation · Jason Teixeira</title>
-<meta name="description" content="What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.">
+<title>Evaluate a RAG Pipeline End-to-End with RAGAS — Documentation · Jason Teixeira</title>
+<meta name="description" content="A practical walkthrough of scoring a retrieval-augmented pipeline end to end: faithfulness, answer relevancy, context precision, and recall.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://agency.sageideas.dev/docs-overview.html">
+<link rel="canonical" href="https://agency.sageideas.dev/docs-evaluate-rag-pipeline.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Overview — Documentation">
-<meta property="og:description" content="What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.">
-<meta property="og:url" content="https://agency.sageideas.dev/docs-overview.html">
+<meta property="og:title" content="Evaluate a RAG Pipeline End-to-End with RAGAS — Documentation">
+<meta property="og:description" content="A practical walkthrough of scoring a retrieval-augmented pipeline end to end: faithfulness, answer relevancy, context precision, and recall.">
+<meta property="og:url" content="https://agency.sageideas.dev/docs-evaluate-rag-pipeline.html">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Overview","description":"What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/docs-overview.html"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"Getting started"},{"@type":"ListItem","position":4,"name":"Overview","item":"https://agency.sageideas.dev/docs-overview.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"Evaluate a RAG Pipeline End-to-End with RAGAS","description":"A practical walkthrough of scoring a retrieval-augmented pipeline end to end: faithfulness, answer relevancy, context precision, and recall.","step":[{"@type":"HowToStep","position":1,"name":"Before you start"},{"@type":"HowToStep","position":2,"name":"Install RAGAS"},{"@type":"HowToStep","position":3,"name":"Assemble the eval rows"},{"@type":"HowToStep","position":4,"name":"Pick metrics that split retrieval from generation"},{"@type":"HowToStep","position":5,"name":"Run the evaluation"},{"@type":"HowToStep","position":6,"name":"Read it as retrieval vs generation"},{"@type":"HowToStep","position":7,"name":"Watch out for"},{"@type":"HowToStep","position":8,"name":"What you built"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"How-to guides"},{"@type":"ListItem","position":4,"name":"Evaluate a RAG Pipeline End-to-End with RAGAS","item":"https://agency.sageideas.dev/docs-evaluate-rag-pipeline.html"}]}</script>
 <style>
   :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
   * { box-sizing:border-box; }
@@ -164,7 +164,7 @@
   <div class="d-layout">
     <aside class="d-sidebar" id="d-sidebar">
     <a href="docs.html" class="d-navitem d-home">Documentation home</a>
-    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem d-on">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-choose-your-path.html" class="d-navitem">Choose your path</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a><a href="docs-how-this-site-works.html" class="d-navitem">How this site works</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a><a href="docs-stack-integrations.html" class="d-navitem">Stack &amp; integrations</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="docs-llm-evaluation-metrics.html" class="d-navitem">LLM Evaluation Metrics Explained</a><a href="docs-rag-evaluation-metrics.html" class="d-navitem">RAG Evaluation Metrics Explained</a><a href="docs-eval-gates-ci.html" class="d-navitem">Eval Gates: The Missing CI Step for AI Features</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div><div class="d-group"><div class="d-grouphead">How-to guides</div><a href="docs-build-llm-eval-gate-ci.html" class="d-navitem">Build an LLM Eval Gate in CI with Promptfoo</a><a href="docs-build-golden-set.html" class="d-navitem">Build a Golden Set for LLM Regression Testing</a><a href="docs-add-human-approval-checkpoint.html" class="d-navitem">Add a Human-Approval Checkpoint to an AI Pipeline</a><a href="docs-write-adversarial-probes.html" class="d-navitem">Write Adversarial Probes for Prompt Injection Testing</a><a href="docs-evaluate-rag-pipeline.html" class="d-navitem">Evaluate a RAG Pipeline End-to-End with RAGAS</a><a href="docs-nightly-llm-regression-github-actions.html" class="d-navitem">Set Up a Nightly LLM Regression Suite in GitHub Actions</a><a href="docs-version-golden-datasets.html" class="d-navitem">Version Golden Datasets Like Code</a><a href="docs-test-tool-call-accuracy.html" class="d-navitem">Build a Tool-Call Accuracy Test Harness for AI Agents</a><a href="docs-test-multi-turn-conversations.html" class="d-navitem">Test Multi-Turn Agent Conversations</a><a href="docs-add-llm-observability.html" class="d-navitem">Add Open-Source LLM Observability (Langfuse or Phoenix)</a><a href="docs-build-quality-ratchet.html" class="d-navitem">Build a Quality Ratchet That Blocks Regressions</a><a href="docs-playwright-ai-generated-ui.html" class="d-navitem">Run Playwright Tests Against an AI-Generated UI</a><a href="docs-detect-hallucinations-production.html" class="d-navitem">Detect Hallucinations Automatically in Production Logs</a><a href="docs-red-team-chatbot-suite.html" class="d-navitem">Build a Red-Team Test Suite for a Customer-Facing Chatbot</a><a href="docs-wire-eval-gate-deploy.html" class="d-navitem">Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</a><a href="docs-structure-ai-monorepo.html" class="d-navitem">Structure a Monorepo for an AI Product Plus Eval Suite</a></div>
+    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-choose-your-path.html" class="d-navitem">Choose your path</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a><a href="docs-how-this-site-works.html" class="d-navitem">How this site works</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a><a href="docs-stack-integrations.html" class="d-navitem">Stack &amp; integrations</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="docs-llm-evaluation-metrics.html" class="d-navitem">LLM Evaluation Metrics Explained</a><a href="docs-rag-evaluation-metrics.html" class="d-navitem">RAG Evaluation Metrics Explained</a><a href="docs-eval-gates-ci.html" class="d-navitem">Eval Gates: The Missing CI Step for AI Features</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div><div class="d-group"><div class="d-grouphead">How-to guides</div><a href="docs-build-llm-eval-gate-ci.html" class="d-navitem">Build an LLM Eval Gate in CI with Promptfoo</a><a href="docs-build-golden-set.html" class="d-navitem">Build a Golden Set for LLM Regression Testing</a><a href="docs-add-human-approval-checkpoint.html" class="d-navitem">Add a Human-Approval Checkpoint to an AI Pipeline</a><a href="docs-write-adversarial-probes.html" class="d-navitem">Write Adversarial Probes for Prompt Injection Testing</a><a href="docs-evaluate-rag-pipeline.html" class="d-navitem d-on">Evaluate a RAG Pipeline End-to-End with RAGAS</a><a href="docs-nightly-llm-regression-github-actions.html" class="d-navitem">Set Up a Nightly LLM Regression Suite in GitHub Actions</a><a href="docs-version-golden-datasets.html" class="d-navitem">Version Golden Datasets Like Code</a><a href="docs-test-tool-call-accuracy.html" class="d-navitem">Build a Tool-Call Accuracy Test Harness for AI Agents</a><a href="docs-test-multi-turn-conversations.html" class="d-navitem">Test Multi-Turn Agent Conversations</a><a href="docs-add-llm-observability.html" class="d-navitem">Add Open-Source LLM Observability (Langfuse or Phoenix)</a><a href="docs-build-quality-ratchet.html" class="d-navitem">Build a Quality Ratchet That Blocks Regressions</a><a href="docs-playwright-ai-generated-ui.html" class="d-navitem">Run Playwright Tests Against an AI-Generated UI</a><a href="docs-detect-hallucinations-production.html" class="d-navitem">Detect Hallucinations Automatically in Production Logs</a><a href="docs-red-team-chatbot-suite.html" class="d-navitem">Build a Red-Team Test Suite for a Customer-Facing Chatbot</a><a href="docs-wire-eval-gate-deploy.html" class="d-navitem">Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</a><a href="docs-structure-ai-monorepo.html" class="d-navitem">Structure a Monorepo for an AI Product Plus Eval Suite</a></div>
     <div class="d-group"><div class="d-grouphead">More</div>
       <a href="services.html" class="d-navitem d-ext">Services matrix <span class="d-extmark">↗</span></a>
       <a href="case-studies.html" class="d-navitem d-ext">Case studies <span class="d-extmark">↗</span></a>
@@ -172,25 +172,92 @@
     </div>
   </aside>
     <main class="d-main">
-      <div class="d-crumb"><a href="index.html">Home</a> / <a href="docs.html">Docs</a> / Getting started / <span style="color:var(--dim)">Overview</span></div>
+      <div class="d-crumb"><a href="index.html">Home</a> / <a href="docs.html">Docs</a> / How-to guides / <span style="color:var(--dim)">Evaluate a RAG Pipeline End-to-End with RAGAS</span></div>
       
-    <div class="d-kicker">Getting started</div>
-    <h1>Overview</h1>
-    <p class="d-lead">I ship AI features and then prove they work. This documentation is the honest, complete version of what I build, how engagements run, and the method behind the proof.</p>
-    <div class="d-body"><h2 id="the-thesis" class="d-h2"><a href="#the-thesis" class="d-anchor" aria-label="Link to this section">#</a>The thesis</h2>
-<p class="d-p">Shipping an AI feature is the easy 80%. The hard 20% — the part that decides whether it survives contact with real users — is proving it behaves: that a prompt change didn’t quietly regress, that it won’t leak data or get jailbroken, that it stays in its lane. I build both halves, and I treat the proof as a first-class deliverable, not an afterthought.</p>
-<p class="d-p">The through-line on everything here is <b>proof, not vibes</b>: every capability links to a real artifact — a public repo, a verbatim test run, or a live screenshot — and this very site runs its own QA suite on every deploy.</p>
-<h2 id="who-this-is-for" class="d-h2"><a href="#who-this-is-for" class="d-anchor" aria-label="Link to this section">#</a>Who this is for</h2>
-<div class="d-cards"><div class="d-card"><h3>Teams shipping LLM features</h3><p>You have a chatbot, agent, RAG system, or generator in production (or nearly), and a wrong or unsafe answer has real cost.</p></div><div class="d-card"><h3>Teams whose releases keep breaking</h3><p>You need a regression suite and a CI gate a release manager can actually trust.</p></div><div class="d-card"><h3>Teams drowning in manual work</h3><p>You have an intake, triage, or routing workflow a well-built automation could run — safely.</p></div></div>
-<h2 id="how-this-documentation-is-organized" class="d-h2"><a href="#how-this-documentation-is-organized" class="d-anchor" aria-label="Link to this section">#</a>How this documentation is organized</h2>
-<ul class="d-ul"><li><b>What I build</b> — the capabilities, documented: what each is, what you get, and how it works.</li><li><b>The eval method</b> — the philosophy and mechanics of proving AI features (with animated deep-dive guides).</li><li><b>Working together</b> — how engagements run, how your data is handled, and how pricing works.</li><li><b>Reference</b> — FAQ, a plain-English glossary, and an index of every proof artifact.</li></ul>
-<div class="d-cta"><div><div class="d-cta-h">The fastest way to see it</div><div class="d-cta-s">Get a free mini-eval on your live AI feature — real findings, no call required.</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div></div>
+    <div class="d-kicker">How-to guides</div>
+    <h1>Evaluate a RAG Pipeline End-to-End with RAGAS</h1>
+    <p class="d-lead">Measure both halves of a RAG system, so you know whether a wrong answer is a retrieval bug or a generation bug.</p>
+    <div class="d-body"><p class="d-p">RAGAS scores a RAG pipeline on two fronts: how good the retrieval was, and how faithful the answer was to what got retrieved. That split is the point. It tells you whether a wrong answer came from bad context or from the model making things up. This guide runs RAGAS over a small eval set and reads the numbers. Budget about thirty minutes.</p>
+<h2 id="before-you-start" class="d-h2"><a href="#before-you-start" class="d-anchor" aria-label="Link to this section">#</a>Before you start</h2>
+<ul class="d-ul"><li>Python 3.9 or newer.</li><li>An OpenAI API key in <code>OPENAI_API_KEY</code>. RAGAS uses an LLM to judge and defaults to OpenAI.</li><li>A RAG pipeline you can call to get an answer and the retrieved chunks for a question.</li><li>A handful of questions with known correct answers.</li></ul>
+<h2 id="install-ragas" class="d-h2"><a href="#install-ragas" class="d-anchor" aria-label="Link to this section">#</a>Install RAGAS</h2>
+<p class="d-p">Install RAGAS and the datasets helper it uses to hold your eval rows. RAGAS calls an LLM to grade some metrics, so set your key in the environment. Never put the key in code.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>terminal</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="terminal code sample"><code>pip install ragas datasets
+export OPENAI_API_KEY=sk-...</code></pre></figure>
+<h2 id="assemble-the-eval-rows" class="d-h2"><a href="#assemble-the-eval-rows" class="d-anchor" aria-label="Link to this section">#</a>Assemble the eval rows</h2>
+<p class="d-p">RAGAS needs four fields per row. The <code>question</code>, your pipeline's <code>answer</code>, the <code>contexts</code> your retriever returned as a list of strings, and the <code>ground_truth</code> answer you already know is correct. Run each question through your real pipeline to fill answer and contexts. Do not hand-write the contexts. The whole point is to grade what your retriever actually pulled.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>build_dataset.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="build_dataset.py code sample"><code>from datasets import Dataset
+
+# each contexts entry is the list of chunks your retriever returned
+data = {
+    "question": [
+        "What is the refund window?",
+        "How do I cancel my plan?",
+    ],
+    "answer": [
+        "You have 14 days to request a refund.",
+        "Go to Settings, then Billing, then Cancel.",
+    ],
+    "contexts": [
+        ["Refunds are available within 14 days of purchase."],
+        ["To cancel, open Settings &gt; Billing &gt; Cancel plan."],
+    ],
+    "ground_truth": [
+        "Refunds are available within 14 days.",
+        "Cancel from Settings &gt; Billing &gt; Cancel.",
+    ],
+}
+
+dataset = Dataset.from_dict(data)</code></pre></figure>
+<h2 id="pick-metrics-that-split-retrieval-from-generation" class="d-h2"><a href="#pick-metrics-that-split-retrieval-from-generation" class="d-anchor" aria-label="Link to this section">#</a>Pick metrics that split retrieval from generation</h2>
+<p class="d-p">Choose metrics that map to each half of the system. <code>context_precision</code> and <code>context_recall</code> grade retrieval, whether the right chunks showed up. <code>faithfulness</code> and <code>answer_relevancy</code> grade generation, whether the answer stuck to the context and addressed the question. Keeping both groups is what lets you tell a retrieval bug from a generation bug.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>metrics.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="metrics.py code sample"><code>from ragas.metrics import (
+    context_precision,
+    context_recall,
+    faithfulness,
+    answer_relevancy,
+)
+
+metrics = [
+    context_precision,   # retrieval
+    context_recall,      # retrieval
+    faithfulness,        # generation
+    answer_relevancy,    # generation
+]</code></pre></figure>
+<h2 id="run-the-evaluation" class="d-h2"><a href="#run-the-evaluation" class="d-anchor" aria-label="Link to this section">#</a>Run the evaluation</h2>
+<p class="d-p">Call <code>evaluate</code> with the dataset and your metrics. RAGAS runs each metric over every row and returns aggregate scores between 0 and 1. This costs a few API calls per row because the LLM-graded metrics ask a model to judge, so keep the set small while you iterate.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>run_eval.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="run_eval.py code sample"><code>from ragas import evaluate
+from build_dataset import dataset
+from metrics import metrics
+
+result = evaluate(dataset, metrics=metrics)
+print(result)
+# {'context_precision': 0.95, 'context_recall': 0.90,
+#  'faithfulness': 0.88, 'answer_relevancy': 0.91}</code></pre></figure>
+<h2 id="read-it-as-retrieval-vs-generation" class="d-h2"><a href="#read-it-as-retrieval-vs-generation" class="d-anchor" aria-label="Link to this section">#</a>Read it as retrieval vs generation</h2>
+<p class="d-p">Now diagnose. If context precision or recall is low, the retriever is the problem and the generator never had a chance, so fix chunking, embeddings, or top-k. If retrieval scores are high but faithfulness is low, the context was fine and the model invented something, so that is a generation bug. Export the per-row scores to find the exact questions that dragged the average down.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>per_row.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="per_row.py code sample"><code>from ragas import evaluate
+from build_dataset import dataset
+from metrics import metrics
+
+result = evaluate(dataset, metrics=metrics)
+
+# one row per question, with every metric as a column
+df = result.to_pandas()
+print(df[["question", "context_recall", "faithfulness"]])
+df.to_csv("ragas_scores.csv", index=False)</code></pre></figure>
+<h2 id="watch-out-for" class="d-h2"><a href="#watch-out-for" class="d-anchor" aria-label="Link to this section">#</a>Watch out for</h2>
+<ul class="d-ul"><li>RAGAS grades with an LLM, so scores wobble a little between runs. Treat them as directional. Watch how they move across a fixed eval set instead of reading a single decimal place.</li><li><code>context_recall</code> needs ground_truth. If you skip that field the metric silently returns nothing, so give every row a real known-good answer.</li><li>The default judge is an OpenAI model and it costs money per row. A big eval set on every commit gets expensive fast. Keep the set small, or run the full set nightly and a subset on each change.</li></ul>
+<h2 id="what-you-built" class="d-h2"><a href="#what-you-built" class="d-anchor" aria-label="Link to this section">#</a>What you built</h2>
+<p class="d-p">You now score a RAG pipeline on both halves and can tell whether a bad answer came from retrieval or generation. That split turns vague RAG debugging into a specific fix in a specific component. Next, wire the aggregate scores into a gate so a change that drops faithfulness or recall fails the build.</p>
+<div class="d-proof"><a href="rag-evaluation-guide.html" class="d-plink">RAG evaluation guide <span>→</span></a><a href="learn.html" class="d-plink">The Learn library <span>→</span></a></div>
+<div class="d-cta"><div><div class="d-cta-h">Want this built into your pipeline?</div><div class="d-cta-s">Get a free mini-eval on your live AI feature, or book a call to have it wired in properly.</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div></div>
     <div class="d-help"><span>Was this helpful?</span><a href="book.html" data-evt="docs-help-yes">Book a call →</a><a href="sample.html" data-evt="docs-help-eval">Get a free mini-eval →</a></div>
-    <div class="d-prevnext"><div class="d-pn" style="visibility:hidden"></div><a class="d-pn next" href="docs-start-here.html"><div class="l">Next →</div><div class="t">Start here</div></a></div>
+    <div class="d-prevnext"><a class="d-pn prev" href="docs-write-adversarial-probes.html"><div class="l">← Previous</div><div class="t">Write Adversarial Probes for Prompt Injection Testing</div></a><a class="d-pn next" href="docs-nightly-llm-regression-github-actions.html"><div class="l">Next →</div><div class="t">Set Up a Nightly LLM Regression Suite in GitHub Actions</div></a></div>
     <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a> · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
     </main>
-    <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#the-thesis" class="d-toc-link" data-target="the-thesis">The thesis</a><a href="#who-this-is-for" class="d-toc-link" data-target="who-this-is-for">Who this is for</a><a href="#how-this-documentation-is-organized" class="d-toc-link" data-target="how-this-documentation-is-organized">How this documentation is organized</a></nav></div>
+    <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#before-you-start" class="d-toc-link" data-target="before-you-start">Before you start</a><a href="#install-ragas" class="d-toc-link" data-target="install-ragas">Install RAGAS</a><a href="#assemble-the-eval-rows" class="d-toc-link" data-target="assemble-the-eval-rows">Assemble the eval rows</a><a href="#pick-metrics-that-split-retrieval-from-generation" class="d-toc-link" data-target="pick-metrics-that-split-retrieval-from-generation">Pick metrics that split retrieval from generation</a><a href="#run-the-evaluation" class="d-toc-link" data-target="run-the-evaluation">Run the evaluation</a><a href="#read-it-as-retrieval-vs-generation" class="d-toc-link" data-target="read-it-as-retrieval-vs-generation">Read it as retrieval vs generation</a><a href="#watch-out-for" class="d-toc-link" data-target="watch-out-for">Watch out for</a><a href="#what-you-built" class="d-toc-link" data-target="what-you-built">What you built</a></nav></div>
   </div>
 
   <div class="d-modal" id="d-modal" role="dialog" aria-label="Search documentation" aria-modal="true">
