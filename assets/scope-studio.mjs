@@ -196,10 +196,65 @@ if (root && qMount && planMount && disc) {
   let chatKeys = null;
   let chatSegment = null;
   let curKeys = [], curSegment = null, curPlan = null; // latest computed plan, for the AI proposal
+
+  // ── one-question-at-a-time flow state ──
+  // The questionnaire renders a single question per screen (Typeform-style) with a
+  // progress stepper, Back/Continue nav, and a done panel. `step` indexes QUESTIONS;
+  // `answers`, keysFromAnswers → computePlan → __renderScopePlan stay unchanged.
+  const UI = { back: 'Back', next: 'Continue', see: 'See my plan', edit: 'Edit answers', pick: 'Pick all that apply', q: 'Question', of: 'of', done: 'Done' };
+  const ARROW_R = '<svg class="sf-ar" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const ARROW_L = '<svg class="sf-ar sf-ar-l" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
+  const CHECK = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  let step = 0;
+  let advTimer = 0;
+
+  // entry chooser: the two cards reuse #scope-mode-quick / #scope-mode-chat so
+  // scope-chat.mjs's setMode() wiring (hidden toggles + aria-pressed + openChat) still fires.
+  const quickCard = document.getElementById('scope-mode-quick');
+  const chatCard = document.getElementById('scope-mode-chat');
+  const chatRootEl = document.getElementById('scope-chat');
+  root.dataset.entry = 'choose';
+
   track('started');
   renderQuestions();
   rehydrateFromUrl();
   renderPlan();
+  wireEntry();
+  maybeAutoEnter();
+
+  function wireEntry() {
+    if (quickCard) quickCard.addEventListener('click', () => enterQuick(true));
+    if (chatCard) chatCard.addEventListener('click', () => { root.dataset.entry = 'chat'; qMount.hidden = true; });
+  }
+
+  // Reveal the quick-questions flow. scope-chat.mjs also unhides #scope-questions on
+  // this click; doing it here too keeps the chooser working if that module fails to load.
+  function enterQuick(focusFirst) {
+    root.dataset.entry = 'quick';
+    qMount.hidden = false;
+    if (chatRootEl) chatRootEl.hidden = true;
+    if (quickCard) quickCard.setAttribute('aria-pressed', 'true');
+    if (chatCard) chatCard.setAttribute('aria-pressed', 'false');
+    if (focusFirst !== false) setTimeout(focusPrompt, REDUCED ? 0 : 60);
+  }
+
+  // step-0 Back returns to the chooser so the visitor can switch to Nadine.
+  function exitToChooser() {
+    clearTimeout(advTimer);
+    root.dataset.entry = 'choose';
+    qMount.hidden = true;
+    if (chatRootEl) chatRootEl.hidden = true;
+    if (quickCard) { quickCard.setAttribute('aria-pressed', 'false'); try { quickCard.focus(); } catch (e) { /* focus optional */ } }
+    if (chatCard) chatCard.setAttribute('aria-pressed', 'false');
+  }
+
+  // A shared link (#plan= or #caps=) pre-fills answers/keys — reveal the plan on arrival.
+  function maybeAutoEnter() {
+    if ((chatKeys !== null && chatKeys.length) || QUESTIONS.some((q) => (answers[q.id] || []).length)) {
+      enterQuick(false);
+      showReview();
+    }
+  }
 
   // Hook for assets/scope-chat.mjs: apply an externally-derived (AI) capability
   // key selection to the SAME live blueprint/plan the questionnaire builds.
@@ -313,15 +368,81 @@ if (root && qMount && planMount && disc) {
     }
   }
 
+  // Builds the persistent flow shell (progress stepper + bar + stage) once, then
+  // renders the first question. Kept named renderQuestions() — the init call is unchanged.
   function renderQuestions() {
-    qMount.innerHTML = QUESTIONS.map((q, qi) => `
-      <fieldset class="scope-q" style="--qd:${qi * 70}ms">
-        <legend>${esc(q.prompt)}</legend>
-        <div class="scope-opts">
-          ${q.options.map((o) => `<button type="button" class="scope-opt" data-q="${q.id}" data-id="${o.id}" data-multi="${q.multi}" aria-pressed="false" style="--tc:${optionColor(o)}">${esc(o.label)}</button>`).join('')}
+    const N = QUESTIONS.length;
+    qMount.innerHTML = `
+      <div class="scope-flow" role="group" aria-roledescription="questionnaire" aria-label="Scope your project">
+        <div class="scope-flow-head">
+          <div class="sf-steps" id="sf-steps" aria-hidden="true"></div>
+          <div class="sf-progress mono" id="sf-progress" role="progressbar" aria-valuemin="1" aria-valuemax="${N}" aria-valuenow="1" aria-label="${UI.q} 1 ${UI.of} ${N}"></div>
         </div>
-      </fieldset>`).join('');
-    qMount.querySelectorAll('.scope-opt').forEach((btn) => btn.addEventListener('click', onPick));
+        <div class="sf-bar" aria-hidden="true"><span class="sf-bar-fill" id="sf-bar-fill"></span></div>
+        <div class="scope-stage" id="scope-stage"></div>
+      </div>`;
+    renderStep(0, 0);
+  }
+
+  function stepEnterClass(dir) {
+    if (REDUCED) return '';
+    return dir < 0 ? ' sf-in-back' : ' sf-in';
+  }
+
+  function updateProgress(i) {
+    const N = QUESTIONS.length;
+    const done = i >= N;
+    const pb = document.getElementById('sf-progress');
+    if (pb) {
+      pb.setAttribute('aria-valuenow', String(done ? N : i + 1));
+      pb.setAttribute('aria-label', done ? UI.done : `${UI.q} ${i + 1} ${UI.of} ${N}`);
+      pb.innerHTML = done ? `<span class="sf-count"><b>${UI.done}</b></span>` : `<span class="sf-count"><b>${UI.q} ${i + 1}</b> ${UI.of} ${N}</span>`;
+    }
+    const steps = document.getElementById('sf-steps');
+    if (steps) steps.innerHTML = QUESTIONS.map((_, k) => `<i class="sf-dot${done || k < i ? ' done' : k === i ? ' on' : ''}"></i>`).join('');
+    const fill = document.getElementById('sf-bar-fill');
+    if (fill) fill.style.width = `${Math.round(((done ? N : i + 1) / N) * 100)}%`;
+  }
+
+  function renderStep(i, dir) {
+    clearTimeout(advTimer);
+    step = i;
+    const q = QUESTIONS[i];
+    const stage = document.getElementById('scope-stage');
+    if (!stage) return;
+    const multi = !!q.multi;
+    const sel = answers[q.id] || [];
+    const role = multi ? 'checkbox' : 'radio';
+    const opts = q.options.map((o) => {
+      const on = sel.includes(o.id);
+      return `<button type="button" class="scope-opt${on ? ' is-on' : ''}" role="${role}" data-q="${q.id}" data-id="${o.id}" data-multi="${multi}" aria-checked="${on}" tabindex="-1" style="--tc:${optionColor(o)}">
+          <span class="opt-mark" aria-hidden="true"></span>
+          <span class="opt-label">${esc(o.label)}</span>
+        </button>`;
+    }).join('');
+    stage.innerHTML = `
+      <div class="scope-step${stepEnterClass(dir)}" data-step="${i}">
+        <h2 class="sf-prompt" id="sf-prompt" tabindex="-1">${esc(q.prompt)}</h2>
+        ${multi ? `<p class="sf-hint"><span class="sf-hint-ico" aria-hidden="true">${CHECK}</span>${UI.pick}</p>` : ''}
+        <div class="scope-opts ${multi ? 'is-multi' : 'is-single'}" role="${multi ? 'group' : 'radiogroup'}" aria-label="${esc(q.prompt)}">
+          ${opts}
+        </div>
+        <div class="sf-nav">
+          <button type="button" class="sf-btn sf-back" id="sf-back">${ARROW_L}${UI.back}</button>
+          <button type="button" class="sf-btn sf-next" id="sf-next">${i === QUESTIONS.length - 1 ? UI.see : UI.next}${ARROW_R}</button>
+        </div>
+      </div>`;
+    updateProgress(i);
+    // wire options (roving tabindex: only the selected/first option is tabbable)
+    const optEls = [...stage.querySelectorAll('.scope-opt')];
+    optEls.forEach((b) => { b.addEventListener('click', onPick); b.addEventListener('keydown', onOptKey); });
+    const firstFocusable = optEls.find((b) => b.classList.contains('is-on')) || optEls[0];
+    if (firstFocusable) firstFocusable.tabIndex = 0;
+    const back = document.getElementById('sf-back');
+    const next = document.getElementById('sf-next');
+    if (back) back.addEventListener('click', goBack);
+    if (next) next.addEventListener('click', goNext);
+    focusPrompt();
   }
 
   function onPick(e) {
@@ -331,6 +452,7 @@ if (root && qMount && planMount && disc) {
     const q = b.dataset.q;
     const id = b.dataset.id;
     const multi = b.dataset.multi === 'true';
+    const stage = document.getElementById('scope-stage');
     answers[q] = answers[q] || [];
     if (multi) {
       const i = answers[q].indexOf(id);
@@ -338,14 +460,99 @@ if (root && qMount && planMount && disc) {
       else answers[q].push(id);
     } else {
       answers[q] = answers[q][0] === id ? [] : [id];
-      qMount.querySelectorAll(`.scope-opt[data-q="${q}"]`).forEach((x) => setPressed(x, false));
+      if (stage) stage.querySelectorAll(`.scope-opt[data-q="${q}"]`).forEach((x) => setPressed(x, false));
     }
     setPressed(b, answers[q].includes(id));
     renderPlan();
+    // single-select: one choice moves the flow on (Typeform-style), after the pick pops
+    if (!multi && answers[q].length) {
+      clearTimeout(advTimer);
+      advTimer = setTimeout(goNext, REDUCED ? 0 : 340);
+    }
+  }
+
+  // Arrow/Home/End roving focus inside the current option group; Enter/Space activate natively.
+  function onOptKey(e) {
+    const group = e.currentTarget.closest('.scope-opts');
+    if (!group) return;
+    const opts = [...group.querySelectorAll('.scope-opt')];
+    const cur = opts.indexOf(e.currentTarget);
+    let ni = -1;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') ni = (cur + 1) % opts.length;
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ni = (cur - 1 + opts.length) % opts.length;
+    else if (e.key === 'Home') ni = 0;
+    else if (e.key === 'End') ni = opts.length - 1;
+    if (ni < 0) return;
+    e.preventDefault();
+    opts.forEach((o) => { o.tabIndex = -1; });
+    opts[ni].tabIndex = 0;
+    try { opts[ni].focus(); } catch (err) { /* focus optional */ }
+  }
+
+  function goNext() {
+    clearTimeout(advTimer);
+    if (step < QUESTIONS.length - 1) renderStep(step + 1, 1);
+    else showReview();
+  }
+
+  function goBack() {
+    clearTimeout(advTimer);
+    if (step > 0) renderStep(step - 1, -1);
+    else exitToChooser();
+  }
+
+  function goTo(i) {
+    clearTimeout(advTimer);
+    renderStep(Math.max(0, Math.min(QUESTIONS.length - 1, i)), 0);
+  }
+
+  // Done panel — the reveal after the last question. The live plan/blueprint already
+  // rendered on each pick; this focuses the visitor on it and offers the email handoff.
+  function showReview() {
+    const stage = document.getElementById('scope-stage');
+    if (!stage) return;
+    step = QUESTIONS.length;
+    updateProgress(step);
+    const has = !!(curPlan && curPlan.count);
+    stage.innerHTML = `
+      <div class="scope-step scope-done${REDUCED ? '' : ' sf-in'}">
+        <span class="sf-done-ico${has ? ' on' : ''}" aria-hidden="true">${CHECK}</span>
+        <h2 class="sf-prompt" id="sf-prompt" tabindex="-1">${has ? 'Your plan&rsquo;s ready.' : 'One more thing.'}</h2>
+        <p class="sf-done-copy">${has
+          ? 'Your itemized plan and indicative range are assembled &mdash; on the right on desktop, just below on mobile. Adjust anytime.'
+          : 'You haven&rsquo;t picked anything to build yet. Choose what you want to happen and your plan assembles instantly.'}</p>
+        <div class="sf-nav">
+          <button type="button" class="sf-btn sf-back" id="sf-back">${ARROW_L}${UI.edit}</button>
+          ${has
+            ? `<a href="#scope-handoff" class="sf-btn sf-next" id="sf-done-cta" data-evt="scope-done-cta">Email me the plan${ARROW_R}</a>`
+            : `<button type="button" class="sf-btn sf-next" id="sf-next">Pick what to build${ARROW_R}</button>`}
+      </div>
+      </div>`;
+    const back = document.getElementById('sf-back');
+    if (back) back.addEventListener('click', () => renderStep(QUESTIONS.length - 1, -1));
+    const next = document.getElementById('sf-next');
+    if (next) next.addEventListener('click', () => goTo(1)); // the "what do you want to happen?" question
+    focusPrompt();
+    if (has) revealPlan();
+  }
+
+  function revealPlan() {
+    if (REDUCED) return;
+    if (window.matchMedia && window.matchMedia('(max-width:900px)').matches) {
+      const c = document.getElementById('scope-canvas');
+      if (c && c.scrollIntoView) { try { c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { /* optional */ } }
+    }
+  }
+
+  function focusPrompt() {
+    if (root.dataset.entry !== 'quick') return; // don't steal focus while the chooser is up
+    const p = document.getElementById('sf-prompt');
+    if (!p) return;
+    try { p.focus({ preventScroll: true }); } catch (e) { try { p.focus(); } catch (_) { /* optional */ } }
   }
 
   function setPressed(btn, on) {
-    btn.setAttribute('aria-pressed', String(on));
+    btn.setAttribute('aria-checked', String(on));
     btn.classList.toggle('is-on', on);
   }
 

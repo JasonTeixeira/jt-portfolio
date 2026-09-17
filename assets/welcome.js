@@ -429,7 +429,7 @@
     var tr = d.getElementById('jt-tour'); if (tr) tr.remove();
     if (intoTour) startTour(); else build();
   }
-  window.jtTour = function () { reopen(false); };      // open the Atlas greeter (with the tour button)
+  window.jtTour = function () { reopen(false); };      // open the Nadine greeter (with the tour button)
   window.jtTourStart = function () { reopen(true); };  // jump straight into the voiced 60-second tour
 
   // Mutual exclusivity with the concierge chat: when the chat panel opens, dismiss the
