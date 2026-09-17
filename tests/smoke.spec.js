@@ -966,8 +966,9 @@ test.describe('portfolio — scope studio', () => {
   test('build page: reachable from nav, no overflow at 320, one h1', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto('/');
-    // reachable from the primary nav (the footer nav also links it, so scope to .site-nav)
-    await expect(page.locator('.site-nav a[href="build.html"]')).toHaveCount(1);
+    // Scope is the primary nav action now: it appears as the prominent CTA and a
+    // grouped nav link, so assert reachability (>=1) rather than an exact count.
+    expect(await page.locator('.site-nav a[href="build.html"]').count()).toBeGreaterThanOrEqual(1);
     await page.goto('/build.html');
     await expect(page.locator('h1')).toHaveCount(1);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);

@@ -16,7 +16,7 @@
 <link rel="preload" href="/assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/site.css?v=20260917f">
+<link rel="stylesheet" href="/assets/site.css?v=20260917g">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <style>
   :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
@@ -67,13 +67,32 @@
       <div class="sec-rule"><span class="sec-label" style="color:#22d3ee">Scope Studio &middot; monte seu plano</span><span class="line"></span></div>
       <h1 class="sec-title" style="max-width:20ch;margin-top:12px">Diga o que você precisa. Eu escopo.</h1>
       <p class="subtle" style="margin-top:12px;max-width:56ch">Algumas perguntas, e você receberá um plano detalhado com uma faixa indicativa. Sem cadastro, sem necessidade de chamada. Esta é a ferramenta do Jason. Jason lê cada plano que ela gera.</p>
-      <div class="scope-mode-toggle" role="group" aria-label="Como você quer escopar isso?">
-        <button type="button" id="scope-mode-chat" class="scope-mode-btn" aria-pressed="false">Conversar sobre isso</button>
-        <button type="button" id="scope-mode-quick" class="scope-mode-btn" aria-pressed="true">Perguntas rápidas</button>
+      <div class="scope-entry" id="scope-entry" role="group" aria-label="Como você quer escopar isso?">
+        <p class="scope-entry-lead" id="scope-entry-lead">Duas formas de obter seu plano. Escolha a que preferir &mdash; você pode trocar quando quiser.</p>
+        <div class="scope-entry-cards">
+          <button type="button" id="scope-mode-quick" class="scope-entry-card" aria-pressed="false">
+            <span class="se-top">
+              <span class="se-ico se-ico-q" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg></span>
+              <span class="se-eyebrow">Mais rápido &middot; ~2 min</span>
+            </span>
+            <span class="se-title">Responda 3 perguntas rápidas</span>
+            <span class="se-desc">Toque para passar por três perguntas. Veja seu plano e faixa indicativa se montarem ao vivo &mdash; sem cadastro.</span>
+            <span class="se-go">Começar<svg class="se-ar" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </button>
+          <button type="button" id="scope-mode-chat" class="scope-entry-card" aria-pressed="false">
+            <span class="se-top">
+              <span class="se-ico se-ico-c" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6A8.5 8.5 0 0 1 4 11.5 8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg></span>
+              <span class="se-eyebrow">Conversa</span>
+            </span>
+            <span class="se-title">Converse com a Nadine</span>
+            <span class="se-desc">Descreva com suas palavras. A Nadine faz as perguntas certas e delimita com você.</span>
+            <span class="se-go">Começar<svg class="se-ar" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </button>
+        </div>
       </div>
       <div class="tf-grid scope-grid" style="margin-top:20px">
         <div id="scope-primary">
-          <div id="scope-questions"></div>
+          <div id="scope-questions" hidden></div>
           <div id="scope-chat" class="scope-chat" hidden>
             <div class="sc-voice-bar">
               <button type="button" id="scope-voice-toggle" class="sc-voice-toggle-btn" aria-pressed="false" aria-controls="scope-voice-panel">
@@ -151,9 +170,9 @@
     <span><a href="/pt/index.html" class="dim-link" style="color:var(--faint)">&larr; portfólio</a></span>
   </footer>
 </div>
-<script type="module" src="/assets/scope-studio.mjs"></script>
-<script type="module" src="/assets/scope-chat.mjs"></script>
-<script defer src="/assets/nav.js?v=20260917f"></script>
+<script type="module" src="/assets/scope-studio.mjs?v=20260917g"></script>
+<script type="module" src="/assets/scope-chat.mjs?v=20260917g"></script>
+<script defer src="/assets/nav.js?v=20260917g"></script>
 <script defer src="/assets/transitions.js"></script>
 <script defer src="/assets/ga.js?v=4"></script>
 </body>

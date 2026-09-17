@@ -15,6 +15,102 @@ function band([lo, hi]) { return money(lo) + '–' + money(hi); }
 function trackColor(t) { return TRACK_COLOR[t] || '#8E8882'; }
 function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
+/* ── UI chrome localization ────────────────────────────────────────────────
+   Only the CHROME rendered by this controller is localized (nav, progress,
+   review panel, HUD labels, lead statuses, proposal, share summary). The
+   QUESTION CONTENT — segment/capability names + why-text from scope-core.mjs
+   (QUESTIONS / RATE_CARD) — is English across all locales today; translating
+   that is a separate, larger content job and is intentionally left untouched.
+   Keyed off <html lang>, falling back to English for any unknown locale. */
+const LANG = (document.documentElement.lang || 'en').slice(0, 2).toLowerCase();
+const STRINGS = {
+  en: {
+    back: 'Back', next: 'Continue', see: 'See my plan', edit: 'Edit answers',
+    pick: 'Pick all that apply', q: 'Question', of: 'of', done: 'Done',
+    planReady: 'Your plan&rsquo;s ready.', oneMore: 'One more thing.',
+    doneHas: 'Your itemized plan and indicative range are assembled &mdash; on the right on desktop, just below on mobile. Adjust anytime.',
+    doneEmpty: 'You haven&rsquo;t picked anything to build yet. Choose what you want to happen and your plan assembles instantly.',
+    emailPlan: 'Email me the plan', pickBuild: 'Pick what to build',
+    startHere: 'Start here',
+    auditNote: 'Fixed-price audit week &mdash; a written plan &amp; firm quote, <b>credited into the build</b>.',
+    fullBuild: 'full build &middot; indicative', typical: 'typical', timeline: 'timeline', wks: 'wks',
+    totalLblA: 'full build &middot; indicative range &middot; typical ~', totalLblB: ' &middot; exact scope on a call',
+    totalAudit: 'Or start with the <b>$497 audit week</b> &mdash; credited into the build, so the real cost of starting is $0.',
+    bpEmpty: 'Your system builds here.<br><span>Pick what you want to happen — watch it assemble, priced and proven.</span>',
+    bpYourBuild: 'YOUR BUILD', bpProven: 'PROVEN', bpShipped: 'SHIPPED',
+    bpAriaA: 'A live diagram of your scoped system: ', bpAriaMid: ' components across ', bpAriaEnd: ' phases, ',
+    bpGateOn: 'with an evaluation gate that proves it works', bpGateOff: 'ready to ship',
+    summHead: "Here's the plan I scoped on your site:", summTotal: 'Indicative total:', summWeeks: 'weeks',
+    summNote: '(Indicative only. Happy to lock exact scope on a call.)', summShared: 'Shared plan:',
+    sending: 'Sending…',
+    statusEmailed: 'Done — your itemized plan is on its way to your inbox, with a link to book a 15-minute call. I review every one myself.',
+    statusCaptured: "Got it — I've got your plan and I'll follow up personally, usually within a day. I review every one myself.",
+    statusNoPlan: "Got it — I'll reach out personally to scope this with you, usually within a day.",
+    statusFail: 'Couldn’t send from here. Use “open in your email app” below, or email hello@sageideas.dev.',
+    writingProposal: 'Writing your proposal…', yourProposal: 'Your proposal',
+    readItToMe: 'Read it to me', stopReading: 'Stop reading',
+    acceptWriting: 'Accept &amp; get it in writing &rarr;', bookCall: 'Book a 15-min call',
+    copied: 'Copied', copyLink: 'Copy shareable link',
+  },
+  es: {
+    back: 'Atrás', next: 'Continuar', see: 'Ver mi plan', edit: 'Editar respuestas',
+    pick: 'Elige todas las que apliquen', q: 'Pregunta', of: 'de', done: 'Listo',
+    planReady: 'Tu plan está listo.', oneMore: 'Una cosa más.',
+    doneHas: 'Tu plan detallado y rango indicativo están armados &mdash; a la derecha en escritorio, justo debajo en móvil. Ajústalo cuando quieras.',
+    doneEmpty: 'Aún no has elegido nada para construir. Elige lo que quieres que suceda y tu plan se arma al instante.',
+    emailPlan: 'Envíame el plan', pickBuild: 'Elige qué construir',
+    startHere: 'Empieza aquí',
+    auditNote: 'Semana de auditoría a precio fijo &mdash; un plan escrito y presupuesto firme, <b>abonado a la construcción</b>.',
+    fullBuild: 'construcción completa &middot; indicativo', typical: 'típico', timeline: 'plazo', wks: 'sem',
+    totalLblA: 'construcción completa &middot; rango indicativo &middot; típico ~', totalLblB: ' &middot; alcance exacto en una llamada',
+    totalAudit: 'O empieza con la <b>semana de auditoría de $497</b> &mdash; abonada a la construcción, así el costo real de empezar es $0.',
+    bpEmpty: 'Tu sistema se construye aquí.<br><span>Elige lo que quieres que suceda — míralo ensamblarse, con precio y comprobado.</span>',
+    bpYourBuild: 'TU SISTEMA', bpProven: 'COMPROBADO', bpShipped: 'ENTREGADO',
+    bpAriaA: 'Un diagrama en vivo de tu sistema delimitado: ', bpAriaMid: ' componentes en ', bpAriaEnd: ' fases, ',
+    bpGateOn: 'con una prueba de evaluación que demuestra que funciona', bpGateOff: 'listo para lanzar',
+    summHead: 'Este es el plan que delimité en tu sitio:', summTotal: 'Total indicativo:', summWeeks: 'semanas',
+    summNote: '(Solo indicativo. Con gusto fijamos el alcance exacto en una llamada.)', summShared: 'Plan compartido:',
+    sending: 'Enviando…',
+    statusEmailed: 'Listo — tu plan detallado va camino a tu bandeja de entrada, con un enlace para reservar una llamada de 15 minutos. Reviso cada uno personalmente.',
+    statusCaptured: 'Entendido — tengo tu plan y te contactaré personalmente, normalmente en un día. Reviso cada uno personalmente.',
+    statusNoPlan: 'Entendido — me pondré en contacto personalmente para delimitar esto contigo, normalmente en un día.',
+    statusFail: 'No se pudo enviar desde aquí. Usa «abrir en tu app de correo» abajo, o escribe a hello@sageideas.dev.',
+    writingProposal: 'Escribiendo tu propuesta…', yourProposal: 'Tu propuesta',
+    readItToMe: 'Léemelo', stopReading: 'Detener lectura',
+    acceptWriting: 'Aceptar y recibirlo por escrito &rarr;', bookCall: 'Reserva una llamada de 15 min',
+    copied: 'Copiado', copyLink: 'Copiar enlace para compartir',
+  },
+  pt: {
+    back: 'Voltar', next: 'Continuar', see: 'Ver meu plano', edit: 'Editar respostas',
+    pick: 'Selecione todas as que se aplicam', q: 'Pergunta', of: 'de', done: 'Concluído',
+    planReady: 'Seu plano está pronto.', oneMore: 'Só mais uma coisa.',
+    doneHas: 'Seu plano detalhado e faixa indicativa estão prontos &mdash; à direita no desktop, logo abaixo no celular. Ajuste quando quiser.',
+    doneEmpty: 'Você ainda não escolheu nada para construir. Escolha o que você quer que aconteça e seu plano se monta na hora.',
+    emailPlan: 'Envie-me o plano', pickBuild: 'Escolha o que construir',
+    startHere: 'Comece aqui',
+    auditNote: 'Semana de auditoria com preço fixo &mdash; um plano escrito e orçamento firme, <b>creditado na construção</b>.',
+    fullBuild: 'construção completa &middot; indicativo', typical: 'típico', timeline: 'prazo', wks: 'sem',
+    totalLblA: 'construção completa &middot; faixa indicativa &middot; típico ~', totalLblB: ' &middot; escopo exato em uma ligação',
+    totalAudit: 'Ou comece com a <b>semana de auditoria de $497</b> &mdash; creditada na construção, então o custo real de começar é $0.',
+    bpEmpty: 'Seu sistema é construído aqui.<br><span>Escolha o que você quer que aconteça — veja montar, precificado e comprovado.</span>',
+    bpYourBuild: 'SEU SISTEMA', bpProven: 'COMPROVADO', bpShipped: 'ENTREGUE',
+    bpAriaA: 'Um diagrama ao vivo do seu sistema escopado: ', bpAriaMid: ' componentes em ', bpAriaEnd: ' fases, ',
+    bpGateOn: 'com um portão de avaliação que prova que funciona', bpGateOff: 'pronto para lançar',
+    summHead: 'Este é o plano que escopei no seu site:', summTotal: 'Total indicativo:', summWeeks: 'semanas',
+    summNote: '(Apenas indicativo. Fico feliz em fechar o escopo exato em uma ligação.)', summShared: 'Plano compartilhado:',
+    sending: 'Enviando…',
+    statusEmailed: 'Pronto — seu plano detalhado está a caminho da sua caixa de entrada, com um link para agendar uma ligação de 15 minutos. Eu reviso cada um pessoalmente.',
+    statusCaptured: 'Entendi — tenho seu plano e vou responder pessoalmente, geralmente em um dia. Eu reviso cada um pessoalmente.',
+    statusNoPlan: 'Entendi — vou entrar em contato pessoalmente para escopar isso com você, geralmente em um dia.',
+    statusFail: 'Não foi possível enviar daqui. Use «abrir no seu app de e-mail» abaixo, ou escreva para hello@sageideas.dev.',
+    writingProposal: 'Escrevendo sua proposta…', yourProposal: 'Sua proposta',
+    readItToMe: 'Leia para mim', stopReading: 'Parar leitura',
+    acceptWriting: 'Aceitar e receber por escrito &rarr;', bookCall: 'Agende uma ligação de 15 min',
+    copied: 'Copiado', copyLink: 'Copiar link para compartilhar',
+  },
+};
+const L = STRINGS[LANG] || STRINGS.en;
+
 /* ── anonymous prospect tracking: fire-and-forget, never affects the UI ──
    A missing/failing /api/scope endpoint (static hosting, no env configured)
    must never log a console error or block any interaction. */
@@ -97,16 +193,17 @@ function buildBlueprint(plan) {
     });
   });
   // start + verdict
-  parts.push(`<g class="bp-node" style="--d:0ms"><circle cx="${x0}" cy="${midY}" r="6" fill="#F4F2EF"/><text x="${x0}" y="${midY - 16}" text-anchor="middle" class="bp-cap" fill="#8E8882">YOUR BUILD</text></g>`);
+  parts.push(`<g class="bp-node" style="--d:0ms"><circle cx="${x0}" cy="${midY}" r="6" fill="#F4F2EF"/><text x="${x0}" y="${midY - 16}" text-anchor="middle" class="bp-cap" fill="#8E8882">${esc(L.bpYourBuild)}</text></g>`);
   const vc = hasGate ? '#10b981' : '#8E8882';
-  const vlabel = hasGate ? 'PROVEN' : 'SHIPPED';
+  const vlabel = hasGate ? L.bpProven : L.bpShipped;
   parts.push(`<g class="bp-node bp-verdict${hasGate ? ' on' : ''}" style="--d:${delay + 120}ms">
     <circle cx="${x1}" cy="${midY}" r="12" fill="none" stroke="${vc}" stroke-opacity="0.35" class="bp-halo"/>
     <circle cx="${x1}" cy="${midY}" r="6" fill="${vc}"/>
     <text x="${x1}" y="${midY - 18}" text-anchor="middle" class="bp-cap" fill="${vc}">${vlabel}</text>
   </g>`);
   const packet = REDUCED ? '' : `<circle r="3.5" fill="#22d3ee" class="bp-packet"><animate attributeName="cx" from="${x0}" to="${x1}" dur="3.2s" repeatCount="indefinite"/><animate attributeName="cy" values="${midY};${midY}" dur="3.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" dur="3.2s" repeatCount="indefinite"/></circle>`;
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="A live diagram of your scoped system: ${plan.count} components across ${cols.length} phases, ${hasGate ? 'with an evaluation gate that proves it works' : 'ready to ship'}." style="display:block;width:100%;height:auto;overflow:visible">${parts.join('')}${packet}</svg>`;
+  const aria = `${L.bpAriaA}${plan.count}${L.bpAriaMid}${cols.length}${L.bpAriaEnd}${hasGate ? L.bpGateOn : L.bpGateOff}.`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}" style="display:block;width:100%;height:auto;overflow:visible">${parts.join('')}${packet}</svg>`;
 }
 
 /* ── count-up on the total band ── */
@@ -131,7 +228,7 @@ window.__renderScopePlan = function (plan) {
   if (!mount) return;
 
   if (!plan.count) {
-    if (bp) bp.innerHTML = `<div class="bp-empty"><span class="bp-seed"></span><p>Your system builds here.<br><span>Pick what you want to happen — watch it assemble, priced and proven.</span></p></div>`;
+    if (bp) bp.innerHTML = `<div class="bp-empty"><span class="bp-seed"></span><p>${L.bpEmpty}</p></div>`;
     if (hud) hud.innerHTML = '';
     mount.innerHTML = '';
     lastLo = lastHi = 0;
@@ -149,14 +246,14 @@ window.__renderScopePlan = function (plan) {
   if (hud) {
     hud.innerHTML = `
       <div class="hud-audit">
-        <span class="ha-badge">Start here</span>
+        <span class="ha-badge">${L.startHere}</span>
         <span class="ha-price">$497</span>
-        <span class="ha-note">Fixed-price audit week &mdash; a written plan &amp; firm quote, <b>credited into the build</b>.</span>
+        <span class="ha-note">${L.auditNote}</span>
       </div>
       <div class="hud-row">
-        <div class="hud-stat"><span class="hud-num" data-track="green" id="scope-total-num">${band(plan.totalBand)}</span><span class="hud-lbl">full build &middot; indicative</span></div>
-        <div class="hud-stat"><span class="hud-num sm">~${money(mid)}</span><span class="hud-lbl">typical</span></div>
-        <div class="hud-stat"><span class="hud-num sm">~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]}<span class="hud-u">wks</span></span><span class="hud-lbl">timeline</span></div>
+        <div class="hud-stat"><span class="hud-num" data-track="green" id="scope-total-num">${band(plan.totalBand)}</span><span class="hud-lbl">${L.fullBuild}</span></div>
+        <div class="hud-stat"><span class="hud-num sm">~${money(mid)}</span><span class="hud-lbl">${L.typical}</span></div>
+        <div class="hud-stat"><span class="hud-num sm">~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]}<span class="hud-u">${L.wks}</span></span><span class="hud-lbl">${L.timeline}</span></div>
       </div>
       <div class="hud-bar" aria-hidden="true">${plan.phases.map((p) => `<span style="flex:${p.items.length};background:${PHASE_COLOR[p.phase]}"></span>`).join('')}</div>`;
     const num = document.getElementById('scope-total-num');
@@ -179,8 +276,8 @@ window.__renderScopePlan = function (plan) {
       ${phaseCards}
       <div id="scope-total" class="plan-total">
         <span class="pt-num">${band(plan.totalBand)}</span>
-        <span class="pt-lbl">full build &middot; indicative range &middot; typical ~${money(mid)} &middot; exact scope on a call</span>
-        <span class="pt-audit">Or start with the <b>$497 audit week</b> &mdash; credited into the build, so the real cost of starting is $0.</span>
+        <span class="pt-lbl">${L.totalLblA}${money(mid)}${L.totalLblB}</span>
+        <span class="pt-audit">${L.totalAudit}</span>
       </div>
     </div>`;
 };
@@ -213,7 +310,7 @@ if (root && qMount && planMount && disc) {
   // The questionnaire renders a single question per screen (Typeform-style) with a
   // progress stepper, Back/Continue nav, and a done panel. `step` indexes QUESTIONS;
   // `answers`, keysFromAnswers → computePlan → __renderScopePlan stay unchanged.
-  const UI = { back: 'Back', next: 'Continue', see: 'See my plan', edit: 'Edit answers', pick: 'Pick all that apply', q: 'Question', of: 'of', done: 'Done' };
+  const UI = { back: L.back, next: L.next, see: L.see, edit: L.edit, pick: L.pick, q: L.q, of: L.of, done: L.done };
   const ARROW_R = '<svg class="sf-ar" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   const ARROW_L = '<svg class="sf-ar sf-ar-l" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
   const CHECK = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -225,7 +322,27 @@ if (root && qMount && planMount && disc) {
   const quickCard = document.getElementById('scope-mode-quick');
   const chatCard = document.getElementById('scope-mode-chat');
   const chatRootEl = document.getElementById('scope-chat');
+  const entryEl = document.getElementById('scope-entry'); // the two-card chooser block
   root.dataset.entry = 'choose';
+
+  // One-time voiced hand-off (Nadine) the first time a real plan assembles — a warm
+  // "there's your plan" moment. Generic line (never TTS of the dynamic plan); honors the
+  // concierge voice-off pref and only fires after the visitor's own interaction.
+  // Declared BEFORE the init sequence below: renderPlan() runs during init and, on a
+  // deep-linked (#plan=/#caps=) load, immediately calls playPlanReady() — if this state
+  // were declared further down it would hit the temporal dead zone and throw, aborting
+  // init before maybeAutoEnter() could route the visitor to the review.
+  const SS_LOC = /^\/pt(\/|$)/.test(location.pathname) ? 'pt' : /^\/es(\/|$)/.test(location.pathname) ? 'es' : 'en';
+  let planVoicePlayed = false;
+  function playPlanReady() {
+    if (planVoicePlayed) return;
+    planVoicePlayed = true;
+    try {
+      if (localStorage.getItem('atlas-voice') === 'off') return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      new window.Audio('/assets/concierge/' + SS_LOC + '/planReady.mp3?v=1').play().catch(() => {});
+    } catch (e) { /* audio optional */ }
+  }
 
   track('started');
   renderQuestions();
@@ -251,8 +368,11 @@ if (root && qMount && planMount && disc) {
   }
 
   // step-0 Back returns to the chooser so the visitor can switch to Nadine.
+  // Also un-hides the chooser for a deep-linked visitor who edited answers all
+  // the way back to the start (maybeAutoEnter hides it on arrival).
   function exitToChooser() {
     clearTimeout(advTimer);
+    if (entryEl) entryEl.hidden = false;
     root.dataset.entry = 'choose';
     qMount.hidden = true;
     if (chatRootEl) chatRootEl.hidden = true;
@@ -260,12 +380,21 @@ if (root && qMount && planMount && disc) {
     if (chatCard) chatCard.setAttribute('aria-pressed', 'false');
   }
 
-  // A shared link (#plan= or #caps=) pre-fills answers/keys — reveal the plan on arrival.
+  // A shared link (#plan= or #caps=) pre-fills answers/keys and decodes to ≥1
+  // capability — land the visitor straight on the finished plan/review, NOT the
+  // chooser. We enter quick mode (as if the quick card was picked), hide the
+  // two-card chooser entirely so it isn't the primary view, and show the done
+  // panel; renderPlan() already flipped data-state to "plan", which reveals the
+  // gated #scope-handoff email capture. The "Edit answers" affordance in the
+  // done panel (and step-0 Back → exitToChooser) restores full navigation.
+  // A normal, no-hash load never reaches this branch, so the default chooser
+  // flow is unchanged.
   function maybeAutoEnter() {
-    if ((chatKeys !== null && chatKeys.length) || QUESTIONS.some((q) => (answers[q.id] || []).length)) {
-      enterQuick(false);
-      showReview();
-    }
+    const hasPlan = (chatKeys !== null && chatKeys.length) || QUESTIONS.some((q) => (answers[q.id] || []).length);
+    if (!hasPlan) return;
+    if (entryEl) entryEl.hidden = true;
+    enterQuick(false);
+    showReview();
   }
 
   // Hook for assets/scope-chat.mjs: apply an externally-derived (AI) capability
@@ -288,7 +417,7 @@ if (root && qMount && planMount && disc) {
     const body = document.getElementById('scope-proposal-body');
     if (!body) return;
     const orig = btn ? btn.textContent : '';
-    if (btn) { btn.disabled = true; btn.textContent = 'Writing your proposal…'; }
+    if (btn) { btn.disabled = true; btn.textContent = L.writingProposal; }
     track('proposal_written', { count: curPlan.count });
     let text = '';
     try {
@@ -308,7 +437,7 @@ if (root && qMount && planMount && disc) {
     if (!body) return;
     const card = document.createElement('div'); card.className = 'scope-prop-card';
     const head = document.createElement('div'); head.className = 'scope-prop-head';
-    head.innerHTML = '<span>Your proposal</span><button class="ra-btn" type="button" data-read-target="#scope-prop-text" data-stop-label="Stop reading">Read it to me</button>';
+    head.innerHTML = `<span>${L.yourProposal}</span><button class="ra-btn" type="button" data-read-target="#scope-prop-text" data-stop-label="${esc(L.stopReading)}">${L.readItToMe}</button>`;
     const txt = document.createElement('div'); txt.id = 'scope-prop-text'; txt.className = 'scope-prop-text';
     String(text).replace(/\*\*/g, '').replace(/^#+\s*/gm, '').split(/\n\n+/).forEach((para) => {
       const p = document.createElement('p');
@@ -318,7 +447,7 @@ if (root && qMount && planMount && disc) {
       txt.appendChild(p);
     });
     const cta = document.createElement('div'); cta.className = 'scope-prop-cta';
-    cta.innerHTML = '<a href="#scope-lead" class="btn-solid green" id="scope-prop-accept">Accept &amp; get it in writing &rarr;</a><a href="book.html" class="btn-ghost" data-evt="prop-book">Book a 15-min call</a>';
+    cta.innerHTML = `<a href="#scope-lead" class="btn-solid green" id="scope-prop-accept">${L.acceptWriting}</a><a href="book.html" class="btn-ghost" data-evt="prop-book">${L.bookCall}</a>`;
     card.appendChild(head); card.appendChild(txt); card.appendChild(cta);
     body.innerHTML = ''; body.appendChild(card);
     const acc = document.getElementById('scope-prop-accept');
@@ -334,7 +463,7 @@ if (root && qMount && planMount && disc) {
     const keys = keysFromAnswers(answers);
     const plan = computePlan(keys, segmentFromAnswers());
     const hasPlan = keys.length > 0;
-    if (status) { status.style.color = '#8E8882'; status.textContent = 'Sending…'; }
+    if (status) { status.style.color = '#8E8882'; status.textContent = L.sending; }
     let ok = false;
     let emailed = false;
     try {
@@ -364,10 +493,8 @@ if (root && qMount && planMount && disc) {
       if (status) {
         status.style.color = '#10b981';
         status.textContent = hasPlan
-          ? (emailed
-            ? "Done — your itemized plan is on its way to your inbox, with a link to book a 15-minute call. I review every one myself."
-            : "Got it — I've got your plan and I'll follow up personally, usually within a day. I review every one myself.")
-          : "Got it — I'll reach out personally to scope this with you, usually within a day.";
+          ? (emailed ? L.statusEmailed : L.statusCaptured)
+          : L.statusNoPlan;
       }
       if (input) input.disabled = true;
       const send = document.getElementById('scope-send');
@@ -376,7 +503,7 @@ if (root && qMount && planMount && disc) {
     } else if (status) {
       // No working endpoint (static host / not yet deployed) — the "open in your email app" link is still there.
       status.style.color = '#F59E0B';
-      status.textContent = 'Couldn’t send from here. Use “open in your email app” below, or email hello@sageideas.dev.';
+      status.textContent = L.statusFail;
     }
   }
 
@@ -529,15 +656,13 @@ if (root && qMount && planMount && disc) {
     stage.innerHTML = `
       <div class="scope-step scope-done${REDUCED ? '' : ' sf-in'}">
         <span class="sf-done-ico${has ? ' on' : ''}" aria-hidden="true">${CHECK}</span>
-        <h2 class="sf-prompt" id="sf-prompt" tabindex="-1">${has ? 'Your plan&rsquo;s ready.' : 'One more thing.'}</h2>
-        <p class="sf-done-copy">${has
-          ? 'Your itemized plan and indicative range are assembled &mdash; on the right on desktop, just below on mobile. Adjust anytime.'
-          : 'You haven&rsquo;t picked anything to build yet. Choose what you want to happen and your plan assembles instantly.'}</p>
+        <h2 class="sf-prompt" id="sf-prompt" tabindex="-1">${has ? L.planReady : L.oneMore}</h2>
+        <p class="sf-done-copy">${has ? L.doneHas : L.doneEmpty}</p>
         <div class="sf-nav">
           <button type="button" class="sf-btn sf-back" id="sf-back">${ARROW_L}${UI.edit}</button>
           ${has
-            ? `<a href="#scope-handoff" class="sf-btn sf-next" id="sf-done-cta" data-evt="scope-done-cta">Email me the plan${ARROW_R}</a>`
-            : `<button type="button" class="sf-btn sf-next" id="sf-next">Pick what to build${ARROW_R}</button>`}
+            ? `<a href="#scope-handoff" class="sf-btn sf-next" id="sf-done-cta" data-evt="scope-done-cta">${L.emailPlan}${ARROW_R}</a>`
+            : `<button type="button" class="sf-btn sf-next" id="sf-next">${L.pickBuild}${ARROW_R}</button>`}
       </div>
       </div>`;
     const back = document.getElementById('sf-back');
@@ -571,21 +696,6 @@ if (root && qMount && planMount && disc) {
   function segmentFromAnswers() {
     const s = (answers.segment || [])[0];
     return { 'seg-service': 'service-business', 'seg-aiproduct': 'ai-product', 'seg-ops': 'ops-automation', 'seg-product': 'product-build' }[s] || null;
-  }
-
-  // One-time voiced hand-off (Nadine) the first time a real plan assembles — a warm
-  // "there's your plan" moment. Generic line (never TTS of the dynamic plan); honors the
-  // concierge voice-off pref and only fires after the visitor's own interaction.
-  const SS_LOC = /^\/pt(\/|$)/.test(location.pathname) ? 'pt' : /^\/es(\/|$)/.test(location.pathname) ? 'es' : 'en';
-  let planVoicePlayed = false;
-  function playPlanReady() {
-    if (planVoicePlayed) return;
-    planVoicePlayed = true;
-    try {
-      if (localStorage.getItem('atlas-voice') === 'off') return;
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      new window.Audio('/assets/concierge/' + SS_LOC + '/planReady.mp3?v=1').play().catch(() => {});
-    } catch (e) { /* audio optional */ }
   }
 
   function renderPlan() {
@@ -623,7 +733,7 @@ if (root && qMount && planMount && disc) {
 
   function planSummaryText(plan) {
     const lines = plan.items.map((i) => `• ${i.name} · ${band(i.band)} (${i.effort})`);
-    return `Here's the plan I scoped on your site:\n\n${lines.join('\n')}\n\nIndicative total: ${band(plan.totalBand)} · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} weeks\n(Indicative only. Happy to lock exact scope on a call.)\n\nShared plan: ${location.href}`;
+    return `${L.summHead}\n\n${lines.join('\n')}\n\n${L.summTotal} ${band(plan.totalBand)} · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} ${L.summWeeks}\n${L.summNote}\n\n${L.summShared} ${location.href}`;
   }
 
   function updateHandoff(plan) {
@@ -644,8 +754,8 @@ if (root && qMount && planMount && disc) {
         track('handoff_clicked', { meta: { kind: 'copy' } });
         try {
           await navigator.clipboard.writeText(location.href);
-          copy.textContent = 'Copied';
-          setTimeout(() => { copy.textContent = 'Copy shareable link'; }, 1600);
+          copy.textContent = L.copied;
+          setTimeout(() => { copy.textContent = L.copyLink; }, 1600);
         } catch {
           // Clipboard API unavailable (e.g. insecure context) — link is still visible to copy manually.
         }
