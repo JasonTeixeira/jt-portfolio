@@ -4,8 +4,35 @@ import {
   isEnabled, getProjectByPortalToken, getProjectByProposalId, ensurePortalToken,
   listMilestones, upsertMilestone, markDelivered, approveMilestone,
   createContract, getContractByPublicId, getContractsForProposal, sendContract, acceptContract,
-  listClientProjectsByEmail, contractSummariesForProposals,
+  listClientProjectsByEmail, contractSummariesForProposals, normalizeMessageAttachment,
 } from '../../lib/portal-db.mjs';
+
+test('normalizeMessageAttachment accepts only paths under this project msg/ prefix', () => {
+  const pid = 'proj-123';
+  // valid path minted by this project's sign_upload
+  const ok = normalizeMessageAttachment(pid, { path: `msg/${pid}/abc-report.pdf`, name: 'report.pdf', size: 1024, type: 'application/pdf' });
+  assert.deepEqual(ok, { path: `msg/${pid}/abc-report.pdf`, name: 'report.pdf', size: 1024, type: 'application/pdf' });
+});
+
+test('normalizeMessageAttachment rejects cross-project, arbitrary, and traversal paths', () => {
+  const pid = 'proj-123';
+  assert.equal(normalizeMessageAttachment(pid, { path: 'msg/other-proj/x.pdf', name: 'x' }), null);
+  assert.equal(normalizeMessageAttachment(pid, { path: 'proj-123/x.pdf', name: 'x' }), null); // deliverables prefix, not msg/
+  assert.equal(normalizeMessageAttachment(pid, { path: '../../secrets', name: 'x' }), null);
+  assert.equal(normalizeMessageAttachment(pid, { path: `msg/${pid}`, name: 'x' }), null); // no trailing slash → not under prefix
+  assert.equal(normalizeMessageAttachment(pid, { path: `msg/${pid}/../other-proj/x`, name: 'x' }), null); // traversal after valid prefix
+  assert.equal(normalizeMessageAttachment(pid, {}), null);
+  assert.equal(normalizeMessageAttachment(pid, null), null);
+  assert.equal(normalizeMessageAttachment('', { path: 'msg//x' }), null);
+});
+
+test('normalizeMessageAttachment sanitizes name and bounds metadata', () => {
+  const pid = 'p1';
+  const r = normalizeMessageAttachment(pid, { path: `msg/${pid}/u-file`, name: '../../etc/passwd', size: -5, type: 'x'.repeat(200) });
+  assert.equal(r.name, 'passwd'); // basename only, traversal stripped
+  assert.equal(r.size, null); // negative size rejected
+  assert.equal(r.type.length, 120); // bounded
+});
 
 test('contractSummariesForProposals returns [] for empty ids and is degrade-safe', async () => {
   assert.deepEqual(await listClientProjectsByEmail('a@b.co'), { ok: false, skipped: true });

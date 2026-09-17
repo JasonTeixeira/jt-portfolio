@@ -35,9 +35,13 @@ export function renderInbox(mount, key, deps) {
     const scroll = h('div', { style: 'max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 0' });
     for (const m of msgs) {
       const mine = m.sender === 'operator';
-      scroll.appendChild(h('div', { style: `max-width:80%;align-self:${mine ? 'flex-end' : 'flex-start'};background:${mine ? 'rgba(16,185,129,.12)' : '#141418'};border:1px solid ${mine ? 'rgba(16,185,129,.3)' : 'var(--line,#26262c)'};border-radius:10px;padding:8px 12px` },
-        h('div', { style: 'font-size:13px;white-space:pre-wrap;word-break:break-word' }, m.body),
-        h('div', { class: 'subtle', style: 'font-size:10px;margin-top:4px;color:var(--faint)' }, `${mine ? 'you' : 'client'} · ${fmtTime(m.created_at)}`)));
+      const bubble = h('div', { style: `max-width:80%;align-self:${mine ? 'flex-end' : 'flex-start'};background:${mine ? 'rgba(16,185,129,.12)' : '#141418'};border:1px solid ${mine ? 'rgba(16,185,129,.3)' : 'var(--line,#26262c)'};border-radius:10px;padding:8px 12px` },
+        h('div', { style: 'font-size:13px;white-space:pre-wrap;word-break:break-word' }, m.body));
+      if (m.attachment && m.attachment.name) {
+        bubble.appendChild(h('a', { href: m.attachment.url || '#', target: '_blank', rel: 'noopener', style: 'display:inline-flex;align-items:center;gap:6px;margin-top:5px;font-size:12px;color:#22d3ee;text-decoration:none' }, h('span', {}, '📎'), h('span', {}, m.attachment.name)));
+      }
+      bubble.appendChild(h('div', { class: 'subtle', style: 'font-size:10px;margin-top:4px;color:var(--faint)' }, `${mine ? 'you' : 'client'} · ${fmtTime(m.created_at)}`));
+      scroll.appendChild(bubble);
     }
     threadCard.appendChild(scroll);
 

@@ -665,10 +665,14 @@ function renderMessagesCard(project, key) {
   const empty = h('p', { class: 'subtle', style: 'font-size:13px' }, 'No messages yet.');
   function bubble(m) {
     const mine = m.sender === 'operator';
-    return h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:82%;border:1px solid var(--line);border-radius:14px;padding:9px 13px;background:${mine ? 'rgba(16,185,129,0.08)' : '#0F0F13'}` },
+    const el = h('div', { style: `align-self:${mine ? 'flex-end' : 'flex-start'};max-width:82%;border:1px solid var(--line);border-radius:14px;padding:9px 13px;background:${mine ? 'rgba(16,185,129,0.08)' : '#0F0F13'}` },
       h('div', { style: 'font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:3px' }, mine ? 'You (Jason)' : 'Client'),
-      h('div', { style: 'font-size:13.5px;line-height:1.55;color:var(--ink);white-space:pre-wrap' }, m.body),
-      h('div', { class: 'mono', style: 'font-size:10px;color:var(--faint);margin-top:4px' }, formatAge(m.created_at)));
+      h('div', { style: 'font-size:13.5px;line-height:1.55;color:var(--ink);white-space:pre-wrap' }, m.body));
+    if (m.attachment && m.attachment.name) {
+      el.appendChild(h('a', { href: m.attachment.url || '#', target: '_blank', rel: 'noopener', style: 'display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12.5px;color:#22d3ee;text-decoration:none' }, h('span', {}, '📎'), h('span', {}, m.attachment.name)));
+    }
+    el.appendChild(h('div', { class: 'mono', style: 'font-size:10px;color:var(--faint);margin-top:4px' }, formatAge(m.created_at)));
+    return el;
   }
   function load() {
     apiGet(`/api/messages?projectId=${encodeURIComponent(project.id)}`, key).then((r) => {

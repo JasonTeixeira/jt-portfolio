@@ -1,7 +1,8 @@
 import { withObserve } from '../lib/observe.mjs';
 import {
   isEnabled, getProjectByPortalToken, listMilestones, approveMilestone, getContractsForProposal,
-  listMessages, addMessage, markMessagesRead, listDeliverables, signDeliverableDownload,
+  listMessages, addMessage, markMessagesRead, listDeliverables, signDeliverableDownload, signMessageUpload,
+  signMessageDownload, normalizeMessageAttachment,
 } from '../lib/portal-db.mjs';
 import { getProposalById, updateProposal } from '../lib/proposal-db.mjs';
 import { listInvoicesForProposal, isInvoicePaid } from '../lib/invoice-db.mjs';
@@ -62,6 +63,9 @@ export function clientView(project, proposal, milestones, contract, messages, in
     ? { public_id: contract.public_id, status: contract.status } : null;
   const msgs = Array.isArray(messages) ? messages.map((m) => ({
     sender: m.sender, body: m.body, created_at: m.created_at,
+    // attachment metadata only — the bucket path is NEVER exposed; a signed url is added by
+    // the GET handler for messages that have a file.
+    attachment: m.attachment_path ? { name: m.attachment_name, size: m.attachment_size, type: m.attachment_type, url: null } : null,
   })) : [];
   // Invoice history — client-safe fields only; paid status derived from the ledger, never
   // stored, so an invoice can't disagree with what Stripe actually collected.
@@ -112,6 +116,14 @@ async function handler(req, res) {
     markMessagesRead(project.id, 'client').catch(() => {});
     const view = clientView(project, proposal, milestones, contract, messages, invoices);
     if (!view) return res.status(200).json({ ok: false, reason: 'not_found' });
+    // Sign short-lived download URLs for message attachments (raw messages carry the path;
+    // the client view never exposes it). Index-aligned with clientView's message mapping.
+    await Promise.all(messages.map(async (m, i) => {
+      if (m.attachment_path && view.messages[i] && view.messages[i].attachment) {
+        const s = await signMessageDownload(m.attachment_path, 300);
+        view.messages[i].attachment.url = s.ok ? s.url : null;
+      }
+    }));
     // deliverable files: mint a fresh short-lived signed download URL per file (no storage_path leak)
     const filesR = await listDeliverables(project.id);
     const files = filesR.ok ? filesR.data : [];
@@ -161,21 +173,47 @@ async function handler(req, res) {
     }
   }
 
-  // client posts a message to the project thread
-  if (body.action === 'message') {
-    const mv = validateMessage(body); if (!mv.ok) return res.status(400).json({ ok: false, error: mv.error });
+  // client asks for a one-time signed upload URL for a message attachment. Path is server-built
+  // under this project's msg/ prefix — the caller never chooses it. The 25MB cap is enforced for
+  // real by the message-uploads bucket's file_size_limit (this check is an advisory early-reject;
+  // a client can under-report size, so storage is the true backstop).
+  if (body.action === 'sign_upload') {
+    const pt = typeof body.portalToken === 'string' ? body.portalToken.trim() : '';
+    const filename = typeof body.filename === 'string' ? body.filename : '';
+    const size = typeof body.size === 'number' ? body.size : 0;
+    if (!pt || !filename) return res.status(400).json({ ok: false, error: 'portalToken and filename required' });
+    if (size > 25 * 1024 * 1024) return res.status(400).json({ ok: false, error: 'file_too_large' });
     if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
-    const pR = await getProjectByPortalToken(body.portalToken.trim());
+    const pR = await getProjectByPortalToken(pt);
     if (!pR.ok || !pR.data) return res.status(404).json({ ok: false, error: 'not_found' });
-    const sent = await addMessage(pR.data.id, 'client', body.body.trim());
+    const up = await signMessageUpload(pR.data.id, filename);
+    if (!up.ok) return res.status(200).json({ ok: false, reason: 'upload_unavailable' });
+    return res.status(200).json({ ok: true, signedUrl: up.signedUrl, token: up.token, path: up.path });
+  }
+
+  // client posts a message to the project thread (optionally with one attachment)
+  if (body.action === 'message') {
+    const pt = typeof body.portalToken === 'string' ? body.portalToken.trim() : '';
+    const text0 = typeof body.body === 'string' ? body.body.trim() : '';
+    const att = body.attachment && typeof body.attachment === 'object' ? body.attachment : null;
+    const hasAtt = att && typeof att.path === 'string' && att.path;
+    if (!pt) return res.status(400).json({ ok: false, error: 'portalToken required' });
+    if (!text0 && !hasAtt) return res.status(400).json({ ok: false, error: 'message required' });
+    if (text0.length > 5000) return res.status(400).json({ ok: false, error: 'message too long' });
+    if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
+    const pR = await getProjectByPortalToken(pt);
+    if (!pR.ok || !pR.data) return res.status(404).json({ ok: false, error: 'not_found' });
+    // Only accept an attachment path this project's own sign_upload minted (prevents a client
+    // from attaching another project's / an arbitrary bucket path).
+    const attachment = hasAtt ? normalizeMessageAttachment(pR.data.id, att) : null;
+    const text = text0 || '(sent a file)';
+    const sent = await addMessage(pR.data.id, 'client', text, attachment);
     if (!sent.ok) { console.error('[portal] addMessage failed', sent.error || ''); return res.status(200).json({ ok: false, reason: 'write_failed' }); }
     try {
-      // Carry the client's address as reply-to so the operator can answer straight
-      // from their mailbox (best-effort; a missing email just omits reply-to).
       const propR = await getProposalById(pR.data.proposal_id);
       const clientEmail = propR && propR.ok && propR.data ? propR.data.client_email : undefined;
       await sendOperator({ subject: 'New message from a client — project portal',
-        text: `A client sent you a message in their project portal:\n\n"${body.body.trim().slice(0, 800)}"\n\nReply directly to this email to answer the client, or in the admin: ${SITE}/proposal-admin.html\n`,
+        text: `A client sent you a message in their project portal:\n\n"${text.slice(0, 800)}"${attachment ? `\n\n📎 with an attachment: ${attachment.name || 'file'}` : ''}\n\nReply directly to this email to answer the client, or in the admin: ${SITE}/proposal-admin.html\n`,
         replyTo: clientEmail || undefined });
     } catch (e) { console.error('[portal] notify send failed', (e && e.message) || e); }
     return res.status(200).json({ ok: true, sent: true });

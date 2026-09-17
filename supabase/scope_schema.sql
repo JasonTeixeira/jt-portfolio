@@ -177,6 +177,13 @@ insert into storage.buckets (id, name, public, file_size_limit)
 values ('deliverables', 'deliverables', false, 52428800)
 on conflict (id) do nothing;
 
+-- Client message attachments: a SEPARATE private bucket with a hard 25MB ceiling,
+-- enforced by storage itself (the app's own size check is client-reported and advisory).
+-- Isolated from 'deliverables' so a casual client upload can never collide with an operator file.
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('message-uploads', 'message-uploads', false, 26214400)
+on conflict (id) do update set file_size_limit = excluded.file_size_limit;
+
 create table if not exists scope_deliverable_files (
   id uuid primary key default gen_random_uuid(),
   project_id uuid not null references scope_projects(id) on delete cascade,
@@ -361,3 +368,10 @@ create table if not exists scope_client_prefs (
   created_at timestamptz not null default now()
 );
 alter table scope_client_prefs enable row level security;
+
+-- ── Message attachments (2026-09-16): optional single file per portal message ──
+alter table scope_messages
+  add column if not exists attachment_path text,
+  add column if not exists attachment_name text,
+  add column if not exists attachment_size integer,
+  add column if not exists attachment_type text;
