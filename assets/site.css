@@ -552,7 +552,11 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 }
 
 /* ═══════════════ Scope Studio (/build.html) ═══════════════ */
-#scope-root .scope-grid { grid-template-columns: 1fr 1.05fr; }
+#scope-root .scope-grid { grid-template-columns: 1.06fr 0.94fr; }
+.scope-left { min-width: 0; }
+/* keep the assembling canvas pinned beside the hero + questions from the first paint.
+   the #scope-canvas id rule sets position:relative, so we must out-specify it here. */
+#scope-root .scope-grid #scope-canvas.tf-sticky { position: sticky; top: 88px; align-self: start; }
 #scope-questions { min-height: 420px; }
 #scope-canvas { min-height: 300px; }
 
@@ -598,6 +602,12 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 .hud-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:#8E8882; }
 .hud-bar { display:flex; gap:2px; height:6px; margin-top:14px; border-radius:999px; overflow:hidden; }
 .hud-bar span { display:block; transition:flex .45s cubic-bezier(.16,1,.3,1); }
+/* audit rung — the low-commitment entry point, led with above the full-build range */
+.hud-audit { display:flex; align-items:baseline; flex-wrap:wrap; gap:8px 12px; margin-bottom:16px; padding:12px 14px; border:1px solid rgba(16,185,129,0.3); border-radius:12px; background:linear-gradient(180deg,rgba(16,185,129,0.09),rgba(16,185,129,0.02)); }
+.ha-badge { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:#06130E; background:#10b981; border-radius:999px; padding:3px 9px; font-weight:700; }
+.ha-price { font-family:'Instrument Serif',Georgia,serif; font-size:clamp(1.5rem,2.4vw,2rem); line-height:1; color:#10b981; }
+.ha-note { flex:1 1 100%; font-size:12px; line-height:1.5; color:#A8A29E; }
+.ha-note b { color:#F4F2EF; font-weight:600; }
 
 /* — the itemized plan artifact — */
 #scope-plan:not(:empty) { margin-top:18px; padding-top:16px; border-top:1px solid #211F1C; }
@@ -615,6 +625,8 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 .plan-total { margin-top:18px; border-top:1px solid #2A2826; padding-top:14px; display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; }
 .pt-num { font-family:'Instrument Serif',Georgia,serif; font-size:clamp(1.4rem,2.4vw,1.9rem); color:#10b981; }
 .pt-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#8E8882; }
+.pt-audit { flex:1 1 100%; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.55; letter-spacing:.01em; color:#8E8882; margin-top:4px; }
+.pt-audit b { color:#10b981; font-weight:600; }
 
 @media (max-width:900px){ #scope-root .scope-grid { grid-template-columns:1fr; } #scope-canvas { position:static; } }
 @media (prefers-reduced-motion:reduce){
