@@ -15,6 +15,7 @@ import { renderInbox as renderInboxView } from './admin-inbox.mjs';
 import { createCommandPalette } from './admin-command.mjs';
 import { areaChart, deltaBadge, funnelBars } from './admin-charts.mjs';
 import { renderSettings as renderSettingsView } from './admin-settings.mjs';
+import { renderAudit as renderAuditView } from './admin-audit.mjs';
 
 // Admin auth: a logged-in operator (Supabase JWT, sent as Bearer) OR the break-glass
 // ?key token (sent as x-admin-token). authHeaders() attaches whichever we have.
@@ -1143,6 +1144,10 @@ function renderSettings(root, key) {
   renderSettingsView(root, key, { h, clear, authHeaders, renderNotAuthorized });
 }
 
+function renderAudit(root, key) {
+  renderAuditView(root, key, { h, clear, authHeaders, renderNotAuthorized });
+}
+
 function renderInbox(root, key) {
   const mount = h('div', {}); root.appendChild(mount);
   renderInboxView(mount, key, { h, clear, authHeaders, renderNotAuthorized, onRead: refreshInboxBadge });
@@ -1182,6 +1187,7 @@ const SECTIONS = [
   { id: 'proposals', label: 'Proposals', ico: '▤', fn: renderProposals },
   { id: 'gtm', label: 'GTM', ico: '◈', fn: renderGTM },
   { id: 'settings', label: 'Settings', ico: '⚙', fn: renderSettings },
+  { id: 'audit', label: 'Audit log', ico: '❯', fn: renderAudit },
 ];
 let ADMIN_KEY = '';
 

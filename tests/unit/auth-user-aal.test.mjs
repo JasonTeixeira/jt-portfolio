@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { aalFromToken } from '../../lib/auth-user.mjs';
+import { aalFromToken, emailFromToken } from '../../lib/auth-user.mjs';
 
 // Build a JWT-shaped string (header.payload.sig) with a base64url payload — aalFromToken
 // only decodes the claim, it does NOT verify the signature (the token is already proven
@@ -30,6 +30,13 @@ test('aalFromToken returns null when the claim is absent or the token is malform
 test('aalFromToken is decode-only — it does NOT validate the signature (invariant guard)', () => {
   const forged = jwt({ aal: 'aal2', sub: 'attacker' }).replace(/\.sig$/, '.totally-invalid-signature');
   assert.equal(aalFromToken(forged), 'aal2', 'reads the claim regardless of signature — hence caller MUST validate the token first');
+});
+
+test('emailFromToken decodes + lowercases the email claim, null on absence/garbage', () => {
+  assert.equal(emailFromToken(jwt({ email: 'Sage@SageIdeas.org' })), 'sage@sageideas.org');
+  assert.equal(emailFromToken(jwt({ sub: 'u1' })), null);
+  assert.equal(emailFromToken('not-a-jwt'), null);
+  assert.equal(emailFromToken(null), null);
 });
 
 test('aalFromToken tolerates base64url padding variations', () => {

@@ -9,7 +9,8 @@
  */
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
-import { authorizeAdmin } from '../lib/admin-auth.mjs';
+import { authorizeAdmin, adminActor } from '../lib/admin-auth.mjs';
+import { logAudit } from '../lib/audit-db.mjs';
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { getProjectByProposalId, ensurePortalToken } from '../lib/portal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
@@ -63,6 +64,7 @@ async function handler(req, res) {
       }
       const r = await createInvoice(proposalId, kind, amount, propR.data.currency || 'usd');
       if (!r.ok) { console.error('[invoice] generate failed', r.error); return res.status(400).json({ ok: false, error: 'save_failed' }); }
+      logAudit({ actor: adminActor(req), action: 'invoice_generated', targetType: 'invoice', targetId: `INV-${r.data.invoice_no}`, meta: { kind, amount_cents: amount } }).catch(() => {});
       return res.status(200).json({ ok: true, invoice: { ...r.data, paid: isInvoicePaid(propR.data, kind) } });
     }
 
@@ -83,6 +85,7 @@ async function handler(req, res) {
       } catch { /* fall back to bare site */ }
       const sent = await markInvoiceSent(id);
       if (!sent.ok) { console.error('[invoice] mark sent failed', sent.error); return res.status(400).json({ ok: false, error: 'save_failed' }); }
+      logAudit({ actor: adminActor(req), action: 'invoice_sent', targetType: 'invoice', targetId: `INV-${sent.data.invoice_no}`, meta: { to: proposal.client_email || null } }).catch(() => {});
       try {
         const mail = invoiceEmail({ invoiceNo: inv.invoice_no, amountCents: inv.amount_cents, kind: inv.kind, link });
         await sendClient({ to: proposal.client_email, subject: mail.subject, text: mail.text, html: mail.html });

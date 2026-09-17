@@ -1,6 +1,7 @@
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
-import { authorizeAdmin } from '../lib/admin-auth.mjs';
+import { authorizeAdmin, adminActor } from '../lib/admin-auth.mjs';
+import { logAudit } from '../lib/audit-db.mjs';
 import { isEnabled, sendContract } from '../lib/portal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
 import { contractEmail } from '../lib/email-templates.mjs';
@@ -24,6 +25,7 @@ async function handler(req, res) {
       await sendClient({ to: row.client_email, subject: mail.subject, text: mail.text, html: mail.html });
     } catch {}
   }
+  logAudit({ actor: adminActor(req), action: 'contract_sent', targetType: 'contract', targetId: row.public_id, meta: { to: row.client_email || null } }).catch(() => {});
   return res.status(200).json({ ok: true, publicId: row.public_id });
 }
 
