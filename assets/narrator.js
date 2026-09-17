@@ -123,7 +123,7 @@
     if (d.getElementById('jt-nar-css')) return;
     var css = [
       // pointer-events:none on the wrapper so its empty area (full-width on mobile) never
-      // swallows taps meant for the Atlas FAB beneath it; the actual controls re-enable it.
+      // swallows taps meant for the Nadine FAB beneath it; the actual controls re-enable it.
       '#jt-narrator{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:2147482000;pointer-events:none;font-family:"Plus Jakarta Sans",system-ui,sans-serif}',
       // Hide while the mobile nav is open so it never overlaps a menu item (e.g. Sign up).
       'body.site-nav-open #jt-narrator{display:none!important}',
