@@ -1,14 +1,425 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Field Notes — Jason Teixeira</title>
+    <title>Field Notes & Learn — Jason Teixeira</title>
     <link>https://agency.sageideas.dev/field-notes.html</link>
-    <description>Working notes from the proof-first trenches: AI automation, QA, and LLM evaluation.</description>
+    <atom:link href="https://agency.sageideas.dev/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Proof-first writing on AI evaluation, RAG, agents, testing, and shipping AI you can trust — field notes plus the Learn library.</description>
     <language>en-us</language>
+    <lastBuildDate>Thu, 17 Sep 2026 16:03:47 GMT</lastBuildDate>
+    <item>
+      <title>LLM Evaluation Metrics Explained</title>
+      <link>https://agency.sageideas.dev/docs-llm-evaluation-metrics.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-llm-evaluation-metrics.html</guid>
+      <category>cornerstone</category>
+      <pubDate>Thu, 17 Sep 2026 16:03:47 GMT</pubDate>
+      <description>The four families of eval metrics, when to reach for each, and how they become a gate.</description>
+    </item>
+    <item>
+      <title>RAG Evaluation Metrics Explained</title>
+      <link>https://agency.sageideas.dev/docs-rag-evaluation-metrics.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-rag-evaluation-metrics.html</guid>
+      <category>cornerstone</category>
+      <pubDate>Thu, 17 Sep 2026 16:02:47 GMT</pubDate>
+      <description>The four RAG metrics, and how they tell a retrieval bug from a generation bug.</description>
+    </item>
+    <item>
+      <title>Eval Gates: The Missing CI Step for AI Features</title>
+      <link>https://agency.sageideas.dev/docs-eval-gates-ci.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-eval-gates-ci.html</guid>
+      <category>cornerstone</category>
+      <pubDate>Thu, 17 Sep 2026 16:01:47 GMT</pubDate>
+      <description>What an eval gate is, its anatomy, and why AI features need one.</description>
+    </item>
+    <item>
+      <title>How to Build an LLM Eval Gate in CI with Promptfoo</title>
+      <link>https://agency.sageideas.dev/docs-build-llm-eval-gate-ci.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-build-llm-eval-gate-ci.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 16:00:47 GMT</pubDate>
+      <description>Add a Promptfoo eval gate to CI that blocks a merge when quality drops.</description>
+    </item>
+    <item>
+      <title>How to Build a Golden Set for LLM Regression Testing</title>
+      <link>https://agency.sageideas.dev/docs-build-golden-set.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-build-golden-set.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:59:47 GMT</pubDate>
+      <description>Assemble and grow a golden set of cases for LLM regression testing.</description>
+    </item>
+    <item>
+      <title>How to Add a Human-Approval Checkpoint to an AI Pipeline</title>
+      <link>https://agency.sageideas.dev/docs-add-human-approval-checkpoint.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-add-human-approval-checkpoint.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:58:47 GMT</pubDate>
+      <description>Insert a human-in-the-loop approval step before risky AI actions.</description>
+    </item>
+    <item>
+      <title>How to Write Adversarial Probes for Prompt Injection Testing</title>
+      <link>https://agency.sageideas.dev/docs-write-adversarial-probes.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-write-adversarial-probes.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:57:47 GMT</pubDate>
+      <description>Write adversarial probes that test for prompt injection and jailbreaks.</description>
+    </item>
+    <item>
+      <title>How to Evaluate a RAG Pipeline End-to-End with RAGAS</title>
+      <link>https://agency.sageideas.dev/docs-evaluate-rag-pipeline.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-evaluate-rag-pipeline.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:56:47 GMT</pubDate>
+      <description>Score a RAG pipeline end to end with RAGAS metrics.</description>
+    </item>
+    <item>
+      <title>How to Set Up a Nightly LLM Regression Suite in GitHub Actions</title>
+      <link>https://agency.sageideas.dev/docs-nightly-llm-regression-github-actions.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-nightly-llm-regression-github-actions.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:55:47 GMT</pubDate>
+      <description>Run an LLM eval suite nightly in GitHub Actions with alerts.</description>
+    </item>
+    <item>
+      <title>How to Version Golden Datasets Like Code</title>
+      <link>https://agency.sageideas.dev/docs-version-golden-datasets.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-version-golden-datasets.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:54:47 GMT</pubDate>
+      <description>Keep eval datasets under version control for reproducible scores.</description>
+    </item>
+    <item>
+      <title>How to Build a Tool-Call Accuracy Test Harness for AI Agents</title>
+      <link>https://agency.sageideas.dev/docs-test-tool-call-accuracy.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-test-tool-call-accuracy.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:53:47 GMT</pubDate>
+      <description>Build a harness that tests an agent picks the right tool and arguments.</description>
+    </item>
+    <item>
+      <title>How to Test Multi-Turn Agent Conversations</title>
+      <link>https://agency.sageideas.dev/docs-test-multi-turn-conversations.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-test-multi-turn-conversations.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:52:47 GMT</pubDate>
+      <description>Test multi-turn agent conversations, including memory and state.</description>
+    </item>
+    <item>
+      <title>How to Add Open-Source LLM Observability (Langfuse or Phoenix)</title>
+      <link>https://agency.sageideas.dev/docs-add-llm-observability.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-add-llm-observability.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:51:47 GMT</pubDate>
+      <description>Add self-hosted LLM observability with Langfuse or Phoenix.</description>
+    </item>
+    <item>
+      <title>How to Build a Quality Ratchet That Blocks Regressions</title>
+      <link>https://agency.sageideas.dev/docs-build-quality-ratchet.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-build-quality-ratchet.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:50:47 GMT</pubDate>
+      <description>Build a ratchet where the last good score becomes the new floor.</description>
+    </item>
+    <item>
+      <title>How to Run Playwright Tests Against an AI-Generated UI</title>
+      <link>https://agency.sageideas.dev/docs-playwright-ai-generated-ui.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-playwright-ai-generated-ui.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:49:47 GMT</pubDate>
+      <description>Write resilient Playwright tests for an AI-generated or changing UI.</description>
+    </item>
+    <item>
+      <title>How to Detect Hallucinations Automatically in Production Logs</title>
+      <link>https://agency.sageideas.dev/docs-detect-hallucinations-production.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-detect-hallucinations-production.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:48:47 GMT</pubDate>
+      <description>Detect hallucinations in production by grounding answers against sources.</description>
+    </item>
+    <item>
+      <title>How to Build a Red-Team Test Suite for a Customer-Facing Chatbot</title>
+      <link>https://agency.sageideas.dev/docs-red-team-chatbot-suite.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-red-team-chatbot-suite.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:47:47 GMT</pubDate>
+      <description>Build a repeatable red-team suite for a customer-facing chatbot.</description>
+    </item>
+    <item>
+      <title>How to Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</title>
+      <link>https://agency.sageideas.dev/docs-wire-eval-gate-deploy.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-wire-eval-gate-deploy.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:46:47 GMT</pubDate>
+      <description>Make an eval gate a real deploy blocker in GitHub or Vercel.</description>
+    </item>
+    <item>
+      <title>How to Structure a Monorepo for an AI Product Plus Eval Suite</title>
+      <link>https://agency.sageideas.dev/docs-structure-ai-monorepo.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-structure-ai-monorepo.html</guid>
+      <category>tutorial</category>
+      <pubDate>Thu, 17 Sep 2026 15:45:47 GMT</pubDate>
+      <description>Structure an AI product monorepo with app, prompts, datasets, and evals.</description>
+    </item>
+    <item>
+      <title>LLM-as-a-Judge: How It Works and When It Fails</title>
+      <link>https://agency.sageideas.dev/docs-llm-as-judge-explained.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-llm-as-judge-explained.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:44:47 GMT</pubDate>
+      <description>How LLM-as-judge works, its biases, and how to calibrate one you can trust.</description>
+    </item>
+    <item>
+      <title>Why Your LLM Eval Scores Do Not Match Production</title>
+      <link>https://agency.sageideas.dev/docs-eval-scores-vs-production.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-eval-scores-vs-production.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:43:47 GMT</pubDate>
+      <description>Why eval scores diverge from production reality and how to close the gap.</description>
+    </item>
+    <item>
+      <title>Testing vs Evaluating an LLM: What Is the Difference</title>
+      <link>https://agency.sageideas.dev/docs-testing-vs-evaluating-llms.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-testing-vs-evaluating-llms.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:42:47 GMT</pubDate>
+      <description>The difference between testing and evaluating an LLM, and when to use each.</description>
+    </item>
+    <item>
+      <title>How Often Should You Re-Run Your LLM Evals</title>
+      <link>https://agency.sageideas.dev/docs-how-often-run-llm-evals.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-how-often-run-llm-evals.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:41:47 GMT</pubDate>
+      <description>A practical cadence for when to run LLM evals: per-change, nightly, pre-release.</description>
+    </item>
+    <item>
+      <title>Why Your RAG Pipeline Hallucinates and How to Fix It</title>
+      <link>https://agency.sageideas.dev/docs-why-rag-hallucinates.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-why-rag-hallucinates.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:40:47 GMT</pubDate>
+      <description>The real causes of RAG hallucination and how to fix each one.</description>
+    </item>
+    <item>
+      <title>Chunking Strategies for RAG, Compared</title>
+      <link>https://agency.sageideas.dev/docs-rag-chunking-strategies.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-rag-chunking-strategies.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:39:47 GMT</pubDate>
+      <description>Fixed, sentence, and semantic chunking compared for RAG retrieval quality.</description>
+    </item>
+    <item>
+      <title>Hybrid Search vs Pure Vector Search for RAG</title>
+      <link>https://agency.sageideas.dev/docs-hybrid-vs-vector-search.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-hybrid-vs-vector-search.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:38:47 GMT</pubDate>
+      <description>When hybrid search beats pure vector search for RAG, and why.</description>
+    </item>
+    <item>
+      <title>RAG vs Fine-Tuning: When to Use Each</title>
+      <link>https://agency.sageideas.dev/docs-rag-vs-fine-tuning.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-rag-vs-fine-tuning.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:37:47 GMT</pubDate>
+      <description>A decision framework for choosing RAG, fine-tuning, or both.</description>
+    </item>
+    <item>
+      <title>Why AI Agents Fail in Production</title>
+      <link>https://agency.sageideas.dev/docs-why-ai-agents-fail.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-why-ai-agents-fail.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:36:47 GMT</pubDate>
+      <description>The production failure modes of AI agents and how to catch them early.</description>
+    </item>
+    <item>
+      <title>Agent Trajectory Evaluation: Testing More Than the Answer</title>
+      <link>https://agency.sageideas.dev/docs-agent-trajectory-evaluation.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-agent-trajectory-evaluation.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:35:47 GMT</pubDate>
+      <description>How to evaluate the whole path an agent takes, not just its final answer.</description>
+    </item>
+    <item>
+      <title>How to Test AI Systems That Give Different Answers Each Run</title>
+      <link>https://agency.sageideas.dev/docs-non-deterministic-ai-testing.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-non-deterministic-ai-testing.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:34:47 GMT</pubDate>
+      <description>How to test non-deterministic AI without chasing noise.</description>
+    </item>
+    <item>
+      <title>How Reliable Should an AI Agent Actually Be</title>
+      <link>https://agency.sageideas.dev/docs-ai-agent-reliability-standard.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-ai-agent-reliability-standard.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:33:47 GMT</pubDate>
+      <description>How to set a real reliability bar for an AI agent, tied to its blast radius.</description>
+    </item>
+    <item>
+      <title>Shift-Left Testing for AI: Catch Regressions Before Merge</title>
+      <link>https://agency.sageideas.dev/docs-shift-left-testing-ai.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-shift-left-testing-ai.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:32:47 GMT</pubDate>
+      <description>How to move AI quality checks earlier, to the pull request.</description>
+    </item>
+    <item>
+      <title>Canary Releases for AI Models: A Practical Playbook</title>
+      <link>https://agency.sageideas.dev/docs-canary-releases-ai.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-canary-releases-ai.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:31:47 GMT</pubDate>
+      <description>A practical playbook for canary-releasing AI models and prompts.</description>
+    </item>
+    <item>
+      <title>Setting SLOs for AI Features: What Good Enough Means</title>
+      <link>https://agency.sageideas.dev/docs-slos-for-ai-features.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-slos-for-ai-features.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:30:47 GMT</pubDate>
+      <description>How to set service-level objectives for AI features.</description>
+    </item>
+    <item>
+      <title>The AI Incident Post-Mortem, With a Real Example</title>
+      <link>https://agency.sageideas.dev/docs-ai-incident-postmortem.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-ai-incident-postmortem.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:29:47 GMT</pubDate>
+      <description>A post-mortem template for AI incidents, with a worked example.</description>
+    </item>
+    <item>
+      <title>How AI Is Changing Test Automation: Real vs Hype</title>
+      <link>https://agency.sageideas.dev/docs-ai-in-test-automation.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-ai-in-test-automation.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:28:47 GMT</pubDate>
+      <description>An honest read on where AI helps test automation and where it is hype.</description>
+    </item>
+    <item>
+      <title>Test Automation ROI: How to Calculate It for Leadership</title>
+      <link>https://agency.sageideas.dev/docs-test-automation-roi.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-test-automation-roi.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:27:47 GMT</pubDate>
+      <description>A simple, honest ROI model for test automation.</description>
+    </item>
+    <item>
+      <title>Visual Regression Testing: Tools and Best Practices</title>
+      <link>https://agency.sageideas.dev/docs-visual-regression-testing.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-visual-regression-testing.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:26:47 GMT</pubDate>
+      <description>How visual regression testing works, the tools, and how to avoid flaky diffs.</description>
+    </item>
+    <item>
+      <title>Test Coverage Metrics That Actually Matter</title>
+      <link>https://agency.sageideas.dev/docs-meaningful-test-coverage.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-meaningful-test-coverage.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:25:47 GMT</pubDate>
+      <description>Why coverage percentage misleads, and the metrics that actually matter.</description>
+    </item>
+    <item>
+      <title>How to Ship an AI Feature Without Breaking User Trust</title>
+      <link>https://agency.sageideas.dev/docs-ship-ai-without-breaking-trust.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-ship-ai-without-breaking-trust.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:24:47 GMT</pubDate>
+      <description>Guardrails, disclosures, and fallbacks that protect user trust in AI features.</description>
+    </item>
+    <item>
+      <title>Passing Tests Is Not Proof: What Done Means for an AI Feature</title>
+      <link>https://agency.sageideas.dev/docs-passing-tests-isnt-proof.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-passing-tests-isnt-proof.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:23:47 GMT</pubDate>
+      <description>Why green tests are not proof for AI, and a real definition of done.</description>
+    </item>
+    <item>
+      <title>When Your AI Works in Demo but Fails in Production</title>
+      <link>https://agency.sageideas.dev/docs-demo-works-production-fails.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-demo-works-production-fails.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:22:47 GMT</pubDate>
+      <description>Why AI features pass the demo but fail in production, and how to close it.</description>
+    </item>
+    <item>
+      <title>Build vs Buy: LLM API vs Fine-Tuning Your Own</title>
+      <link>https://agency.sageideas.dev/docs-build-vs-buy-llm.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-build-vs-buy-llm.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:21:47 GMT</pubDate>
+      <description>A framework for choosing between an LLM API and your own model.</description>
+    </item>
+    <item>
+      <title>AI Workflow Automation: What It Actually Means</title>
+      <link>https://agency.sageideas.dev/docs-what-is-ai-workflow-automation.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-what-is-ai-workflow-automation.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:20:47 GMT</pubDate>
+      <description>What AI workflow automation really means, its strengths and failure points.</description>
+    </item>
+    <item>
+      <title>How to Automate Support Triage With an LLM, Safely</title>
+      <link>https://agency.sageideas.dev/docs-automate-support-triage.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-automate-support-triage.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:19:47 GMT</pubDate>
+      <description>How to automate support triage with an LLM without letting it go off the rails.</description>
+    </item>
+    <item>
+      <title>AI Automation Failure Modes: What Breaks in Production</title>
+      <link>https://agency.sageideas.dev/docs-ai-automation-failure-modes.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-ai-automation-failure-modes.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:18:47 GMT</pubDate>
+      <description>The failure modes of AI automations in production, and how to contain them.</description>
+    </item>
+    <item>
+      <title>Is This Automation Worth Building? An ROI Framework</title>
+      <link>https://agency.sageideas.dev/docs-automation-roi-framework.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-automation-roi-framework.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:17:47 GMT</pubDate>
+      <description>A simple framework for deciding if an automation is worth building.</description>
+    </item>
+    <item>
+      <title>The State of LLM Evaluation Tools in 2026</title>
+      <link>https://agency.sageideas.dev/docs-state-of-llm-eval-tools-2026.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-state-of-llm-eval-tools-2026.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:16:47 GMT</pubDate>
+      <description>A 2026 map of the LLM evaluation tool landscape and how to navigate it.</description>
+    </item>
+    <item>
+      <title>Open-Source vs Commercial LLM Eval Platforms</title>
+      <link>https://agency.sageideas.dev/docs-open-source-vs-commercial-eval.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-open-source-vs-commercial-eval.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:15:47 GMT</pubDate>
+      <description>The real trade-off between open-source and commercial LLM eval platforms.</description>
+    </item>
+    <item>
+      <title>The Best LLM Observability Tools in 2026</title>
+      <link>https://agency.sageideas.dev/docs-best-llm-observability-tools.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-best-llm-observability-tools.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:14:47 GMT</pubDate>
+      <description>What LLM observability is and how the 2026 tools compare.</description>
+    </item>
+    <item>
+      <title>The Best Open-Source LLM Eval Frameworks in 2026</title>
+      <link>https://agency.sageideas.dev/docs-best-open-source-llm-eval-frameworks.html</link>
+      <guid isPermaLink="true">https://agency.sageideas.dev/docs-best-open-source-llm-eval-frameworks.html</guid>
+      <category>guide</category>
+      <pubDate>Thu, 17 Sep 2026 15:13:47 GMT</pubDate>
+      <description>A roundup of the best open-source LLM eval frameworks and what each is best at.</description>
+    </item>
     <item>
       <title>Eighteen agents audited a live curriculum. One lesson was teaching a false error.</title>
       <link>https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html</guid>
+      <category>field note</category>
       <pubDate>Sun, 16 Aug 2026 12:00:00 GMT</pubDate>
       <description>I pointed an audit fleet at 34 published programming lessons: six auditors executing every code claim, six rewriters, six independent verifiers. 73 defects, 17 critical or high. Every one anchored to a verbatim quote. Thirteen minutes of wall clock.</description>
     </item>
@@ -16,6 +427,7 @@
       <title>Five pages, five agents, one design file — zero merge conflicts</title>
       <link>https://agency.sageideas.dev/notes/five-pages-five-agents.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/five-pages-five-agents.html</guid>
+      <category>field note</category>
       <pubDate>Sun, 16 Aug 2026 12:00:00 GMT</pubDate>
       <description>A parallel agent fleet implemented five production marketing pages 1:1 from design files in about five minutes of wall clock. The interesting part isn't the speed — it's the three rules that made the output shippable.</description>
     </item>
@@ -23,6 +435,7 @@
       <title>The day my own quality gate blocked me</title>
       <link>https://agency.sageideas.dev/notes/gate-blocked-me.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/gate-blocked-me.html</guid>
+      <category>field note</category>
       <pubDate>Sat, 15 Aug 2026 12:00:00 GMT</pubDate>
       <description>At 11:39 my proof loop refused the PROVEN verdict — 15 high/critical CVEs had drifted into production deps. By 14:35 it was green. Both runs are published verbatim.</description>
     </item>
@@ -30,6 +443,7 @@
       <title>LLM regression testing with Promptfoo in CI: the minimum viable gate</title>
       <link>https://agency.sageideas.dev/notes/promptfoo-ci-minimum-gate.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/promptfoo-ci-minimum-gate.html</guid>
+      <category>field note</category>
       <pubDate>Sat, 15 Aug 2026 12:00:00 GMT</pubDate>
       <description>30 golden traces, one judge, one failing exit code. The smallest setup that stops a bad prompt change from reaching production — runnable this afternoon.</description>
     </item>
@@ -37,6 +451,7 @@
       <title>No fake green: what a proof ledger taught me about AI agents</title>
       <link>https://agency.sageideas.dev/notes/no-fake-green.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/no-fake-green.html</guid>
+      <category>field note</category>
       <pubDate>Tue, 04 Aug 2026 12:00:00 GMT</pubDate>
       <description>Agents will happily report success they never earned. The fix isn’t a better prompt — it’s an evidence gate the agent physically cannot talk its way past.</description>
     </item>
@@ -44,6 +459,7 @@
       <title>Your LLM feature needs a regression suite more than a better prompt</title>
       <link>https://agency.sageideas.dev/notes/llm-regression-suite.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/llm-regression-suite.html</guid>
+      <category>field note</category>
       <pubDate>Sat, 18 Jul 2026 12:00:00 GMT</pubDate>
       <description>Prompt tweaks feel like progress because nobody is measuring. Golden traces + LLM-as-judge in CI turn &quot;it seems better&quot; into a diff you can gate on.</description>
     </item>
@@ -51,6 +467,7 @@
       <title>Automation that never talks to your customer</title>
       <link>https://agency.sageideas.dev/notes/automation-that-never-talks.html</link>
       <guid isPermaLink="true">https://agency.sageideas.dev/notes/automation-that-never-talks.html</guid>
+      <category>field note</category>
       <pubDate>Mon, 22 Jun 2026 12:00:00 GMT</pubDate>
       <description>The best-converting AI workflow I’ve shipped sends zero AI-written messages. Where to put the human approval point, and why it beats full autonomy.</description>
     </item>
