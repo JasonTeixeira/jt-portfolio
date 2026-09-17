@@ -24,6 +24,13 @@
     .portal-card, .portal-ms-dot, .portal-badge, .portal-chip { border-color:#ccc !important; background:#fff !important; box-shadow:none !important; }
     .portal-title, .portal-ms-title, .portal-ms-amt { color:#111 !important; }
     a { color:#111 !important; text-decoration:underline; }
+    .no-print { display:none !important; }
+  }
+  /* Printing a single invoice receipt: isolate the overlay so only the receipt prints. */
+  @media print {
+    body.receipting > *:not(.receipt-overlay) { display:none !important; }
+    body.receipting .receipt-overlay { position:static !important; inset:auto !important; background:#fff !important; padding:0 !important; display:block !important; }
+    body.receipting .receipt-doc { box-shadow:none !important; border-radius:0 !important; padding:0 !important; }
   }
 </style>
   <!-- Vercel Web Analytics (privacy-first pageviews; enable in Vercel dashboard) -->

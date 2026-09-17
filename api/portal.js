@@ -4,6 +4,7 @@ import {
   listMessages, addMessage, markMessagesRead, listDeliverables, signDeliverableDownload,
 } from '../lib/portal-db.mjs';
 import { getProposalById, updateProposal } from '../lib/proposal-db.mjs';
+import { listInvoicesForProposal, isInvoicePaid } from '../lib/invoice-db.mjs';
 import { sendOperator } from '../lib/notify.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { createCheckoutSession, retrieveSession, isEnabled as stripeEnabled, webhookConfigured } from '../lib/stripe.mjs';
@@ -42,7 +43,7 @@ export function milestoneBelongsToProject(milestones, milestoneId) {
 // Pure whitelist: turns raw DB rows into exactly what the client is allowed to see.
 // No client_email, ip, tokens, or internal proposal id — the milestone `id` IS included
 // so the client can send it back on approve.
-export function clientView(project, proposal, milestones, contract, messages) {
+export function clientView(project, proposal, milestones, contract, messages, invoices) {
   if (!project) return null;
   const plan = proposal ? {
     keys: Array.isArray(proposal.keys) ? proposal.keys : [],
@@ -62,7 +63,13 @@ export function clientView(project, proposal, milestones, contract, messages) {
   const msgs = Array.isArray(messages) ? messages.map((m) => ({
     sender: m.sender, body: m.body, created_at: m.created_at,
   })) : [];
-  return { project: { status: project.status }, plan, milestones: ms, contract: contractOut, messages: msgs };
+  // Invoice history — client-safe fields only; paid status derived from the ledger, never
+  // stored, so an invoice can't disagree with what Stripe actually collected.
+  const inv = (Array.isArray(invoices) ? invoices : [])
+    .filter((i) => i.status !== 'draft') // a draft invoice hasn't been sent — invisible to the client
+    .map((i) => ({ invoice_no: i.invoice_no, kind: i.kind, amount_cents: i.amount_cents, currency: i.currency,
+      status: i.status, issued_at: i.issued_at, sent_at: i.sent_at, due_at: i.due_at, paid: isInvoicePaid(proposal, i.kind) }));
+  return { project: { status: project.status }, plan, milestones: ms, contract: contractOut, messages: msgs, invoices: inv };
 }
 
 async function loadContractSummary(proposalId) {
@@ -82,13 +89,15 @@ async function handler(req, res) {
     const projR = await getProjectByPortalToken(token);
     if (!projR.ok || !projR.data) return res.status(200).json({ ok: false, reason: 'not_found' });
     const project = projR.data;
-    const [proposalR, milestonesR, contract, messagesR] = await Promise.all([
+    const [proposalR, milestonesR, contract, messagesR, invoicesR] = await Promise.all([
       getProposalById(project.proposal_id),
       listMilestones(project.id),
       loadContractSummary(project.proposal_id),
       listMessages(project.id),
+      listInvoicesForProposal(project.proposal_id),
     ]);
     const proposal = proposalR.ok ? proposalR.data : null;
+    const invoices = invoicesR.ok ? invoicesR.data : [];
     // Email gate: if this project has a client email on file, the caller must present a
     // verified portal session (proof they entered that email). A leaked/forwarded link
     // therefore reveals NOTHING until the email is proven. No email on file → token-only
@@ -101,7 +110,7 @@ async function handler(req, res) {
     const messages = messagesR.ok ? messagesR.data : [];
     // client is looking at the thread now — mark operator messages read (fire-and-forget)
     markMessagesRead(project.id, 'client').catch(() => {});
-    const view = clientView(project, proposal, milestones, contract, messages);
+    const view = clientView(project, proposal, milestones, contract, messages, invoices);
     if (!view) return res.status(200).json({ ok: false, reason: 'not_found' });
     // deliverable files: mint a fresh short-lived signed download URL per file (no storage_path leak)
     const filesR = await listDeliverables(project.id);
