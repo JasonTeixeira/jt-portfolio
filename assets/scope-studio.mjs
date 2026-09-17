@@ -140,11 +140,22 @@ window.__renderScopePlan = function (plan) {
 
   if (bp) bp.innerHTML = buildBlueprint(plan);
 
+  // Lead with the low-commitment rung: the fixed-price audit is the real entry
+  // point (credited into the build), so people anchor on $497, not the ceiling.
+  // The full range stays live-assembling, now with a "typical" midpoint so it
+  // reads as one number with a spread, not two scary endpoints.
+  const mid = Math.round((plan.totalBand[0] + plan.totalBand[1]) / 2);
+
   if (hud) {
     hud.innerHTML = `
+      <div class="hud-audit">
+        <span class="ha-badge">Start here</span>
+        <span class="ha-price">$497</span>
+        <span class="ha-note">Fixed-price audit week &mdash; a written plan &amp; firm quote, <b>credited into the build</b>.</span>
+      </div>
       <div class="hud-row">
-        <div class="hud-stat"><span class="hud-num" data-track="green" id="scope-total-num">${band(plan.totalBand)}</span><span class="hud-lbl">indicative range</span></div>
-        <div class="hud-stat"><span class="hud-num sm">${plan.count}</span><span class="hud-lbl">components</span></div>
+        <div class="hud-stat"><span class="hud-num" data-track="green" id="scope-total-num">${band(plan.totalBand)}</span><span class="hud-lbl">full build &middot; indicative</span></div>
+        <div class="hud-stat"><span class="hud-num sm">~${money(mid)}</span><span class="hud-lbl">typical</span></div>
         <div class="hud-stat"><span class="hud-num sm">~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]}<span class="hud-u">wks</span></span><span class="hud-lbl">timeline</span></div>
       </div>
       <div class="hud-bar" aria-hidden="true">${plan.phases.map((p) => `<span style="flex:${p.items.length};background:${PHASE_COLOR[p.phase]}"></span>`).join('')}</div>`;
@@ -168,7 +179,8 @@ window.__renderScopePlan = function (plan) {
       ${phaseCards}
       <div id="scope-total" class="plan-total">
         <span class="pt-num">${band(plan.totalBand)}</span>
-        <span class="pt-lbl">indicative range · exact scope on a call</span>
+        <span class="pt-lbl">full build &middot; indicative range &middot; typical ~${money(mid)} &middot; exact scope on a call</span>
+        <span class="pt-audit">Or start with the <b>$497 audit week</b> &mdash; credited into the build, so the real cost of starting is $0.</span>
       </div>
     </div>`;
 };
