@@ -912,19 +912,38 @@ test.describe('portfolio — docs hub', () => {
   });
 });
 
+// Scope Studio is a two-card chooser → one-question-at-a-time flow.
+// Q0 = segment (single-select, auto-advances), Q1 = needs (multi-select, holds
+// opt-eval / opt-e2e), Q2 = maturity. The needs options only exist once you enter
+// quick mode and advance past the segment step, so tests reach them via reachNeeds().
+async function enterQuick(page) {
+  await page.locator('#scope-mode-quick').click();
+  await expect(page.locator('#scope-questions')).toBeVisible();
+}
+async function reachNeeds(page) {
+  await enterQuick(page);
+  await page.locator('.scope-opt[data-id="seg-aiproduct"]').click(); // single-select auto-advances to needs
+  await expect(page.locator('.scope-opt[data-id="opt-eval"]')).toBeVisible();
+}
+
 test.describe('portfolio — scope studio', () => {
-  test('build page loads with questions and no console errors', async ({ page }) => {
+  test('build page loads with the two-card chooser; entering quick mode reveals the questions', async ({ page }) => {
     const errors = trackErrors(page);
     await page.goto('/build.html');
     await expect(page).toHaveTitle(/Scope|Build/i);
-    await expect(page.locator('#scope-questions')).toBeVisible();
+    // entry chooser: two cards, questionnaire hidden until one is picked
+    await expect(page.locator('#scope-mode-quick')).toBeVisible();
+    await expect(page.locator('#scope-mode-chat')).toBeVisible();
+    await expect(page.locator('#scope-questions')).toBeHidden();
     await expect(page.locator('#scope-root')).toHaveAttribute('data-state', 'discovery');
+    await enterQuick(page);
     expect(errors).toEqual([]);
   });
 
   test('selecting needs builds an itemized plan with an indicative total', async ({ page }) => {
     const errors = trackErrors(page);
     await page.goto('/build.html');
+    await reachNeeds(page);
     await page.locator('.scope-opt[data-id="opt-eval"]').click();      // llm-eval + ci-gate
     await expect(page.locator('#scope-plan')).toContainText('LLM evaluation harness');
     await expect(page.locator('#scope-plan')).toContainText('CI quality gate');
@@ -936,6 +955,7 @@ test.describe('portfolio — scope studio', () => {
 
   test('handoff: mailto is prefilled with the plan; talk-to-human always present', async ({ page, context, browserName }) => {
     await page.goto('/build.html');
+    await reachNeeds(page);
     await page.locator('.scope-opt[data-id="opt-e2e"]').click();
     const mailto = await page.locator('#scope-email').getAttribute('href');
     expect(mailto).toContain('mailto:hello@sageideas.dev');
@@ -946,7 +966,8 @@ test.describe('portfolio — scope studio', () => {
   test('build page: reachable from nav, no overflow at 320, one h1', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto('/');
-    await expect(page.locator('nav a[href="build.html"]')).toHaveCount(1);
+    // reachable from the primary nav (the footer nav also links it, so scope to .site-nav)
+    await expect(page.locator('.site-nav a[href="build.html"]')).toHaveCount(1);
     await page.goto('/build.html');
     await expect(page.locator('h1')).toHaveCount(1);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
@@ -956,6 +977,7 @@ test.describe('portfolio — scope studio', () => {
   test('persistence is fire-and-forget: /api/scope absent does not break the tool', async ({ page }) => {
     const errors = trackErrors(page);
     await page.goto('/build.html');                 // static server has no /api → 501/404
+    await reachNeeds(page);
     await page.locator('.scope-opt[data-id="opt-eval"]').click();
     await expect(page.locator('#scope-plan')).toContainText('LLM evaluation harness');
     expect(errors).toEqual([]);                      // failed POST must not log a console error
@@ -963,6 +985,7 @@ test.describe('portfolio — scope studio', () => {
 
   test('lead capture form submits and degrades gracefully when /api/lead is absent', async ({ page }) => {
     await page.goto('/build.html');                  // static server has no /api → the graceful fallback path
+    await reachNeeds(page);
     await page.locator('.scope-opt[data-id="opt-eval"]').click();
     await page.locator('#scope-email-input').fill('client@example.com');
     await page.locator('#scope-send').click();
@@ -971,15 +994,15 @@ test.describe('portfolio — scope studio', () => {
     await expect(page).toHaveURL(/build\.html/);      // must not navigate away (no jarring mailto redirect)
   });
 
-  test('AI chat: toggle exists, defaults to quick questions, and switches modes', async ({ page }) => {
+  test('entry chooser: both cards present, nothing pre-selected, switching reveals the right surface', async ({ page }) => {
     const errors = trackErrors(page);
     await page.goto('/build.html');
     await expect(page.locator('#scope-mode-chat')).toBeVisible();
     await expect(page.locator('#scope-mode-quick')).toBeVisible();
-    // default: questionnaire visible, chat hidden
-    await expect(page.locator('#scope-questions')).toBeVisible();
+    // two-card chooser: nothing pre-selected, both surfaces hidden until a card is picked
+    await expect(page.locator('#scope-questions')).toBeHidden();
     await expect(page.locator('#scope-chat')).toBeHidden();
-    await expect(page.locator('#scope-mode-quick')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#scope-mode-quick')).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('#scope-mode-chat')).toHaveAttribute('aria-pressed', 'false');
 
     await page.locator('#scope-mode-chat').click();
@@ -1009,7 +1032,7 @@ test.describe('portfolio — scope studio', () => {
     expect(errors).toEqual([]);
 
     // the questionnaire fallback still fully works from here
-    await page.locator('#scope-mode-quick').click();
+    await reachNeeds(page);
     await page.locator('.scope-opt[data-id="opt-eval"]').click();
     await expect(page.locator('#scope-plan')).toContainText('LLM evaluation harness');
     await expect(page.locator('#scope-total')).toContainText('$');
@@ -1021,7 +1044,7 @@ test.describe('portfolio — scope studio', () => {
     await page.goto('/build.html');
     await page.locator('#scope-mode-chat').click();
     // greeting bubble renders on open
-    await expect(page.locator('#scope-chat-messages')).toContainText("This is Jason's AI");
+    await expect(page.locator('#scope-chat-messages')).toContainText("I'm Nadine");
 
     await page.locator('#scope-chat-input').fill("We need help scoping an AI chatbot project.");
     await page.locator('#scope-chat-form').locator('button[type="submit"]').click();

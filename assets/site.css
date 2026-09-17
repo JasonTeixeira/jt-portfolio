@@ -928,6 +928,16 @@ details.faq > p { margin: 0 0 18px 30px; font-size: 13.5px; line-height: 1.7; co
 .jt-capacity .dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; flex-shrink: 0; animation: jt-blink 2.4s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .jt-capacity .dot { animation: none; } }
 
+/* ─── "what happens next" — post-submit reassurance timeline (scope handoff only) ─── */
+.scope-next { margin-top: 18px; padding: 16px 18px; border: 1px solid #26231F; border-radius: 14px; background: linear-gradient(180deg, rgba(34,211,238,0.045), transparent); max-width: 660px; animation: jt-fadeup .4s ease-out both; }
+.scope-next-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #22d3ee; margin: 0 0 13px; }
+.scope-next-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.scope-next-steps li { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; line-height: 1.55; color: #A8A29E; }
+.scope-next-n { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #06131A; background: #22d3ee; font-weight: 700; margin-top: 1px; }
+.scope-next-steps b { color: #F4F2EF; font-weight: 600; }
+@media (max-width: 640px) { .scope-next-steps { grid-template-columns: 1fr; gap: 11px; } }
+@media (prefers-reduced-motion: reduce) { .scope-next { animation: none; } }
+
 /* ═══════════════ P3.3 — restrained depth (compositor-friendly: transform/opacity/box-shadow) ═══════════════ */
 .svc-card { box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset; }
 .svc-card:hover { box-shadow: 0 16px 40px -14px rgba(9,9,11,0.55), 0 0 0 1px rgba(167,139,250,0.14); }

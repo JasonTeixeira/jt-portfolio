@@ -16,7 +16,7 @@
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/site.css?v=20260917d">
+<link rel="stylesheet" href="assets/site.css?v=20260917e">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
 <style>
   :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#2A2826; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --rose:#f43f5e; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
@@ -163,6 +163,14 @@
           <button id="scope-send" type="submit" class="btn-solid green">Email me the plan &rarr;</button>
         </form>
         <div id="scope-send-status" role="status" aria-live="polite" style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8882;min-height:16px"></div>
+        <div class="scope-next" aria-label="What happens after you send your plan">
+          <p class="scope-next-eyebrow">What happens next</p>
+          <ol class="scope-next-steps">
+            <li><span class="scope-next-n">1</span><span><b>Your plan lands in your inbox</b> &mdash; the itemized plan and indicative range, in a couple of minutes.</span></li>
+            <li><span class="scope-next-n">2</span><span><b>Jason reads it himself</b> &mdash; every plan, personally, usually within one business day.</span></li>
+            <li><span class="scope-next-n">3</span><span><b>If it&rsquo;s a fit</b> &mdash; a short call to lock exact scope and a written quote. No pressure, no spam.</span></li>
+          </ol>
+        </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:14px">
           <button id="scope-copy" type="button" class="btn-ghost">Copy shareable link</button>
           <button class="ra-btn btn-ghost" type="button" data-read-target="#scope-plan" data-stop-label="Stop reading">Read the quote aloud</button>
@@ -244,7 +252,7 @@
 </div>
 <script type="module" src="assets/scope-studio.mjs?v=20260912a"></script>
 <script type="module" src="assets/scope-chat.mjs?v=20260910a"></script>
-<script defer src="assets/nav.js?v=20260917d"></script>
+<script defer src="assets/nav.js?v=20260917e"></script>
 <script defer src="assets/transitions.js?v=20260912a"></script>
 <style>
 .ra-btn.ra-on{border-color:#22d3ee!important;color:#22d3ee!important}
