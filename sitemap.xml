@@ -48,12 +48,30 @@
   <url><loc>https://agency.sageideas.dev/docs-stack-integrations.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-eval-method.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-llm-evaluation-metrics.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-rag-evaluation-metrics.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-eval-gates-ci.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-process-and-handoff.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-data-and-security.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-pricing.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-faq.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-glossary.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/docs-proof-index.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-build-llm-eval-gate-ci.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-build-golden-set.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-add-human-approval-checkpoint.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-write-adversarial-probes.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-evaluate-rag-pipeline.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-nightly-llm-regression-github-actions.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-version-golden-datasets.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-test-tool-call-accuracy.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-test-multi-turn-conversations.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-add-llm-observability.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-build-quality-ratchet.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-playwright-ai-generated-ui.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-detect-hallucinations-production.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-red-team-chatbot-suite.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-wire-eval-gate-deploy.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/docs-structure-ai-monorepo.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/learn.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/learn-llm-evaluation.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/learn-rag-retrieval.html</loc><lastmod>2026-09-17</lastmod></url>

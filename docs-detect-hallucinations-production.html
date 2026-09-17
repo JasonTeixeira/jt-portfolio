@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Overview — Documentation · Jason Teixeira</title>
-<meta name="description" content="What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.">
+<title>Detect Hallucinations Automatically in Production Logs — Documentation · Jason Teixeira</title>
+<meta name="description" content="How to run an automated grounding check over production traffic so hallucinations get flagged instead of shipped.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://agency.sageideas.dev/docs-overview.html">
+<link rel="canonical" href="https://agency.sageideas.dev/docs-detect-hallucinations-production.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Overview — Documentation">
-<meta property="og:description" content="What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.">
-<meta property="og:url" content="https://agency.sageideas.dev/docs-overview.html">
+<meta property="og:title" content="Detect Hallucinations Automatically in Production Logs — Documentation">
+<meta property="og:description" content="How to run an automated grounding check over production traffic so hallucinations get flagged instead of shipped.">
+<meta property="og:url" content="https://agency.sageideas.dev/docs-detect-hallucinations-production.html">
 <meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Overview","description":"What Jason Teixeira builds and proves for teams shipping AI — the thesis, who it is for, and how the documentation is organized.","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/docs-overview.html"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"Getting started"},{"@type":"ListItem","position":4,"name":"Overview","item":"https://agency.sageideas.dev/docs-overview.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"Detect Hallucinations Automatically in Production Logs","description":"How to run an automated grounding check over production traffic so hallucinations get flagged instead of shipped.","step":[{"@type":"HowToStep","position":1,"name":"Before you start"},{"@type":"HowToStep","position":2,"name":"Log the three things a grounding check needs"},{"@type":"HowToStep","position":3,"name":"Write the grounding check"},{"@type":"HowToStep","position":4,"name":"Run it over the log file"},{"@type":"HowToStep","position":5,"name":"Turn the rate into an alert"},{"@type":"HowToStep","position":6,"name":"Send the flagged answers somewhere a human will see them"},{"@type":"HowToStep","position":7,"name":"Watch out for"},{"@type":"HowToStep","position":8,"name":"What you built"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://agency.sageideas.dev/docs.html"},{"@type":"ListItem","position":3,"name":"How-to guides"},{"@type":"ListItem","position":4,"name":"Detect Hallucinations Automatically in Production Logs","item":"https://agency.sageideas.dev/docs-detect-hallucinations-production.html"}]}</script>
 <style>
   :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
   * { box-sizing:border-box; }
@@ -164,7 +164,7 @@
   <div class="d-layout">
     <aside class="d-sidebar" id="d-sidebar">
     <a href="docs.html" class="d-navitem d-home">Documentation home</a>
-    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem d-on">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-choose-your-path.html" class="d-navitem">Choose your path</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a><a href="docs-how-this-site-works.html" class="d-navitem">How this site works</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a><a href="docs-stack-integrations.html" class="d-navitem">Stack &amp; integrations</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="docs-llm-evaluation-metrics.html" class="d-navitem">LLM Evaluation Metrics Explained</a><a href="docs-rag-evaluation-metrics.html" class="d-navitem">RAG Evaluation Metrics Explained</a><a href="docs-eval-gates-ci.html" class="d-navitem">Eval Gates: The Missing CI Step for AI Features</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div><div class="d-group"><div class="d-grouphead">How-to guides</div><a href="docs-build-llm-eval-gate-ci.html" class="d-navitem">Build an LLM Eval Gate in CI with Promptfoo</a><a href="docs-build-golden-set.html" class="d-navitem">Build a Golden Set for LLM Regression Testing</a><a href="docs-add-human-approval-checkpoint.html" class="d-navitem">Add a Human-Approval Checkpoint to an AI Pipeline</a><a href="docs-write-adversarial-probes.html" class="d-navitem">Write Adversarial Probes for Prompt Injection Testing</a><a href="docs-evaluate-rag-pipeline.html" class="d-navitem">Evaluate a RAG Pipeline End-to-End with RAGAS</a><a href="docs-nightly-llm-regression-github-actions.html" class="d-navitem">Set Up a Nightly LLM Regression Suite in GitHub Actions</a><a href="docs-version-golden-datasets.html" class="d-navitem">Version Golden Datasets Like Code</a><a href="docs-test-tool-call-accuracy.html" class="d-navitem">Build a Tool-Call Accuracy Test Harness for AI Agents</a><a href="docs-test-multi-turn-conversations.html" class="d-navitem">Test Multi-Turn Agent Conversations</a><a href="docs-add-llm-observability.html" class="d-navitem">Add Open-Source LLM Observability (Langfuse or Phoenix)</a><a href="docs-build-quality-ratchet.html" class="d-navitem">Build a Quality Ratchet That Blocks Regressions</a><a href="docs-playwright-ai-generated-ui.html" class="d-navitem">Run Playwright Tests Against an AI-Generated UI</a><a href="docs-detect-hallucinations-production.html" class="d-navitem">Detect Hallucinations Automatically in Production Logs</a><a href="docs-red-team-chatbot-suite.html" class="d-navitem">Build a Red-Team Test Suite for a Customer-Facing Chatbot</a><a href="docs-wire-eval-gate-deploy.html" class="d-navitem">Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</a><a href="docs-structure-ai-monorepo.html" class="d-navitem">Structure a Monorepo for an AI Product Plus Eval Suite</a></div>
+    <div class="d-group"><div class="d-grouphead">Getting started</div><a href="docs-overview.html" class="d-navitem">Overview</a><a href="docs-start-here.html" class="d-navitem">Start here</a><a href="docs-choose-your-path.html" class="d-navitem">Choose your path</a><a href="docs-how-engagements-work.html" class="d-navitem">How engagements work</a><a href="docs-how-this-site-works.html" class="d-navitem">How this site works</a></div><div class="d-group"><div class="d-grouphead">What I build</div><a href="docs-ai-engineering.html" class="d-navitem">AI product engineering</a><a href="docs-evaluation-and-quality.html" class="d-navitem">AI evaluation &amp; quality</a><a href="docs-test-automation.html" class="d-navitem">Test automation &amp; CI</a><a href="docs-workflow-automation.html" class="d-navitem">AI workflow automation</a><a href="docs-product-and-platform.html" class="d-navitem">Product &amp; platform</a><a href="docs-stack-integrations.html" class="d-navitem">Stack &amp; integrations</a></div><div class="d-group"><div class="d-grouphead">The eval method</div><a href="docs-eval-method.html" class="d-navitem">The eval method</a><a href="docs-llm-evaluation-metrics.html" class="d-navitem">LLM Evaluation Metrics Explained</a><a href="docs-rag-evaluation-metrics.html" class="d-navitem">RAG Evaluation Metrics Explained</a><a href="docs-eval-gates-ci.html" class="d-navitem">Eval Gates: The Missing CI Step for AI Features</a><a href="guide-eval-gate.html" class="d-navitem d-ext">The CI eval gate <span class="d-extmark">↗</span></a><a href="guide-probes.html" class="d-navitem d-ext">Safety probes <span class="d-extmark">↗</span></a><a href="guide-golden-set.html" class="d-navitem d-ext">Golden sets &amp; judges <span class="d-extmark">↗</span></a><a href="guide-human-approval.html" class="d-navitem d-ext">Human approval <span class="d-extmark">↗</span></a></div><div class="d-group"><div class="d-grouphead">Working together</div><a href="docs-process-and-handoff.html" class="d-navitem">Process &amp; handoff</a><a href="docs-data-and-security.html" class="d-navitem">Data &amp; security</a><a href="docs-pricing.html" class="d-navitem">Pricing</a></div><div class="d-group"><div class="d-grouphead">Reference</div><a href="docs-faq.html" class="d-navitem">FAQ</a><a href="docs-glossary.html" class="d-navitem">Glossary</a><a href="docs-proof-index.html" class="d-navitem">Proof index</a></div><div class="d-group"><div class="d-grouphead">How-to guides</div><a href="docs-build-llm-eval-gate-ci.html" class="d-navitem">Build an LLM Eval Gate in CI with Promptfoo</a><a href="docs-build-golden-set.html" class="d-navitem">Build a Golden Set for LLM Regression Testing</a><a href="docs-add-human-approval-checkpoint.html" class="d-navitem">Add a Human-Approval Checkpoint to an AI Pipeline</a><a href="docs-write-adversarial-probes.html" class="d-navitem">Write Adversarial Probes for Prompt Injection Testing</a><a href="docs-evaluate-rag-pipeline.html" class="d-navitem">Evaluate a RAG Pipeline End-to-End with RAGAS</a><a href="docs-nightly-llm-regression-github-actions.html" class="d-navitem">Set Up a Nightly LLM Regression Suite in GitHub Actions</a><a href="docs-version-golden-datasets.html" class="d-navitem">Version Golden Datasets Like Code</a><a href="docs-test-tool-call-accuracy.html" class="d-navitem">Build a Tool-Call Accuracy Test Harness for AI Agents</a><a href="docs-test-multi-turn-conversations.html" class="d-navitem">Test Multi-Turn Agent Conversations</a><a href="docs-add-llm-observability.html" class="d-navitem">Add Open-Source LLM Observability (Langfuse or Phoenix)</a><a href="docs-build-quality-ratchet.html" class="d-navitem">Build a Quality Ratchet That Blocks Regressions</a><a href="docs-playwright-ai-generated-ui.html" class="d-navitem">Run Playwright Tests Against an AI-Generated UI</a><a href="docs-detect-hallucinations-production.html" class="d-navitem d-on">Detect Hallucinations Automatically in Production Logs</a><a href="docs-red-team-chatbot-suite.html" class="d-navitem">Build a Red-Team Test Suite for a Customer-Facing Chatbot</a><a href="docs-wire-eval-gate-deploy.html" class="d-navitem">Wire an Eval Gate into a GitHub or Vercel Deploy Pipeline</a><a href="docs-structure-ai-monorepo.html" class="d-navitem">Structure a Monorepo for an AI Product Plus Eval Suite</a></div>
     <div class="d-group"><div class="d-grouphead">More</div>
       <a href="services.html" class="d-navitem d-ext">Services matrix <span class="d-extmark">↗</span></a>
       <a href="case-studies.html" class="d-navitem d-ext">Case studies <span class="d-extmark">↗</span></a>
@@ -172,25 +172,96 @@
     </div>
   </aside>
     <main class="d-main">
-      <div class="d-crumb"><a href="index.html">Home</a> / <a href="docs.html">Docs</a> / Getting started / <span style="color:var(--dim)">Overview</span></div>
+      <div class="d-crumb"><a href="index.html">Home</a> / <a href="docs.html">Docs</a> / How-to guides / <span style="color:var(--dim)">Detect Hallucinations Automatically in Production Logs</span></div>
       
-    <div class="d-kicker">Getting started</div>
-    <h1>Overview</h1>
-    <p class="d-lead">I ship AI features and then prove they work. This documentation is the honest, complete version of what I build, how engagements run, and the method behind the proof.</p>
-    <div class="d-body"><h2 id="the-thesis" class="d-h2"><a href="#the-thesis" class="d-anchor" aria-label="Link to this section">#</a>The thesis</h2>
-<p class="d-p">Shipping an AI feature is the easy 80%. The hard 20% — the part that decides whether it survives contact with real users — is proving it behaves: that a prompt change didn’t quietly regress, that it won’t leak data or get jailbroken, that it stays in its lane. I build both halves, and I treat the proof as a first-class deliverable, not an afterthought.</p>
-<p class="d-p">The through-line on everything here is <b>proof, not vibes</b>: every capability links to a real artifact — a public repo, a verbatim test run, or a live screenshot — and this very site runs its own QA suite on every deploy.</p>
-<h2 id="who-this-is-for" class="d-h2"><a href="#who-this-is-for" class="d-anchor" aria-label="Link to this section">#</a>Who this is for</h2>
-<div class="d-cards"><div class="d-card"><h3>Teams shipping LLM features</h3><p>You have a chatbot, agent, RAG system, or generator in production (or nearly), and a wrong or unsafe answer has real cost.</p></div><div class="d-card"><h3>Teams whose releases keep breaking</h3><p>You need a regression suite and a CI gate a release manager can actually trust.</p></div><div class="d-card"><h3>Teams drowning in manual work</h3><p>You have an intake, triage, or routing workflow a well-built automation could run — safely.</p></div></div>
-<h2 id="how-this-documentation-is-organized" class="d-h2"><a href="#how-this-documentation-is-organized" class="d-anchor" aria-label="Link to this section">#</a>How this documentation is organized</h2>
-<ul class="d-ul"><li><b>What I build</b> — the capabilities, documented: what each is, what you get, and how it works.</li><li><b>The eval method</b> — the philosophy and mechanics of proving AI features (with animated deep-dive guides).</li><li><b>Working together</b> — how engagements run, how your data is handled, and how pricing works.</li><li><b>Reference</b> — FAQ, a plain-English glossary, and an index of every proof artifact.</li></ul>
-<div class="d-cta"><div><div class="d-cta-h">The fastest way to see it</div><div class="d-cta-s">Get a free mini-eval on your live AI feature — real findings, no call required.</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div></div>
+    <div class="d-kicker">How-to guides</div>
+    <h1>Detect Hallucinations Automatically in Production Logs</h1>
+    <p class="d-lead">Flag confident-but-wrong answers in production automatically, by checking each claim against its sources.</p>
+    <div class="d-body"><p class="d-p">A grounding check takes an answer your system already gave, breaks it into claims, and checks each claim against the sources that were supposed to back it. If a claim has no support in the sources, that is your hallucination signal. This guide builds one that runs over your production logs and flags the confident-but-wrong answers. Budget about forty minutes.</p>
+<h2 id="before-you-start" class="d-h2"><a href="#before-you-start" class="d-anchor" aria-label="Link to this section">#</a>Before you start</h2>
+<ul class="d-ul"><li>A RAG or LLM feature that logs the question, the final answer, and the retrieved source text.</li><li>Python 3.10+ and the OpenAI SDK (<code>pip install openai</code>).</li><li>An API key in an env var (<code>OPENAI_API_KEY</code>). The examples use it as the judge.</li></ul>
+<h2 id="log-the-three-things-a-grounding-check-needs" class="d-h2"><a href="#log-the-three-things-a-grounding-check-needs" class="d-anchor" aria-label="Link to this section">#</a>Log the three things a grounding check needs</h2>
+<p class="d-p">You cannot check grounding without the sources that were in context when the answer was made. Log the question, the final answer, and the exact retrieved chunks for every request. One JSONL line per request is enough. If you only log the answer, you have nothing to ground against, so fix the logging first.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>logs/answers.jsonl</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="logs/answers.jsonl code sample"><code>{"id": "req-1041", "question": "What is the refund window?", "answer": "You can get a full refund within 30 days, no questions asked.", "sources": ["Refunds are available within 14 days of purchase. A restocking fee may apply."]}
+{"id": "req-1042", "question": "Do you ship to Canada?", "answer": "Yes, we ship to Canada in 5-7 business days.", "sources": ["We currently ship to the United States and Canada. Delivery takes 5-7 business days."]}</code></pre></figure>
+<h2 id="write-the-grounding-check" class="d-h2"><a href="#write-the-grounding-check" class="d-anchor" aria-label="Link to this section">#</a>Write the grounding check</h2>
+<p class="d-p">The check asks a model one narrow question: is this answer fully supported by these sources? Keep the judge's job small and force a structured verdict, so you get a label you can act on instead of an essay. Ask for the unsupported claim too, because that is what a human will want to see.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>ground.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="ground.py code sample"><code>import json
+from openai import OpenAI
+
+client = OpenAI()
+
+PROMPT = """You are a grounding checker. Decide if the ANSWER is fully supported by the SOURCES.
+An answer is grounded only if every factual claim in it appears in or follows directly from the sources.
+Contradictions or invented specifics (numbers, dates, policies) are NOT grounded.
+
+QUESTION: {question}
+SOURCES: {sources}
+ANSWER: {answer}
+
+Reply as JSON: {{"grounded": true|false, "unsupported_claim": "&lt;the worst unsupported claim, or empty&gt;"}}"""
+
+def check(record):
+    msg = PROMPT.format(
+        question=record["question"],
+        sources="\n".join(record["sources"]),
+        answer=record["answer"],
+    )
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": msg}],
+        response_format={"type": "json_object"},
+        temperature=0,
+    )
+    return json.loads(resp.choices[0].message.content)</code></pre></figure>
+<h2 id="run-it-over-the-log-file" class="d-h2"><a href="#run-it-over-the-log-file" class="d-anchor" aria-label="Link to this section">#</a>Run it over the log file</h2>
+<p class="d-p">Loop the check across your JSONL log and print only the answers that failed. This is the whole point: turn a pile of logs into a short list of suspect answers with the exact claim that was not supported. Start on a sample of a few hundred lines before you point it at everything.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>scan.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="scan.py code sample"><code>import json
+from ground import check
+
+flagged = 0
+total = 0
+with open("logs/answers.jsonl") as f:
+    for line in f:
+        record = json.loads(line)
+        total += 1
+        verdict = check(record)
+        if not verdict["grounded"]:
+            flagged += 1
+            print(f"[UNGROUNDED] {record['id']}: {verdict['unsupported_claim']}")
+
+print(f"\n{flagged}/{total} answers ungrounded ({flagged/total:.0%})")</code></pre></figure>
+<h2 id="turn-the-rate-into-an-alert" class="d-h2"><a href="#turn-the-rate-into-an-alert" class="d-anchor" aria-label="Link to this section">#</a>Turn the rate into an alert</h2>
+<p class="d-p">A single bad answer is noise. A rising ungrounded rate is a signal worth waking up for. Compute the rate over a window and exit non-zero when it crosses a threshold, so a cron job or CI step can page you or fail the build. Set the threshold from your own baseline. Do not copy a number from here.</p>
+<figure class="d-codewrap"><figcaption class="d-codecap"><span>gate.py</span><button class="d-copy" type="button" aria-label="Copy code">copy</button></figcaption><pre class="d-code" tabindex="0" role="region" aria-label="gate.py code sample"><code>import sys
+
+MAX_UNGROUNDED_RATE = 0.05  # tune to your baseline
+
+def gate(flagged, total):
+    rate = flagged / total if total else 0
+    print(f"ungrounded rate: {rate:.1%} (threshold {MAX_UNGROUNDED_RATE:.0%})")
+    if rate &gt; MAX_UNGROUNDED_RATE:
+        print("FAIL: hallucination rate above threshold")
+        sys.exit(1)
+    print("OK")
+
+if __name__ == "__main__":
+    flagged, total = int(sys.argv[1]), int(sys.argv[2])
+    gate(flagged, total)</code></pre></figure>
+<h2 id="send-the-flagged-answers-somewhere-a-human-will-see-them" class="d-h2"><a href="#send-the-flagged-answers-somewhere-a-human-will-see-them" class="d-anchor" aria-label="Link to this section">#</a>Send the flagged answers somewhere a human will see them</h2>
+<p class="d-p">The scan is only useful if someone reads the flags. Write the ungrounded answers to a file or a channel your team actually watches, and review them on a schedule. Feed the real hallucinations back into your golden set as known failures. That closes the loop between detection and prevention.</p>
+<h2 id="watch-out-for" class="d-h2"><a href="#watch-out-for" class="d-anchor" aria-label="Link to this section">#</a>Watch out for</h2>
+<ul class="d-ul"><li>The judge is itself an LLM and can be wrong. It will miss subtle hallucinations and sometimes flag correct answers, so treat the output as a triage queue you still review by hand. Spot-check its calls before you trust the rate.</li><li>This only catches claims that contradict or overreach the sources. If retrieval pulled the wrong sources in the first place, a grounded-looking answer can still be wrong. Grounding checks the answer against the sources. It does not check whether the sources were right.</li><li>Running a judge call per log line costs money and time. Sample your logs, run on a schedule instead of inline, and use a cheap model for the check.</li></ul>
+<h2 id="what-you-built" class="d-h2"><a href="#what-you-built" class="d-anchor" aria-label="Link to this section">#</a>What you built</h2>
+<p class="d-p">You have a grounding check that reads your production logs, flags answers that are not supported by their sources, and fails when the ungrounded rate climbs. It is honest about its own limits and cheap to run on a sample. Next, wire the flagged cases into your golden set so today's hallucinations become tomorrow's regression tests.</p>
+<div class="d-proof"><a href="rag-evaluation-guide.html" class="d-plink">RAG evaluation guide <span>→</span></a><a href="learn.html" class="d-plink">The Learn library <span>→</span></a></div>
+<div class="d-cta"><div><div class="d-cta-h">Want this built into your pipeline?</div><div class="d-cta-s">Get a free mini-eval on your live AI feature, or book a call to have it wired in properly.</div></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="build.html" class="d-cta-btn" data-evt="docs-cta-scope">Build your plan → 2 min</a><a href="book.html" data-evt="docs-cta" style="font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap">or book a call →</a></div></div></div>
     <div class="d-help"><span>Was this helpful?</span><a href="book.html" data-evt="docs-help-yes">Book a call →</a><a href="sample.html" data-evt="docs-help-eval">Get a free mini-eval →</a></div>
-    <div class="d-prevnext"><div class="d-pn" style="visibility:hidden"></div><a class="d-pn next" href="docs-start-here.html"><div class="l">Next →</div><div class="t">Start here</div></a></div>
+    <div class="d-prevnext"><a class="d-pn prev" href="docs-playwright-ai-generated-ui.html"><div class="l">← Previous</div><div class="t">Run Playwright Tests Against an AI-Generated UI</div></a><a class="d-pn next" href="docs-red-team-chatbot-suite.html"><div class="l">Next →</div><div class="t">Build a Red-Team Test Suite for a Customer-Facing Chatbot</div></a></div>
     <div class="d-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="docs.html" class="dim-link" style="color:inherit">Documentation home</a> · <a href="privacy.html" class="dim-link" style="color:inherit">privacy</a> · <a href="terms.html" class="dim-link" style="color:inherit">terms</a></div>
     <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script>
     </main>
-    <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#the-thesis" class="d-toc-link" data-target="the-thesis">The thesis</a><a href="#who-this-is-for" class="d-toc-link" data-target="who-this-is-for">Who this is for</a><a href="#how-this-documentation-is-organized" class="d-toc-link" data-target="how-this-documentation-is-organized">How this documentation is organized</a></nav></div>
+    <div class="d-rail"><nav class="d-toc" aria-label="On this page"><div class="d-toc-h">On this page</div><a href="#before-you-start" class="d-toc-link" data-target="before-you-start">Before you start</a><a href="#log-the-three-things-a-grounding-check-needs" class="d-toc-link" data-target="log-the-three-things-a-grounding-check-needs">Log the three things a grounding check needs</a><a href="#write-the-grounding-check" class="d-toc-link" data-target="write-the-grounding-check">Write the grounding check</a><a href="#run-it-over-the-log-file" class="d-toc-link" data-target="run-it-over-the-log-file">Run it over the log file</a><a href="#turn-the-rate-into-an-alert" class="d-toc-link" data-target="turn-the-rate-into-an-alert">Turn the rate into an alert</a><a href="#send-the-flagged-answers-somewhere-a-human-will-see-them" class="d-toc-link" data-target="send-the-flagged-answers-somewhere-a-human-will-see-them">Send the flagged answers somewhere a human will see them</a><a href="#watch-out-for" class="d-toc-link" data-target="watch-out-for">Watch out for</a><a href="#what-you-built" class="d-toc-link" data-target="what-you-built">What you built</a></nav></div>
   </div>
 
   <div class="d-modal" id="d-modal" role="dialog" aria-label="Search documentation" aria-modal="true">
