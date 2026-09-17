@@ -151,9 +151,64 @@ function diagramFunnel() {
   return diagramWrap({ label: 'this site’s funnel', svg, note: 'The same pipeline, compressed: nothing here skips a step, and nothing here invents a number.' });
 }
 
+/* Diagram — the LLM eval metric cheat sheet: four metric families, each with the
+ * metrics that belong to it and the one-line "reach for this when…". Code-native,
+ * embeddable (this is a linkable asset in its own right), and mirrored by an
+ * accessible table in the page body for screen readers + indexing. */
+function diagramMetricCheatSheet() {
+  const fams = [
+    { t: 'CORRECTNESS', c: DIAG.cyan, rows: [
+      ['Exact match / F1', 'closed, deterministic answers'],
+      ['Semantic similarity', 'open answers where meaning matters'],
+      ['LLM-as-judge (rubric)', 'nuanced quality, graded at scale'],
+      ['Pairwise / Elo', 'ranking two prompt or model versions'],
+    ] },
+    { t: 'RETRIEVAL · RAG', c: DIAG.purple, rows: [
+      ['Faithfulness', 'answer must be grounded in sources'],
+      ['Answer relevancy', 'answer actually addresses the question'],
+      ['Context precision', 'retrieved chunks are on-topic'],
+      ['Context recall', 'the needed chunk was retrieved at all'],
+    ] },
+    { t: 'SAFETY', c: DIAG.rose, rows: [
+      ['Toxicity / bias', 'user-facing, brand-risk surfaces'],
+      ['PII leakage', 'the model can see sensitive data'],
+      ['Injection resistance', 'untrusted text enters the prompt'],
+      ['Jailbreak rate', 'the model has tools or authority'],
+    ] },
+    { t: 'OPERATIONAL', c: DIAG.amber, rows: [
+      ['Latency p95', 'it sits in a user-facing path'],
+      ['Cost per eval / run', 'the suite runs on every commit'],
+      ['Output-variance', 'same input, different answers'],
+      ['Task completion', 'the system takes multi-step actions'],
+    ] },
+  ];
+  const colW = 232, gap = 18, x0 = 6, rowH = 60, rowGap = 8, headY = 24, firstRow = 52;
+  const cols = fams.map((f, i) => {
+    const x = x0 + i * (colW + gap);
+    const head = `
+      <rect x="${x}" y="4" width="${colW}" height="30" rx="7" fill="none" stroke="${f.c}" stroke-opacity="0.34"/>
+      <circle cx="${x + 15}" cy="${headY - 5}" r="3.5" fill="${f.c}"/>
+      <text x="${x + 27}" y="${headY}" font-family="${DIAG.mono}" font-size="11.5" font-weight="700" letter-spacing="0.06em" fill="${f.c}">${f.t}</text>`;
+    const rows = f.rows.map((r, j) => {
+      const y = firstRow + j * (rowH + rowGap);
+      return `
+        <rect x="${x}" y="${y}" width="${colW}" height="${rowH}" rx="8" fill="#0E0E11" stroke="${DIAG.line}"/>
+        <rect x="${x}" y="${y}" width="3" height="${rowH}" rx="1.5" fill="${f.c}" fill-opacity="0.7"/>
+        <text x="${x + 15}" y="${y + 24}" font-family="${DIAG.mono}" font-size="12.5" font-weight="600" fill="${DIAG.ink}">${r[0]}</text>
+        <text x="${x + 15}" y="${y + 43}" font-family="${DIAG.mono}" font-size="10" fill="${DIAG.faint}">${r[1]}</text>`;
+    }).join('');
+    return head + rows;
+  }).join('');
+  const totalW = x0 * 2 + fams.length * colW + (fams.length - 1) * gap;
+  const totalH = firstRow + 4 * (rowH + rowGap) + 6;
+  const svg = `<svg viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" role="img" aria-label="LLM evaluation metric cheat sheet: four metric families and when to reach for each metric" style="max-width:100%">${cols}</svg>`;
+  return diagramWrap({ label: 'the LLM eval metric cheat sheet', svg, note: 'Pick the smallest set that answers "is this good enough?" for <b>your</b> feature — most teams need two or three of these, not all sixteen.' });
+}
+
 export const DIAGRAM_ENGAGEMENT_FLOW = diagramEngagementFlow();
 export const DIAGRAM_EVAL_GATE = diagramEvalGate();
 export const DIAGRAM_FUNNEL = diagramFunnel();
+export const DIAGRAM_METRIC_CHEATSHEET = diagramMetricCheatSheet();
 
 // Sidebar structure. Internal pages reference a slug in PAGES; external items
 // (the animated deep-dive guides) link out with their own chrome.
@@ -167,6 +222,7 @@ export const NAV = [
   ]},
   { cat: 'The eval method', items: [
     { slug: 'eval-method' },
+    { slug: 'llm-evaluation-metrics' },
     { title: 'The CI eval gate', href: 'guide-eval-gate.html', ext: true },
     { title: 'Safety probes', href: 'guide-probes.html', ext: true },
     { title: 'Golden sets & judges', href: 'guide-golden-set.html', ext: true },
@@ -183,6 +239,73 @@ export const NAV = [
 const BOOK = 'book.html';
 
 export const PAGES = {
+  'llm-evaluation-metrics': {
+    title: 'LLM Evaluation Metrics Explained',
+    cat: 'The eval method',
+    desc: 'A practical field guide to LLM evaluation metrics — correctness, retrieval, safety, and operational — with a cheat sheet for which metric to reach for and when.',
+    lead: 'There are dozens of LLM evaluation metrics and most of them are noise for your particular feature. This is the working guide to the ones that matter: what each measures, when to reach for it, and how they add up to a number you can gate a release on.',
+    schema: 'howto',
+    blocks: [
+      ['p', 'Every eval metric is an attempt to answer one question: <b>is this good enough to ship, and how would I know if it quietly got worse?</b> The metrics differ only in which kind of "good" they measure. Pick the wrong ones and you get a dashboard full of green that tells you nothing; pick the right two or three and you get a gate that actually catches a regression before your users do.'],
+      ['p', 'This guide sorts the useful metrics into four families, tells you when each earns its place, and shows how they roll up into the eval gate that the rest of <a href="docs-eval-method.html">the method</a> is built on.'],
+
+      ['h', 'The four families of eval metrics'],
+      ['p', 'Almost every metric worth running falls into one of four buckets. The cheat sheet below is the whole landscape on one screen. The right-hand line on each is the trigger: the situation where that metric stops being academic and starts being the thing standing between you and an incident.'],
+      ['html', DIAGRAM_METRIC_CHEATSHEET],
+      ['note', 'You do not run all sixteen. A retrieval chatbot lives on faithfulness, answer relevancy, and injection resistance; a code generator lives on exact-match tests and latency. Choosing the smallest honest set <b>is</b> the skill.'],
+      ['p', 'The same landscape as a table you can copy into a planning doc:'],
+      ['table', ['Family', 'Metric', 'Reach for it when'], [
+        ['<b>Correctness</b>', 'Exact match / F1', 'answers are closed and deterministic (classification, extraction)'],
+        ['', 'Semantic similarity', 'answers are open text and meaning matters more than wording'],
+        ['', 'LLM-as-judge (rubric)', 'you need nuanced quality graded at a scale humans cannot'],
+        ['', 'Pairwise / Elo', 'you are ranking two prompt or model versions head to head'],
+        ['<b>Retrieval · RAG</b>', 'Faithfulness / groundedness', 'the answer must be supported by the retrieved sources'],
+        ['', 'Answer relevancy', 'the answer must actually address what was asked'],
+        ['', 'Context precision', 'you are checking whether retrieved chunks are on-topic'],
+        ['', 'Context recall', 'you are checking whether the needed chunk was retrieved at all'],
+        ['<b>Safety</b>', 'Toxicity / bias', 'output is user-facing and carries brand risk'],
+        ['', 'PII leakage', 'the model can see data it must never repeat'],
+        ['', 'Injection resistance', 'untrusted text (a document, a webpage) enters the prompt'],
+        ['', 'Jailbreak rate', 'the model holds tools, spend authority, or private data'],
+        ['<b>Operational</b>', 'Latency p95', 'it sits in a path a human is waiting on'],
+        ['', 'Cost per eval / run', 'the suite runs on every commit and the bill compounds'],
+        ['', 'Output variance', 'the same input can produce different answers run to run'],
+        ['', 'Task completion', 'the system takes multi-step actions, not just single replies'],
+      ]],
+
+      ['h', 'Correctness: is the answer right?'],
+      ['p', 'For closed tasks — a classifier, an extractor, a router — correctness is cheap and unambiguous: <b>exact match</b> or <b>F1</b> against a labeled set, exactly like any other test. The trouble starts with open-ended output, where two very different strings can both be correct. <b>Semantic similarity</b> (embedding distance against a reference answer) handles paraphrase, but it rewards sounding-alike over being-right, so it is a smoke detector, not a judge. When the quality you care about is genuinely nuanced — tone, completeness, whether an explanation is actually helpful — that is the job of an <b>LLM-as-judge</b>, covered below.'],
+
+      ['h', 'Retrieval: is the answer grounded?'],
+      ['p', 'If your feature is retrieval-augmented (a support bot, a docs assistant, anything that fetches context before answering), correctness is downstream of retrieval, and you have to measure both halves. <b>Faithfulness</b> asks whether the answer is actually supported by the retrieved sources or whether the model went off-script and made something up. <b>Answer relevancy</b> asks whether it addressed the real question. Then the two retrieval-side metrics: <b>context precision</b> (were the chunks you pulled on-topic?) and <b>context recall</b> (did you pull the chunk that actually held the answer?). A RAG system that hallucinates is almost always failing recall — the answer was never in the context to begin with. There is a <a href="rag-evaluation-guide.html">deeper RAG evaluation guide</a> for that whole pillar.'],
+
+      ['h', 'Safety: can it be made to misbehave?'],
+      ['p', 'Safety metrics are the ones teams skip until an incident makes them mandatory. <b>Toxicity and bias</b> scoring matters the moment output is user-facing. <b>PII leakage</b> checks matter the moment the model can see sensitive data. And the two adversarial ones — <b>injection resistance</b> and <b>jailbreak rate</b> — matter the moment untrusted text enters the prompt or the model gains tools and authority. These are not measured with a friendly test set; they are measured with <a href="guide-probes.html">adversarial probes</a> written specifically to make the system fail, because an attacker will.'],
+
+      ['h', 'Operational: can you afford to run it?'],
+      ['p', 'A perfect eval suite you cannot afford to run on every commit is a suite that runs never. <b>Latency</b> (measure p95, not the average, because the average hides the failures your users feel) and <b>cost per run</b> decide whether the gate is sustainable. <b>Output variance</b> is the quietly important one: LLMs are non-deterministic, so a metric that swings five points between identical runs will either block good releases or wave bad ones through. You manage it by fixing sampling where you can and running enough samples to separate real movement from noise.'],
+
+      ['h', 'LLM-as-judge: powerful, and quietly fallible'],
+      ['p', 'Using a strong model to grade another model against a rubric is the highest-leverage technique here, and it scales nuanced judgment to thousands of cases. It also has real failure modes you have to design around: judges show <b>position bias</b> (they favor whichever answer came first), <b>verbosity bias</b> (longer reads as better), and <b>self-preference</b> (a model rates its own family higher). Left unmanaged, a judge produces confident, consistent, wrong scores.'],
+      ['note', 'warn', 'Calibrate the judge before you trust it. Grade a small human-labeled set with your judge and check agreement; randomize answer order to kill position bias; force a structured rubric with explicit criteria rather than a vibe score. An uncalibrated judge is not a metric, it is a rumor.'],
+
+      ['h', 'Why your eval score will not match production'],
+      ['p', 'This is the caveat that separates people who run evals from people who trust them. Your score is only as honest as your <a href="guide-golden-set.html">golden set</a> — the fixed cases you grade against. If that set was written in a quiet afternoon and production is full of typos, adversarial users, and edge cases nobody imagined, your 94% is measuring a world your users do not live in. The fix is not a cleverer metric. It is feeding real, sometimes embarrassing production cases back into the golden set on a schedule, so the thing you measure keeps drifting toward the thing your users actually do.'],
+
+      ['h', 'How many metrics do you actually need?'],
+      ['p', 'Fewer than you think. Start from the failure that would hurt most — a hallucinated answer, a leaked record, a jailbreak, a latency spike — and pick the one or two metrics that catch it. Add a metric only when you can name the specific regression it exists to stop. A gate with three metrics that everyone understands beats a dashboard with twenty that nobody reads.'],
+
+      ['h', 'From metrics to a gate'],
+      ['p', 'Metrics on a dashboard change nobody\'s behavior. Metrics wired to a threshold that <b>blocks a merge</b> change everything. That is the last step: pick your handful of metrics, set an honest threshold on each (usually "no worse than last known-good", a <a href="guide-golden-set.html">ratchet</a>), and run them in CI so a regression stops the release instead of reaching your users. That mechanism is the <a href="guide-eval-gate.html">CI eval gate</a>, and it is the whole reason to measure any of this.'],
+      ['proof', [
+        ['Watch an eval score, live in your browser', 'eval.html'],
+        ['The CI eval gate, explained', 'guide-eval-gate.html'],
+        ['Golden sets & judges, explained', 'guide-golden-set.html'],
+        ['No fake green — what a proof ledger taught me', 'notes/no-fake-green.html'],
+      ]],
+      ['cta', 'Want these wired into your pipeline?', 'Get a free mini-eval on your live AI feature — I\'ll show you which of these metrics your feature is missing, with real findings.'],
+    ],
+  },
   overview: {
     title: 'Overview',
     cat: 'Getting started',
