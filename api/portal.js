@@ -56,7 +56,7 @@ export function clientView(project, proposal, milestones, contract, messages, in
   } : null;
   const ms = Array.isArray(milestones) ? milestones.map((m) => ({
     id: m.id, seq: m.seq, title: m.title, deliverables: m.deliverables,
-    amount_cents: m.amount_cents, status: m.status, due_at: m.due_at,
+    amount_cents: m.amount_cents, status: m.status, due_at: m.due_at, delivered_at: m.delivered_at,
   })) : [];
   const contractOut = (contract && VISIBLE_CONTRACT_STATUSES.has(contract.status))
     ? { public_id: contract.public_id, status: contract.status } : null;
@@ -179,6 +179,33 @@ async function handler(req, res) {
         replyTo: clientEmail || undefined });
     } catch (e) { console.error('[portal] notify send failed', (e && e.message) || e); }
     return res.status(200).json({ ok: true, sent: true });
+  }
+
+  // client requests changes on a delivered milestone (instead of approving) — logs it to the
+  // thread as a client message + alerts the operator. Non-destructive: the operator decides
+  // what to do; the milestone status isn't flipped here.
+  if (body.action === 'request_changes') {
+    const pt = typeof body.portalToken === 'string' ? body.portalToken.trim() : '';
+    const mid = typeof body.milestoneId === 'string' ? body.milestoneId.trim() : '';
+    const note = (typeof body.note === 'string' ? body.note.trim() : '').slice(0, 2000);
+    if (!pt || !mid || note.length < 2) return res.status(400).json({ ok: false, error: 'portalToken, milestoneId, note required' });
+    if (!isEnabled()) return res.status(200).json({ ok: false, skipped: true, reason: 'not_configured' });
+    const pR = await getProjectByPortalToken(pt);
+    if (!pR.ok || !pR.data) return res.status(404).json({ ok: false, error: 'not_found' });
+    const msR2 = await listMilestones(pR.data.id);
+    const mss = msR2.ok ? msR2.data : [];
+    if (!milestoneBelongsToProject(mss, mid)) return res.status(404).json({ ok: false, error: 'not_found' });
+    const title = (mss.find((m) => m.id === mid) || {}).title || 'a milestone';
+    const sent = await addMessage(pR.data.id, 'client', `⤳ Requested changes on "${title}":\n${note}`);
+    if (!sent.ok) { console.error('[portal] request_changes addMessage failed', sent.error || ''); return res.status(200).json({ ok: false, reason: 'write_failed' }); }
+    try {
+      const propR = await getProposalById(pR.data.proposal_id);
+      const clientEmail = propR && propR.ok && propR.data ? propR.data.client_email : undefined;
+      await sendOperator({ subject: 'Client requested changes on a milestone',
+        text: `A client requested changes on "${title}":\n\n"${note.slice(0, 800)}"\n\nReply here or handle it in the admin: ${SITE}/proposal-admin.html\n`,
+        replyTo: clientEmail || undefined });
+    } catch (e) { console.error('[portal] request_changes notify failed', (e && e.message) || e); }
+    return res.status(200).json({ ok: true, requested: true });
   }
 
   // client starts a Stripe checkout for the remaining balance
