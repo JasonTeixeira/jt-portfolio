@@ -10,8 +10,16 @@ import { DOC_SLUGS } from './docs.data.mjs';
 import { LEARN_SLUGS } from './learn.data.mjs';
 import { TERM_SLUGS } from './glossary.data.mjs';
 import { COMPARE_SLUGS } from './comparisons.data.mjs';
-import { ARTICLE_SLUGS } from './articles.data.mjs';
+import { ARTICLE_SLUGS, ARTICLES } from './articles.data.mjs';
+import { TUTORIALS } from './tutorials.data.mjs';
 import { SITE_URL, AUTHOR } from './site.config.mjs';
+
+// Cornerstones live in docs.data.mjs but are worth surfacing in the feed as flagship posts.
+const CORNERSTONES = [
+  { slug: 'llm-evaluation-metrics', title: 'LLM Evaluation Metrics Explained', dek: 'The four families of eval metrics, when to reach for each, and how they become a gate.' },
+  { slug: 'rag-evaluation-metrics', title: 'RAG Evaluation Metrics Explained', dek: 'The four RAG metrics, and how they tell a retrieval bug from a generation bug.' },
+  { slug: 'eval-gates-ci', title: 'Eval Gates: The Missing CI Step for AI Features', dek: 'What an eval gate is, its anatomy, and why AI features need one.' },
+];
 
 const MONO = "font-family:'JetBrains Mono',monospace;";
 const SERIF = "font-family:'Instrument Serif',Georgia,serif;";
@@ -195,21 +203,40 @@ ${indexItems}
 writeFileSync('field-notes.html', indexHtml);
 
 /* ── RSS feed ── */
-const items = NOTES.map((n) => `    <item>
-      <title>${esc(n.title)}</title>
-      <link>${SITE_URL}/notes/${n.slug}.html</link>
-      <guid isPermaLink="true">${SITE_URL}/notes/${n.slug}.html</guid>
-      <pubDate>${new Date(n.date + 'T12:00:00Z').toUTCString()}</pubDate>
-      <description>${esc(n.dek)}</description>
+// The feed carries the field notes PLUS the flagship Learn library posts (cornerstones,
+// tutorials, articles). Glossary + comparisons stay out — they're reference lookups, not
+// posts. The library published as one drop, so its items are dated at build time, staggered
+// by a minute each so readers keep a stable order; notes keep their real dates.
+const noteItems = NOTES.map((n) => ({
+  title: n.title, url: `${SITE_URL}/notes/${n.slug}.html`, dek: n.dek, tag: 'field note',
+  date: new Date(n.date + 'T12:00:00Z'),
+}));
+const nowMs = Date.now();
+const libraryPosts = [
+  ...CORNERSTONES.map((c) => ({ ...c, tag: 'cornerstone', url: `${SITE_URL}/docs-${c.slug}.html` })),
+  ...TUTORIALS.map((t) => ({ slug: t.slug, title: t.title, dek: t.summary, tag: 'tutorial', url: `${SITE_URL}/docs-${t.slug}.html` })),
+  ...ARTICLES.map((a) => ({ slug: a.slug, title: a.title, dek: a.summary, tag: 'guide', url: `${SITE_URL}/docs-${a.slug}.html` })),
+].map((p, i) => ({ ...p, date: new Date(nowMs - i * 60000) }));
+
+const feedEntries = [...noteItems, ...libraryPosts].sort((a, b) => b.date - a.date);
+const items = feedEntries.map((e) => `    <item>
+      <title>${esc(e.title)}</title>
+      <link>${e.url}</link>
+      <guid isPermaLink="true">${e.url}</guid>
+      <category>${esc(e.tag)}</category>
+      <pubDate>${e.date.toUTCString()}</pubDate>
+      <description>${esc(e.dek)}</description>
     </item>`).join('\n');
 
 writeFileSync('feed.xml', `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Field Notes — ${AUTHOR}</title>
+    <title>Field Notes & Learn — ${AUTHOR}</title>
     <link>${SITE_URL}/field-notes.html</link>
-    <description>Working notes from the proof-first trenches: AI automation, QA, and LLM evaluation.</description>
+    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Proof-first writing on AI evaluation, RAG, agents, testing, and shipping AI you can trust — field notes plus the Learn library.</description>
     <language>en-us</language>
+    <lastBuildDate>${new Date(nowMs).toUTCString()}</lastBuildDate>
 ${items}
   </channel>
 </rss>
