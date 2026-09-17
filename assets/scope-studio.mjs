@@ -45,6 +45,9 @@ function prospectId() {
 }
 
 function track(type, extra) {
+  // Mirror every funnel step into GA4 (ga.js relays window.va('event',{name,data})) so
+  // start → question → plan → lead drop-off is measurable, not just written to Supabase.
+  try { if (typeof window !== 'undefined' && typeof window.va === 'function') window.va('event', { name: 'scope_' + type, data: extra || {} }); } catch { /* analytics must never break the tool */ }
   try {
     const pid = prospectId();
     if (!pid) return;
@@ -263,8 +266,10 @@ if (root && qMount && planMount && disc) {
     if (!email) return;
     const keys = keysFromAnswers(answers);
     const plan = computePlan(keys, segmentFromAnswers());
+    const hasPlan = keys.length > 0;
     if (status) { status.style.color = '#8E8882'; status.textContent = 'Sending…'; }
     let ok = false;
+    let emailed = false;
     try {
       const r = await fetch('/api/lead', {
         method: 'POST',
@@ -273,18 +278,30 @@ if (root && qMount && planMount && disc) {
           email,
           prospectId: prospectId(),
           source: 'scope-studio',
-          feature: plan.count ? plan.items.map((i) => i.name).join(', ') : 'scoping',
+          feature: hasPlan ? plan.items.map((i) => i.name).join(', ') : 'scoping',
           plan: { keys, segment: plan.segment, total: plan.totalBand },
         }),
       });
-      ok = !!(r && r.ok);
+      const j = await r.json().catch(() => ({}));
+      ok = !!(r && r.ok && j && j.ok !== false);
+      emailed = !!(j && j.emailed);
     } catch { ok = false; }
     if (ok) {
-      if (keys.length) {
+      track('lead_captured', { emailed, hasPlan });
+      if (hasPlan) {
         fetch('/api/proposal', { method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prospectId: prospectId(), email, plan: { keys, segment: plan.segment, totalBand: plan.totalBand } }) }).catch(() => {});
       }
-      if (status) { status.style.color = '#10b981'; status.textContent = "Got it. Your plan's on its way to your inbox, and I'll follow up with a proposal shortly. I review every one myself."; }
+      // Only claim inbox delivery when a mail actually went out. Otherwise promise a personal
+      // follow-up (the lead is captured either way), and never claim a "plan" with no plan.
+      if (status) {
+        status.style.color = '#10b981';
+        status.textContent = hasPlan
+          ? (emailed
+            ? "Done — your itemized plan is on its way to your inbox, with a link to book a 15-minute call. I review every one myself."
+            : "Got it — I've got your plan and I'll follow up personally, usually within a day. I review every one myself.")
+          : "Got it — I'll reach out personally to scope this with you, usually within a day.";
+      }
       if (input) input.disabled = true;
       const send = document.getElementById('scope-send');
       if (send) send.disabled = true;

@@ -24,8 +24,11 @@
 import { isEnabled, upsertProspect, appendEvent } from '../lib/scope-db.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
+import { computePlan, SEGMENTS, encodeKeys, DISCLAIMER } from '../assets/scope-core.mjs';
+import { scopePlanEmail } from '../lib/email-templates.mjs';
 
 const RESEND = 'https://api.resend.com';
+const SITE = 'https://agency.sageideas.dev';
 const REPORT_URL = 'https://agency.sageideas.dev/sample-report.html';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -123,15 +126,21 @@ async function handler(req, res) {
   const notifyTo = process.env.RESEND_TO || 'hello@sageideas.dev';
   const nm = (typeof name === 'string' ? name.trim() : '').slice(0, 120) || '(no name)';
   const feat = (typeof feature === 'string' ? feature.trim() : '').slice(0, 500);
+  const hasPlan = plan && Array.isArray(plan.keys) && plan.keys.length > 0;
+  // A verified domain sender is required to email the visitor (onboarding@resend.dev can
+  // only reach the owner's own inbox). This decides whether we can honestly claim delivery.
+  const canEmailVisitor = from.indexOf('resend.dev') === -1;
 
-  // 1. Always notify you of the new lead.
+  // 1. Always notify the operator of the new lead (plan-aware).
   try {
     await resend('/emails', key, {
-      from: `Lead magnet <${from}>`,
+      from: `${hasPlan ? 'Scope Studio' : 'Lead magnet'} <${from}>`,
       to: [notifyTo],
       reply_to: clean,
-      subject: `New sample-report lead — ${clean}`,
-      text: `Email: ${clean}\nName: ${nm}\nFeature URL: ${feat || '(none given)'}\n\nThey grabbed the sample eval report. If they left a feature URL, run the eval CLI on it and send the real report as touch 1.${planSummaryText(plan)}`,
+      subject: hasPlan ? `New scoped lead — ${clean}` : `New sample-report lead — ${clean}`,
+      text: hasPlan
+        ? `Email: ${clean}\nName: ${nm}\n\nThey scoped a project in the Studio. Turn it into a proposal.${planSummaryText(plan)}\n\n(They were emailed their itemized plan + a book-a-call link.)`
+        : `Email: ${clean}\nName: ${nm}\nFeature URL: ${feat || '(none given)'}\n\nThey grabbed the sample eval report. If they left a feature URL, run the eval CLI on it and send the real report as touch 1.${planSummaryText(plan)}`,
     });
   } catch (_) {}
 
@@ -141,20 +150,35 @@ async function handler(req, res) {
     try { await resend(`/audiences/${audience}/contacts`, key, { email: clean, unsubscribed: false }); } catch (_) {}
   }
 
-  // 3. Email the visitor the report — only if a verified domain sender is set
-  //    (onboarding@resend.dev can only send to your own inbox).
-  if (from.indexOf('resend.dev') === -1) {
+  // 3. Email the visitor. If they scoped a plan, send THE PLAN (itemized, with the total
+  //    range + a book-a-call link). Otherwise send the sample-report note. `emailed` is
+  //    returned so the page only claims delivery when a mail actually went out.
+  let emailed = false;
+  if (canEmailVisitor) {
     try {
-      await resend('/emails', key, {
-        from: `Jason Teixeira <${from}>`,
-        to: [clean],
-        subject: 'Your sample AI evaluation report',
-        text: `Hi${nm !== '(no name)' ? ' ' + nm : ''} —\n\nHere's the sample eval report — the exact format and rigor I'd send you, on a fictional target so you can see the method: ${REPORT_URL}\n\nI test and prove AI features for teams shipping LLM products. If you want this run on YOUR live feature for real — verbatim transcripts, no cherry-picking — reply with the feature URL and I'll send you the findings, free. No call required.\n\n— Jason\nagency.sageideas.dev`,
-      });
-    } catch (_) {}
+      if (hasPlan) {
+        const computed = computePlan(plan.keys, plan.segment || null);
+        let planUrl = '';
+        try { planUrl = `${SITE}/build.html#plan=${encodeKeys(plan.keys, plan.segment || null)}`; } catch (_) {}
+        const segLabel = plan.segment && SEGMENTS[plan.segment] ? SEGMENTS[plan.segment].label : '';
+        const mail = scopePlanEmail({
+          segmentLabel: segLabel, phases: computed.phases, totalBand: computed.totalBand,
+          timelineWeeks: computed.timelineWeeks, bookUrl: `${SITE}/book.html`, planUrl, disclaimer: DISCLAIMER,
+        });
+        await resend('/emails', key, { from: `Jason Teixeira <${from}>`, to: [clean], subject: mail.subject, text: mail.text, html: mail.html });
+      } else {
+        await resend('/emails', key, {
+          from: `Jason Teixeira <${from}>`,
+          to: [clean],
+          subject: 'Your sample AI evaluation report',
+          text: `Hi${nm !== '(no name)' ? ' ' + nm : ''} —\n\nHere's the sample eval report — the exact format and rigor I'd send you, on a fictional target so you can see the method: ${REPORT_URL}\n\nI test and prove AI features for teams shipping LLM products. If you want this run on YOUR live feature for real — verbatim transcripts, no cherry-picking — reply with the feature URL and I'll send you the findings, free. No call required.\n\n— Jason\nagency.sageideas.dev`,
+        });
+      }
+      emailed = true;
+    } catch (_) { emailed = false; }
   }
 
-  return res.status(200).json({ ok: true, report: REPORT_URL });
+  return res.status(200).json({ ok: true, report: REPORT_URL, emailed });
 }
 
 export default withObserve('/api/lead', handler);

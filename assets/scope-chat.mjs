@@ -521,11 +521,15 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     try { band = computePlan(lastKeys, lastSegment).totalBand; } catch { /* keep [0,0] */ }
     if (handoffStatus) handoffStatus.textContent = 'Sending it over…';
     let leadOk = false;
+    let emailed = false;
     try {
       const r = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: e, prospectId: pid, source: 'scope-chat', plan: { keys: lastKeys, segment: lastSegment, total: band } }) });
-      leadOk = r.ok;
+      const j = await r.json().catch(() => ({}));
+      leadOk = !!(r.ok && j && j.ok !== false);
+      emailed = !!(j && j.emailed);
     } catch { leadOk = false; }
+    try { if (typeof window !== 'undefined' && typeof window.va === 'function') window.va('event', { name: 'scope_lead_captured', data: { via: 'chat', emailed } }); } catch { /* analytics best-effort */ }
     // proposal draft is best-effort regardless
     try {
       fetch('/api/proposal', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -533,7 +537,9 @@ if (toggleChat && toggleQuick && questionsEl && chatRoot) {
     } catch { /* degrade-safe */ }
     if (handoffForm) handoffForm.hidden = true;
     if (handoffStatus) handoffStatus.textContent = leadOk
-      ? "On its way. I'll follow up personally."
+      ? (emailed
+        ? "Done — your itemized plan is in your inbox, with a link to book a call. I'll follow up personally too."
+        : "Got it — I've got your plan and I'll follow up personally, usually within a day.")
       : "That didn't send. Email me at hello@sageideas.dev and I'll pick it up.";
   }
   if (handoffForm) {
