@@ -30,6 +30,7 @@ const termPath = (slug) => `glossary/${slug}.html`;
 /* ── shell (base='' for the hub at root, base='../' for term pages one level deep) ── */
 function shell({ base, path, title, desc, jsonLd, breadcrumbLd, body }) {
   const canonical = `${SITE_URL}/${path}`;
+  const ogImage = `${SITE_URL}/api/og?eyebrow=Glossary&amp;title=${encodeURIComponent(String(title).replace(/ — .*$/, '').slice(0, 110))}`;
   const ld = [jsonLd].concat(breadcrumbLd ? [breadcrumbLd] : []);
   return `<!DOCTYPE html>
 <html lang="en">
@@ -44,11 +45,11 @@ function shell({ base, path, title, desc, jsonLd, breadcrumbLd, body }) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${SITE_URL}/assets/og.png">
+<meta property="og:image" content="${ogImage}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(desc)}">
-<meta name="twitter:image" content="${SITE_URL}/assets/og.png">
+<meta name="twitter:image" content="${ogImage}">
 <link rel="preload" href="${base}assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${base}assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${base}assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>

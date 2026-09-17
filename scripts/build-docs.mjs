@@ -96,6 +96,7 @@ function shell({ slug, title, desc, breadcrumb, breadcrumbLd, jsonLd, body, toc 
   // Avoid doubling "Documentation" on the docs home (title is already "Documentation").
   const titleTag = /documentation/i.test(title) ? title : `${title} — Documentation`;
   const ogTitle = /documentation/i.test(title) ? title : `${title} — Documentation`;
+  const ogImage = `${SITE_URL}/api/og?eyebrow=Guide&amp;title=${encodeURIComponent(String(title).replace(/ — Documentation.*$/, '').slice(0, 110))}`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,11 +110,11 @@ function shell({ slug, title, desc, breadcrumb, breadcrumbLd, jsonLd, body, toc 
 <meta property="og:title" content="${esc(ogTitle)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${SITE_URL}/assets/og.png">
+<meta property="og:image" content="${ogImage}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(ogTitle)}">
 <meta name="twitter:description" content="${esc(desc)}">
-<meta name="twitter:image" content="${SITE_URL}/assets/og.png">
+<meta name="twitter:image" content="${ogImage}">
 <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
