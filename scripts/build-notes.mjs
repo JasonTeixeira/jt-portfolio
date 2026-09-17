@@ -252,6 +252,7 @@ const pages = [
   '/glossary.html',
   ...TERM_SLUGS.map((s) => `/glossary/${s}.html`),
   '/compare.html',
+  '/embeds.html',
   ...COMPARE_SLUGS.map((s) => `/compare/${s}.html`),
   ...ARTICLE_SLUGS.map((s) => `/docs-${s}.html`),
   ...NOTES.map((n) => `/notes/${n.slug}.html`)

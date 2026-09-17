@@ -148,6 +148,7 @@ export const LIBRARY = {
     { title: 'Stack & integrations (reference)', href: 'docs-stack-integrations.html', type: 'reference', desc: 'The tools and integrations this practice is built on.' },
     { title: 'Product & platform (reference)', href: 'docs-product-and-platform.html', type: 'reference', desc: 'How the pieces fit into a product and platform view.' },
     { title: 'Tool comparisons', href: 'compare.html', type: 'comparison', desc: 'Honest head-to-head comparisons — Promptfoo vs DeepEval, LangSmith vs Braintrust, Playwright vs Cypress, and more — each ending in a real recommendation.' },
+    { title: 'Embeddable diagrams', href: 'embeds.html', type: 'tool', desc: 'Free, code-native diagrams on eval metrics, RAG, and eval gates — drop them into your own docs or posts with attribution.' },
     { title: 'Glossary — 52 terms', href: 'glossary.html', type: 'glossary', desc: 'Plain-English definitions of the eval, RAG, agent, and testing vocabulary, each a real page with a concrete example.' },
     { title: 'Proof index', href: 'docs-proof-index.html', type: 'reference', desc: 'Every verifiable artifact behind the claims on this site, in one place.' },
   ],
