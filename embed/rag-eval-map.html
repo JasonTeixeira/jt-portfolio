@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where a RAG Pipeline Is Measured — Jason Teixeira</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#09090B; color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif; padding:14px; }
+  .d-diagram { margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#0B0B0D; }
+  .d-diagram-cap { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); background:#0E0E11; }
+  .d-diagram-body { padding:20px clamp(10px,3vw,24px); overflow-x:auto; }
+  .d-diagram-body svg { display:block; }
+  .d-diagram-note { padding:11px 16px 14px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.6; color:var(--faint); }
+  .d-diagram-note b { color:var(--dim); font-weight:600; }
+  .credit { margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); text-align:right; }
+  .credit a { color:#10b981; text-decoration:none; }</style>
+</head><body>
+<figure class="d-diagram" role="group" aria-label="where a RAG pipeline is measured">
+    <figcaption class="d-diagram-cap"><span>Diagram — where a RAG pipeline is measured</span><span>SVG · code-native</span></figcaption>
+    <div class="d-diagram-body" tabindex="0" role="region" aria-label="where a RAG pipeline is measured — diagram, scroll horizontally"><svg viewBox="0 0 970 190" width="970" role="img" aria-label="The RAG pipeline with its two measurement points: context precision and recall after retrieval, faithfulness and answer relevancy after generation" style="max-width:100%">
+    <line x1="70" y1="92" x2="900" y2="92" stroke="#2A2826" stroke-width="2"/>
+    <text x="70" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" letter-spacing="0.03em" fill="#A8A29E">QUESTION</text>
+    <circle cx="70" cy="92" r="12" fill="none" stroke="#A8A29E" stroke-opacity="0.34"/>
+    <circle cx="70" cy="92" r="5.5" fill="#A8A29E"/>
+    <text x="320" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" letter-spacing="0.03em" fill="#a78bfa">RETRIEVE</text>
+    <circle cx="320" cy="92" r="12" fill="none" stroke="#a78bfa" stroke-opacity="0.34"/>
+    <circle cx="320" cy="92" r="5.5" fill="#a78bfa"/>
+    <text x="620" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" letter-spacing="0.03em" fill="#22d3ee">GENERATE</text>
+    <circle cx="620" cy="92" r="12" fill="none" stroke="#22d3ee" stroke-opacity="0.34"/>
+    <circle cx="620" cy="92" r="5.5" fill="#22d3ee"/>
+    <text x="900" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" letter-spacing="0.03em" fill="#10b981">ANSWER</text>
+    <circle cx="900" cy="92" r="12" fill="none" stroke="#10b981" stroke-opacity="0.34"/>
+    <circle cx="900" cy="92" r="5.5" fill="#10b981"/>
+    
+      <path d="M320 114 L320 126 L620 126 L620 114" fill="none" stroke="#a78bfa" stroke-opacity="0.5"/>
+      <text x="470" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" fill="#a78bfa">RETRIEVAL METRICS</text>
+      <text x="470" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">context precision · context recall</text>
+    
+      <path d="M620 114 L620 126 L900 126 L900 114" fill="none" stroke="#22d3ee" stroke-opacity="0.5"/>
+      <text x="760" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" fill="#22d3ee">GENERATION METRICS</text>
+      <text x="760" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">faithfulness · answer relevancy</text>
+  </svg></div>
+    <figcaption class="d-diagram-note">A wrong answer is almost always one of two bugs: retrieval never found the right context, or generation ignored it. The metrics split cleanly along that line.</figcaption>
+  </figure>
+<div class="credit">via <a href="https://agency.sageideas.dev/docs-rag-evaluation-metrics.html" target="_blank" rel="noopener">Jason Teixeira — RAG Evaluation Metrics Explained</a></div>
+</body></html>

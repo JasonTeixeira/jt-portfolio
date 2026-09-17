@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The CI Eval Gate — Jason Teixeira</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#09090B; color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif; padding:14px; }
+  .d-diagram { margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#0B0B0D; }
+  .d-diagram-cap { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); background:#0E0E11; }
+  .d-diagram-body { padding:20px clamp(10px,3vw,24px); overflow-x:auto; }
+  .d-diagram-body svg { display:block; }
+  .d-diagram-note { padding:11px 16px 14px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.6; color:var(--faint); }
+  .d-diagram-note b { color:var(--dim); font-weight:600; }
+  .credit { margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); text-align:right; }
+  .credit a { color:#10b981; text-decoration:none; }</style>
+</head><body>
+<figure class="d-diagram" role="group" aria-label="the eval gate">
+    <figcaption class="d-diagram-cap"><span>Diagram — the eval gate</span><span>SVG · code-native</span></figcaption>
+    <div class="d-diagram-body" tabindex="0" role="region" aria-label="the eval gate — diagram, scroll horizontally"><svg viewBox="0 0 980 258" style="width:100%;height:auto;min-width:640px;display:block" role="img" aria-labelledby="dg-gate-t dg-gate-d">
+  <title id="dg-gate-t">The eval gate</title>
+  <desc id="dg-gate-d">AI output runs through an eval battery — correctness, safety, hallucination, and regression checks — into a CI quality gate. Green ships. Red is blocked and sent back to fix and re-run. Nothing ships on a hunch.</desc>
+  <defs>
+    <marker id="dg-arr-ship" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"/></marker>
+    <marker id="dg-arr-block" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f43f5e"/></marker>
+  </defs>
+  <line x1="40" y1="130" x2="672" y2="130" stroke="#2A2826" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="40" cy="130" r="6" fill="#F4F2EF"/>
+  <text x="40" y="100" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#F4F2EF">AI OUTPUT</text>
+  <text x="40" y="152" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">raw, unproven</text>
+  <circle cx="300" cy="130" r="13" fill="none" stroke="#8E8882" stroke-opacity="0.3"/>
+  <circle cx="300" cy="130" r="6" fill="#F4F2EF"/>
+  <text x="300" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#F4F2EF">EVAL BATTERY</text>
+  
+    <line x1="300" y1="130" x2="352" y2="72" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="352" cy="72" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="352" cy="72" r="4" fill="#8E8882"/>
+    <text x="364" y="76" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Correctness</text>
+    <line x1="300" y1="130" x2="352" y2="188" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="352" cy="188" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="352" cy="188" r="4" fill="#8E8882"/>
+    <text x="364" y="192" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Safety</text>
+    <line x1="300" y1="130" x2="404" y2="38" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="404" cy="38" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="404" cy="38" r="4" fill="#8E8882"/>
+    <text x="416" y="42" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Hallucination</text>
+    <line x1="300" y1="130" x2="404" y2="222" stroke="#8E8882" stroke-opacity="0.4" stroke-width="1.2"/>
+    <circle cx="404" cy="222" r="8" fill="none" stroke="#8E8882" stroke-opacity="0.25"/>
+    <circle cx="404" cy="222" r="4" fill="#8E8882"/>
+    <text x="416" y="226" text-anchor="start" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#A8A29E">Regression</text>
+  <text x="620" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" letter-spacing="0.08em" fill="#a78bfa">CI QUALITY GATE</text>
+  <polygon points="620,78 672,130 620,182 568,130" fill="#09090B" stroke="#a78bfa" stroke-width="1.8"/>
+  <text x="620" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#a78bfa">GATE</text>
+  <path d="M672,130 L884,74" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#dg-arr-ship)"/>
+  <path d="M672,130 L884,186" stroke="#f43f5e" stroke-width="1.8" fill="none" marker-end="url(#dg-arr-block)"/>
+  <circle cx="900" cy="70" r="12" fill="none" stroke="#10b981" stroke-opacity="0.35"/>
+  <circle cx="900" cy="70" r="6" fill="#10b981"/>
+  <text x="900" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#10b981">SHIP</text>
+  <text x="900" y="90" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">green → deploy</text>
+  <circle cx="900" cy="190" r="12" fill="none" stroke="#f43f5e" stroke-opacity="0.35"/>
+  <circle cx="900" cy="190" r="6" fill="#f43f5e"/>
+  <text x="900" y="168" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#f43f5e">BLOCKED</text>
+  <text x="900" y="212" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">red → fix &amp; re-run</text>
+</svg></div>
+    <figcaption class="d-diagram-note"><b>This is the differentiator.</b> Anyone can ship an AI feature. The gate is what proves it still works after the next prompt change — and it ships only when every check is green.</figcaption>
+  </figure>
+<div class="credit">via <a href="https://agency.sageideas.dev/docs-eval-gates-ci.html" target="_blank" rel="noopener">Jason Teixeira — Eval Gates: The Missing CI Step</a></div>
+</body></html>

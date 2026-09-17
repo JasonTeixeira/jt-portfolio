@@ -27,6 +27,7 @@
     "build:learn": "node scripts/add-learn-nav.mjs && node scripts/build-learn.mjs",
     "build:glossary": "node scripts/build-glossary.mjs",
     "build:compare": "node scripts/build-compare.mjs",
+    "build:embed": "node scripts/build-embed.mjs",
     "eval:chatbot": "node scripts/eval-chatbot.mjs",
     "eval:scope": "node scripts/eval-scope.mjs",
     "eval:target": "node scripts/eval-target.mjs",

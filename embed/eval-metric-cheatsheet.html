@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The LLM Eval Metric Cheat Sheet — Jason Teixeira</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#09090B; color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif; padding:14px; }
+  .d-diagram { margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#0B0B0D; }
+  .d-diagram-cap { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--faint); background:#0E0E11; }
+  .d-diagram-body { padding:20px clamp(10px,3vw,24px); overflow-x:auto; }
+  .d-diagram-body svg { display:block; }
+  .d-diagram-note { padding:11px 16px 14px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.6; color:var(--faint); }
+  .d-diagram-note b { color:var(--dim); font-weight:600; }
+  .credit { margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); text-align:right; }
+  .credit a { color:#10b981; text-decoration:none; }</style>
+</head><body>
+<figure class="d-diagram" role="group" aria-label="the LLM eval metric cheat sheet">
+    <figcaption class="d-diagram-cap"><span>Diagram — the LLM eval metric cheat sheet</span><span>SVG · code-native</span></figcaption>
+    <div class="d-diagram-body" tabindex="0" role="region" aria-label="the LLM eval metric cheat sheet — diagram, scroll horizontally"><svg viewBox="0 0 994 330" width="994" role="img" aria-label="LLM evaluation metric cheat sheet: four metric families and when to reach for each metric" style="max-width:100%">
+      <rect x="6" y="4" width="232" height="30" rx="7" fill="none" stroke="#22d3ee" stroke-opacity="0.34"/>
+      <circle cx="21" cy="19" r="3.5" fill="#22d3ee"/>
+      <text x="33" y="24" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" letter-spacing="0.06em" fill="#22d3ee">CORRECTNESS</text>
+        <rect x="6" y="52" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="6" y="52" width="3" height="60" rx="1.5" fill="#22d3ee" fill-opacity="0.7"/>
+        <text x="21" y="76" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Exact match / F1</text>
+        <text x="21" y="95" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">closed, deterministic answers</text>
+        <rect x="6" y="120" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="6" y="120" width="3" height="60" rx="1.5" fill="#22d3ee" fill-opacity="0.7"/>
+        <text x="21" y="144" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Semantic similarity</text>
+        <text x="21" y="163" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">open answers where meaning matters</text>
+        <rect x="6" y="188" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="6" y="188" width="3" height="60" rx="1.5" fill="#22d3ee" fill-opacity="0.7"/>
+        <text x="21" y="212" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">LLM-as-judge (rubric)</text>
+        <text x="21" y="231" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">nuanced quality, graded at scale</text>
+        <rect x="6" y="256" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="6" y="256" width="3" height="60" rx="1.5" fill="#22d3ee" fill-opacity="0.7"/>
+        <text x="21" y="280" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Pairwise / Elo</text>
+        <text x="21" y="299" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">ranking two prompt or model versions</text>
+      <rect x="256" y="4" width="232" height="30" rx="7" fill="none" stroke="#a78bfa" stroke-opacity="0.34"/>
+      <circle cx="271" cy="19" r="3.5" fill="#a78bfa"/>
+      <text x="283" y="24" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" letter-spacing="0.06em" fill="#a78bfa">RETRIEVAL · RAG</text>
+        <rect x="256" y="52" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="256" y="52" width="3" height="60" rx="1.5" fill="#a78bfa" fill-opacity="0.7"/>
+        <text x="271" y="76" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Faithfulness</text>
+        <text x="271" y="95" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">answer must be grounded in sources</text>
+        <rect x="256" y="120" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="256" y="120" width="3" height="60" rx="1.5" fill="#a78bfa" fill-opacity="0.7"/>
+        <text x="271" y="144" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Answer relevancy</text>
+        <text x="271" y="163" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">answer actually addresses the question</text>
+        <rect x="256" y="188" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="256" y="188" width="3" height="60" rx="1.5" fill="#a78bfa" fill-opacity="0.7"/>
+        <text x="271" y="212" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Context precision</text>
+        <text x="271" y="231" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">retrieved chunks are on-topic</text>
+        <rect x="256" y="256" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="256" y="256" width="3" height="60" rx="1.5" fill="#a78bfa" fill-opacity="0.7"/>
+        <text x="271" y="280" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Context recall</text>
+        <text x="271" y="299" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">the needed chunk was retrieved at all</text>
+      <rect x="506" y="4" width="232" height="30" rx="7" fill="none" stroke="#f43f5e" stroke-opacity="0.34"/>
+      <circle cx="521" cy="19" r="3.5" fill="#f43f5e"/>
+      <text x="533" y="24" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" letter-spacing="0.06em" fill="#f43f5e">SAFETY</text>
+        <rect x="506" y="52" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="506" y="52" width="3" height="60" rx="1.5" fill="#f43f5e" fill-opacity="0.7"/>
+        <text x="521" y="76" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Toxicity / bias</text>
+        <text x="521" y="95" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">user-facing, brand-risk surfaces</text>
+        <rect x="506" y="120" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="506" y="120" width="3" height="60" rx="1.5" fill="#f43f5e" fill-opacity="0.7"/>
+        <text x="521" y="144" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">PII leakage</text>
+        <text x="521" y="163" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">the model can see sensitive data</text>
+        <rect x="506" y="188" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="506" y="188" width="3" height="60" rx="1.5" fill="#f43f5e" fill-opacity="0.7"/>
+        <text x="521" y="212" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Injection resistance</text>
+        <text x="521" y="231" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">untrusted text enters the prompt</text>
+        <rect x="506" y="256" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="506" y="256" width="3" height="60" rx="1.5" fill="#f43f5e" fill-opacity="0.7"/>
+        <text x="521" y="280" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Jailbreak rate</text>
+        <text x="521" y="299" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">the model has tools or authority</text>
+      <rect x="756" y="4" width="232" height="30" rx="7" fill="none" stroke="#F59E0B" stroke-opacity="0.34"/>
+      <circle cx="771" cy="19" r="3.5" fill="#F59E0B"/>
+      <text x="783" y="24" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" letter-spacing="0.06em" fill="#F59E0B">OPERATIONAL</text>
+        <rect x="756" y="52" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="756" y="52" width="3" height="60" rx="1.5" fill="#F59E0B" fill-opacity="0.7"/>
+        <text x="771" y="76" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Latency p95</text>
+        <text x="771" y="95" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">it sits in a user-facing path</text>
+        <rect x="756" y="120" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="756" y="120" width="3" height="60" rx="1.5" fill="#F59E0B" fill-opacity="0.7"/>
+        <text x="771" y="144" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Cost per eval / run</text>
+        <text x="771" y="163" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">the suite runs on every commit</text>
+        <rect x="756" y="188" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="756" y="188" width="3" height="60" rx="1.5" fill="#F59E0B" fill-opacity="0.7"/>
+        <text x="771" y="212" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Output-variance</text>
+        <text x="771" y="231" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">same input, different answers</text>
+        <rect x="756" y="256" width="232" height="60" rx="8" fill="#0E0E11" stroke="#211F1C"/>
+        <rect x="756" y="256" width="3" height="60" rx="1.5" fill="#F59E0B" fill-opacity="0.7"/>
+        <text x="771" y="280" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#F4F2EF">Task completion</text>
+        <text x="771" y="299" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8E8882">the system takes multi-step actions</text></svg></div>
+    <figcaption class="d-diagram-note">Pick the smallest set that answers "is this good enough?" for <b>your</b> feature — most teams need two or three of these, not all sixteen.</figcaption>
+  </figure>
+<div class="credit">via <a href="https://agency.sageideas.dev/docs-llm-evaluation-metrics.html" target="_blank" rel="noopener">Jason Teixeira — LLM Evaluation Metrics Explained</a></div>
+</body></html>
