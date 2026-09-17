@@ -61,6 +61,24 @@ test('clientView returns null for a missing project', () => {
   assert.equal(clientView(null, null, [], null), null);
 });
 
+test('clientView surfaces sent/paid invoices, hides drafts, derives paid from the ledger', () => {
+  const project = { id: 'p', proposal_id: 'pr', status: 'active' };
+  const proposal = { deposit_cents: 30000, balance_cents: 70000, firm_cents: 100000, paid_at: '2026-09-01T00:00:00Z', balance_paid_at: null };
+  const invoices = [
+    { invoice_no: 1001, kind: 'deposit', amount_cents: 30000, currency: 'usd', status: 'sent', issued_at: 'i', sent_at: 's', due_at: 'd', proposal_id: 'pr' },
+    { invoice_no: 1002, kind: 'balance', amount_cents: 70000, currency: 'usd', status: 'sent', issued_at: 'i', sent_at: 's', due_at: 'd', proposal_id: 'pr' },
+    { invoice_no: 1003, kind: 'full', amount_cents: 100000, currency: 'usd', status: 'draft', proposal_id: 'pr' },
+  ];
+  const v = clientView(project, proposal, [], null, [], invoices);
+  assert.equal(v.invoices.length, 2, 'draft invoice is hidden');
+  const dep = v.invoices.find((i) => i.kind === 'deposit');
+  const bal = v.invoices.find((i) => i.kind === 'balance');
+  assert.equal(dep.paid, true, 'deposit is paid (paid_at set)');
+  assert.equal(bal.paid, false, 'balance unpaid (balance_paid_at null)');
+  assert.equal(dep.proposal_id, undefined, 'internal proposal_id not leaked to the client');
+  assert.equal(dep.invoice_no, 1001);
+});
+
 test('milestoneBelongsToProject: only true when the id is in this project\'s own milestone list', () => {
   const milestones = [{ id: 'M1' }, { id: 'M2' }];
   assert.equal(milestoneBelongsToProject(milestones, 'M1'), true);

@@ -328,6 +328,60 @@ function buildStepper(view, plan) {
   return card;
 }
 
+const fmtDay = (iso) => { try { return new Date(iso).toLocaleDateString(LOCALE, { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return ''; } };
+
+// Invoice & receipt history — sent/paid invoices only (drafts never reach the client). Each
+// paid invoice opens a clean, printable receipt.
+function buildInvoicesCard(view) {
+  const invoices = Array.isArray(view.invoices) ? view.invoices : [];
+  if (!invoices.length) return null;
+  const card = h('div', { class: 'portal-card' }, h('h2', { class: 'portal-card-title' }, t('invoices.title')));
+  for (const inv of invoices) {
+    const kindLabel = t('invoices.kind.' + inv.kind);
+    const statusPill = h('span', { class: 'portal-badge', style: inv.paid ? 'color:var(--green);border-color:var(--green)' : '' }, inv.paid ? t('invoices.paid') : t('invoices.sent'));
+    const row = h('div', { style: 'display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap' },
+      h('span', { class: 'mono', style: 'font-size:12px;color:var(--muted,#8E8882)' }, 'INV-' + inv.invoice_no),
+      h('span', { style: 'font-size:13px' }, kindLabel),
+      statusPill,
+      h('span', { style: 'flex:1' }),
+      h('span', { class: 'mono', style: 'font-weight:600' }, money(inv.amount_cents)));
+    if (inv.paid) {
+      const rb = h('button', { type: 'button', class: 'btn-ghost', style: 'padding:6px 12px;font-size:12px' }, t('invoices.receipt'));
+      rb.addEventListener('click', () => showReceipt(inv));
+      row.appendChild(rb);
+    } else if (inv.due_at) {
+      row.appendChild(h('span', { class: 'mono', style: 'font-size:11px;color:var(--muted,#8E8882)' }, t('invoices.due', { date: fmtDay(inv.due_at) })));
+    }
+    card.appendChild(row);
+  }
+  return card;
+}
+
+// A printable, self-contained receipt overlay for a single paid invoice.
+function showReceipt(inv) {
+  const overlay = h('div', { class: 'receipt-overlay', role: 'dialog', 'aria-modal': 'true',
+    style: 'position:fixed;inset:0;z-index:300;background:rgba(6,6,8,.72);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;overflow:auto' });
+  const line = (l, v, strong) => h('div', { style: `display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid #eee;font-size:${strong ? '16px' : '14px'};font-weight:${strong ? '700' : '400'}` }, h('span', {}, l), h('span', { style: 'font-variant-numeric:tabular-nums' }, v));
+  const doc = h('div', { class: 'receipt-doc', style: 'width:min(560px,100%);background:#fff;color:#111;border-radius:14px;padding:36px 34px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif' },
+    h('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:20px' },
+      h('span', { style: 'font-weight:800;font-size:18px' }, 'Sage Ideas'),
+      h('span', { style: 'font-weight:800;font-size:13px;letter-spacing:.08em;color:#0F9D6C' }, t('receipt.paid'))),
+    h('div', { style: 'font-size:21px;font-weight:700' }, t('receipt.heading')),
+    h('div', { style: 'color:#666;font-size:13px;margin-bottom:20px' }, t('receipt.for', { no: inv.invoice_no })),
+    line(t('invoices.kind.' + inv.kind), money(inv.amount_cents), true),
+    line(t('invoices.paid'), fmtDay(inv.sent_at || inv.issued_at)),
+    h('p', { style: 'color:#666;font-size:12px;margin-top:18px;line-height:1.5' }, 'Thank you for your business. — Jason, Sage Ideas'));
+  const printBtn = h('button', { type: 'button', class: 'btn-ghost no-print', style: 'padding:9px 16px;font-size:13px' }, t('billing.print'));
+  printBtn.addEventListener('click', () => { document.body.classList.add('receipting'); window.print(); setTimeout(() => document.body.classList.remove('receipting'), 400); });
+  const closeBtn = h('button', { type: 'button', class: 'btn-ghost no-print', style: 'padding:9px 16px;font-size:13px' }, t('receipt.close'));
+  closeBtn.addEventListener('click', () => overlay.remove());
+  doc.appendChild(h('div', { class: 'no-print', style: 'display:flex;gap:10px;margin-top:22px' }, printBtn, closeBtn));
+  overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) overlay.remove(); });
+  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', esc); } });
+  overlay.appendChild(doc);
+  document.body.appendChild(overlay);
+}
+
 function renderPortal(root, view, portalToken, opts = {}) {
   clear(root);
   const plan = view.plan || {};
@@ -426,6 +480,9 @@ function renderPortal(root, view, portalToken, opts = {}) {
     payCard.appendChild(h('div', { class: 'portal-pay-row' }, h('span', { class: 'lbl' }, t('billing.balance')), h('span', { class: 'val' }, money(plan.balance_cents))));
   }
   root.appendChild(payCard);
+
+  const invCard = buildInvoicesCard(view);
+  if (invCard) root.appendChild(invCard);
 
   // Project assistant — grounded, read-only Q&A about this project.
   root.appendChild(buildAssistantCard(portalToken));
