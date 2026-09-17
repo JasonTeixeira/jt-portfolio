@@ -396,3 +396,5 @@ create table if not exists scope_broadcast_sends (
   primary key (broadcast_id, email)
 );
 alter table scope_broadcast_sends enable row level security;
+alter table scope_broadcasts add column if not exists content_hash text;
+create index if not exists idx_scope_broadcasts_hash on scope_broadcasts (content_hash, created_at desc);

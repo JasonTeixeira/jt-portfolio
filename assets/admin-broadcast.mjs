@@ -71,7 +71,7 @@ export function renderBroadcast(root, key, deps) {
     const { json } = await post({});
     sendBtn.disabled = false; testBtn.disabled = false;
     if (json && json.ok) {
-      setStatus(`Sent ${json.sent}, skipped ${json.skipped}${json.failed ? `, failed ${json.failed}` : ''}.${json.capped ? ' List exceeded the per-send cap — run again to send the rest.' : ''}`, '#10b981');
+      setStatus(`Sent ${json.sent}, skipped ${json.skipped}${json.failed ? `, failed ${json.failed}` : ''}.${json.capped ? ` ${json.remaining} left — click send again to continue this same broadcast (already-sent addresses are skipped).` : ' Done.'}`, '#10b981');
     } else {
       setStatus('Send failed. Check that email is configured, then retry.', '#F59E0B');
     }
