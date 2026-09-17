@@ -9,6 +9,7 @@ import { SERVICES } from './services.data.mjs';
 import { DOC_SLUGS } from './docs.data.mjs';
 import { LEARN_SLUGS } from './learn.data.mjs';
 import { TERM_SLUGS } from './glossary.data.mjs';
+import { COMPARE_SLUGS } from './comparisons.data.mjs';
 import { SITE_URL, AUTHOR } from './site.config.mjs';
 
 const MONO = "font-family:'JetBrains Mono',monospace;";
@@ -222,6 +223,8 @@ const pages = [
   ...LEARN_SLUGS.map((s) => `/learn-${s}.html`),
   '/glossary.html',
   ...TERM_SLUGS.map((s) => `/glossary/${s}.html`),
+  '/compare.html',
+  ...COMPARE_SLUGS.map((s) => `/compare/${s}.html`),
   ...NOTES.map((n) => `/notes/${n.slug}.html`)
 ];
 const today = new Date().toISOString().slice(0, 10);

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playwright vs Selenium: which should you use? (2026) · Jason Teixeira</title>
+<meta name="description" content="If you are setting up browser end-to-end tests, these two are the usual finalists. Playwright is a modern framework with auto-waiting and one API across br">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/compare/playwright-vs-selenium.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Playwright vs Selenium: which should you use? (2026)">
+<meta property="og:description" content="If you are setting up browser end-to-end tests, these two are the usual finalists. Playwright is a modern framework with auto-waiting and one API across br">
+<meta property="og:url" content="https://agency.sageideas.dev/compare/playwright-vs-selenium.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Playwright vs Selenium: which should you use?","description":"If you are setting up browser end-to-end tests, these two are the usual finalists. Playwright is a modern framework with auto-waiting and one API across br","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/compare/playwright-vs-selenium.html"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://agency.sageideas.dev/learn.html"},{"@type":"ListItem","position":3,"name":"Compare","item":"https://agency.sageideas.dev/compare.html"},{"@type":"ListItem","position":4,"name":"Playwright vs Selenium","item":"https://agency.sageideas.dev/compare/playwright-vs-selenium.html"}]}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .l-top { position:sticky; top:0; z-index:60; display:flex; align-items:center; gap:12px; padding:11px clamp(14px,3vw,28px); background:rgba(9,9,11,0.9); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+  .l-brand { display:inline-flex; align-items:center; gap:9px; }
+  .l-brand .mk { width:24px; height:24px; border:1px solid var(--line); border-radius:6px; display:grid; place-items:center; font-family:var(--mono); font-size:10px; font-weight:700; background:var(--card); }
+  .l-brand .nm { font-family:var(--mono); font-size:12.5px; font-weight:600; white-space:nowrap; }
+  .l-badge { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); border:1px solid var(--line); border-radius:5px; padding:3px 8px; }
+  .l-nav { margin-left:auto; display:flex; gap:18px; align-items:center; font-family:var(--mono); font-size:12px; }
+  .l-nav a { color:var(--dim); } .l-nav a:hover { color:var(--ink); }
+  .l-nav .btn { background:var(--green); color:#052e22; border-radius:22px; padding:8px 15px; font-weight:700; white-space:nowrap; }
+  @media (max-width:640px){ .l-nav .hideable { display:none; } }
+
+  .c-wrap { max-width:880px; margin:0 auto; padding:clamp(28px,5vw,60px) clamp(18px,4vw,32px) 88px; }
+  .c-crumb { font-family:var(--mono); font-size:11px; color:var(--faint); margin-bottom:20px; }
+  .c-crumb a:hover { color:var(--ink); }
+  .c-tag { display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--tc); border:1px solid var(--line); border-radius:5px; padding:4px 9px; }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.3rem,5.2vw,3.5rem); line-height:1.05; letter-spacing:-0.02em; margin:16px 0 0; text-wrap:balance; }
+  h1 .vs { color:var(--faint); font-style:italic; }
+  .c-intro { font-size:clamp(16px,2.1vw,18px); line-height:1.66; color:var(--ink); margin:20px 0 0; max-width:66ch; }
+  .c-intro b { font-weight:600; }
+
+  .c-tablewrap { margin:34px 0 0; border:1px solid var(--line); border-radius:14px; overflow-x:auto; }
+  table.c-table { width:100%; border-collapse:collapse; font-size:14px; min-width:560px; }
+  .c-table th, .c-table td { text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.55; }
+  .c-table thead th { font-family:var(--mono); font-size:11px; letter-spacing:0.04em; text-transform:uppercase; background:#0A0A0C; }
+  .c-table thead th.dim { color:var(--faint); }
+  .c-table thead th.ta { color:var(--tc); }
+  .c-table thead th.tb { color:var(--ink); }
+  .c-table td.dim { font-family:var(--mono); font-size:11.5px; color:var(--faint); white-space:nowrap; }
+  .c-table td { color:var(--dim); }
+  .c-table td b { color:var(--ink); font-weight:600; }
+  .c-table tbody tr:last-child td { border-bottom:none; }
+
+  .c-picks { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:36px; }
+  @media (max-width:620px){ .c-picks { grid-template-columns:1fr; } }
+  .c-pick { border:1px solid var(--line); border-radius:14px; padding:18px 20px; background:var(--card); }
+  .c-pick.a { border-top:2px solid var(--tc); }
+  .c-pick.b { border-top:2px solid var(--dim); }
+  .c-pick .ph { font-family:var(--mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:8px; }
+  .c-pick.a .ph { color:var(--tc); }
+  .c-pick.b .ph { color:var(--ink); }
+  .c-pick p { margin:0; font-size:14.5px; line-height:1.66; color:var(--dim); }
+  .c-pick p b { color:var(--ink); }
+
+  .c-take { margin-top:34px; border:1px solid var(--line); border-left:2px solid var(--green); background:rgba(16,185,129,0.04); border-radius:0 12px 12px 0; padding:18px 22px; }
+  .c-take .th { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); margin-bottom:8px; }
+  .c-take p { margin:0; font-size:15px; line-height:1.7; color:var(--dim); } .c-take p b { color:var(--ink); }
+
+  .c-related { margin-top:48px; border-top:1px solid var(--line); padding-top:26px; }
+  .c-related .rh { font-family:var(--mono); font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:var(--faint); margin-bottom:14px; }
+  .c-chips { display:flex; flex-wrap:wrap; gap:9px; }
+  .c-chip { border:1px solid var(--line); border-radius:20px; padding:8px 14px; font-size:13px; color:var(--dim); }
+  .c-chip:hover { border-color:var(--tc); color:var(--ink); }
+  .c-see { margin-top:18px; font-size:14px; color:var(--dim); } .c-see a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+
+  .c-cta { display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between; border:1px solid var(--line); background:linear-gradient(180deg,rgba(16,185,129,0.06),transparent); border-radius:14px; padding:20px 24px; margin-top:46px; }
+  .c-cta-h { font-family:var(--serif); font-size:1.35rem; }
+  .c-cta-s { font-size:13px; color:var(--dim); margin-top:3px; max-width:54ch; }
+  .c-cta-btn { background:var(--green); color:#052e22; border-radius:22px; padding:11px 20px; font-size:13.5px; font-weight:700; white-space:nowrap; }
+  .c-note { margin-top:26px; font-family:var(--mono); font-size:11px; color:var(--faint); line-height:1.6; }
+  .c-foot { margin-top:22px; font-family:var(--mono); font-size:11px; color:var(--faint); } .c-foot a { color:inherit; }
+
+  /* hub */
+  .c-hero-lead { color:var(--dim); font-size:clamp(15px,2vw,17px); line-height:1.7; margin:18px 0 0; max-width:62ch; }
+  .c-hero-lead a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .c-catblock { margin-top:44px; }
+  .c-cathead { display:flex; align-items:baseline; gap:12px; border-bottom:1px solid var(--line); padding-bottom:10px; }
+  .c-cathead h2 { font-family:var(--serif); font-weight:400; font-size:1.5rem; margin:0; }
+  .c-cathead .cc { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cc); }
+  .c-matchrow { display:block; padding:15px 4px; border-bottom:1px solid var(--line); }
+  .c-matchrow:hover .mt { color:var(--cc); }
+  .c-matchrow .mt { font-size:16px; color:var(--ink); font-family:var(--serif); transition:color .15s; }
+  .c-matchrow .mg { font-size:13px; color:var(--faint); line-height:1.5; margin-top:3px; }
+</style>
+</head>
+<body>
+  <div class="l-top">
+    <a href="../index.html" class="l-brand"><span class="mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span><span class="nm">jason.teixeira<span style="color:var(--green)">()</span></span></a>
+    <span class="l-badge">Compare</span>
+    <nav class="l-nav" aria-label="Primary">
+      <a href="../compare.html">All comparisons</a>
+      <a href="../learn.html" class="hideable">Learn</a>
+      <a href="../docs.html" class="hideable">Docs</a>
+      <a href="../book.html" class="btn">Book a call →</a>
+    </nav>
+  </div>
+  <main class="c-wrap" style="--tc:#F59E0B">
+    <div class="c-crumb"><a href="../index.html">Home</a> / <a href="../learn.html">Learn</a> / <a href="../compare.html">Compare</a> / <span style="color:var(--dim)">Playwright vs Selenium</span></div>
+    <span class="c-tag">Test automation</span>
+    <h1>Playwright <span class="vs">vs</span> Selenium</h1>
+    <p class="c-intro">If you are setting up browser end-to-end tests, these two are the usual finalists. <b>Playwright</b> is a modern framework with auto-waiting and one API across browsers. <b>Selenium</b> is the long-standing WebDriver standard, with the widest language and browser reach and a huge existing ecosystem.</p>
+    <div class="c-tablewrap"><table class="c-table"><thead><tr><th class="dim">Dimension</th><th class="ta">Playwright</th><th class="tb">Selenium</th></tr></thead><tbody><tr><td class="dim">What it is</td><td>A modern browser automation framework from Microsoft</td><td>The WebDriver standard for driving real browsers</td></tr><tr><td class="dim">License</td><td>Open source</td><td>Open source</td></tr><tr><td class="dim">Languages</td><td>JS/TS, Python, Java, .NET</td><td><b>Java, Python, C#, Ruby, JS, and more</b></td></tr><tr><td class="dim">Browsers</td><td>Chromium, Firefox, WebKit (Safari engine)</td><td>Chrome, Firefox, Edge, Safari, others</td></tr><tr><td class="dim">Waiting</td><td><b>Auto-waits</b> on elements by default</td><td>Manual, explicit, or fluent waits</td></tr><tr><td class="dim">Setup</td><td>Bundled browsers, one install</td><td>You manage drivers and browser versions</td></tr><tr><td class="dim">Debugging</td><td>Trace viewer, codegen, video</td><td>Logs and screenshots, less built in</td></tr><tr><td class="dim">Best for</td><td>New suites that want low flake quickly</td><td>Broad language reach and existing grids</td></tr></tbody></table></div>
+    <div class="c-picks">
+    <div class="c-pick a"><div class="ph">Pick Playwright if</div><p>You are starting fresh and want tests that are stable out of the box. Playwright's auto-waiting removes most of the flaky-sleep problem. The trace viewer makes failures easy to read. One install gets you all three browser engines, including WebKit.</p></div>
+    <div class="c-pick b"><div class="ph">Pick Selenium if</div><p>Your team works in a language Playwright does not cover, or you already have a large Selenium suite and a Grid running. Selenium has the widest ecosystem, so it is the safe pick when you need that reach or you are maintaining what already exists.</p></div>
+  </div>
+    <div class="c-take"><div class="th">The honest take</div><p>For a new suite today, I reach for Playwright. The auto-waiting alone removes a whole class of flaky failures that people spend weeks fighting in Selenium, and the debugging tools are better. Selenium is still a serious, capable tool, especially if you are already invested or need a language Playwright does not support. The mistake is rewriting a working Selenium suite into Playwright for the logo. Most flakiness comes from hard sleeps and bad test isolation. You can fix a lot of that in Selenium with proper explicit waits and never migrate.</p></div>
+    <div class="c-related">
+      <div class="rh">Related comparisons — Test automation</div>
+      <div class="c-chips"><a class="c-chip" href="playwright-vs-cypress.html">Playwright vs Cypress</a></div>
+      <div class="c-see">See also: <a href="../reduce-test-flakiness.html">Reduce test flakiness</a> · <a href="../learn-test-automation.html">Test Automation &amp; QA pillar →</a></div>
+    </div>
+    <div class="c-cta"><div><div class="c-cta-h">Not sure which fits your stack?</div><div class="c-cta-s">Book a 20-minute call and I’ll tell you straight, based on your setup — no upsell.</div></div><a href="../book.html" class="c-cta-btn">Book a call →</a></div>
+    <div class="c-note">Comparisons reflect each tool’s general positioning as of 2026 and focus on architecture and fit rather than fast-moving pricing or version details. Check each project’s own docs before you commit.</div>
+    <div class="c-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="../compare.html">All comparisons</a> · <a href="../learn.html">Learn</a>
+    <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script></div>
+  </main>
+  <script defer src="../assets/agent.js"></script>
+</body>
+</html>

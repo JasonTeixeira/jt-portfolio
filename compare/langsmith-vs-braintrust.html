@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LangSmith vs Braintrust: which should you use? (2026) · Jason Teixeira</title>
+<meta name="description" content="If you're building an LLM app and need tracing plus a way to score outputs, these two come up a lot. LangSmith is the observability and eval platform from ">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agency.sageideas.dev/compare/langsmith-vs-braintrust.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangSmith vs Braintrust: which should you use? (2026)">
+<meta property="og:description" content="If you're building an LLM app and need tracing plus a way to score outputs, these two come up a lot. LangSmith is the observability and eval platform from ">
+<meta property="og:url" content="https://agency.sageideas.dev/compare/langsmith-vs-braintrust.html">
+<meta property="og:image" content="https://agency.sageideas.dev/assets/og.png">
+<link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/plus-jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090B'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='monospace' font-size='26' font-weight='700' fill='%2310b981'%3EJT%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"LangSmith vs Braintrust: which should you use?","description":"If you're building an LLM app and need tracing plus a way to score outputs, these two come up a lot. LangSmith is the observability and eval platform from ","author":{"@type":"Person","name":"Jason Teixeira","url":"https://agency.sageideas.dev"},"mainEntityOfPage":"https://agency.sageideas.dev/compare/langsmith-vs-braintrust.html"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://agency.sageideas.dev/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://agency.sageideas.dev/learn.html"},{"@type":"ListItem","position":3,"name":"Compare","item":"https://agency.sageideas.dev/compare.html"},{"@type":"ListItem","position":4,"name":"LangSmith vs Braintrust","item":"https://agency.sageideas.dev/compare/langsmith-vs-braintrust.html"}]}</script>
+<style>
+  :root { --ink:#F4F2EF; --dim:#A8A29E; --faint:#8E8882; --line:#211F1C; --card:#0C0C0E; --bg:#09090B; --green:#10b981; --cyan:#22d3ee; --purple:#a78bfa; --amber:#F59E0B; --mono:'JetBrains Mono',monospace; --serif:'Instrument Serif',Georgia,serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+  a { color:inherit; text-decoration:none; }
+  .l-top { position:sticky; top:0; z-index:60; display:flex; align-items:center; gap:12px; padding:11px clamp(14px,3vw,28px); background:rgba(9,9,11,0.9); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+  .l-brand { display:inline-flex; align-items:center; gap:9px; }
+  .l-brand .mk { width:24px; height:24px; border:1px solid var(--line); border-radius:6px; display:grid; place-items:center; font-family:var(--mono); font-size:10px; font-weight:700; background:var(--card); }
+  .l-brand .nm { font-family:var(--mono); font-size:12.5px; font-weight:600; white-space:nowrap; }
+  .l-badge { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); border:1px solid var(--line); border-radius:5px; padding:3px 8px; }
+  .l-nav { margin-left:auto; display:flex; gap:18px; align-items:center; font-family:var(--mono); font-size:12px; }
+  .l-nav a { color:var(--dim); } .l-nav a:hover { color:var(--ink); }
+  .l-nav .btn { background:var(--green); color:#052e22; border-radius:22px; padding:8px 15px; font-weight:700; white-space:nowrap; }
+  @media (max-width:640px){ .l-nav .hideable { display:none; } }
+
+  .c-wrap { max-width:880px; margin:0 auto; padding:clamp(28px,5vw,60px) clamp(18px,4vw,32px) 88px; }
+  .c-crumb { font-family:var(--mono); font-size:11px; color:var(--faint); margin-bottom:20px; }
+  .c-crumb a:hover { color:var(--ink); }
+  .c-tag { display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--tc); border:1px solid var(--line); border-radius:5px; padding:4px 9px; }
+  h1 { font-family:var(--serif); font-weight:400; font-size:clamp(2.3rem,5.2vw,3.5rem); line-height:1.05; letter-spacing:-0.02em; margin:16px 0 0; text-wrap:balance; }
+  h1 .vs { color:var(--faint); font-style:italic; }
+  .c-intro { font-size:clamp(16px,2.1vw,18px); line-height:1.66; color:var(--ink); margin:20px 0 0; max-width:66ch; }
+  .c-intro b { font-weight:600; }
+
+  .c-tablewrap { margin:34px 0 0; border:1px solid var(--line); border-radius:14px; overflow-x:auto; }
+  table.c-table { width:100%; border-collapse:collapse; font-size:14px; min-width:560px; }
+  .c-table th, .c-table td { text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.55; }
+  .c-table thead th { font-family:var(--mono); font-size:11px; letter-spacing:0.04em; text-transform:uppercase; background:#0A0A0C; }
+  .c-table thead th.dim { color:var(--faint); }
+  .c-table thead th.ta { color:var(--tc); }
+  .c-table thead th.tb { color:var(--ink); }
+  .c-table td.dim { font-family:var(--mono); font-size:11.5px; color:var(--faint); white-space:nowrap; }
+  .c-table td { color:var(--dim); }
+  .c-table td b { color:var(--ink); font-weight:600; }
+  .c-table tbody tr:last-child td { border-bottom:none; }
+
+  .c-picks { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:36px; }
+  @media (max-width:620px){ .c-picks { grid-template-columns:1fr; } }
+  .c-pick { border:1px solid var(--line); border-radius:14px; padding:18px 20px; background:var(--card); }
+  .c-pick.a { border-top:2px solid var(--tc); }
+  .c-pick.b { border-top:2px solid var(--dim); }
+  .c-pick .ph { font-family:var(--mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:8px; }
+  .c-pick.a .ph { color:var(--tc); }
+  .c-pick.b .ph { color:var(--ink); }
+  .c-pick p { margin:0; font-size:14.5px; line-height:1.66; color:var(--dim); }
+  .c-pick p b { color:var(--ink); }
+
+  .c-take { margin-top:34px; border:1px solid var(--line); border-left:2px solid var(--green); background:rgba(16,185,129,0.04); border-radius:0 12px 12px 0; padding:18px 22px; }
+  .c-take .th { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); margin-bottom:8px; }
+  .c-take p { margin:0; font-size:15px; line-height:1.7; color:var(--dim); } .c-take p b { color:var(--ink); }
+
+  .c-related { margin-top:48px; border-top:1px solid var(--line); padding-top:26px; }
+  .c-related .rh { font-family:var(--mono); font-size:10px; letter-spacing:0.13em; text-transform:uppercase; color:var(--faint); margin-bottom:14px; }
+  .c-chips { display:flex; flex-wrap:wrap; gap:9px; }
+  .c-chip { border:1px solid var(--line); border-radius:20px; padding:8px 14px; font-size:13px; color:var(--dim); }
+  .c-chip:hover { border-color:var(--tc); color:var(--ink); }
+  .c-see { margin-top:18px; font-size:14px; color:var(--dim); } .c-see a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+
+  .c-cta { display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between; border:1px solid var(--line); background:linear-gradient(180deg,rgba(16,185,129,0.06),transparent); border-radius:14px; padding:20px 24px; margin-top:46px; }
+  .c-cta-h { font-family:var(--serif); font-size:1.35rem; }
+  .c-cta-s { font-size:13px; color:var(--dim); margin-top:3px; max-width:54ch; }
+  .c-cta-btn { background:var(--green); color:#052e22; border-radius:22px; padding:11px 20px; font-size:13.5px; font-weight:700; white-space:nowrap; }
+  .c-note { margin-top:26px; font-family:var(--mono); font-size:11px; color:var(--faint); line-height:1.6; }
+  .c-foot { margin-top:22px; font-family:var(--mono); font-size:11px; color:var(--faint); } .c-foot a { color:inherit; }
+
+  /* hub */
+  .c-hero-lead { color:var(--dim); font-size:clamp(15px,2vw,17px); line-height:1.7; margin:18px 0 0; max-width:62ch; }
+  .c-hero-lead a { color:var(--cyan); text-decoration:underline; text-underline-offset:2px; }
+  .c-catblock { margin-top:44px; }
+  .c-cathead { display:flex; align-items:baseline; gap:12px; border-bottom:1px solid var(--line); padding-bottom:10px; }
+  .c-cathead h2 { font-family:var(--serif); font-weight:400; font-size:1.5rem; margin:0; }
+  .c-cathead .cc { font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cc); }
+  .c-matchrow { display:block; padding:15px 4px; border-bottom:1px solid var(--line); }
+  .c-matchrow:hover .mt { color:var(--cc); }
+  .c-matchrow .mt { font-size:16px; color:var(--ink); font-family:var(--serif); transition:color .15s; }
+  .c-matchrow .mg { font-size:13px; color:var(--faint); line-height:1.5; margin-top:3px; }
+</style>
+</head>
+<body>
+  <div class="l-top">
+    <a href="../index.html" class="l-brand"><span class="mk"><span style="color:var(--cyan)">J</span><span style="color:var(--purple)">T</span></span><span class="nm">jason.teixeira<span style="color:var(--green)">()</span></span></a>
+    <span class="l-badge">Compare</span>
+    <nav class="l-nav" aria-label="Primary">
+      <a href="../compare.html">All comparisons</a>
+      <a href="../learn.html" class="hideable">Learn</a>
+      <a href="../docs.html" class="hideable">Docs</a>
+      <a href="../book.html" class="btn">Book a call →</a>
+    </nav>
+  </div>
+  <main class="c-wrap" style="--tc:#e879f9">
+    <div class="c-crumb"><a href="../index.html">Home</a> / <a href="../learn.html">Learn</a> / <a href="../compare.html">Compare</a> / <span style="color:var(--dim)">LangSmith vs Braintrust</span></div>
+    <span class="c-tag">Eval platforms &amp; observability</span>
+    <h1>LangSmith <span class="vs">vs</span> Braintrust</h1>
+    <p class="c-intro">If you're building an LLM app and need tracing plus a way to score outputs, these two come up a lot. <b>LangSmith</b> is the observability and eval platform from the LangChain team. It wires tightly into that ecosystem but works on its own. <b>Braintrust</b> is a dev-first eval platform built around fast experiment loops and comparing outputs side by side. Both do tracing and both do evals. The real difference is which workflow you live in.</p>
+    <div class="c-tablewrap"><table class="c-table"><thead><tr><th class="dim">Dimension</th><th class="ta">LangSmith</th><th class="tb">Braintrust</th></tr></thead><tbody><tr><td class="dim">What it is</td><td>Tracing, evals, and prompt tooling</td><td>Eval-first platform with tracing</td></tr><tr><td class="dim">License</td><td>Commercial, hosted (self-host available)</td><td>Commercial, hosted (self-host available)</td></tr><tr><td class="dim">Origin</td><td>From the LangChain team</td><td>Independent, dev-first</td></tr><tr><td class="dim">Ecosystem fit</td><td><b>Deep with LangChain and LangGraph</b>, plus SDKs for other stacks</td><td>Framework-agnostic SDKs</td></tr><tr><td class="dim">Center of gravity</td><td>Trace and debug your app</td><td>Run experiments, compare versions</td></tr><tr><td class="dim">Scoring</td><td>Code and LLM-as-judge evaluators</td><td>Code and LLM-as-judge, strong compare view</td></tr><tr><td class="dim">Prompt work</td><td>Prompt management and a playground</td><td>Playground with the eval loop built in</td></tr><tr><td class="dim">Best for</td><td>Teams already on LangChain</td><td>Teams who want tight eval iteration</td></tr></tbody></table></div>
+    <div class="c-picks">
+    <div class="c-pick a"><div class="ph">Pick LangSmith if</div><p>You're already building on LangChain or LangGraph. Tracing lights up with almost no wiring, the whole call tree just shows up, and prompt management lives in the same place. If your stack is LangChain, this is the low-friction default.</p></div>
+    <div class="c-pick b"><div class="ph">Pick Braintrust if</div><p>Your work is eval-heavy and you want fast loops. Change a prompt, rerun the dataset, compare versions side by side. Braintrust is framework-agnostic, so it fits when you're off LangChain and want a tool built around scoring and iteration.</p></div>
+  </div>
+    <div class="c-take"><div class="th">The honest take</div><p>If you're on LangChain, use LangSmith. The integration is real, and fighting it to run a different tracer is wasted effort. If you're off LangChain, or evals are the main event and you want the tightest compare-and-iterate loop, I'd reach for Braintrust. The common mistake is picking LangSmith by reflex because you use LangChain elsewhere, then finding the eval workflow feels bolted on. The other mistake is letting \"we'll add evals later\" turn into never. Both are commercial and both are good. Decide by your framework and by whether tracing or eval iteration is your real pain. Then wire up ten real test cases this week.</p></div>
+    <div class="c-related">
+      <div class="rh">Related comparisons — Eval platforms &amp; observability</div>
+      <div class="c-chips"><a class="c-chip" href="langsmith-vs-langfuse.html">LangSmith vs Langfuse</a><a class="c-chip" href="braintrust-vs-langfuse.html">Braintrust vs Langfuse</a><a class="c-chip" href="arize-phoenix-vs-langsmith.html">Arize Phoenix vs LangSmith</a><a class="c-chip" href="humanloop-vs-promptlayer.html">Humanloop vs PromptLayer</a><a class="c-chip" href="wandb-weave-vs-braintrust.html">W&amp;B Weave vs Braintrust</a><a class="c-chip" href="patronus-ai-vs-galileo.html">Patronus AI vs Galileo</a></div>
+      <div class="c-see">See also: <a href="../guide-eval-gate.html">The CI eval gate, explained</a> · <a href="../learn-ai-in-ci.html">AI Testing in CI/CD pillar →</a></div>
+    </div>
+    <div class="c-cta"><div><div class="c-cta-h">Not sure which fits your stack?</div><div class="c-cta-s">Book a 20-minute call and I’ll tell you straight, based on your setup — no upsell.</div></div><a href="../book.html" class="c-cta-btn">Book a call →</a></div>
+    <div class="c-note">Comparisons reflect each tool’s general positioning as of 2026 and focus on architecture and fit rather than fast-moving pricing or version details. Check each project’s own docs before you commit.</div>
+    <div class="c-foot">© <span data-year>2026</span> Jason Teixeira · Sage Ideas LLC · <a href="../compare.html">All comparisons</a> · <a href="../learn.html">Learn</a>
+    <script>document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});</script></div>
+  </main>
+  <script defer src="../assets/agent.js"></script>
+</body>
+</html>

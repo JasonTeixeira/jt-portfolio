@@ -1,0 +1,995 @@
+{
+  "promptfoo-vs-deepeval": {
+    "intro": "Both are free, open-source ways to test your LLM app, and both are good. The split is about how you like to work. <b>Promptfoo</b> is config-and-CLI first: you describe your tests in a YAML file and run them from the terminal or CI. <b>DeepEval</b> feels like writing unit tests: you author them in Python, the way you already test the rest of your code.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "A config-driven eval runner + red-teaming tool",
+        "b": "A pytest-style eval library for Python"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "You write tests as",
+        "a": "YAML config (and JS/TS if you want)",
+        "b": "Python test functions"
+      },
+      {
+        "dim": "Feels like",
+        "a": "A CLI you point at prompts and models",
+        "b": "Writing pytest cases for your model"
+      },
+      {
+        "dim": "Metrics",
+        "a": "Built-in asserts + custom + model-graded",
+        "b": "A large library of ready metrics (incl. RAG)"
+      },
+      {
+        "dim": "Red-teaming",
+        "a": "<b>Yes</b>, a real strength",
+        "b": "Some, via safety metrics"
+      },
+      {
+        "dim": "CI integration",
+        "a": "Very strong, built for it",
+        "b": "Strong, runs anywhere pytest runs"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams who want a gate fast, in any stack",
+        "b": "Python teams who live in pytest"
+      }
+    ],
+    "pickA": "You want an eval gate running in CI this week, you are not necessarily a Python shop, or you need built-in red-teaming and prompt-injection scanning. Promptfoo gets you from zero to a passing gate with a config file and one command.",
+    "pickB": "Your codebase is Python and your team already writes pytest. DeepEval lets your LLM tests live right next to your normal tests, with a deep library of metrics you can drop in, so evals stop feeling like a separate thing.",
+    "honestTake": "You will not regret either one, so choose by muscle memory. If your team reaches for pytest without thinking, use DeepEval. If you want the fastest path to a gate that also does red-teaming, or you work across languages, use Promptfoo. The mistake is spending a week choosing. Pick one, write ten real test cases, and wire it into CI. That single step beats the perfect framework you never set up."
+  },
+  "playwright-vs-cypress": {
+    "intro": "Both are modern, open-source tools for testing what your users actually see in a browser, and both are a big upgrade over the old ways. <b>Playwright</b> is the broader tool: many browsers, many languages, one API. <b>Cypress</b> is the more opinionated one: JavaScript, a lovely developer experience, and a time-travelling debugger that people genuinely enjoy.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "A cross-browser automation framework (Microsoft)",
+        "b": "A JS-first, in-browser testing tool"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source (paid dashboard optional)"
+      },
+      {
+        "dim": "Languages",
+        "a": "<b>JS/TS, Python, Java, .NET</b>",
+        "b": "JavaScript / TypeScript"
+      },
+      {
+        "dim": "Browsers",
+        "a": "Chromium, Firefox, WebKit (Safari engine)",
+        "b": "Chromium family, Firefox, WebKit (newer)"
+      },
+      {
+        "dim": "Waiting",
+        "a": "Auto-waits on elements, very few flaky sleeps",
+        "b": "Auto-retries assertions, also solid"
+      },
+      {
+        "dim": "Parallelism",
+        "a": "Built in, free",
+        "b": "Best via the paid dashboard"
+      },
+      {
+        "dim": "Debugging",
+        "a": "Trace viewer, codegen, video",
+        "b": "Time-travel runner people love"
+      },
+      {
+        "dim": "Best for",
+        "a": "Broad coverage, teams beyond JS",
+        "b": "Front-end teams who want great DX in JS"
+      }
+    ],
+    "pickA": "You need to cover real Safari (WebKit), your team is not all JavaScript, or you want free parallelism and cross-browser coverage without paying for a dashboard. Playwright is the safer default for broad, cross-cutting end-to-end testing today.",
+    "pickB": "Your app and team are JavaScript through and through, and developer experience is what will actually get tests written. Cypress makes writing and debugging a test feel good, and a test suite that gets written beats a more capable one that does not.",
+    "honestTake": "For a brand-new project in 2026, Playwright is the default I reach for: the multi-browser, multi-language reach and free parallelism win most of the time. Cypress is not a wrong answer though, especially for a JS front-end team that already loves it. The thing that reduces flakiness is not the logo on the tool, it is auto-waiting instead of hard sleeps and good test isolation, and both of these do that well."
+  },
+  "promptfoo-vs-ragas": {
+    "intro": "If you are building a RAG system, you will eventually ask which eval tool to wire in. These two answer different questions. <b>Promptfoo</b> is a general eval runner. Point it at prompts, models, or a whole app and gate the results in CI. <b>RAGAS</b> is a Python library of metrics built for retrieval-augmented generation, like faithfulness and context precision.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "A general LLM eval runner with red-teaming",
+        "b": "A RAG-focused metric library for Python"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "Scope",
+        "a": "Any prompt, model, or app",
+        "b": "Retrieval and generation pipelines"
+      },
+      {
+        "dim": "You work in",
+        "a": "YAML config and CLI, with JS/TS support",
+        "b": "Python scripts and notebooks"
+      },
+      {
+        "dim": "Metrics",
+        "a": "Assertions, model-graded, custom",
+        "b": "<b>RAG metrics</b> like faithfulness and context recall"
+      },
+      {
+        "dim": "Retrieval-aware",
+        "a": "Not the default focus",
+        "b": "Yes, its whole point"
+      },
+      {
+        "dim": "CI gating",
+        "a": "<b>Built for it</b>",
+        "b": "Possible, but you wire it yourself"
+      },
+      {
+        "dim": "Best for",
+        "a": "A test gate across any LLM work",
+        "b": "Finding where a RAG pipeline breaks"
+      }
+    ],
+    "pickA": "You want one tool to test prompts, compare models, gate outputs in CI, and scan for prompt injection across a codebase that is about more than RAG. Promptfoo gets you a passing gate fast from a config file, and it does not care what language your app is written in.",
+    "pickB": "You have a RAG pipeline and you need to know whether retrieval pulls the right chunks and whether the answer stays faithful to them. RAGAS gives you metrics built for exactly that, so you can separate a retrieval problem from a generation problem.",
+    "honestTake": "These two are not really competitors, and treating them as either-or is the common mistake. For diagnosing a RAG system, RAGAS metrics tell you something Promptfoo does not: whether the retrieved context was any good. For a durable gate in CI across your whole app, Promptfoo is the better home. In practice I reach for RAGAS to understand why a RAG answer is wrong, then run those checks inside a broader Promptfoo gate. One caveat: many of these metrics are themselves LLM-graded, so read the scores as a strong signal and spot-check them."
+  },
+  "ragas-vs-deepeval": {
+    "intro": "If you test an LLM app in Python, you will meet both of these. <b>RAGAS</b> started as a focused toolkit for scoring retrieval-augmented generation. Its metrics are built around context, faithfulness, and answer relevance. <b>DeepEval</b> is broader. It is a pytest-style library with a large menu of metrics, and RAG is one of them.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "A metrics library aimed at RAG evaluation",
+        "b": "A pytest-style eval suite for LLM apps"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "Language",
+        "a": "Python",
+        "b": "Python"
+      },
+      {
+        "dim": "Sweet spot",
+        "a": "<b>RAG pipelines</b>, retrieval and answer quality",
+        "b": "Broad LLM testing, RAG included"
+      },
+      {
+        "dim": "Metrics",
+        "a": "Focused RAG set like faithfulness, context, and relevance",
+        "b": "<b>Large library</b> covering many use cases"
+      },
+      {
+        "dim": "Feels like",
+        "a": "Scoring a RAG dataset",
+        "b": "Writing pytest cases for your model"
+      },
+      {
+        "dim": "How it scores",
+        "a": "Mostly model-graded (LLM-as-judge)",
+        "b": "Model-graded plus custom metrics"
+      },
+      {
+        "dim": "CI fit",
+        "a": "Works, but less shaped like a test runner",
+        "b": "Runs anywhere pytest runs"
+      }
+    ],
+    "pickA": "You are building or tuning a RAG pipeline and you want metrics designed for exactly that. RAGAS gives you faithfulness, context precision and recall, and answer relevance without assembling them yourself. It shines when the question is whether your retrieval is good and your answer is grounded.",
+    "pickB": "You want one eval framework for a whole LLM app and your team already writes pytest. DeepEval lets those tests sit next to your normal tests, with a wide metric library and room for custom ones. It fits well when RAG is one piece of a larger surface you have to cover.",
+    "honestTake": "If your project is a RAG system and that is the thing you are grading, start with RAGAS. Its metrics are purpose-built and you get signal faster. For anything broader, or if you want evals to feel like the unit tests you already write, DeepEval is the more general home and it handles RAG well. They overlap more than people expect, so running both is cheap. The real trap is stalling over the choice. Both lean on LLM-as-judge scoring, so the actual work is writing a real test set and checking that the judge agrees with you."
+  },
+  "openai-evals-vs-promptfoo": {
+    "intro": "If you are wiring up LLM tests, you have probably found both of these. <b>OpenAI Evals</b> is a registry-based framework. You define evals and run them against a model, and the design grew up around OpenAI's own ecosystem. <b>Promptfoo</b> is a config-driven runner that stays model-agnostic. You point one config file at many providers and compare outputs side by side.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "An eval framework with a shared eval registry",
+        "b": "A config-driven, model-agnostic eval runner"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "You write evals as",
+        "a": "Registry entries plus Python",
+        "b": "YAML config, with JS/TS when needed"
+      },
+      {
+        "dim": "Model coverage",
+        "a": "OpenAI-centric by design",
+        "b": "<b>Many providers</b>, built to compare"
+      },
+      {
+        "dim": "Feels like",
+        "a": "Contributing to an eval library",
+        "b": "A CLI you point at prompts and models"
+      },
+      {
+        "dim": "CI integration",
+        "a": "Workable, less turnkey",
+        "b": "<b>Strong</b>, built to run as a gate"
+      },
+      {
+        "dim": "Red-teaming",
+        "a": "Not the focus",
+        "b": "Yes, a real strength"
+      },
+      {
+        "dim": "Best for",
+        "a": "Deep OpenAI eval work and shared benchmarks",
+        "b": "Cross-model comparison and a fast CI gate"
+      }
+    ],
+    "pickA": "You build mainly on OpenAI, you want to write evals in Python, or you want to draw on a shared registry of eval templates. OpenAI Evals fits teams who live inside that ecosystem and want their evals close to it.",
+    "pickB": "You want to compare several models against the same prompts, or you need an eval gate running in CI this week without committing to one vendor. Promptfoo gets you from a config file to a passing gate fast, and the red-teaming is a real bonus.",
+    "honestTake": "For most teams starting evals today, I reach for Promptfoo. The config-first workflow and cross-model comparison get you to a real CI gate faster, and staying model-agnostic matters because most teams end up testing more than one model. OpenAI Evals is the better home if your world is OpenAI and you want Python evals plus the shared registry. The common mistake is picking by whose logo is on the box instead of by how the tool actually works. What moves the needle is writing ten honest test cases and wiring them into CI. Either tool does that."
+  },
+  "giskard-vs-promptfoo": {
+    "intro": "You are building an LLM app and you want to catch problems before users do. <b>Giskard</b> scans your model for issues automatically, including ones you did not think to look for. <b>Promptfoo</b> runs the test cases you write and checks that specific inputs give the outputs you expect. One goes hunting. The other confirms what you already care about.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "A Python library that auto-scans models for issues",
+        "b": "A config-driven eval runner with red-teaming built in"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "Core idea",
+        "a": "Automated vulnerability and bias detection",
+        "b": "Explicit test cases you define and assert on"
+      },
+      {
+        "dim": "You work in",
+        "a": "Python",
+        "b": "YAML config, with JS/TS when you want it"
+      },
+      {
+        "dim": "Finds",
+        "a": "Issues you did not think to check for",
+        "b": "Whatever you wrote a test for"
+      },
+      {
+        "dim": "Red-teaming",
+        "a": "Yes, scanning is the core",
+        "b": "<b>Yes</b>, a real strength"
+      },
+      {
+        "dim": "CI integration",
+        "a": "Works, Python-based",
+        "b": "<b>Strong</b>, built for it"
+      },
+      {
+        "dim": "Best for",
+        "a": "Surfacing unknown risks in a model",
+        "b": "A fast, repeatable eval gate in any stack"
+      }
+    ],
+    "pickA": "You want a tool to hunt for problems you have not enumerated yourself, like hidden biases, robustness gaps, or injection weaknesses. Giskard is Python-first and shines when your model is a black box you need to probe. Reach for it when the risk is the stuff you do not know to test.",
+    "pickB": "You know what correct output looks like and you want a gate that checks it on every change. Promptfoo gets you from zero to a passing eval with a config file and one command, and it works across languages and CI. It also does solid red-teaming, so it covers more than your happy-path cases.",
+    "honestTake": "These are not really rivals, and the mistake is treating them as one choice. I reach for Promptfoo first. Most teams need a repeatable gate that pins down the behavior they care about, and it wires into CI fast. Giskard earns its place as a second layer, a scan that surfaces risks you never wrote a test for. If you can only run one this week, run Promptfoo and write ten real test cases. Add Giskard when you want a machine looking for the failures you missed."
+  },
+  "trulens-vs-ragas": {
+    "intro": "If you are testing a RAG pipeline in Python, both of these show up on the shortlist, and both are open source. <b>TruLens</b> is instrumentation first. You wrap your app, log traces, and attach feedback functions that score whatever you point them at. <b>RAGAS</b> is metrics first. It ships ready-made RAG scores like faithfulness and context relevance that you run over a dataset.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Tracing and feedback-function evals for LLM apps",
+        "b": "A library of ready-made RAG metrics"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "Core idea",
+        "a": "Instrument your app, then score the traces",
+        "b": "Run metrics over a question, answer, and context dataset"
+      },
+      {
+        "dim": "RAG metrics",
+        "a": "Yes, plus general feedback functions you define",
+        "b": "<b>Its whole focus</b>: faithfulness, relevance, recall"
+      },
+      {
+        "dim": "Scope",
+        "a": "Broader. Agents and general LLM apps too",
+        "b": "Centered on retrieval and generation quality"
+      },
+      {
+        "dim": "How you run it",
+        "a": "Live in-app or offline, with a dashboard",
+        "b": "Offline eval runs over datasets"
+      },
+      {
+        "dim": "Setup effort",
+        "a": "More wiring to instrument your app",
+        "b": "Fast to a first score on existing data"
+      },
+      {
+        "dim": "Best for",
+        "a": "Observing and scoring a running app over time",
+        "b": "Grading RAG quality on a test set quickly"
+      }
+    ],
+    "pickA": "You want to see what your app actually does at runtime. TruLens shines when you instrument a live pipeline, log traces, and attach your own feedback functions to score retrieval, answers, or custom criteria, then watch it in a dashboard. Reach for it when the app is more than plain RAG, or when observability over time matters.",
+    "pickB": "You have a RAG pipeline and a set of questions, and you want quality numbers today. RAGAS gives you faithfulness, context relevance, and answer scores out of the box, so you can grade a dataset without designing metrics from scratch. It is the faster path when the job is measuring retrieval and generation quality.",
+    "honestTake": "These solve slightly different problems, so \"which is better\" is the wrong question. For a pure RAG pipeline where you just need quality scores on a test set, I reach for RAGAS first. It is the shortest path to honest numbers. When the app is an agent or a longer chain and I care about what happens live, TruLens earns its extra setup with tracing and custom feedback functions. Plenty of teams use RAGAS-style metrics for the RAG grade and something like TruLens for runtime observability. That is fine. The real mistake is picking a framework before you have written even ten real eval cases. The cases are what tell you the truth."
+  },
+  "confident-ai-vs-braintrust": {
+    "intro": "If you have decided to run LLM evals, both of these are hosted platforms. They store results, track regressions, and give your team a UI to look at. <b>Confident AI</b> is the cloud platform from the DeepEval team, so it is the paid home for your DeepEval tests. <b>Braintrust</b> is a broader eval and logging platform that does not assume any one test framework. It brings its own SDKs, a playground, and production logging.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Hosted platform for DeepEval",
+        "b": "General eval and logging platform"
+      },
+      {
+        "dim": "License",
+        "a": "Commercial / hosted",
+        "b": "Commercial / hosted"
+      },
+      {
+        "dim": "Tied to a framework",
+        "a": "Built around DeepEval (open source)",
+        "b": "Framework-agnostic SDK"
+      },
+      {
+        "dim": "You write evals in",
+        "a": "DeepEval (Python)",
+        "b": "Its own SDK (TypeScript and Python)"
+      },
+      {
+        "dim": "Metrics",
+        "a": "DeepEval's metric library, including RAG metrics",
+        "b": "Built-in scorers plus your own"
+      },
+      {
+        "dim": "Production logging",
+        "a": "Tracing and monitoring included",
+        "b": "<b>Strong logging and observability</b>"
+      },
+      {
+        "dim": "Prompt playground",
+        "a": "Present, dataset-focused",
+        "b": "<b>A core strength</b>"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams already using DeepEval",
+        "b": "Teams wanting one eval and logging home for any stack"
+      }
+    ],
+    "pickA": "You already write your evals in DeepEval and want a managed place to store runs, share results, and watch for regressions without building that yourself. Confident AI is the natural upgrade path. It comes from the same team, and the local library maps straight onto the platform.",
+    "pickB": "You want one platform for both offline evals and production logging, and you do not want to be tied to a specific test library. Braintrust is strong when your team works in TypeScript, or when the prompt-iteration playground and trace logging matter as much as the pass/fail gate.",
+    "honestTake": "Pick by where you already live. If your evals are DeepEval Python tests, Confident AI is the lowest-friction hosted layer and I would not shop around. If you are starting fresh, want TypeScript support, or care about tying evals to real production logs, Braintrust is more flexible. The common mistake is buying a platform before you have written any real test cases, so you pay for dashboards over an empty dataset. Write ten honest evals in the open-source tool first, then decide if you even need the hosted layer."
+  },
+  "langsmith-vs-braintrust": {
+    "intro": "If you're building an LLM app and need tracing plus a way to score outputs, these two come up a lot. <b>LangSmith</b> is the observability and eval platform from the LangChain team. It wires tightly into that ecosystem but works on its own. <b>Braintrust</b> is a dev-first eval platform built around fast experiment loops and comparing outputs side by side. Both do tracing and both do evals. The real difference is which workflow you live in.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Tracing, evals, and prompt tooling",
+        "b": "Eval-first platform with tracing"
+      },
+      {
+        "dim": "License",
+        "a": "Commercial, hosted (self-host available)",
+        "b": "Commercial, hosted (self-host available)"
+      },
+      {
+        "dim": "Origin",
+        "a": "From the LangChain team",
+        "b": "Independent, dev-first"
+      },
+      {
+        "dim": "Ecosystem fit",
+        "a": "<b>Deep with LangChain and LangGraph</b>, plus SDKs for other stacks",
+        "b": "Framework-agnostic SDKs"
+      },
+      {
+        "dim": "Center of gravity",
+        "a": "Trace and debug your app",
+        "b": "Run experiments, compare versions"
+      },
+      {
+        "dim": "Scoring",
+        "a": "Code and LLM-as-judge evaluators",
+        "b": "Code and LLM-as-judge, strong compare view"
+      },
+      {
+        "dim": "Prompt work",
+        "a": "Prompt management and a playground",
+        "b": "Playground with the eval loop built in"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams already on LangChain",
+        "b": "Teams who want tight eval iteration"
+      }
+    ],
+    "pickA": "You're already building on LangChain or LangGraph. Tracing lights up with almost no wiring, the whole call tree just shows up, and prompt management lives in the same place. If your stack is LangChain, this is the low-friction default.",
+    "pickB": "Your work is eval-heavy and you want fast loops. Change a prompt, rerun the dataset, compare versions side by side. Braintrust is framework-agnostic, so it fits when you're off LangChain and want a tool built around scoring and iteration.",
+    "honestTake": "If you're on LangChain, use LangSmith. The integration is real, and fighting it to run a different tracer is wasted effort. If you're off LangChain, or evals are the main event and you want the tightest compare-and-iterate loop, I'd reach for Braintrust. The common mistake is picking LangSmith by reflex because you use LangChain elsewhere, then finding the eval workflow feels bolted on. The other mistake is letting \\\"we'll add evals later\\\" turn into never. Both are commercial and both are good. Decide by your framework and by whether tracing or eval iteration is your real pain. Then wire up ten real test cases this week."
+  },
+  "langsmith-vs-langfuse": {
+    "intro": "If you run LLM apps in production and need to see traces, run evals, and debug bad outputs, you are probably weighing these two. <b>LangSmith</b> is a commercial, hosted platform from the LangChain team. <b>Langfuse</b> is open source and self-hostable, with a hosted option too. The real split is about control and where your data lives.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Hosted LLM tracing and eval platform",
+        "b": "Open-source LLM observability and evals"
+      },
+      {
+        "dim": "License",
+        "a": "Commercial / hosted",
+        "b": "<b>Open source</b> (open-core)"
+      },
+      {
+        "dim": "Hosting",
+        "a": "SaaS, with self-host on higher tiers",
+        "b": "Self-host or use their cloud"
+      },
+      {
+        "dim": "Framework fit",
+        "a": "Tightest with LangChain and LangGraph",
+        "b": "Framework-agnostic, SDKs plus OpenTelemetry"
+      },
+      {
+        "dim": "Core features",
+        "a": "Tracing, datasets, evals, prompt management",
+        "b": "Tracing, datasets, evals, prompt management"
+      },
+      {
+        "dim": "Data control",
+        "a": "Lives on their platform by default",
+        "b": "<b>Fully yours</b> when self-hosted"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams deep in the LangChain stack",
+        "b": "Teams who want to own the stack"
+      }
+    ],
+    "pickA": "Pick LangSmith if you are already building on LangChain or LangGraph and want observability that fits with almost no glue. It also makes sense if you would rather pay for a managed service than run your own infrastructure, and having traces on a vendor platform is fine for your data rules.",
+    "pickB": "Pick Langfuse if you want to self-host so prompt and trace data never leaves your infrastructure, or if you are not tied to LangChain. It suits teams who value owning the deployment, a permissive license, and OpenTelemetry-based instrumentation that works across frameworks.",
+    "honestTake": "For most teams I reach for Langfuse first. Self-hosting keeps sensitive prompt data in-house, and it does not lock you to one framework. LangSmith is the better call if your whole app is LangChain or LangGraph, since the integration is tight and you skip running your own service. The common mistake is defaulting to LangSmith because you used LangChain for one tutorial, then finding out later you cannot easily keep trace data on your own servers. Decide on data ownership and framework lock-in first. The tracing and eval features are close enough that they rarely settle it."
+  },
+  "braintrust-vs-langfuse": {
+    "intro": "Both cover the same ground: run evals on your LLM app and see what it actually did in production. <b>Braintrust</b> is a commercial platform. You get a hosted eval and logging workflow with a polished UI and a prompt playground. <b>Langfuse</b> is open-source observability you can self-host. It starts from tracing, with evals and prompt management layered on top.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Commercial eval and logging platform",
+        "b": "Open-source LLM observability and evals"
+      },
+      {
+        "dim": "License",
+        "a": "Commercial, hosted",
+        "b": "<b>Open source</b>, open-core with a cloud option"
+      },
+      {
+        "dim": "Hosting",
+        "a": "Hosted SaaS, self-host on higher plans",
+        "b": "Cloud or <b>self-host it yourself</b>"
+      },
+      {
+        "dim": "Center of gravity",
+        "a": "Evals, scoring, prompt playground",
+        "b": "Tracing and production observability"
+      },
+      {
+        "dim": "Both do",
+        "a": "Traces, datasets, evals, prompt management",
+        "b": "Traces, datasets, evals, prompt management"
+      },
+      {
+        "dim": "SDKs",
+        "a": "TypeScript and Python, code-first",
+        "b": "TypeScript and Python, plus many integrations"
+      },
+      {
+        "dim": "Data control",
+        "a": "Your data on their cloud by default",
+        "b": "Keep all data in your own infra"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams who want a finished eval workflow",
+        "b": "Teams who want to own the stack"
+      }
+    ],
+    "pickA": "You want a polished eval and prompt-iteration workflow without running any infrastructure, and a commercial SaaS is fine. Braintrust shines when the eval loop is the daily work. Scoring runs, comparing them, and tuning prompts all live in one place your whole team uses.",
+    "pickB": "You need to self-host, keep trace data in your own infrastructure, or you want an open-source tool you can run and inspect. Langfuse is the natural pick when production observability is the first job and you would rather own the deployment than rent it.",
+    "honestTake": "Start with one question. Do you have to own the data and the deployment? If yes, Langfuse is the easy call. Self-hosting open source is exactly what it is built for. If you would rather pay to skip the ops and want the stronger eval and playground experience, Braintrust earns its keep. People get stuck treating this as evals versus observability. Both tools now do both. The real fork is open-source you host versus commercial they host. Decide that first and the rest follows."
+  },
+  "arize-phoenix-vs-langsmith": {
+    "intro": "If you are building an LLM app and want to see what your traces, prompts, and evals are doing, both of these will get you there. <b>Arize Phoenix</b> is open-source tracing you run yourself, built on OpenTelemetry. <b>LangSmith</b> is a hosted platform from the LangChain team that you sign into and send data to.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Open-source LLM tracing and eval tool from Arize",
+        "b": "Hosted tracing and eval platform from LangChain"
+      },
+      {
+        "dim": "License / model",
+        "a": "Open source",
+        "b": "Commercial / hosted, with a self-host option"
+      },
+      {
+        "dim": "Where it runs",
+        "a": "<b>Self-host or local</b>, on your infra",
+        "b": "Mostly their cloud"
+      },
+      {
+        "dim": "Instrumentation",
+        "a": "OpenTelemetry, framework-agnostic",
+        "b": "Native LangChain and LangGraph, plus an SDK for other stacks"
+      },
+      {
+        "dim": "Data control",
+        "a": "Stays where you put it",
+        "b": "Goes to their platform by default"
+      },
+      {
+        "dim": "Evals",
+        "a": "Built-in eval library, code-first",
+        "b": "Datasets and evals with a UI to run them"
+      },
+      {
+        "dim": "Team features",
+        "a": "Lighter, engineer-focused",
+        "b": "Stronger sharing, dashboards, and prompt management"
+      },
+      {
+        "dim": "Best for",
+        "a": "Self-hosting and any-stack tracing",
+        "b": "LangChain teams who want a managed platform"
+      }
+    ],
+    "pickA": "You want to own the data and run tracing on your own infra, or you are not on LangChain and want a vendor-neutral, OpenTelemetry-based setup. Phoenix is also the easy answer when you just want to spin something up locally and poke at traces without signing up for anything.",
+    "pickB": "Your app is built on LangChain or LangGraph and you want tracing, datasets, and evals working out of the box without running a service yourself. LangSmith pays off most when a team needs shared dashboards, prompt management, and a hosted place to collaborate on evals.",
+    "honestTake": "If you are already deep in LangChain, LangSmith is the path of least resistance and I would just use it. If you are not, or you care about self-hosting and keeping trace data in-house, Phoenix is the cleaner fit and costs nothing to try. The common mistake is picking LangSmith by reflex because you used LangChain once, then paying for a hosted platform when a self-hosted open-source tool would have done the job. Both give you real trace visibility. Decide on who owns the data and whether you want to run the service yourself."
+  },
+  "humanloop-vs-promptlayer": {
+    "intro": "If you need one place to store prompts, log model calls, and run evals, both tools show up on the shortlist. <b>Humanloop</b> leans toward a full evaluation and feedback platform for teams shipping serious LLM features. <b>PromptLayer</b> started as a logging layer and grew into a prompt registry with a friendly visual editor, so it feels lighter and more like a prompt CMS.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Prompt management, evals, and observability platform",
+        "b": "Prompt registry and request logging, plus evals"
+      },
+      {
+        "dim": "License",
+        "a": "Commercial / hosted",
+        "b": "Commercial / hosted"
+      },
+      {
+        "dim": "Origin",
+        "a": "Built around evaluation and human feedback",
+        "b": "Built around logging LLM requests"
+      },
+      {
+        "dim": "Who edits prompts",
+        "a": "Engineers and PMs, collaborative",
+        "b": "<b>Non-engineers too</b>. The visual editor is a strength"
+      },
+      {
+        "dim": "Evals",
+        "a": "A core focus, human and automated",
+        "b": "Present, lighter weight"
+      },
+      {
+        "dim": "Logging / observability",
+        "a": "Yes, via SDK",
+        "b": "<b>Yes, the original strength</b>"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams who want evals and feedback loops first",
+        "b": "Teams who want prompts out of code, fast"
+      }
+    ],
+    "pickA": "Pick Humanloop if evaluation and human feedback sit at the center of how you work, and you have PMs and domain experts who review outputs alongside engineers. It fits teams who treat prompt quality as an ongoing measured process.",
+    "pickB": "Pick PromptLayer if you want prompts pulled out of your code into a registry that non-engineers can edit, with request logging you can trust from day one. It gets you a versioned prompt store and a visual editor quickly, which matters when product people own the copy.",
+    "honestTake": "These overlap more than either would admit, so decide by where your weight sits. If evals and human review are the point, Humanloop is built for that. If the real need is getting prompts out of code and logging every call so non-engineers can iterate, PromptLayer is the lighter, faster path. One common mistake is buying a hosted platform to solve a problem a free open-source eval runner would handle. Be honest about whether you need the collaboration and logging layer or just a way to test prompts. If it is only the second, look at a free tool before you sign anything."
+  },
+  "wandb-weave-vs-braintrust": {
+    "intro": "If you are shipping an LLM app and need to watch what it does in production and score it, both of these fit. <b>W&B Weave</b> is the LLM layer of Weights & Biases. It is an open-source SDK that traces your calls and runs evals, and it sits close to the ML tooling many teams already use. <b>Braintrust</b> is a commercial platform built around evals, a prompt playground, and logging, with a polished UI as the main workspace.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "W&B's LLM tracing and eval SDK",
+        "b": "A purpose-built eval and observability platform"
+      },
+      {
+        "dim": "License",
+        "a": "Open-source SDK with a hosted backend",
+        "b": "Commercial and hosted"
+      },
+      {
+        "dim": "Feels like",
+        "a": "Code-first tracing, W&B style",
+        "b": "A UI-forward eval workspace"
+      },
+      {
+        "dim": "You write evals in",
+        "a": "Python or TypeScript",
+        "b": "Python or TypeScript, plus in the UI"
+      },
+      {
+        "dim": "Tracing and observability",
+        "a": "<b>Strong</b>, auto-logs LLM calls",
+        "b": "Strong, logging and evals linked"
+      },
+      {
+        "dim": "Prompt iteration",
+        "a": "Through code and UI",
+        "b": "The <b>playground</b> is a core strength"
+      },
+      {
+        "dim": "Ecosystem fit",
+        "a": "Best if you already use W&B",
+        "b": "Standalone, assumes no prior tooling"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams in the W&B world who want LLM tracing",
+        "b": "Teams who want evals as the main product"
+      }
+    ],
+    "pickA": "You already live in Weights & Biases, or you want an open-source SDK so your tracing is not locked behind one vendor. Weave gives you call-level tracing and evals that sit next to the rest of your ML work. Getting started costs nothing but an import.",
+    "pickB": "Evals and prompt iteration are the daily job and you want a real product built around them. Braintrust's playground, dataset handling, and logging are tight and quick to adopt, which helps a team that has no prior observability stack to fit into.",
+    "honestTake": "If your team already uses W&B, Weave is the obvious call, and the open-source SDK is a real plus. If you are starting clean and evals are the point, Braintrust's UI-first workflow tends to get people running experiments faster, and the playground is genuinely good. The common mistake is picking on the feature checklist. Both trace, both eval, both log. Choose on what you already run and how your team likes to work, code-first or UI-first. And remember the tool is worthless until you write real eval cases from actual failures. That is the part people skip."
+  },
+  "patronus-ai-vs-galileo": {
+    "intro": "If you are shipping an LLM feature and need a real eval and monitoring layer with a vendor behind it, these two come up. <b>Patronus AI</b> leans into automated evaluation and safety, with its own judge models built to catch hallucinations and unsafe output. <b>Galileo</b> is a broader observability platform that pairs its own eval metrics with production tracing and guardrails.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Eval and safety platform with its own judge models",
+        "b": "LLM observability and eval platform"
+      },
+      {
+        "dim": "License",
+        "a": "Commercial / hosted",
+        "b": "Commercial / hosted"
+      },
+      {
+        "dim": "Core strength",
+        "a": "Automated evals, hallucination and safety scoring",
+        "b": "Production tracing and eval metrics in one view"
+      },
+      {
+        "dim": "Judge models",
+        "a": "Ships its own eval models",
+        "b": "Ships its own eval models"
+      },
+      {
+        "dim": "Guardrails",
+        "a": "Safety and red-team oriented",
+        "b": "Runtime guardrail layer"
+      },
+      {
+        "dim": "Feels like",
+        "a": "An eval and safety lab",
+        "b": "An observability suite with evals built in"
+      },
+      {
+        "dim": "Setup",
+        "a": "SDK plus hosted service",
+        "b": "SDK plus hosted dashboards"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams who lead with safety and eval rigor",
+        "b": "Teams who want traces and evals together"
+      }
+    ],
+    "pickA": "Pick Patronus if evaluation quality and safety are the main event. It fits teams who want strong automated hallucination and safety scoring plus red-teaming, and who are ready to build eval discipline around it. Good when the risk of bad output is the thing keeping you up at night.",
+    "pickB": "Pick Galileo when you want one place to watch production and run evals at the same time. It suits teams who care about tracing what their app actually did, catching regressions, and putting a guardrail in front of live traffic. The observability framing helps most when the app is already in users' hands.",
+    "honestTake": "Both are commercial platforms with their own judge models, and both are solid. The real split is emphasis. Patronus reads as eval and safety first. Galileo reads as observability with evals attached. The mistake people make is buying a platform before they have written a single real test case, then treating the vendor dashboard as proof things work. Start with ten evals you actually trust on your own data. Wire one into CI. Then decide which hosted platform earns the budget. If you are early and cost-sensitive, run an open-source eval tool first and graduate to one of these when you need the support and scale."
+  },
+  "guardrails-ai-vs-nemo-guardrails": {
+    "intro": "If you are adding a safety layer to an LLM feature, these are two common open-source choices, and they solve different problems. <b>Guardrails AI</b> validates and corrects model output against a schema or a set of checks. <b>NeMo Guardrails</b> controls the flow of a conversation with rails that decide what the bot is allowed to do or say.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Output validation and structure enforcement",
+        "b": "Programmable rails for conversation flow"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "Core unit",
+        "a": "Validators on inputs and outputs",
+        "b": "Rails defined in a config and rules DSL"
+      },
+      {
+        "dim": "Main job",
+        "a": "Catch or fix bad output and enforce a schema",
+        "b": "Steer dialog, block topics, gate actions"
+      },
+      {
+        "dim": "Backed by",
+        "a": "Guardrails AI, with a validator hub",
+        "b": "NVIDIA"
+      },
+      {
+        "dim": "On failure",
+        "a": "Reask, filter, fix, or raise",
+        "b": "Redirect the conversation down a safe path"
+      },
+      {
+        "dim": "Best for",
+        "a": "Structured output and per-response checks",
+        "b": "Chatbots that need topic and action control"
+      }
+    ],
+    "pickA": "Pick this when you are calling an LLM to produce something with a shape, like JSON, or you want per-response checks for things like PII, toxicity, or off-topic answers. Guardrails AI wraps the call, validates the result, and can reask or fix it. It works for any LLM feature, including ones that are not chat.",
+    "pickB": "Pick this when you are building a conversational assistant and you need to control what it talks about and which actions it can take. NeMo Guardrails lets you define rails so the bot stays on approved topics, refuses certain requests, and routes tool calls through checks. It shines when the risk lives in the back-and-forth rather than one response.",
+    "honestTake": "These are not really competitors, so the mistake is treating them as an either-or. If your surface is a single LLM call that needs to return clean, checked output, reach for Guardrails AI. If your surface is a multi-turn assistant that needs to stay in bounds and gate what it does, reach for NeMo Guardrails. Plenty of real systems use both. Rails handle the conversation, output validation handles the individual responses. Pick based on where your actual risk is, then add the other layer if you hit the gap."
+  },
+  "lakera-guard-vs-rebuff": {
+    "intro": "If you are adding a defense layer against prompt injection and jailbreaks, these two show the classic split. <b>Lakera Guard</b> is a commercial API. You send it text and get back a risk verdict. <b>Rebuff</b> is an open-source detector you run yourself. It layers a few detection tricks together.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Hosted API for injection and safety detection",
+        "b": "Open-source injection detector you self-host"
+      },
+      {
+        "dim": "License",
+        "a": "Commercial / hosted",
+        "b": "Open source"
+      },
+      {
+        "dim": "Where it runs",
+        "a": "You call their API",
+        "b": "Your own infrastructure"
+      },
+      {
+        "dim": "Detection approach",
+        "a": "Managed models the vendor updates",
+        "b": "Layered checks including heuristics, an LLM check, a vector store, and canary tokens"
+      },
+      {
+        "dim": "Who maintains the threat model",
+        "a": "<b>The vendor, continuously</b>",
+        "b": "You and the community"
+      },
+      {
+        "dim": "Data leaves your infra",
+        "a": "Yes, text goes to their API",
+        "b": "No, unless you add an LLM step that calls out"
+      },
+      {
+        "dim": "Ops burden",
+        "a": "Low, it is a managed service",
+        "b": "Higher, you run and tune it"
+      },
+      {
+        "dim": "Best for",
+        "a": "Teams who want defense now without maintaining it",
+        "b": "Teams who want control and no third-party calls"
+      }
+    ],
+    "pickA": "You want an injection and jailbreak filter live quickly, and you would rather pay someone to keep the detection current than chase new attacks yourself. Lakera Guard fits when you are fine sending prompt text to a third party and you value a managed, continuously updated defense.",
+    "pickB": "You need to keep prompts on your own infrastructure, you want to read and tune the detection logic, or you want something free to build on. Rebuff gives you a layered starting point you fully own. That is the right call when a third-party API is off the table.",
+    "honestTake": "These two are at different stages of maturity. Lakera Guard is a maintained commercial product. Rebuff is a useful open-source project whose momentum has been uneven, so check its recent activity before you build on it. If you need real injection defense in production and can send text to an API, a managed service like Lakera Guard is the easier bet, because the threat landscape moves faster than most teams can track. If you cannot send data out, self-host Rebuff and budget for the upkeep. Do not treat either one as a solved wall. Injection defense is probabilistic and both will miss things, so keep least-privilege tool access and human approval on the dangerous actions no matter which you pick."
+  },
+  "langchain-vs-llamaindex": {
+    "intro": "Anyone building a RAG app or an LLM agent hits both of these fast. <b>LangChain</b> is the broad toolkit. It gives you chains, agents, tools, memory, and integrations for building most kinds of LLM apps. <b>LlamaIndex</b> is narrower on purpose. It is built around getting your data indexed, retrieved, and queried well.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "A broad framework for LLM apps and agents",
+        "b": "A framework focused on data and retrieval for RAG"
+      },
+      {
+        "dim": "License",
+        "a": "Open source, with a commercial platform available",
+        "b": "Open source, with a commercial platform available"
+      },
+      {
+        "dim": "Center of gravity",
+        "a": "Chains, agents, tools, orchestration",
+        "b": "Indexing, retrieval, query engines"
+      },
+      {
+        "dim": "Languages",
+        "a": "Python and JavaScript/TypeScript",
+        "b": "Python and TypeScript"
+      },
+      {
+        "dim": "Integrations",
+        "a": "<b>Very large</b> catalog of models, stores, and tools",
+        "b": "Strong on data loaders and vector stores"
+      },
+      {
+        "dim": "Agents and orchestration",
+        "a": "First-class, with LangGraph for graph-based flows",
+        "b": "Present, but retrieval comes first"
+      },
+      {
+        "dim": "RAG ergonomics",
+        "a": "Flexible, with more wiring to do yourself",
+        "b": "Opinionated, with less code for good retrieval"
+      },
+      {
+        "dim": "Best for",
+        "a": "Multi-step apps and agent workflows",
+        "b": "Search and Q&A over your own documents"
+      }
+    ],
+    "pickA": "You are building something bigger than retrieval. An agent that calls tools, a multi-step workflow, or an app that talks to many models and services. LangChain gives you the orchestration pieces and the widest integration catalog. LangGraph handles stateful, branching flows when a simple chain runs out of room.",
+    "pickB": "Your core problem is retrieval quality over your own data, and you want good defaults without wiring everything by hand. LlamaIndex gets you from documents to a working query engine quickly. Data loaders and indexing choices are the main event here.",
+    "honestTake": "For a plain \\\"answer questions over my documents\\\" build, I reach for LlamaIndex first. The retrieval defaults are stronger and you write less glue. For an agent or a multi-step app with tools and branching, I reach for LangChain, and LangGraph once state gets real. The common mistake is treating this as either/or. The two overlap heavily, and people happily use LlamaIndex for the retrieval layer inside a LangChain app. Do not agonize over the framework. What decides whether your RAG is good is your chunking, your retrieval, and your evals. Neither library saves you from getting those right."
+  },
+  "playwright-vs-selenium": {
+    "intro": "If you are setting up browser end-to-end tests, these two are the usual finalists. <b>Playwright</b> is a modern framework with auto-waiting and one API across browsers. <b>Selenium</b> is the long-standing WebDriver standard, with the widest language and browser reach and a huge existing ecosystem.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "A modern browser automation framework from Microsoft",
+        "b": "The WebDriver standard for driving real browsers"
+      },
+      {
+        "dim": "License",
+        "a": "Open source",
+        "b": "Open source"
+      },
+      {
+        "dim": "Languages",
+        "a": "JS/TS, Python, Java, .NET",
+        "b": "<b>Java, Python, C#, Ruby, JS, and more</b>"
+      },
+      {
+        "dim": "Browsers",
+        "a": "Chromium, Firefox, WebKit (Safari engine)",
+        "b": "Chrome, Firefox, Edge, Safari, others"
+      },
+      {
+        "dim": "Waiting",
+        "a": "<b>Auto-waits</b> on elements by default",
+        "b": "Manual, explicit, or fluent waits"
+      },
+      {
+        "dim": "Setup",
+        "a": "Bundled browsers, one install",
+        "b": "You manage drivers and browser versions"
+      },
+      {
+        "dim": "Debugging",
+        "a": "Trace viewer, codegen, video",
+        "b": "Logs and screenshots, less built in"
+      },
+      {
+        "dim": "Best for",
+        "a": "New suites that want low flake quickly",
+        "b": "Broad language reach and existing grids"
+      }
+    ],
+    "pickA": "You are starting fresh and want tests that are stable out of the box. Playwright's auto-waiting removes most of the flaky-sleep problem. The trace viewer makes failures easy to read. One install gets you all three browser engines, including WebKit.",
+    "pickB": "Your team works in a language Playwright does not cover, or you already have a large Selenium suite and a Grid running. Selenium has the widest ecosystem, so it is the safe pick when you need that reach or you are maintaining what already exists.",
+    "honestTake": "For a new suite today, I reach for Playwright. The auto-waiting alone removes a whole class of flaky failures that people spend weeks fighting in Selenium, and the debugging tools are better. Selenium is still a serious, capable tool, especially if you are already invested or need a language Playwright does not support. The mistake is rewriting a working Selenium suite into Playwright for the logo. Most flakiness comes from hard sleeps and bad test isolation. You can fix a lot of that in Selenium with proper explicit waits and never migrate."
+  },
+  "n8n-vs-zapier": {
+    "intro": "If you are wiring apps together to move data and trigger actions, these two come up first. <b>n8n</b> is open-source and self-hostable, so you can run it on your own box and drop into code inside a step when you need to. <b>Zapier</b> is a no-code SaaS with a huge app catalog, built so non-engineers can ship a working automation in an afternoon.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Open-source workflow automation you can self-host",
+        "b": "No-code automation SaaS"
+      },
+      {
+        "dim": "License",
+        "a": "<b>Open-source (fair-code)</b>",
+        "b": "Commercial / hosted"
+      },
+      {
+        "dim": "Hosting",
+        "a": "Self-host or their cloud",
+        "b": "Cloud only"
+      },
+      {
+        "dim": "How you build",
+        "a": "Visual editor plus code steps",
+        "b": "UI-first guided steps"
+      },
+      {
+        "dim": "App catalog",
+        "a": "Large, plus a generic HTTP node for anything",
+        "b": "<b>Very large</b>, the widest catalog"
+      },
+      {
+        "dim": "Logic",
+        "a": "Branching, loops, and custom code",
+        "b": "Paths and filters, more limited"
+      },
+      {
+        "dim": "Who it fits",
+        "a": "Developers who want control",
+        "b": "Non-technical builders"
+      },
+      {
+        "dim": "Best for",
+        "a": "Complex flows, data privacy, cost control at scale",
+        "b": "Fast wins across many SaaS apps"
+      }
+    ],
+    "pickA": "Pick n8n if you want to self-host for data privacy or to avoid per-task pricing at volume, or if your flows need branching, loops, and custom code. It gives you an engineer's level of control, and the generic HTTP node means you can hit any API even when there is no prebuilt connector.",
+    "pickB": "Pick Zapier if you want something running today without touching a server, and the apps you use are already in the catalog. It is the fastest path for a non-technical person to connect two SaaS tools and have it just work, while someone else handles uptime.",
+    "honestTake": "For a solo builder or a team with any engineering muscle, I reach for n8n. Self-hosting kills the per-task bill that Zapier can run up at scale, and the code steps handle logic that a pure no-code tool struggles with. Zapier still wins when the person building is non-technical, or when you need a connector that only Zapier has. The common mistake is picking Zapier for speed, then getting stuck when the automation grows past simple triggers or the monthly bill climbs. Start by checking whether your apps have connectors in both. Then be honest about whether you will ever need branching or custom code. If yes, the up-front effort of n8n pays for itself."
+  },
+  "n8n-vs-make": {
+    "intro": "If you are wiring apps together to move data and trigger actions, these two come up first. <b>n8n</b> leans developer: it is open-core, node-based, and you can self-host it and run your own code inline. <b>Make</b> is a hosted visual builder. You drag and connect steps in the browser and never touch a server.",
+    "table": [
+      {
+        "dim": "What it is",
+        "a": "Node-based automation, code-friendly",
+        "b": "Visual scenario builder, hosted"
+      },
+      {
+        "dim": "License",
+        "a": "Open-core, self-hostable",
+        "b": "Commercial, hosted"
+      },
+      {
+        "dim": "Where it runs",
+        "a": "Self-host or their cloud",
+        "b": "Their cloud"
+      },
+      {
+        "dim": "Custom code",
+        "a": "Write real code inline in a node",
+        "b": "Built-in functions, limited code steps"
+      },
+      {
+        "dim": "Integrations",
+        "a": "Large library plus generic HTTP",
+        "b": "Large library plus generic HTTP"
+      },
+      {
+        "dim": "Learning curve",
+        "a": "Steeper, rewards technical users",
+        "b": "Gentler, works for non-devs"
+      },
+      {
+        "dim": "Data control",
+        "a": "Can run on your own infra",
+        "b": "Data flows through their platform"
+      },
+      {
+        "dim": "Best for",
+        "a": "Devs who want control and self-hosting",
+        "b": "Teams who want a hosted builder fast"
+      }
+    ],
+    "pickA": "You want to self-host, keep data on your own infrastructure, or drop into real code when no node exists. n8n fits teams with some technical depth who would rather own the runtime than rent it.",
+    "pickB": "You want a working automation today without standing up a server, and your team is more operations than engineering. Make gives you a clean visual canvas and solid connectors, so non-developers can build and maintain scenarios themselves.",
+    "honestTake": "For a technical team I reach for n8n. Self-hosting and inline code mean you rarely hit a wall you cannot climb over. For a non-technical team that just needs things connected, Make is the faster, calmer path, and that is a fine choice. The common mistake is picking by integration count. Both cover the popular apps and both have generic HTTP for the rest. The real question is whether you want to own the runtime or rent it. Answer that first."
+  }
+}
