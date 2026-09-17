@@ -24,6 +24,7 @@
     "proof": "node scripts/proof.mjs",
     "lighthouse": "lhci autorun",
     "build:docs": "node scripts/build-docs.mjs",
+    "build:learn": "node scripts/add-learn-nav.mjs && node scripts/build-learn.mjs",
     "eval:chatbot": "node scripts/eval-chatbot.mjs",
     "eval:scope": "node scripts/eval-scope.mjs",
     "eval:target": "node scripts/eval-target.mjs",
