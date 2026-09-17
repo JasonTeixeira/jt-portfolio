@@ -1,7 +1,26 @@
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
 import { authorizeAdmin } from '../lib/admin-auth.mjs';
-import { isEnabled, upsertMilestone, markDelivered } from '../lib/portal-db.mjs';
+import { isEnabled, upsertMilestone, markDelivered, getProjectById, ensurePortalToken } from '../lib/portal-db.mjs';
+import { getProposalById } from '../lib/proposal-db.mjs';
+import { sendClient } from '../lib/notify.mjs';
+import { deliveryEmail } from '../lib/email-templates.mjs';
+
+const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
+// Best-effort: email the client that a milestone was delivered, with their portal link.
+async function notifyClientDelivered(milestone) {
+  try {
+    const pjR = await getProjectById(milestone.project_id);
+    if (!pjR.ok || !pjR.data) return;
+    const propR = await getProposalById(pjR.data.proposal_id);
+    const email = propR.ok && propR.data ? propR.data.client_email : null;
+    if (!email) return;
+    const tok = await ensurePortalToken(pjR.data.id);
+    const link = tok.ok && tok.token ? `${SITE}/portal.html?id=${tok.token}` : SITE;
+    const mail = deliveryEmail({ link, what: milestone.title || 'A milestone' });
+    await sendClient({ to: email, subject: mail.subject, text: mail.text, html: mail.html });
+  } catch (e) { console.error('[milestone] client notify failed', (e && e.message) || e); }
+}
 
 export function validate(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return { ok: false, error: 'bad body' };
@@ -27,6 +46,7 @@ async function handler(req, res) {
   if (body.action === 'deliver') {
     const r = await markDelivered(body.id.trim());
     if (!r.ok) return res.status(200).json({ ok: false, skipped: true });
+    if (r.data) notifyClientDelivered(r.data).catch(() => {}); // fire-and-forget
     return res.status(200).json({ ok: true, milestone: r.data });
   }
   const isEdit = typeof body.id === 'string' && Boolean(body.id.trim());

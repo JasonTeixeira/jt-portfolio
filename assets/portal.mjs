@@ -99,6 +99,12 @@ function buildMilestoneRow(m, portalToken) {
   const titleBlock = h('div', {}, h('div', { class: 'portal-ms-title' }, m.title || 'Milestone'), milestoneBadge(m.status));
   row.appendChild(h('div', { class: 'portal-ms-head' }, titleBlock, h('div', { class: 'portal-ms-amt' }, money(m.amount_cents))));
 
+  // "What's next / when" — a due date on open milestones, a delivered date once shipped.
+  const dstr = (m.status === 'delivered' || m.status === 'approved')
+    ? (m.delivered_at ? t('ms.deliveredOn', { date: fmtDay(m.delivered_at) }) : '')
+    : (m.due_at ? t('ms.dueOn', { date: fmtDay(m.due_at) }) : '');
+  if (dstr) row.appendChild(h('div', { style: 'font-size:11.5px;color:var(--muted,#8E8882);margin:-2px 0 6px' }, dstr));
+
   const delivWrap = h('div', { class: 'portal-ms-deliverables' });
   const lines = String(m.deliverables || '').split('\n').map((s) => s.trim()).filter(Boolean);
   if (lines.length === 0) {
@@ -167,6 +173,33 @@ function buildMilestoneRow(m, portalToken) {
     });
 
     row.appendChild(form);
+
+    // Request-changes: an alternative to approving on a delivered milestone. Logs to the
+    // thread + alerts the operator; non-destructive (doesn't flip status).
+    const rcToggle = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:8px;padding:8px 14px;font-size:12.5px' }, t('ms.requestChanges'));
+    const rcText = h('textarea', { rows: '3', placeholder: t('ms.changesPrompt'), style: 'width:100%;padding:9px;border-radius:8px;resize:vertical' });
+    const rcSend = h('button', { type: 'button', class: 'btn-solid green', style: 'margin-top:8px;padding:9px 16px;font-size:13px' }, t('ms.changesSend'));
+    const rcCancel = h('button', { type: 'button', class: 'btn-ghost', style: 'margin-top:8px;margin-left:8px;padding:9px 16px;font-size:13px' }, t('ms.cancel'));
+    const rcStatus = h('div', { class: 'portal-approve-status', role: 'status', 'aria-live': 'polite' });
+    const rcForm = h('div', { style: 'display:none;margin-top:8px' }, rcText, h('div', {}, rcSend, rcCancel), rcStatus);
+    rcToggle.addEventListener('click', () => { rcForm.style.display = rcForm.style.display === 'none' ? 'block' : 'none'; if (rcForm.style.display === 'block') rcText.focus(); });
+    rcCancel.addEventListener('click', () => { rcForm.style.display = 'none'; });
+    rcSend.addEventListener('click', () => {
+      const note = rcText.value.trim();
+      clear(rcStatus); rcStatus.classList.remove('ok', 'err');
+      if (note.length < 2) { rcStatus.classList.add('err'); rcStatus.appendChild(document.createTextNode(t('ms.changesPrompt'))); return; }
+      rcSend.disabled = true;
+      fetch('/api/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portalToken, action: 'request_changes', milestoneId: m.id, note, session: getSess(portalToken) }) })
+        .then((r) => r.json().catch(() => null))
+        .then((d) => {
+          clear(rcStatus);
+          if (d && d.ok) { rcStatus.classList.add('ok'); rcStatus.appendChild(document.createTextNode(t('ms.changesSent'))); rcText.value = ''; rcForm.style.display = 'none'; }
+          else { rcStatus.classList.add('err'); rcStatus.appendChild(document.createTextNode(t('ms.changesError'))); rcSend.disabled = false; }
+        })
+        .catch(() => { clear(rcStatus); rcStatus.classList.add('err'); rcStatus.appendChild(document.createTextNode(t('ms.changesError'))); rcSend.disabled = false; });
+    });
+    row.appendChild(h('div', { class: 'portal-approve', style: 'margin-top:2px' }, rcToggle, rcForm));
   }
 
   return row;
