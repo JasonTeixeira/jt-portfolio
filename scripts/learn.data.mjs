@@ -145,7 +145,7 @@ export const LIBRARY = {
   'tool-landscape': [
     { title: 'Stack & integrations (reference)', href: 'docs-stack-integrations.html', type: 'reference', desc: 'The tools and integrations this practice is built on.' },
     { title: 'Product & platform (reference)', href: 'docs-product-and-platform.html', type: 'reference', desc: 'How the pieces fit into a product and platform view.' },
-    { title: 'Glossary', href: 'docs-glossary.html', type: 'glossary', desc: 'Plain-English definitions of the eval, RAG, and testing vocabulary.' },
+    { title: 'Glossary — 52 terms', href: 'glossary.html', type: 'glossary', desc: 'Plain-English definitions of the eval, RAG, agent, and testing vocabulary, each a real page with a concrete example.' },
     { title: 'Proof index', href: 'docs-proof-index.html', type: 'reference', desc: 'Every verifiable artifact behind the claims on this site, in one place.' },
   ],
 };

@@ -63,6 +63,59 @@
   <url><loc>https://agency.sageideas.dev/learn-shipping-ai.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/learn-workflow-automation.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/learn-tool-landscape.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/golden-set.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/llm-as-judge.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/eval-harness.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/semantic-similarity.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/f1-score.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/rubric-based-grading.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/pairwise-comparison.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/elo-rating.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/perplexity.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/synthetic-data-generation.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/eval-dataset-versioning.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/eval-driven-development.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/prompt-regression-testing.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/model-card.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/rag.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/faithfulness.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/context-precision.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/context-recall.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/answer-relevancy.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/chunking-strategy.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/hybrid-search.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/reranker.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/query-rewriting.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/agentic-rag.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/embedding-drift.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/hallucination.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/prompt-injection.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/jailbreak.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/red-teaming.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/adversarial-testing.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/guardrails.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/toxicity-scoring.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/bias-evaluation.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/pii-leakage.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/agent-trajectory-evaluation.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/tool-call-accuracy.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/function-calling-evaluation.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/task-completion-rate.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/multi-turn-evaluation.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/structured-output-validation.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/ci-quality-gate.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/ratchet.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/flake.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/golden-run-evidence.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/canary-prompt.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/shadow-deployment.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/champion-challenger.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/human-in-the-loop.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/model-drift.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/non-determinism.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/temperature.html</loc><lastmod>2026-09-17</lastmod></url>
+  <url><loc>https://agency.sageideas.dev/glossary/llm-gateway.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/notes/eighteen-agent-audit-gauntlet.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/notes/five-pages-five-agents.html</loc><lastmod>2026-09-17</lastmod></url>
   <url><loc>https://agency.sageideas.dev/notes/gate-blocked-me.html</loc><lastmod>2026-09-17</lastmod></url>
