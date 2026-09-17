@@ -6,6 +6,7 @@ import { isEnabled, upsertMilestone, markDelivered, getProjectById, ensurePortal
 import { getProposalById } from '../lib/proposal-db.mjs';
 import { sendClient } from '../lib/notify.mjs';
 import { deliveryEmail } from '../lib/email-templates.mjs';
+import { clientWantsUpdates } from '../lib/client-prefs-db.mjs';
 
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 // Best-effort: email the client that a milestone was delivered, with their portal link.
@@ -16,6 +17,7 @@ async function notifyClientDelivered(milestone) {
     const propR = await getProposalById(pjR.data.proposal_id);
     const email = propR.ok && propR.data ? propR.data.client_email : null;
     if (!email) return;
+    if (!(await clientWantsUpdates(email))) return; // client opted out of update emails
     const tok = await ensurePortalToken(pjR.data.id);
     const link = tok.ok && tok.token ? `${SITE}/portal.html?id=${tok.token}` : SITE;
     const mail = deliveryEmail({ link, what: milestone.title || 'A milestone' });

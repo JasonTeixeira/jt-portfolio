@@ -123,6 +123,37 @@ function renderOnboarding(root, projects, accessToken) {
   })();
 }
 
+// Account & notification settings — the client's email + an "email me updates" toggle
+// (persisted per-email; payment receipts always send regardless).
+function renderAccount(root, email, accessToken) {
+  const card = el('div');
+  card.style.cssText = 'border:1px solid var(--line);background:var(--card,#0F0F13);border-radius:14px;padding:16px 20px;margin:22px 0 0';
+  const hd = el('div', null, t('account.title'));
+  hd.style.cssText = 'font-family:var(--mono,monospace);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:12px';
+  card.appendChild(hd);
+  if (email) { const em = el('div', null, email); em.style.cssText = 'font-size:14px;margin-bottom:14px;color:var(--dim,#A8A29E)'; card.appendChild(em); }
+  const box = el('input'); box.type = 'checkbox'; box.checked = true; box.style.cssText = 'width:18px;height:18px;accent-color:#10b981;flex:none';
+  const saved = el('span', null, ''); saved.style.cssText = 'font-family:var(--mono,monospace);font-size:11px;color:#10b981;margin-left:8px';
+  const toggleRow = el('label'); toggleRow.style.cssText = 'display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px';
+  toggleRow.append(box, el('span', null, t('account.notify')), saved);
+  card.appendChild(toggleRow);
+  const hint = el('div', null, t('account.notifyHint')); hint.style.cssText = 'font-size:11.5px;color:var(--faint);margin-top:6px';
+  card.appendChild(hint);
+  root.appendChild(card);
+  (async () => {
+    try { const r = await fetch('/api/client-prefs', { headers: { Authorization: `Bearer ${accessToken}` } }); if (r.ok) { const j = await r.json(); if (j.ok && j.prefs) box.checked = j.prefs.notify_updates !== false; } } catch { /* default checked */ }
+  })();
+  box.addEventListener('change', async () => {
+    saved.textContent = '…';
+    try {
+      const r = await fetch('/api/client-prefs', { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ notify_updates: box.checked }) });
+      const j = await r.json().catch(() => null);
+      saved.textContent = j && j.ok ? t('account.saved') : '';
+      setTimeout(() => { saved.textContent = ''; }, 2000);
+    } catch { saved.textContent = ''; }
+  });
+}
+
 export function initDashboard() {
   const root = document.getElementById('root');
   if (!root) return;
@@ -188,6 +219,7 @@ export function initDashboard() {
     // Mission-control: what needs the client's attention, then their onboarding progress.
     renderAttention(root, projects);
     if (!data.admin) renderOnboarding(root, projects, s.access_token);
+    renderAccount(root, data.email, s.access_token);
 
     const grid = el('div', 'cx-grid');
     for (const p of projects) {

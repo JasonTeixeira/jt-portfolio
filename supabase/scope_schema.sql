@@ -352,3 +352,12 @@ create table if not exists scope_audit (
 create index if not exists idx_scope_audit_created on scope_audit (created_at desc);
 create index if not exists idx_scope_audit_action on scope_audit (action);
 alter table scope_audit enable row level security;
+
+-- ── Client notification prefs (2026-09-16): keyed by client email, RLS deny-all ──
+create table if not exists scope_client_prefs (
+  email text primary key,
+  notify_updates boolean not null default true,
+  updated_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+alter table scope_client_prefs enable row level security;
