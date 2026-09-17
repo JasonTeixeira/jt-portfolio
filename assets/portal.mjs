@@ -405,7 +405,15 @@ function showReceipt(inv) {
     line(t('invoices.paid'), fmtDay(inv.sent_at || inv.issued_at)),
     h('p', { style: 'color:#666;font-size:12px;margin-top:18px;line-height:1.5' }, 'Thank you for your business. — Jason, Sage Ideas'));
   const printBtn = h('button', { type: 'button', class: 'btn-ghost no-print', style: 'padding:9px 16px;font-size:13px' }, t('billing.print'));
-  printBtn.addEventListener('click', () => { document.body.classList.add('receipting'); window.print(); setTimeout(() => document.body.classList.remove('receipting'), 400); });
+  printBtn.addEventListener('click', () => {
+    // Remove the print-isolation class on afterprint (reliable across browsers where print()
+    // doesn't block); a 4s timeout is only a fallback for browsers that never fire the event.
+    const cleanup = () => { document.body.classList.remove('receipting'); window.removeEventListener('afterprint', cleanup); };
+    document.body.classList.add('receipting');
+    window.addEventListener('afterprint', cleanup);
+    window.print();
+    setTimeout(cleanup, 4000);
+  });
   const closeBtn = h('button', { type: 'button', class: 'btn-ghost no-print', style: 'padding:9px 16px;font-size:13px' }, t('receipt.close'));
   closeBtn.addEventListener('click', () => overlay.remove());
   doc.appendChild(h('div', { class: 'no-print', style: 'display:flex;gap:10px;margin-top:22px' }, printBtn, closeBtn));
