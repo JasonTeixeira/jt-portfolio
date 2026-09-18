@@ -5,7 +5,7 @@
 // Defines window.__renderScopePlan (blueprint + HUD + itemized plan) directly.
 
 import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER, CARD_BY_KEY } from './scope-core.mjs';
-import { locPhase, locCardName, locCardWhy, locEffort, locQPrompt, locOptLabel, locDisclaimer } from './scope-i18n.mjs?v=20260918a';
+import { locPhase, locCardName, locCardWhy, locEffort, locQPrompt, locOptLabel, locDisclaimer } from './scope-i18n.mjs?v=20260918b';
 
 const TRACK_COLOR = { 'AI Build': '#22d3ee', 'Eval & QA': '#a78bfa', 'Test Automation': '#10b981', 'Automation': '#F59E0B', 'Product': '#8FA0FF' };
 const PHASE_COLOR = { audit: '#8FA0FF', build: '#22d3ee', gate: '#a78bfa', operate: '#10b981' };
