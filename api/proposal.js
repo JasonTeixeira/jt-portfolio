@@ -1,4 +1,4 @@
-import { isEnabled, createProposal, getProposalByPublicId, updateProposal } from '../lib/proposal-db.mjs';
+import { isEnabled, createProposal, getProposalByPublicId, updateProposal, findRecentDraftPublicId } from '../lib/proposal-db.mjs';
 import { appendEvent } from '../lib/scope-db.mjs';
 import { sendOperator } from '../lib/notify.mjs';
 import { computePlan } from '../assets/scope-core.mjs';
@@ -76,6 +76,13 @@ async function handler(req, res) {
     client_email: typeof body.email === 'string' ? body.email.slice(0, 320) : null,
     expires_at: expires,
   };
+  // Idempotency: if this prospect already has an identical draft from the last few minutes
+  // (a double-click or a retry), return it instead of minting a second draft + a second
+  // operator email. Only short-circuits on a SUCCESSFUL read — a failed lookup falls
+  // through to create, so a DB blip can never suppress a genuine new proposal.
+  const dupe = await findRecentDraftPublicId(row.prospect_id, row.keys, row.segment);
+  if (dupe.ok && dupe.data) return res.status(200).json({ ok: true, publicId: dupe.data, deduped: true });
+
   const created = await createProposal(row);
   if (!created.ok) return res.status(200).json({ ok: false, skipped: true });
   appendEvent({ prospect_id: row.prospect_id, type: 'proposal_drafted', meta: { public_id: pid, firm_cents: firm } }).catch(() => {});

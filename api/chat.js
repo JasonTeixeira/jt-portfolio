@@ -168,6 +168,10 @@ const PROMPTS = {
 
 const MAX_TURNS = 16;
 const MAX_CHARS = 800;
+const DAY_MS = 86_400_000;
+// Global daily request ceiling on the metered LLM. ~1000/day is generous for a portfolio
+// demo yet caps worst-case spend hard. Tune via CHAT_DAILY_MAX in Vercel.
+const MAX_CHAT_PER_DAY = Number(process.env.CHAT_DAILY_MAX) || 1000;
 const MAX_OUT = { associate: 220, concierge: 220, scope: 500, automations: 280 };
 
 // Strip any $-amount token (e.g. "$4,000", "$9k", "$4,000–$9k", "$4k to $9k")
@@ -242,6 +246,16 @@ async function handler(req, res) {
   const ip = clientIp(req);
   if (await rateLimited(ip, 20, 'chat')) {
     return res.status(429).json({ ok: false, error: 'slow_down' });
+  }
+
+  // Global/day request budget — a hard ceiling across ALL callers so a distributed flood
+  // (or one IP fanned out across serverless instances) can't run up unbounded metered LLM
+  // spend. Over budget → 501, which the client already handles by dropping to the scripted
+  // receptionist, so the demo degrades gracefully instead of erroring. Env-overridable.
+  // (Truly global only when Upstash is configured; without it the counter is per-instance,
+  // same soft-cap caveat as every other limit here — still strictly better than no ceiling.)
+  if (await rateLimited('global', MAX_CHAT_PER_DAY, 'chat-budget', DAY_MS)) {
+    return res.status(501).json({ ok: false, error: 'llm_budget_exceeded' });
   }
 
   const body = req.body ?? {};

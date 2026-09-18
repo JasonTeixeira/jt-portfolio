@@ -40,6 +40,10 @@ const RESEND = 'https://api.resend.com';
 const SITE = 'https://agency.sageideas.dev';
 const REPORT_URL = 'https://agency.sageideas.dev/sample-report.html';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DAY_MS = 86_400_000;
+// Max visitor-facing sends to a single address per rolling day. Generous for a real
+// person re-requesting their plan, tight enough to blunt an email-bomb. Env-overridable.
+const MAX_SENDS_PER_EMAIL_DAY = Number(process.env.LEAD_SENDS_PER_EMAIL_DAY) || 5;
 
 
 async function resend(path, key, body) {
@@ -180,7 +184,12 @@ async function handler(req, res) {
   // inbox and must never be suppressed.) `emailed` is only true when a mail actually went
   // out, so the page never claims delivery for a suppressed or failed send.
   let emailed = false;
-  if (canEmailVisitor) {
+  // Per-recipient/day cap (independent of the per-IP cap above): the recipient address is
+  // fully attacker-controlled, so without this someone could email-bomb a victim by
+  // resubmitting the form. MAX_SENDS_PER_EMAIL_DAY sends per address per rolling day.
+  const recipientFlooded = canEmailVisitor
+    && await rateLimited(clean.toLowerCase(), MAX_SENDS_PER_EMAIL_DAY, 'lead-recipient', DAY_MS);
+  if (canEmailVisitor && !recipientFlooded) {
     try {
       let payload;
       if (hasPlan) {
