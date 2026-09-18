@@ -1,0 +1,6 @@
+{
+  "lane": "smb",
+  "note": "Tier 2 — cash-pay, marketing-savvy, booking-driven (sidesteps HIPAA friction).",
+  "queries": ["med spa", "aesthetics clinic", "cosmetic dentist", "chiropractor", "IV therapy clinic", "wellness clinic"],
+  "metros": ["Phoenix, AZ"]
+}

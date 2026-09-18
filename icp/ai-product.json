@@ -1,0 +1,8 @@
+{
+  "lane": "apollo",
+  "note": "Lane B — AI product companies shipping LLM features (matches the site's eval/QA offer). Used by scripts/source-leads.mjs.",
+  "titles": ["CTO", "VP Engineering", "Head of Engineering", "Head of AI", "Head of Machine Learning", "VP Product", "Head of Product", "Founder", "Co-Founder", "Director of Engineering"],
+  "employeeRanges": ["11,50", "51,200", "201,500"],
+  "keywords": ["artificial intelligence", "machine learning", "llm", "generative ai", "saas"],
+  "locations": ["United States"]
+}
