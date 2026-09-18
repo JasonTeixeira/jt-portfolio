@@ -21,12 +21,13 @@
  * capturing the lead on-page must never fail because of a downstream issue.
  */
 
-import { isEnabled, upsertProspect, appendEvent } from '../lib/scope-db.mjs';
+import { isEnabled, upsertProspect, appendEvent, getProspect } from '../lib/scope-db.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
 import { computePlan, SEGMENTS, encodeKeys, DISCLAIMER } from '../assets/scope-core.mjs';
 import { locCardName, locCardWhy, locPhase, locSegment } from '../assets/scope-i18n.mjs';
 import { scopePlanEmail } from '../lib/email-templates.mjs';
+import { sendClient } from '../lib/notify.mjs';
 
 // Visitor-facing locales we localize the emailed plan into. Anything else falls back to English.
 const SUPPORTED_LANGS = ['en', 'es', 'pt'];
@@ -112,8 +113,20 @@ async function handler(req, res) {
   // the Resend key below — never allowed to affect the { ok: true } response.
   if (isEnabled() && typeof prospectId === 'string' && prospectId.trim()) {
     try {
-      const row = { id: prospectId.trim(), email: clean, stage: 'engaged' };
+      const pid = prospectId.trim();
+      const row = { id: pid, email: clean };
       if (plan && typeof plan.segment === 'string' && plan.segment) row.segment = plan.segment;
+      // Never downgrade a prospect's stage. A lead re-submitting the form only ADVANCES
+      // new/scoped → engaged; a terminal stage (won = paying customer, lost = operator's
+      // explicit call) is preserved. The lead_captured event below still records the touch.
+      // Crucially, only touch stage when the read SUCCEEDED — getProspect is guarded and
+      // returns { ok:false } on a transient Supabase blip; treating that as "no stage" would
+      // force 'engaged' and silently downgrade a won/lost prospect, the exact bug we're fixing.
+      const cur = await getProspect(pid);
+      if (cur && cur.ok) {
+        const curStage = cur.data ? cur.data.stage : null; // null = brand-new prospect → engaged
+        if (!curStage || curStage === 'new' || curStage === 'scoped') row.stage = 'engaged';
+      } // read failed → leave stage untouched so the upsert can't downgrade a terminal stage
       await upsertProspect(row);
       await appendEvent({
         prospect_id: prospectId.trim(),
@@ -161,9 +174,15 @@ async function handler(req, res) {
   // 3. Email the visitor. If they scoped a plan, send THE PLAN (itemized, with the total
   //    range + a book-a-call link). Otherwise send the sample-report note. `emailed` is
   //    returned so the page only claims delivery when a mail actually went out.
+  // Visitor sends go through sendClient() so they respect the suppression list — an
+  // address that hard-bounced or filed a spam complaint is skipped, protecting sender
+  // reputation. (The operator notify above is intentionally raw — it's mail to our own
+  // inbox and must never be suppressed.) `emailed` is only true when a mail actually went
+  // out, so the page never claims delivery for a suppressed or failed send.
   let emailed = false;
   if (canEmailVisitor) {
     try {
+      let payload;
       if (hasPlan) {
         const lang = normalizeLang(req.body && req.body.lang);
         const computed = computePlan(plan.keys, plan.segment || null);
@@ -182,16 +201,16 @@ async function handler(req, res) {
           segmentLabel: segLabel, phases, totalBand: computed.totalBand,
           timelineWeeks: computed.timelineWeeks, bookUrl: `${SITE}/book.html`, planUrl, disclaimer: DISCLAIMER, lang,
         });
-        await resend('/emails', key, { from: `Jason Teixeira <${from}>`, to: [clean], subject: mail.subject, text: mail.text, html: mail.html });
+        payload = { to: clean, subject: mail.subject, text: mail.text, html: mail.html };
       } else {
-        await resend('/emails', key, {
-          from: `Jason Teixeira <${from}>`,
-          to: [clean],
+        payload = {
+          to: clean,
           subject: 'Your sample AI evaluation report',
           text: `Hi${nm !== '(no name)' ? ' ' + nm : ''} —\n\nHere's the sample eval report — the exact format and rigor I'd send you, on a fictional target so you can see the method: ${REPORT_URL}\n\nI test and prove AI features for teams shipping LLM products. If you want this run on YOUR live feature for real — verbatim transcripts, no cherry-picking — reply with the feature URL and I'll send you the findings, free. No call required.\n\n— Jason\nagency.sageideas.dev`,
-        });
+        };
       }
-      emailed = true;
+      const result = await sendClient(payload);
+      emailed = result.ok === true;
     } catch (_) { emailed = false; }
   }
 
