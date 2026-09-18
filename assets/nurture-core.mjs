@@ -21,9 +21,12 @@ export function planPhrase(plan) {
   return { list, band: bandStr(plan.total_lo, plan.total_hi) };
 }
 
-export const DUE = { LEAD_HOURS: 48, LEAD2_HOURS: 144, UNPAID_1_DAYS: 3, UNPAID_2_DAYS: 8, EXPIRING_WITHIN_DAYS: 3, DRAFT_STALE_HOURS: 24 };
+export const DUE = { LEAD_HOURS: 48, LEAD2_HOURS: 144, UNPAID_1_DAYS: 3, UNPAID_2_DAYS: 8, EXPIRING_WITHIN_DAYS: 3, DRAFT_STALE_HOURS: 24,
+  // Cold outbound cadence: opener promptly, then value +3d, then a soft close +4d.
+  OUTBOUND_2_DAYS: 3, OUTBOUND_3_DAYS: 4 };
 export const SEND_CAP = 200;
-export const STEP = { LEAD: 'lead_no_proposal', LEAD_2: 'lead_no_proposal_2', UNPAID_1: 'proposal_unpaid_1', UNPAID_2: 'proposal_unpaid_2', EXPIRING: 'proposal_expiring' };
+export const STEP = { LEAD: 'lead_no_proposal', LEAD_2: 'lead_no_proposal_2', UNPAID_1: 'proposal_unpaid_1', UNPAID_2: 'proposal_unpaid_2', EXPIRING: 'proposal_expiring',
+  OUTBOUND_1: 'outbound_1', OUTBOUND_2: 'outbound_2', OUTBOUND_3: 'outbound_3' };
 
 export function isSendable(p) { return Boolean(p) && !p.unsubscribed && !p.nurture_suppressed; }
 export function hoursBetween(aIso, bIso) { return (new Date(bIso).getTime() - new Date(aIso).getTime()) / 3600e3; }
@@ -172,5 +175,75 @@ export function expiringEmail({ proposal, siteUrl, unsubscribeUrl }) {
     "If you want to move ahead, it's all still here and ready to accept."];
   const text = `Hi,\n\n${paras.join('\n\n')}\n\nReview and accept: ${link}` + footer(unsubscribeUrl);
   const html = htmlEmail({ preheader: heading, heading, paras, ctaText: 'Review and accept', ctaUrl: link, unsubscribeUrl });
+  return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
+}
+
+// ── Cold outbound: a 3-touch sequence for sourced (source:'outbound') prospects ──────────
+// These go to people who have NOT opted in, so they lead with value + a free offer, never a
+// hard pitch, and carry the same one-click unsubscribe + postal address as every other send.
+// Which step is due, given the prospect's sourced time + prior outbound sends. Pure + testable.
+// `sends` is [{ step, sent_at }] for this prospect's outbound_* rows (newest first is fine).
+export function outboundDueStep(prospect, sends, nowIso) {
+  if (!isSendable(prospect) || !prospect.email) return null;
+  const now = new Date(nowIso).getTime();
+  const sentAt = {};
+  for (const s of (sends || [])) if (s && s.step) sentAt[s.step] = s.sent_at;
+  const daysSince = (iso) => (iso ? (now - new Date(iso).getTime()) / 864e5 : Infinity);
+  // 1: opener — as soon as the lead is sourced (first eligible cron tick).
+  if (!sentAt[STEP.OUTBOUND_1]) return STEP.OUTBOUND_1;
+  // 2: value/proof — OUTBOUND_2_DAYS after the opener.
+  if (!sentAt[STEP.OUTBOUND_2] && daysSince(sentAt[STEP.OUTBOUND_1]) >= DUE.OUTBOUND_2_DAYS) return STEP.OUTBOUND_2;
+  // 3: soft close — OUTBOUND_3_DAYS after step 2. Never loops back.
+  if (sentAt[STEP.OUTBOUND_2] && !sentAt[STEP.OUTBOUND_3] && daysSince(sentAt[STEP.OUTBOUND_2]) >= DUE.OUTBOUND_3_DAYS) return STEP.OUTBOUND_3;
+  return null;
+}
+
+// Pull the AI-personalized opener the sourcer stored, if any (else a solid default).
+function outboundOpener(prospect) {
+  const q = prospect && prospect.qualification;
+  const o = q && typeof q === 'object' ? q.opener : null;
+  if (o && typeof o === 'string' && o.trim().length > 20) return o.trim();
+  const first = firstName(prospect);
+  return `Hi${first ? ' ' + first : ''} — I help teams shipping AI features prove they actually work: LLM evals, adversarial safety testing, CI quality gates.`;
+}
+
+export function outbound1Email({ prospect, siteUrl, unsubscribeUrl }) {
+  const subject = 'proving your AI features actually work';
+  const heading = 'Do your AI features have proof, or just a demo?';
+  const paras = [
+    _esc(outboundOpener(prospect)),
+    "Most AI ships on a demo and a prayer — looks great in the meeting, then a real user finds the one thing it gets wrong. I close that gap: evals, tests, and a gate that catches bad output before it ships. My own site runs its quality checks in public.",
+    "Want a free evaluation of one live AI feature? Reply with a URL and I'll send back real findings — verbatim transcripts, no cherry-picking, no call required.",
+  ];
+  const text = `${outboundOpener(prospect)}\n\nMost AI ships on a demo and a prayer — looks great in the meeting, then a real user finds the one thing it gets wrong. I close that gap: evals, safety tests, and a CI gate that catches bad output before it ships.\n\nWant a free evaluation of one live AI feature? Reply with a URL and I'll send back real findings — no call required. Or see the method: ${siteUrl}/sample-report.html` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'A free evaluation of one live AI feature — real findings, no call.', heading, paras, ctaText: 'See a sample report', ctaUrl: `${siteUrl}/sample-report.html`, altText: 'Or scope a build:', altUrl: `${siteUrl}/build.html`, unsubscribeUrl });
+  return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
+}
+
+export function outbound2Email({ prospect, siteUrl, unsubscribeUrl }) {
+  const first = firstName(prospect);
+  const subject = 'the difference between shipped and proven';
+  const heading = 'Shipped is not the same as proven';
+  const paras = [
+    `${first ? first + ', a' : 'A'} quick, concrete example of what I mean by "proof."`,
+    "On one feature: hallucination rate on a golden set went from ~10% to under 1% after two assertions and a CI gate — every number backed by a test you can re-run, not a claim. That's the whole method: build the AI, then prove it with evidence a skeptic can check.",
+    "If you're shipping anything LLM-powered, a free evaluation of one live feature is the fastest way to see where it actually breaks. Reply with a URL.",
+  ];
+  const text = `${paras.map((p) => p).join('\n\n')}\n\nThe method + a sample report: ${siteUrl}/sample-report.html\nScope a build: ${siteUrl}/build.html` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'Proof a skeptic can check — not a claim.', heading, paras, ctaText: 'See the method', ctaUrl: `${siteUrl}/sample-report.html`, altText: 'Or scope a project:', altUrl: `${siteUrl}/build.html`, unsubscribeUrl });
+  return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
+}
+
+export function outbound3Email({ prospect, siteUrl, unsubscribeUrl }) {
+  const first = firstName(prospect);
+  const subject = "I'll leave you be — but the offer stands";
+  const heading = 'Last note — the free evaluation offer stands';
+  const paras = [
+    `${first ? first + ", I" : 'I'}'ll stop here so I'm not cluttering your inbox.`,
+    "If proving your AI features is ever on your plate — before a launch, after an incident, or when a customer finds the one thing it gets wrong — the free evaluation offer is open. One live feature, real findings, no call required.",
+    "Either way, good luck with what you're building.",
+  ];
+  const text = `${paras.join('\n\n')}\n\nWhenever it's useful: ${siteUrl}/book.html` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'One live feature, real findings, no call required.', heading, paras, ctaText: 'Grab 15 minutes', ctaUrl: `${siteUrl}/book.html`, altText: 'Or see the method:', altUrl: `${siteUrl}/sample-report.html`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }

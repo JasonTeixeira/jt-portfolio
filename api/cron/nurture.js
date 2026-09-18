@@ -1,10 +1,11 @@
 import { withObserve } from '../../lib/observe.mjs';
 import { timingSafeEqual } from 'node:crypto';
 import * as db from '../../lib/nurture-db.mjs';
-import { sendClient, sendOperator } from '../../lib/notify.mjs';
+import { sendClient, sendOutbound, sendOperator, outboundConfigured } from '../../lib/notify.mjs';
 import {
   SEND_CAP, STEP, isSendable, leadDue, lead2Due, dueStepForProposal,
   leadEmail, lead2Email, unpaidEmail, expiringEmail, listUnsubHeaders,
+  outboundDueStep, outbound1Email, outbound2Email, outbound3Email,
 } from '../../assets/nurture-core.mjs';
 const SITE = process.env.SITE_URL || 'https://agency.sageideas.dev';
 const CRON = process.env.CRON_SECRET;
@@ -27,7 +28,7 @@ async function handler(req, res) {
   let sent = 0, due = 0, errors = 0;
   const cap = () => sent >= SEND_CAP;
 
-  async function fire({ prospect, proposal, step, email }) {
+  async function fire({ prospect, proposal, step, email, via = sendClient }) {
     due++;
     if (cap()) return;
     try {
@@ -36,7 +37,7 @@ async function handler(req, res) {
       const tok = await db.ensureUnsubToken(prospect.id);
       if (!tok.ok || !tok.token) return;
       const built = email(unsubUrl(tok.token));
-      const r = await sendClient({ to: prospect.email || (proposal && proposal.client_email), subject: built.subject, text: built.text, html: built.html, headers: built.headers });
+      const r = await via({ to: prospect.email || (proposal && proposal.client_email), subject: built.subject, text: built.text, html: built.html, headers: built.headers });
       if (r.ok) sent++;
       // send row already recorded; a send failure is not retried (a nurture nudge is best-effort)
     } catch { errors++; }
@@ -77,6 +78,24 @@ async function handler(req, res) {
       await fire({ prospect, proposal: p, step, email });
     }
   } catch (e) { errors++; console.error('nurture section error:', e && e.message ? e.message : e); }
+
+  // E — cold outbound sequence (sourced prospects). Double-gated so cold mail can NEVER fire
+  // by accident: the master NURTURE_ENABLED switch above, PLUS an explicit OUTBOUND_ENABLED
+  // AND a distinct verified outbound domain (protects the transactional domain's reputation).
+  if (process.env.OUTBOUND_ENABLED === 'true' && outboundConfigured()) {
+    try {
+      const cands = await db.outboundCandidates(now);
+      const OB_EMAIL = { [STEP.OUTBOUND_1]: outbound1Email, [STEP.OUTBOUND_2]: outbound2Email, [STEP.OUTBOUND_3]: outbound3Email };
+      for (const { prospect, sends } of (cands.data || [])) {
+        if (cap()) break;
+        const step = outboundDueStep(prospect, sends, now);
+        if (!step) continue;
+        const build = OB_EMAIL[step];
+        await fire({ prospect, proposal: null, step, via: sendOutbound,
+          email: (u) => build({ prospect, siteUrl: SITE, unsubscribeUrl: u }) });
+      }
+    } catch (e) { errors++; console.error('nurture outbound error:', e && e.message ? e.message : e); }
+  }
 
   // D — operator digest: stale drafts + run summary (also the heartbeat)
   try {

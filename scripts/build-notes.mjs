@@ -244,7 +244,7 @@ ${items}
 
 /* ── sitemap + robots ── */
 const pages = [
-  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/services.html', '/build.html', '/case-studies.html', '/proof.html', '/company.html', '/resources.html', '/work-nexural.html', '/work-academy.html', '/roi.html', '/demos.html', '/front-desk.html', '/ai-under-test.html', '/eval.html', '/book.html', '/sample.html', '/sample-report.html', '/docs.html', '/guide-eval-gate.html', '/guide-probes.html', '/guide-golden-set.html', '/guide-human-approval.html', '/hire-ai-qa-engineer.html', '/llm-evaluation-consultant.html', '/rag-evaluation-guide.html', '/ai-agent-testing.html', '/reduce-test-flakiness.html', '/privacy.html', '/terms.html',
+  '/', '/field-notes.html', '/checklist.html', '/what-i-build.html', '/services.html', '/build.html', '/case-studies.html', '/founding-clients.html', '/proof.html', '/company.html', '/resources.html', '/work-nexural.html', '/work-academy.html', '/roi.html', '/demos.html', '/front-desk.html', '/ai-under-test.html', '/eval.html', '/book.html', '/sample.html', '/sample-report.html', '/docs.html', '/guide-eval-gate.html', '/guide-probes.html', '/guide-golden-set.html', '/guide-human-approval.html', '/hire-ai-qa-engineer.html', '/llm-evaluation-consultant.html', '/rag-evaluation-guide.html', '/ai-agent-testing.html', '/reduce-test-flakiness.html', '/privacy.html', '/terms.html',
   ...SERVICES.map((s) => `/services/${s.slug}.html`),
   // standalone service landing pages that exist on disk but aren't in services.data
   '/services/security-hardening.html', '/services/ai-product-build.html', '/services/custom-ai-builds.html',
