@@ -18,7 +18,7 @@ const SVGS = {
 
 const COLS = [
   { h: 'Explore', links: [['Approach', 'approach.html'], ['Services', 'services.html'], ['Automations', '/automations/'], ['Scope a project', 'build.html']] },
-  { h: 'Work', links: [['Case studies', 'case-studies.html'], ['Proof', 'proof.html'], ['Lab', 'lab.html'], ['Demos', 'demos.html']] },
+  { h: 'Work', links: [['Case studies', 'case-studies.html'], ['Founding rate', 'founding-clients.html'], ['Proof', 'proof.html'], ['Lab', 'lab.html']] },
   { h: 'Learn', links: [['Learn library', 'learn.html'], ['Docs', 'docs.html'], ['Glossary', 'glossary.html'], ['Tool comparisons', 'compare.html'], ['Embed a diagram', 'embeds.html']] },
   { h: 'More', links: [['What I build', 'what-i-build.html'], ['ROI calculator', 'roi.html'], ['Hiring?', 'hire-ai-qa-engineer.html'], ['Academy ↗', 'https://sageideas.dev/academy']] },
 ];

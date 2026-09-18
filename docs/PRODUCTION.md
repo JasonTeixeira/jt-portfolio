@@ -137,4 +137,52 @@ Enable Point-in-Time Recovery (PITR) on the Supabase project and **test a restor
 | Stripe webhook failure alerts | TODO — flip on in Stripe Dashboard |
 | Durable rate limiting | DONE (code) — activate with `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`; in-memory fallback otherwise |
 | Resend domain auth (SPF/DKIM/DMARC) | TODO — hard gate before `NURTURE_ENABLED=true` |
+| Outbound engine (Apollo→verify→score→CRM) | DONE (code) — activate with `APOLLO_API_KEY` (+ optional `ZEROBOUNCE_API_KEY`, `LLM_*`) |
+| Cold outbound sequencer | DONE (code) — gated on `OUTBOUND_ENABLED=true` + a distinct `OUTBOUND_FROM` domain |
 | Backups / DR | TODO — needs Supabase Pro PITR + a tested restore |
+
+---
+
+## Outbound engine & deliverability — DONE (code); activate with env
+
+The site is now a two-way engine: inbound (Scope tool → proposal → deposit) **and** cold
+outbound (source ICP leads → verify → AI-score → sequenced email → same proposal path).
+All of it is env-gated and inert until you supply keys, so nothing sends by accident.
+
+### Deliverability (do this FIRST — nothing outbound matters until email lands)
+
+1. **Verify `sageideas.dev` in Resend** (SPF/DKIM/DMARC) — the same hard gate above. This
+   is what lets scoped-plan emails actually reach visitors.
+2. Set the transactional sender: `RESEND_FROM="Jason Teixeira <hello@sageideas.dev>"`.
+3. **Authenticate a SEPARATE subdomain for cold outbound** (e.g. `mail.sageideas.dev`) and
+   set `OUTBOUND_FROM="Jason Teixeira <jason@mail.sageideas.dev>"`. Cold volume must never
+   ride the transactional domain — a spam flag there would degrade receipts/plans/portal mail.
+4. Verify readiness against the live Resend API:
+   ```
+   npm run outbound:preflight
+   ```
+   Exits 0 when transactional email is send-ready; warns until `OUTBOUND_FROM` is a distinct,
+   verified domain. Run it after every env change.
+
+### Sourcing leads (fill the pipeline)
+
+```
+export APOLLO_API_KEY=...          # required — Apollo → Settings → API
+export ZEROBOUNCE_API_KEY=...      # optional — verify before sending (protects the domain)
+# LLM_API_KEY / LLM_BASE_URL / LLM_MODEL — optional — AI fit-score + personalized opener
+npm run outbound:source -- --pages 2 --limit 50 --min-score 55
+npm run outbound:source -- --dry-run     # source + score, print, write nothing
+```
+Sourced leads land in `scope_prospects` at stage `new`, source `outbound`, with the fit
+score + personalized opener in `qualification`. Review them in the admin cockpit.
+
+### Turning on the cold sequence
+
+The daily cron (`/api/cron/nurture`) also runs the 3-touch cold sequence for `source:'outbound'`
+prospects, but only when **both** are true (belt + suspenders so cold mail never fires early):
+- `NURTURE_ENABLED=true` (the master email switch), and
+- `OUTBOUND_ENABLED=true` **and** a distinct verified `OUTBOUND_FROM` is set.
+
+Every cold email carries one-click unsubscribe + the physical postal address (CAN-SPAM), sends
+through the suppression list, and is idempotent per step (no double-sends). Warm the outbound
+domain for 2–3 weeks (ramp volume slowly) before scaling.
