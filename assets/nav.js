@@ -87,7 +87,7 @@
       panel.appendChild(out);
     } else {
       panel.appendChild(link(L.login, 'login.html'));
-      // Sign up stays a plain link so "Book a call" is the single primary (green) CTA.
+      // Sign up stays a plain link so "Scope a project" is the single primary (green) CTA.
       panel.appendChild(link(L.signup, 'signup.html'));
     }
   }
@@ -96,15 +96,35 @@
   // The static HTML keeps every link (SEO + no-JS fallback); this reorganizes them into
   // three clear groups so the bar reads as a menu, not a wall of 14 equal links.
   var NAV_GROUPS = [
-    { label: 'Services', items: [
+    { key: 'services', label: 'Services', items: [
       ['Approach', 'approach.html'], ['Services', 'services.html'],
       ['Automations', '/automations/'], ['Scope a project', 'build.html'] ] },
-    { label: 'Work', items: [
+    { key: 'work', label: 'Work', items: [
       ['Case studies', 'case-studies.html'], ['Proof', 'proof.html'], ['Lab', 'lab.html'] ] },
-    { label: 'Learn', items: [
+    { key: 'learn', label: 'Learn', items: [
       ['Learn library', 'learn.html'], ['Docs', 'docs.html'], ['Glossary', 'glossary.html'],
       ['Tool comparisons', 'compare.html'], ['Field notes', 'field-notes.html'], ['Resources', 'resources.html'] ] },
   ];
+  // Localized labels so the ES/PT nav isn't half-English. Keyed by group key and by
+  // link basename; anything missing falls back to the English NAV_GROUPS label.
+  var NAV_GROUP_L = {
+    es: { services: 'Servicios', work: 'Trabajo', learn: 'Aprende' },
+    pt: { services: 'Serviços', work: 'Trabalho', learn: 'Aprenda' },
+  };
+  var NAV_LINK_L = {
+    es: {
+      'approach.html': 'Enfoque', 'services.html': 'Servicios', 'automations': 'Automatizaciones',
+      'build.html': 'Define tu proyecto', 'case-studies.html': 'Casos de estudio', 'proof.html': 'Pruebas',
+      'lab.html': 'Lab', 'learn.html': 'Biblioteca', 'docs.html': 'Docs', 'glossary.html': 'Glosario',
+      'compare.html': 'Comparativas', 'field-notes.html': 'Notas de campo', 'resources.html': 'Recursos',
+    },
+    pt: {
+      'approach.html': 'Abordagem', 'services.html': 'Serviços', 'automations': 'Automações',
+      'build.html': 'Orçar um projeto', 'case-studies.html': 'Estudos de caso', 'proof.html': 'Provas',
+      'lab.html': 'Lab', 'learn.html': 'Biblioteca', 'docs.html': 'Docs', 'glossary.html': 'Glossário',
+      'compare.html': 'Comparações', 'field-notes.html': 'Notas de campo', 'resources.html': 'Recursos',
+    },
+  };
   function baseName(href) { return String(href || '').split('#')[0].split('?')[0].replace(/\/$/, '').split('/').pop() || 'index.html'; }
   function closeAllGroups(panel, except) {
     panel.querySelectorAll('.nav-group.open').forEach(function (o) {
@@ -116,6 +136,9 @@
   function groupNav(nav) {
     var panel = nav.querySelector('.site-nav-links');
     if (!panel || panel.getAttribute('data-grouped')) return;
+    var loc = navLoc();
+    var groupL = NAV_GROUP_L[loc] || {};
+    var linkL = NAV_LINK_L[loc] || {};
     var existing = {};
     panel.querySelectorAll('a.site-nav-link').forEach(function (a) { existing[baseName(a.getAttribute('href'))] = a; });
     var cta = panel.querySelector('.site-nav-cta');
@@ -127,13 +150,13 @@
       var group = document.createElement('div'); group.className = 'nav-group';
       var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'nav-group-btn';
       btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-expanded', 'false');
-      btn.innerHTML = g.label + '<span class="nav-caret" aria-hidden="true">▾</span>';
+      btn.innerHTML = (groupL[g.key] || g.label) + '<span class="nav-caret" aria-hidden="true">▾</span>';
       var dd = document.createElement('div'); dd.className = 'nav-dropdown';
       var active = false;
       g.items.forEach(function (it) {
         var bn = baseName(it[1]);
         var a = existing[bn] || document.createElement('a');
-        a.textContent = it[0]; a.setAttribute('href', it[1]); a.className = 'nav-dd-link';
+        a.textContent = linkL[bn] || it[0]; a.setAttribute('href', it[1]); a.className = 'nav-dd-link';
         if (bn === cur) { a.setAttribute('aria-current', 'page'); active = true; }
         dd.appendChild(a);
       });
