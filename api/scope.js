@@ -18,9 +18,51 @@
 import { isEnabled, upsertProspect, appendEvent, insertPlan } from '../lib/scope-db.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
+import { CARD_BY_KEY, SEGMENTS } from '../assets/scope-core.mjs';
 
 const EVENT_TYPES = new Set(['started', 'questioned', 'plan_built', 'proposal_written', 'lead_captured', 'handoff_clicked']);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// This endpoint is a PUBLIC, unauthenticated fire-and-forget beacon: prospectId is
+// client-minted and nobody is logged in. So everything that reaches the DB is treated
+// as untrusted — keys are intersected with the real rate card, segment must be a known
+// enum value, and free-form meta is size/shape-capped — so a script can't poison the
+// operator's pipeline or run up storage by writing arbitrary blobs. (Rate limiting in
+// lib/ratelimit.mjs bounds volume; this bounds per-row shape.)
+const MAX_KEYS = 40;          // rate card is ~32 caps; a real plan can't exceed it
+const MAX_FLAGS = 20;
+const MAX_META_BYTES = 2048;  // scope event meta is small structured data, never a payload
+
+// Keep only real rate-card keys (drops unknown/garbage), de-duped, capped.
+export function cleanKeys(arr) {
+  if (!Array.isArray(arr)) return [];
+  const out = [];
+  const seen = new Set();
+  for (const k of arr) {
+    if (typeof k !== 'string' || !CARD_BY_KEY.has(k) || seen.has(k)) continue;
+    seen.add(k);
+    out.push(k);
+    if (out.length >= MAX_KEYS) break;
+  }
+  return out;
+}
+// Segment is persisted only if it's a known enum value; anything else → null.
+export function cleanSegment(seg) {
+  return (typeof seg === 'string' && Object.prototype.hasOwnProperty.call(SEGMENTS, seg)) ? seg : null;
+}
+export function cleanFlags(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr.filter((f) => typeof f === 'string').slice(0, MAX_FLAGS).map((f) => f.slice(0, 120));
+}
+// Accept a small structured object only; reject arrays, oversized blobs, and non-objects.
+export function cleanMeta(meta) {
+  if (!meta || typeof meta !== 'object' || Array.isArray(meta)) return {};
+  try {
+    const s = JSON.stringify(meta);
+    if (!s || s.length > MAX_META_BYTES) return {};
+    return meta;
+  } catch { return {}; }
+}
 
 /**
  * Pure request-body validator — no DB access, safe to unit test directly.
@@ -66,11 +108,11 @@ function planRow(prospectId, plan, fallbackSegment) {
 
   return {
     prospect_id: prospectId,
-    keys: Array.isArray(plan.keys) ? plan.keys : [],
-    segment: (typeof plan.segment === 'string' && plan.segment) || fallbackSegment || null,
+    keys: cleanKeys(plan.keys), // rate-card keys only — never trust the raw client array
+    segment: cleanSegment(plan.segment) || cleanSegment(fallbackSegment),
     total_lo: totalLo,
     total_hi: totalHi,
-    flags: Array.isArray(plan.flags) ? plan.flags : [],
+    flags: cleanFlags(plan.flags),
   };
 }
 
@@ -107,16 +149,17 @@ async function handler(req, res) {
   // Never break the visitor's experience over a persistence hiccup: every
   // step is best-effort and failures are absorbed, not surfaced.
   try {
+    const cleanSeg = cleanSegment(segment);
     const prospectRow = { id: prospectId };
     if (email) prospectRow.email = email;
-    if (segment) prospectRow.segment = segment;
+    if (cleanSeg) prospectRow.segment = cleanSeg;
     const prospectResult = await upsertProspect(prospectRow);
     if (!prospectResult.ok) skipped = true;
 
     const eventResult = await appendEvent({
       prospect_id: prospectId,
       type,
-      meta: (body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)) ? body.meta : {},
+      meta: cleanMeta(body.meta),
     });
     if (!eventResult.ok) skipped = true;
 

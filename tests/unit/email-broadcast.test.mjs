@@ -35,3 +35,11 @@ test('broadcastEmail omits List-Unsubscribe header when no unsub url', () => {
   const m = broadcastEmail({ subject: 'S', heading: 'H', bodyText: 'b' });
   assert.equal(m.headers, undefined);
 });
+
+// CAN-SPAM §5 requires a physical postal address in every commercial email.
+test('broadcastEmail includes a physical postal address (CAN-SPAM)', () => {
+  const m = broadcastEmail({ subject: 'S', heading: 'H', bodyText: 'b', unsubscribeUrl: 'https://x.co/u?token=t' });
+  assert.ok(m.html.includes('Orlando, FL'), 'postal address present in html');
+  assert.ok(m.text.includes('Orlando, FL'), 'postal address present in text');
+  assert.ok(m.html.includes('Sage Ideas LLC'), 'legal entity present in html');
+});
