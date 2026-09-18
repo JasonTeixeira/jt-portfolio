@@ -1,0 +1,6 @@
+{
+  "lane": "smb",
+  "note": "Tier 1 — solo/small firms (a missed intake = a lost case). Target 1-10 attorney firms.",
+  "queries": ["personal injury attorney", "family law firm", "criminal defense attorney", "immigration lawyer", "estate planning attorney"],
+  "metros": ["Phoenix, AZ"]
+}

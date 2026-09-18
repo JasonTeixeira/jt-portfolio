@@ -1,0 +1,6 @@
+{
+  "lane": "smb",
+  "note": "Tier 1 — highest closeability. Set your metros. Each query × metro is one Places search.",
+  "queries": ["plumber", "HVAC contractor", "electrician", "roofing contractor", "garage door repair", "water damage restoration", "pest control", "appliance repair"],
+  "metros": ["Phoenix, AZ"]
+}

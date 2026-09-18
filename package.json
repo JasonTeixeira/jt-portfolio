@@ -35,7 +35,8 @@
     "build:proofkit": "node scripts/build-proof-kit.mjs",
     "build:i18n": "node scripts/build-i18n-manifest.mjs",
     "outbound:preflight": "node scripts/deliverability-preflight.mjs",
-    "outbound:source": "node scripts/source-leads.mjs"
+    "outbound:source": "node scripts/source-leads.mjs",
+    "outbound:smb": "node scripts/source-smb.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
