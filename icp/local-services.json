@@ -2,5 +2,5 @@
   "lane": "smb",
   "note": "Tier 2 — same missed-call economics as home services.",
   "queries": ["auto repair shop", "cleaning service", "moving company", "locksmith", "landscaping company", "towing service"],
-  "metros": ["Phoenix, AZ"]
+  "metros": ["nationwide"]
 }
