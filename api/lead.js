@@ -25,7 +25,15 @@ import { isEnabled, upsertProspect, appendEvent } from '../lib/scope-db.mjs';
 import { rateLimited, clientIp } from '../lib/ratelimit.mjs';
 import { withObserve } from '../lib/observe.mjs';
 import { computePlan, SEGMENTS, encodeKeys, DISCLAIMER } from '../assets/scope-core.mjs';
+import { locCardName, locCardWhy, locPhase, locSegment } from '../assets/scope-i18n.mjs';
 import { scopePlanEmail } from '../lib/email-templates.mjs';
+
+// Visitor-facing locales we localize the emailed plan into. Anything else falls back to English.
+const SUPPORTED_LANGS = ['en', 'es', 'pt'];
+function normalizeLang(v) {
+  const l = typeof v === 'string' ? v.trim().slice(0, 2).toLowerCase() : '';
+  return SUPPORTED_LANGS.includes(l) ? l : 'en';
+}
 
 const RESEND = 'https://api.resend.com';
 const SITE = 'https://agency.sageideas.dev';
@@ -157,13 +165,22 @@ async function handler(req, res) {
   if (canEmailVisitor) {
     try {
       if (hasPlan) {
+        const lang = normalizeLang(req.body && req.body.lang);
         const computed = computePlan(plan.keys, plan.segment || null);
         let planUrl = '';
         try { planUrl = `${SITE}/build.html#plan=${encodeKeys(plan.keys, plan.segment || null)}`; } catch (_) {}
-        const segLabel = plan.segment && SEGMENTS[plan.segment] ? SEGMENTS[plan.segment].label : '';
+        // Deterministic pricing (computePlan) is unchanged — only the DISPLAY strings localize, so
+        // the itemized email matches exactly what the visitor saw on /es/ or /pt/build.html.
+        const enSegLabel = plan.segment && SEGMENTS[plan.segment] ? SEGMENTS[plan.segment].label : '';
+        const segLabel = plan.segment ? locSegment(plan.segment, enSegLabel, lang) : '';
+        const phases = computed.phases.map((p) => ({
+          ...p,
+          label: locPhase(p.phase, p.label, lang),
+          items: (p.items || []).map((i) => ({ ...i, name: locCardName(i, lang), why: locCardWhy(i, lang) })),
+        }));
         const mail = scopePlanEmail({
-          segmentLabel: segLabel, phases: computed.phases, totalBand: computed.totalBand,
-          timelineWeeks: computed.timelineWeeks, bookUrl: `${SITE}/book.html`, planUrl, disclaimer: DISCLAIMER,
+          segmentLabel: segLabel, phases, totalBand: computed.totalBand,
+          timelineWeeks: computed.timelineWeeks, bookUrl: `${SITE}/book.html`, planUrl, disclaimer: DISCLAIMER, lang,
         });
         await resend('/emails', key, { from: `Jason Teixeira <${from}>`, to: [clean], subject: mail.subject, text: mail.text, html: mail.html });
       } else {
