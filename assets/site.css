@@ -169,6 +169,15 @@ p a, .prose a {
 }
 .site-nav-link { white-space: nowrap; }
 .site-nav .nav-social { flex-shrink: 0; }
+/* CLS fix: on desktop nav.js collapses the ~14 flat links into 3 dropdowns. If the raw
+   links paint first they wrap the bar to several rows, then the collapse yanks all content
+   up (~0.41 CLS — the page's dominant layout shift). Hide the raw links until nav.js marks
+   the panel [data-grouped]; the brand + Scope CTA still render immediately, so the bar keeps
+   a constant one-row height. Links stay in the DOM (and the footer) for SEO / no-JS crawling;
+   groupNav removes + re-creates them as .nav-dd-link, so this only affects the pre-JS paint. */
+@media (min-width: 761px) {
+  .site-nav-links:not([data-grouped]) > a.site-nav-link { display: none; }
+}
 .site-nav-link {
   color: #A8A29E; padding-bottom: 3px;
   background-image: linear-gradient(#22d3ee, #22d3ee);
