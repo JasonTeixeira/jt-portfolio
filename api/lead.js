@@ -119,9 +119,14 @@ async function handler(req, res) {
       // Never downgrade a prospect's stage. A lead re-submitting the form only ADVANCES
       // new/scoped → engaged; a terminal stage (won = paying customer, lost = operator's
       // explicit call) is preserved. The lead_captured event below still records the touch.
+      // Crucially, only touch stage when the read SUCCEEDED — getProspect is guarded and
+      // returns { ok:false } on a transient Supabase blip; treating that as "no stage" would
+      // force 'engaged' and silently downgrade a won/lost prospect, the exact bug we're fixing.
       const cur = await getProspect(pid);
-      const curStage = cur && cur.ok && cur.data ? cur.data.stage : null;
-      if (!curStage || curStage === 'new' || curStage === 'scoped') row.stage = 'engaged';
+      if (cur && cur.ok) {
+        const curStage = cur.data ? cur.data.stage : null; // null = brand-new prospect → engaged
+        if (!curStage || curStage === 'new' || curStage === 'scoped') row.stage = 'engaged';
+      } // read failed → leave stage untouched so the upsert can't downgrade a terminal stage
       await upsertProspect(row);
       await appendEvent({
         prospect_id: prospectId.trim(),
