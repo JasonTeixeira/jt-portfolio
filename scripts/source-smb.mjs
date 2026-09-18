@@ -129,7 +129,8 @@ async function main() {
           if (args.dryRun) { stats.sourced += 1; continue; }
           const up = await upsertOutboundProspect({
             email, name: biz.name, company: biz.name, title: trade, vertical: s.vertical, phone: biz.phone,
-            channel: 'places', score: s.score, tier: s.tier, reason: s.reason, opener: s.opener, verifyStatus,
+            channel: 'places', score: s.score, tier: s.tier, reason: s.reason, opener: s.opener,
+            automations: s.automations, verifyStatus,
           });
           if (!up.ok) { console.error(`[smb] upsert failed ${email}: ${up.error}`); continue; }
           if (up.data.existed) stats.updated += 1; else stats.sourced += 1;
