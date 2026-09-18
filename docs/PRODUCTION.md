@@ -87,9 +87,18 @@ Activation (recommended before heavy traffic, optional for first payment):
 
 > Note: the shipped implementation uses the Upstash REST API directly (`UPSTASH_REDIS_REST_*`), **not** the `@vercel/kv` wrapper. Do not set `KV_REST_API_*` — those names are not read by the code.
 
-## Deliverability — TODO (hard gate before enabling nurture)
+## Deliverability — DONE ✓ (transactional); outbound domain still recommended
 
-Verify the Resend sending domain (SPF, DKIM, DMARC) **before** flipping `NURTURE_ENABLED=true`. Sending unauthenticated mail at volume is how a domain lands in spam/blocklists — and once that happens, transactional email (proposal links, receipts, portal links) degrades too, not just nurture. See `docs/NURTURE.md` §4 (kill switch) and §6 (deliverability gate) for the full checklist and rollout sequencing.
+The Resend sending domain (`sageideas.dev`) is **verified** (SPF/DKIM/DMARC) and `RESEND_FROM`
+is set — `/api/health` reports `resend:true` and `email_domain:true`, so scoped-plan emails,
+receipts, portal links, and nurture all deliver from an authenticated domain. `NURTURE_ENABLED`
+is on. (Historical note: this section previously read "TODO" — that was stale; the domain has
+since been verified. Always trust `/api/health` over this doc.)
+
+**Still recommended before scaling COLD outbound:** authenticate a *separate* subdomain (e.g.
+`mail.sageideas.dev`) and set `OUTBOUND_FROM` to it, so cold volume can't damage the
+transactional domain's reputation. Run `npm run outbound:preflight` to confirm. See the
+"Outbound engine & deliverability" section below.
 
 ## The live E2E test — DONE ✓ (script), run manually
 
@@ -132,11 +141,11 @@ Enable Point-in-Time Recovery (PITR) on the Supabase project and **test a restor
 | Dependency scanning | DONE ✓ — Dependabot, weekly |
 | Live E2E money-path script | DONE ✓ — `scripts/e2e-moneypath.mjs`, run manually |
 | CI (unit + Playwright + Lighthouse) | DONE ✓ — already wired |
-| Error tracking (Sentry) | TODO — needs `SENTRY_DSN` |
+| Error tracking (Sentry) | DONE ✓ — `SENTRY_DSN` set; `/api/health` reports `sentry:true` |
 | Uptime monitoring | TODO — needs UptimeRobot/BetterStack account |
 | Stripe webhook failure alerts | TODO — flip on in Stripe Dashboard |
-| Durable rate limiting | DONE (code) — activate with `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`; in-memory fallback otherwise |
-| Resend domain auth (SPF/DKIM/DMARC) | TODO — hard gate before `NURTURE_ENABLED=true` |
+| Durable rate limiting | DONE ✓ — Upstash configured in prod (`/api/health` `rate_limit_backed:true`); caps are durable, not soft |
+| Resend domain auth (SPF/DKIM/DMARC) | DONE ✓ — sageideas.dev verified in Resend; `RESEND_FROM` set; `/api/health` reports `email_domain:true` |
 | Outbound engine (Apollo→verify→score→CRM) | DONE (code) — activate with `APOLLO_API_KEY` (+ optional `ZEROBOUNCE_API_KEY`, `LLM_*`) |
 | Cold outbound sequencer | DONE (code) — gated on `OUTBOUND_ENABLED=true` + a distinct `OUTBOUND_FROM` domain |
 | Backups / DR | TODO — needs Supabase Pro PITR + a tested restore |
