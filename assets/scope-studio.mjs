@@ -5,6 +5,7 @@
 // Defines window.__renderScopePlan (blueprint + HUD + itemized plan) directly.
 
 import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER, CARD_BY_KEY } from './scope-core.mjs';
+import { locPhase, locCardName, locCardWhy, locEffort, locQPrompt, locOptLabel, locDisclaimer } from './scope-i18n.mjs?v=20260918a';
 
 const TRACK_COLOR = { 'AI Build': '#22d3ee', 'Eval & QA': '#a78bfa', 'Test Automation': '#10b981', 'Automation': '#F59E0B', 'Product': '#8FA0FF' };
 const PHASE_COLOR = { audit: '#8FA0FF', build: '#22d3ee', gate: '#a78bfa', operate: '#10b981' };
@@ -177,7 +178,7 @@ function buildBlueprint(plan) {
   cols.forEach((col, ci) => {
     const sx = colX[ci];
     parts.push(`<circle cx="${sx}" cy="${midY}" r="3" fill="${PHASE_COLOR[col.phase]}" class="bp-station"/>`);
-    parts.push(`<text x="${sx}" y="${midY + 24}" text-anchor="middle" class="bp-phase" fill="${PHASE_COLOR[col.phase]}">${esc(col.label).toUpperCase()}</text>`);
+    parts.push(`<text x="${sx}" y="${midY + 24}" text-anchor="middle" class="bp-phase" fill="${PHASE_COLOR[col.phase]}">${esc(locPhase(col.phase, col.label, LANG)).toUpperCase()}</text>`);
     col.items.forEach((it, k) => {
       const up = k % 2 === 0;
       const tier = Math.floor(k / 2);
@@ -262,11 +263,11 @@ window.__renderScopePlan = function (plan) {
 
   const phaseCards = plan.phases.map((p) => `
     <div class="plan-phase">
-      <div class="plan-phase-h" style="color:${PHASE_COLOR[p.phase]}"><span class="pp-dot" style="background:${PHASE_COLOR[p.phase]}"></span>${esc(p.label)} <span class="pp-band">${band(p.band)}</span></div>
+      <div class="plan-phase-h" style="color:${PHASE_COLOR[p.phase]}"><span class="pp-dot" style="background:${PHASE_COLOR[p.phase]}"></span>${esc(locPhase(p.phase, p.label, LANG))} <span class="pp-band">${band(p.band)}</span></div>
       ${p.items.map((i) => `
         <div class="plan-item" style="--tc:${trackColor(i.track)}">
-          <div class="pi-main"><div class="pi-name">${esc(i.name)}</div><div class="pi-why">${esc(i.why)}</div></div>
-          <div class="pi-price">${band(i.band)}<span class="pi-eff">${esc(i.effort)}</span></div>
+          <div class="pi-main"><div class="pi-name">${esc(locCardName(i, LANG))}</div><div class="pi-why">${esc(locCardWhy(i, LANG))}</div></div>
+          <div class="pi-price">${band(i.band)}<span class="pi-eff">${esc(locEffort(i.effort, LANG))}</span></div>
         </div>`).join('')}
     </div>`).join('');
 
@@ -295,7 +296,7 @@ function optionColor(o) {
 }
 
 if (root && qMount && planMount && disc) {
-  disc.textContent = DISCLAIMER;
+  disc.textContent = locDisclaimer(LANG, DISCLAIMER);
   const answers = {};
   let planTrackTimer = 0;
   // A capability-key selection applied by the AI chat (assets/scope-chat.mjs),
@@ -556,14 +557,14 @@ if (root && qMount && planMount && disc) {
       const on = sel.includes(o.id);
       return `<button type="button" class="scope-opt${on ? ' is-on' : ''}" role="${role}" data-q="${q.id}" data-id="${o.id}" data-multi="${multi}" aria-checked="${on}" tabindex="-1" style="--tc:${optionColor(o)}">
           <span class="opt-mark" aria-hidden="true"></span>
-          <span class="opt-label">${esc(o.label)}</span>
+          <span class="opt-label">${esc(locOptLabel(q.id, o, LANG))}</span>
         </button>`;
     }).join('');
     stage.innerHTML = `
       <div class="scope-step${stepEnterClass(dir)}" data-step="${i}">
-        <h2 class="sf-prompt" id="sf-prompt" tabindex="-1">${esc(q.prompt)}</h2>
+        <h2 class="sf-prompt" id="sf-prompt" tabindex="-1">${esc(locQPrompt(q, LANG))}</h2>
         ${multi ? `<p class="sf-hint"><span class="sf-hint-ico" aria-hidden="true">${CHECK}</span>${UI.pick}</p>` : ''}
-        <div class="scope-opts ${multi ? 'is-multi' : 'is-single'}" role="${multi ? 'group' : 'radiogroup'}" aria-label="${esc(q.prompt)}">
+        <div class="scope-opts ${multi ? 'is-multi' : 'is-single'}" role="${multi ? 'group' : 'radiogroup'}" aria-label="${esc(locQPrompt(q, LANG))}">
           ${opts}
         </div>
         <div class="sf-nav">
@@ -732,7 +733,7 @@ if (root && qMount && planMount && disc) {
   }
 
   function planSummaryText(plan) {
-    const lines = plan.items.map((i) => `• ${i.name} · ${band(i.band)} (${i.effort})`);
+    const lines = plan.items.map((i) => `• ${locCardName(i, LANG)} · ${band(i.band)} (${locEffort(i.effort, LANG)})`);
     return `${L.summHead}\n\n${lines.join('\n')}\n\n${L.summTotal} ${band(plan.totalBand)} · ~${plan.timelineWeeks[0]}–${plan.timelineWeeks[1]} ${L.summWeeks}\n${L.summNote}\n\n${L.summShared} ${location.href}`;
   }
 
