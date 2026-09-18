@@ -1096,8 +1096,32 @@ function renderOverview(root) {
   apiGet('/api/intel').then((r) => {
     if (r.unauthorized || r.status >= 500) return; // stay quiet on failure — this is an overlay signal
     const j = r.json && r.json.ok ? r.json : null;
+
+    // ── Conversion funnel (server-truth from scope_* tables, ad-block-proof) ──
+    const fn = j && j.funnel;
+    if (fn && Array.isArray(fn.stages) && fn.stages.length) {
+      const top = Math.max(1, fn.stages[0].count || 0);
+      const RUNG = ['#22d3ee', '#38bdf8', '#818cf8', '#10b981'];
+      const fcard = h('div', { class: 'admin-card', style: 'margin-top:8px' });
+      fcard.appendChild(h('div', { style: 'display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px' },
+        h('span', { class: 'sec-label' }, 'conversion funnel'),
+        h('span', { class: 'subtle', style: 'font-size:11px;color:var(--faint)' }, `last ${fn.days} days`),
+        h('span', { class: 'mono', style: 'font-size:11.5px;color:#10b981;margin-left:auto' }, `${fn.overall}% visit→booked`)));
+      fn.stages.forEach((s, i) => {
+        const wpct = Math.max(2, Math.round(((s.count || 0) / top) * 100));
+        fcard.appendChild(h('div', { style: 'margin:7px 0' },
+          h('div', { style: 'display:flex;align-items:baseline;gap:8px;font-size:12.5px;margin-bottom:3px' },
+            h('span', { style: 'flex:1' }, s.label),
+            s.ofPrev != null ? h('span', { class: 'mono', style: 'font-size:11px;color:var(--faint)' }, `${s.ofPrev}%`) : null,
+            h('span', { class: 'mono', style: 'font-size:13px;font-weight:600' }, String(s.count))),
+          h('div', { style: 'height:8px;border-radius:5px;background:#17171d;overflow:hidden' },
+            h('div', { style: `height:100%;width:${wpct}%;border-radius:5px;background:${RUNG[i] || '#22d3ee'}` }))));
+      });
+      intelMount.appendChild(fcard);
+    }
+
     const actions = (j && j.actions) || [];
-    if (!actions.length && !(j && j.forecastCents)) return; // nothing to surface
+    if (!actions.length && !(j && j.forecastCents)) return; // nothing else to surface
     const card = h('div', { class: 'admin-card', style: 'margin-top:8px;border:1px solid rgba(244,63,94,.22)' });
     card.appendChild(h('div', { style: 'display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px' },
       h('span', { class: 'sec-label', style: 'color:#f43f5e' }, 'act now'),
