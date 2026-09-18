@@ -16,13 +16,13 @@ function band([lo, hi]) { return money(lo) + '–' + money(hi); }
 function trackColor(t) { return TRACK_COLOR[t] || '#8E8882'; }
 function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
-/* ── UI chrome localization ────────────────────────────────────────────────
-   Only the CHROME rendered by this controller is localized (nav, progress,
-   review panel, HUD labels, lead statuses, proposal, share summary). The
-   QUESTION CONTENT — segment/capability names + why-text from scope-core.mjs
-   (QUESTIONS / RATE_CARD) — is English across all locales today; translating
-   that is a separate, larger content job and is intentionally left untouched.
-   Keyed off <html lang>, falling back to English for any unknown locale. */
+/* ── Localization ──────────────────────────────────────────────────────────
+   Two layers, both keyed off <html lang> with English fallback:
+   • STRINGS (below) — the UI CHROME this controller renders (nav, progress,
+     review panel, HUD labels, lead statuses, proposal, share summary).
+   • scope-i18n.mjs — the QUESTION CONTENT (prompts, option labels, capability
+     names + why-text, phase/segment labels, disclaimer). scope-core.mjs stays
+     the English source of truth for pricing/keys; only the display is localized. */
 const LANG = (document.documentElement.lang || 'en').slice(0, 2).toLowerCase();
 const STRINGS = {
   en: {
