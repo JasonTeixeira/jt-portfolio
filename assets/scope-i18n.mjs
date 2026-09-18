@@ -85,6 +85,17 @@ export const SCOPE_I18N = {
       backend: { name: 'APIs y backends', why: 'La capa de servicios de la que depende todo lo demás.' },
       dashboards: { name: 'Dashboards y visualización de datos', why: 'Convierte tus datos en una decisión, no en un CSV.' },
     },
+    services: {
+      'opt-build-ai': { title: 'Asistentes y agentes de IA', sub: 'Chatbots, RAG, copilotos' },
+      'opt-voice': { title: 'Voz IA y recepción', sub: 'Atiende cada llamada, 24/7' },
+      'opt-product': { title: 'Sitios web y apps', sub: 'Portales, herramientas, plataformas' },
+      'opt-automate': { title: 'Automatización de flujos', sub: 'Elimina el trabajo manual' },
+      'opt-leads': { title: 'Captura de prospectos', sub: 'No pierdas ningún prospecto' },
+      'opt-data': { title: 'Datos y dashboards', sub: 'Convierte datos en decisiones' },
+      'opt-eval': { title: 'Evaluación y QA de IA', sub: 'Demuestra que funciona, gate en CI' },
+      'opt-safety': { title: 'Seguridad y guardrails de IA', sub: 'Frena alucinaciones y fugas' },
+      'opt-e2e': { title: 'Automatización de pruebas', sub: 'Lanza sin romper nada' },
+    },
   },
   pt: {
     effortUnit: 'sem',
@@ -163,6 +174,17 @@ export const SCOPE_I18N = {
       backend: { name: 'APIs e backends', why: 'A camada de serviços da qual todo o resto depende.' },
       dashboards: { name: 'Dashboards e visualização de dados', why: 'Transforme seus dados em uma decisão, não em um CSV.' },
     },
+    services: {
+      'opt-build-ai': { title: 'Assistentes e agentes de IA', sub: 'Chatbots, RAG, copilotos' },
+      'opt-voice': { title: 'Voz IA e recepção', sub: 'Atenda todas as chamadas, 24/7' },
+      'opt-product': { title: 'Sites e web apps', sub: 'Portais, ferramentas, plataformas' },
+      'opt-automate': { title: 'Automação de fluxos', sub: 'Acabe com o trabalho manual' },
+      'opt-leads': { title: 'Captura de leads', sub: 'Nunca perca um lead' },
+      'opt-data': { title: 'Dados e dashboards', sub: 'Transforme dados em decisões' },
+      'opt-eval': { title: 'Avaliação e QA de IA', sub: 'Prove que funciona, gate no CI' },
+      'opt-safety': { title: 'Segurança e guardrails de IA', sub: 'Barre alucinações e vazamentos' },
+      'opt-e2e': { title: 'Automação de testes', sub: 'Publique sem quebrar nada' },
+    },
   },
 };
 
@@ -200,4 +222,8 @@ export function locOptLabel(qid, opt, lang) {
 export function locDisclaimer(lang, fallback) {
   const t = pack(lang);
   return (t && t.disclaimer) || fallback;
+}
+export function locService(need, field, fallback, lang) {
+  const t = pack(lang);
+  return (t && t.services && t.services[need] && t.services[need][field]) || fallback;
 }

@@ -5,7 +5,7 @@
 // Defines window.__renderScopePlan (blueprint + HUD + itemized plan) directly.
 
 import { QUESTIONS, keysFromAnswers, computePlan, encodeKeys, decodeKeys, DISCLAIMER, CARD_BY_KEY } from './scope-core.mjs';
-import { locPhase, locCardName, locCardWhy, locEffort, locQPrompt, locOptLabel, locDisclaimer } from './scope-i18n.mjs?v=20260918b';
+import { locPhase, locCardName, locCardWhy, locEffort, locQPrompt, locOptLabel, locDisclaimer, locService } from './scope-i18n.mjs?v=20260918c';
 
 const TRACK_COLOR = { 'AI Build': '#22d3ee', 'Eval & QA': '#a78bfa', 'Test Automation': '#10b981', 'Automation': '#F59E0B', 'Product': '#8FA0FF' };
 const PHASE_COLOR = { audit: '#8FA0FF', build: '#22d3ee', gate: '#a78bfa', operate: '#10b981' };
@@ -52,6 +52,7 @@ const STRINGS = {
     readItToMe: 'Read it to me', stopReading: 'Stop reading',
     acceptWriting: 'Accept &amp; get it in writing &rarr;', bookCall: 'Book a 15-min call',
     copied: 'Copied', copyLink: 'Copy shareable link',
+    servicesHead: 'What do you want to build?', servicesSub: 'Pick one for an instant priced plan — add more as you go, or take the guided path below.',
   },
   es: {
     back: 'Atrás', next: 'Continuar', see: 'Ver mi plan', edit: 'Editar respuestas',
@@ -80,6 +81,7 @@ const STRINGS = {
     readItToMe: 'Léemelo', stopReading: 'Detener lectura',
     acceptWriting: 'Aceptar y recibirlo por escrito &rarr;', bookCall: 'Reserva una llamada de 15 min',
     copied: 'Copiado', copyLink: 'Copiar enlace para compartir',
+    servicesHead: '¿Qué quieres construir?', servicesSub: 'Elige uno para ver un plan con precio al instante — agrega más sobre la marcha, o sigue la ruta guiada de abajo.',
   },
   pt: {
     back: 'Voltar', next: 'Continuar', see: 'Ver meu plano', edit: 'Editar respostas',
@@ -108,6 +110,7 @@ const STRINGS = {
     readItToMe: 'Leia para mim', stopReading: 'Parar leitura',
     acceptWriting: 'Aceitar e receber por escrito &rarr;', bookCall: 'Agende uma ligação de 15 min',
     copied: 'Copiado', copyLink: 'Copiar link para compartilhar',
+    servicesHead: 'O que você quer construir?', servicesSub: 'Escolha um para ver um plano com preço na hora — adicione mais ao longo do caminho, ou siga o caminho guiado abaixo.',
   },
 };
 const L = STRINGS[LANG] || STRINGS.en;
@@ -318,6 +321,25 @@ if (root && qMount && planMount && disc) {
   let step = 0;
   let advTimer = 0;
 
+  // ── Service net: a visible menu of everything you can scope, shown on the landing.
+  // The scoping engine already prices this whole range; this surfaces it so a visitor
+  // sees the breadth (websites, automation, leads, AI, data, QA…) instead of it being
+  // hidden behind "answer 3 questions". Each tile is a quick-start — clicking it enters
+  // the flow with that need preselected and an instant priced plan; segment/maturity stay
+  // available to refine. `need` maps to a QUESTIONS['needs'] option id; title/sub localize
+  // via scope-i18n (locService), falling back to the English source here.
+  const SERVICES = [
+    { need: 'opt-build-ai', title: 'AI assistants & agents', sub: 'Chatbots, RAG, copilots', icon: '<path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/>' },
+    { need: 'opt-voice', title: 'AI voice & front desk', sub: 'Answer every call, 24/7', icon: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>' },
+    { need: 'opt-product', title: 'Websites & web apps', sub: 'Portals, tools, platforms', icon: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>' },
+    { need: 'opt-automate', title: 'Workflow automation', sub: 'Kill the manual busywork', icon: '<path d="M4 6h9M4 12h16M4 18h9"/><circle cx="17" cy="6" r="2.4"/><circle cx="17" cy="18" r="2.4"/>' },
+    { need: 'opt-leads', title: 'Lead capture systems', sub: 'Never miss a lead', icon: '<path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/>' },
+    { need: 'opt-data', title: 'Data & dashboards', sub: 'Turn data into decisions', icon: '<path d="M3 3v18h18"/><path d="M8 15v2M13 9v8M18 5v12"/>' },
+    { need: 'opt-eval', title: 'AI evaluation & QA', sub: 'Prove it works, gate CI', icon: '<path d="M21 12a9 9 0 1 1-4.5-7.8"/><path d="M9 11.5l2.5 2.5L21 5"/>' },
+    { need: 'opt-safety', title: 'AI safety & guardrails', sub: 'Stop hallucinations & leaks', icon: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>' },
+    { need: 'opt-e2e', title: 'Test automation', sub: 'Ship without breaking', icon: '<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>' },
+  ];
+
   // entry chooser: the two cards reuse #scope-mode-quick / #scope-mode-chat so
   // scope-chat.mjs's setMode() wiring (hidden toggles + aria-pressed + openChat) still fires.
   const quickCard = document.getElementById('scope-mode-quick');
@@ -350,6 +372,7 @@ if (root && qMount && planMount && disc) {
   rehydrateFromUrl();
   renderPlan();
   wireEntry();
+  renderServices();
   maybeAutoEnter();
 
   function wireEntry() {
@@ -366,6 +389,47 @@ if (root && qMount && planMount && disc) {
     if (quickCard) quickCard.setAttribute('aria-pressed', 'true');
     if (chatCard) chatCard.setAttribute('aria-pressed', 'false');
     if (focusFirst !== false) setTimeout(focusPrompt, REDUCED ? 0 : 60);
+  }
+
+  // Render the landing service net + wire each tile as a quick-start.
+  function renderServices() {
+    const mount = document.getElementById('scope-services');
+    if (!mount) return;
+    const head = document.getElementById('scope-services-head');
+    if (head) head.textContent = L.servicesHead || 'What do you want to build?';
+    const sub = document.getElementById('scope-services-sub');
+    if (sub) sub.textContent = L.servicesSub || 'Pick one for an instant priced plan — add more as you go.';
+    mount.innerHTML = SERVICES.map((s) => `
+      <button type="button" class="scope-svc" data-need="${s.need}" style="--tc:${optionColor({ keys: (CARD_BY_KEY.get(needFirstKey(s.need)) ? [needFirstKey(s.need)] : []) })}">
+        <span class="svc-ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg></span>
+        <span class="svc-txt"><span class="svc-title">${esc(locService(s.need, 'title', s.title, LANG))}</span><span class="svc-sub">${esc(locService(s.need, 'sub', s.sub, LANG))}</span></span>
+        <span class="svc-go" aria-hidden="true">${ARROW_R}</span>
+      </button>`).join('');
+    mount.querySelectorAll('.scope-svc').forEach((b) => b.addEventListener('click', () => quickStart(b.dataset.need)));
+  }
+
+  // The lead capability behind a needs option — used only to tint the service tile.
+  function needFirstKey(needId) {
+    const q = QUESTIONS.find((x) => x.id === 'needs');
+    const o = q && q.options.find((op) => op.id === needId);
+    return o && o.keys && o.keys[0];
+  }
+
+  // Quick-start: pick a service on the landing → enter the flow at the "needs" step with
+  // that option preselected and an instant plan assembled on the right. Segment/maturity
+  // stay reachable (Back), so nothing is lost — it's just a faster on-ramp.
+  function quickStart(need) {
+    if (!need) return;
+    chatKeys = null; chatSegment = null;
+    answers.needs = [need];
+    if (entryEl) entryEl.hidden = true;
+    enterQuick(false);
+    const idx = QUESTIONS.findIndex((q) => q.id === 'needs');
+    if (idx >= 0) renderStep(idx, 1);
+    renderPlan();
+    track('quickstart', { need });
+    const canvas = document.getElementById('scope-canvas');
+    if (canvas) canvas.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
   }
 
   // step-0 Back returns to the chooser so the visitor can switch to Nadine.
