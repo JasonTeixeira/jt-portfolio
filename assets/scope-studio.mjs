@@ -539,6 +539,7 @@ if (root && qMount && planMount && disc) {
           email,
           prospectId: prospectId(),
           source: 'scope-studio',
+          lang: LANG,
           feature: hasPlan ? plan.items.map((i) => i.name).join(', ') : 'scoping',
           plan: { keys, segment: plan.segment, total: plan.totalBand },
         }),
