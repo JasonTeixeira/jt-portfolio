@@ -177,6 +177,68 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllGroups(panel); });
   }
 
+  // ── Honest language switcher ────────────────────────────────────────────
+  // Every page ships a fixed EN·ES·PT switcher ([data-i18n]), but only a subset
+  // of pages are translated. Hide the ES and/or PT link when the current page
+  // has no translation in that locale, so the switcher never links to a 404.
+  // The active locale (current page) and EN always stay. Fail-safe: if the
+  // manifest is missing or unfetchable, the switcher is left exactly as authored.
+  function switcherLocale(el) {
+    var t = (el.textContent || '').trim().toUpperCase();
+    return t === 'EN' ? 'en' : t === 'ES' ? 'es' : t === 'PT' ? 'pt' : null;
+  }
+  function isSwitcherItem(el) {
+    // A locale is either a link (<a>) or the active label (<span aria-current>).
+    return el.tagName === 'A' || (el.tagName === 'SPAN' && el.hasAttribute('aria-current'));
+  }
+  function isSwitcherSep(el) {
+    // Separators are plain <span>·</span> without aria-current.
+    return el.tagName === 'SPAN' && !el.hasAttribute('aria-current');
+  }
+  function gateSwitcher(box, pages) {
+    var kids = Array.prototype.slice.call(box.children);
+    var items = kids.filter(isSwitcherItem);
+    var seps = kids.filter(isSwitcherSep);
+    if (items.length < 2) return;
+    var active = navLoc();
+    var current = baseName(location.pathname);
+    var hasEs = Array.isArray(pages.es) && pages.es.indexOf(current) !== -1;
+    var hasPt = Array.isArray(pages.pt) && pages.pt.indexOf(current) !== -1;
+    function keep(loc) {
+      if (loc === 'en' || loc === active) return true; // EN + current locale always stay
+      if (loc === 'es') return hasEs;
+      if (loc === 'pt') return hasPt;
+      return true; // unknown label — leave it alone
+    }
+    var kept = [];
+    items.forEach(function (el) {
+      var loc = switcherLocale(el);
+      if (loc && !keep(loc)) { el.hidden = true; el.style.display = 'none'; }
+      else kept.push(el);
+    });
+    if (kept.length === items.length) return; // nothing hidden — leave markup untouched
+    // Re-thread separators: hide them all, then place exactly one before each
+    // surviving item after the first, so none dangle at the ends.
+    seps.forEach(function (s) { s.hidden = true; s.style.display = 'none'; });
+    for (var i = 0; i < kept.length - 1 && i < seps.length; i++) {
+      var sep = seps[i];
+      sep.hidden = false; sep.style.display = '';
+      box.insertBefore(sep, kept[i + 1]);
+    }
+  }
+  function initSwitcher() {
+    var boxes = document.querySelectorAll('[data-i18n]');
+    if (!boxes.length) return;
+    fetch('/assets/i18n-pages.json')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (pages) {
+        if (!pages) return;
+        for (var i = 0; i < boxes.length; i++) gateSwitcher(boxes[i], pages);
+      })
+      .catch(function () { /* manifest unavailable — leave switcher untouched */ });
+  }
+
   var navs = document.querySelectorAll('.site-nav');
   for (var i = 0; i < navs.length; i++) { initNav(navs[i]); groupNav(navs[i]); injectAuth(navs[i]); }
+  initSwitcher();
 })();
