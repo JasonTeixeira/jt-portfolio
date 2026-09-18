@@ -27,6 +27,16 @@ import { isEnabled as verifyEnabled, verifyEmail } from '../lib/lead-verify.mjs'
 import { isEnabled as llmEnabled, scoreBusiness } from '../lib/lead-score.mjs';
 import { isEnabled as dbEnabled, upsertOutboundProspect } from '../lib/scope-db.mjs';
 
+// The AI front desk is delivered remotely, so geography is irrelevant to fulfillment — we
+// source by VERTICAL nationwide. These are high-density US metros for maximum match volume;
+// --metros "all" (or "nationwide") sweeps all of them, biggest markets first.
+const TOP_METROS = [
+  'Houston, TX', 'Dallas, TX', 'Phoenix, AZ', 'Los Angeles, CA', 'Chicago, IL',
+  'Atlanta, GA', 'Miami, FL', 'Tampa, FL', 'Orlando, FL', 'San Antonio, TX',
+  'Charlotte, NC', 'Denver, CO', 'Las Vegas, NV', 'Nashville, TN', 'Austin, TX',
+  'Jacksonville, FL', 'Columbus, OH', 'Indianapolis, IN', 'San Diego, CA', 'Sacramento, CA',
+];
+
 function parseArgs(argv) {
   const a = { vertical: null, config: null, metros: null, limit: 50, minScore: 0, dryRun: false, verify: true };
   for (let i = 0; i < argv.length; i += 1) {
@@ -49,7 +59,14 @@ function loadConfig(args) {
     try { cfg = { ...cfg, ...JSON.parse(readFileSync(path, 'utf8')) }; }
     catch (e) { console.error(`[smb] could not read ${path}: ${e.message}`); }
   }
-  if (args.metros) cfg.metros = args.metros.split(';').map((s) => s.trim()).filter(Boolean);
+  if (args.metros) {
+    const m = args.metros.trim().toLowerCase();
+    cfg.metros = (m === 'all' || m === 'nationwide')
+      ? TOP_METROS
+      : args.metros.split(';').map((s) => s.trim()).filter(Boolean);
+  }
+  // Config metros of ["nationwide"] / ["all"] also expand to the full metro sweep.
+  if (cfg.metros.length === 1 && /^(all|nationwide)$/i.test(cfg.metros[0])) cfg.metros = TOP_METROS;
   return cfg;
 }
 
