@@ -218,15 +218,15 @@ function outboundAutomationList(prospect) {
 export function outbound1Email({ prospect, siteUrl, unsubscribeUrl }) {
   const first = firstName(prospect);
   const autos = outboundAutomationList(prospect);
-  const subject = 'an AI setup idea for your business';
-  const heading = 'AI that catches the calls, texts & follow-ups you\'re missing';
+  const subject = `a thought for ${prospect && prospect.company ? String(prospect.company).slice(0, 60) : 'your business'}`;
+  const heading = 'A quieter way to stop losing work to missed calls';
   const paras = [
     _esc(outboundOpener(prospect)),
-    autos ? _esc(`For a business like yours I'd start with: ${autos}. It plugs into what you already use and runs in the background.`) : 'It plugs into what you already use and runs in the background — no new software for your team to learn.',
-    `Want to see a custom plan built for your business? It takes about 2 minutes and there's no cost and no call — you'll get an itemized breakdown on the spot. Or just reply and I'll walk you through it.`,
+    autos ? _esc(`For a business like yours that usually looks like: ${autos} — all running quietly in the background, nothing for your team to learn.`) : 'It runs quietly in the background — nothing for your team to learn.',
+    `To be clear, I'm not trying to get you on a call or sell you anything today. If you're ever curious what it'd look like for your business, you can see it and get a no-cost breakdown on your own time here — completely self-serve. And if it's not for you, no worries at all.`,
   ];
-  const text = `${outboundOpener(prospect)}\n\n${autos ? `For a business like yours I'd start with: ${autos}. ` : ''}It plugs into what you already use and runs in the background.\n\nSee how it works — a 2-min demo and a scoped quote for your business (no cost, no call): ${siteUrl}/automations/\n\nOr just reply and I'll walk you through it.` + footer(unsubscribeUrl);
-  const html = htmlEmail({ preheader: 'See how it works — a 2-min demo and a scoped quote, no cost.', heading, paras, ctaText: 'See how it works', ctaUrl: `${siteUrl}/automations/`, altText: 'Or just reply to this email.', altUrl: `${siteUrl}/automations/`, unsubscribeUrl });
+  const text = `${outboundOpener(prospect)}\n\n${autos ? `For a business like yours that usually looks like: ${autos}. ` : ''}It runs quietly in the background.\n\nI'm not after a call — if you're ever curious, you can see it and get a no-cost breakdown on your own time: ${siteUrl}/automations/\n\nIf it's not for you, no worries at all. And feel free to just reply if a question comes up.` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'No call, no pitch — see it on your own time, only if it\'s useful.', heading, paras, ctaText: 'See it on your own time', ctaUrl: `${siteUrl}/automations/`, altText: 'Or just reply if a question comes up.', altUrl: `${siteUrl}/automations/`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }
 
@@ -234,29 +234,29 @@ export function outbound1Email({ prospect, siteUrl, unsubscribeUrl }) {
 export function outbound2Email({ prospect, siteUrl, unsubscribeUrl }) {
   const first = firstName(prospect);
   const autos = outboundAutomationList(prospect);
-  const subject = 'the leads slipping through the cracks';
-  const heading = 'Every missed call and slow reply is a lost customer';
+  const subject = 'following up gently';
+  const heading = 'No pressure — just leaving this here';
   const paras = [
-    `${first ? first + ', f' : 'F'}ollowing up on my note. The businesses that win right now aren't the ones with the best ad — they're the ones that answer first and never let a lead go cold.`,
-    autos ? _esc(`That's exactly what the setup I'd build does for you: ${autos}. It works 24/7 so nothing slips through while you're on a job or after hours.`) : 'That\'s exactly what AI automation does — answers every call and text, follows up instantly, and books the work, 24/7, so nothing slips through while you\'re busy.',
-    'The fastest way to see it: build your custom plan in 2 minutes and you\'ll get an itemized breakdown for your business. No cost, no call.',
+    `${first ? first + ', j' : 'J'}ust following up once in case my last note got buried — I know how it goes.`,
+    autos ? _esc(`The idea is simple: ${autos}, working 24/7 so a lead never slips through while you're busy or after hours. Most owners are surprised how much quiet revenue that recovers.`) : 'The idea is simple: answer every call and message, follow up instantly, and book the work automatically — so nothing slips through while you\'re busy.',
+    'No call needed and nothing to buy — if you\'re curious, you can look at it on your own time and get a no-cost breakdown for your business. Totally up to you.',
   ];
-  const text = `${paras.join('\n\n')}\n\nSee how it works (2-min demo + scoped quote, no cost): ${siteUrl}/automations/\n\nOr just reply here.` + footer(unsubscribeUrl);
-  const html = htmlEmail({ preheader: 'Answer first, never let a lead go cold.', heading, paras, ctaText: 'See how it works', ctaUrl: `${siteUrl}/automations/`, altText: 'Or just reply here.', altUrl: `${siteUrl}/automations/`, unsubscribeUrl });
+  const text = `${paras.join('\n\n')}\n\nLook whenever it suits you (no cost, no call): ${siteUrl}/automations/\n\nOr just reply here.` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'No pressure — look on your own time, only if you\'re curious.', heading, paras, ctaText: 'See it on your own time', ctaUrl: `${siteUrl}/automations/`, altText: 'Or just reply here.', altUrl: `${siteUrl}/automations/`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }
 
 // Touch 3 — soft close; the funnel + a reply are both one click away.
 export function outbound3Email({ prospect, siteUrl, unsubscribeUrl }) {
   const first = firstName(prospect);
-  const subject = 'last note';
-  const heading = 'Last note — your custom plan is one click away';
+  const subject = "that's all from me";
+  const heading = "That's all from me — no more emails";
   const paras = [
-    `${first ? first + ", I" : 'I'}'ll stop here so I'm not cluttering your inbox.`,
-    'If getting more done without hiring — answering every lead, booking the work, following up automatically — is ever on your plate, your custom plan is ready whenever you want it. Two minutes, no cost, no call.',
-    'Either way, wishing you a great rest of the year.',
+    `${first ? first + ", I" : 'I'}'ll leave you to it — I won't keep emailing.`,
+    'If a day ever comes where answering every lead, booking the work, and following up automatically would take something off your plate, the door\'s open. You can look on your own time, no cost and no call, whenever it suits you — or not at all, genuinely no worries.',
+    'Either way, I hope business is good. Take care.',
   ];
-  const text = `${paras.join('\n\n')}\n\nSee how it works whenever it's useful: ${siteUrl}/automations/\n\nOr just reply here.` + footer(unsubscribeUrl);
-  const html = htmlEmail({ preheader: 'See how it works whenever you want.', heading, paras, ctaText: 'See how it works', ctaUrl: `${siteUrl}/automations/`, altText: 'Or just reply here.', altUrl: `${siteUrl}/automations/`, unsubscribeUrl });
+  const text = `${paras.join('\n\n')}\n\nWhenever it suits you: ${siteUrl}/automations/\n\nOr just reply here.` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'That\'s all from me — the door\'s open whenever it suits you.', heading, paras, ctaText: 'Look whenever it suits you', ctaUrl: `${siteUrl}/automations/`, altText: 'Or just reply here.', altUrl: `${siteUrl}/automations/`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }
