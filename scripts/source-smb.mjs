@@ -23,6 +23,7 @@
 import { readFileSync } from 'node:fs';
 import { isEnabled as placesEnabled, searchBusinesses } from '../lib/places.mjs';
 import { isEnabled as hunterEnabled, findEmail } from '../lib/hunter.mjs';
+import { isEnabled as finderEnabled, findBusinessEmail } from '../lib/email-finder.mjs';
 import { isEnabled as verifyEnabled, verifyEmail } from '../lib/lead-verify.mjs';
 import { isEnabled as llmEnabled, scoreBusiness } from '../lib/lead-score.mjs';
 import { isEnabled as dbEnabled, upsertOutboundProspect } from '../lib/scope-db.mjs';
@@ -98,9 +99,8 @@ async function main() {
     console.error('[smb] need queries + metros (via --vertical <name> / --config <path> and --metros).');
     process.exit(1);
   }
-  const verifyMode = args.verify && verifyEnabled() ? 'zerobounce'
-    : (hunterEnabled() ? `hunter-confidence≥${MIN_HUNTER_CONFIDENCE} (free)` : 'off');
-  console.log(`[smb] places=on hunter=${hunterEnabled() ? 'on' : 'OFF (no emails)'} verify=${verifyMode} llm=${llmEnabled() ? 'on' : 'rule-based'} db=${dbEnabled() && !args.dryRun ? 'on' : (args.dryRun ? 'dry-run' : 'OFF')}`);
+  const finder = finderEnabled() ? 'findymail(pattern+verify)' : (hunterEnabled() ? 'hunter(crawl)' : 'OFF — no emails');
+  console.log(`[smb] places=on email-finder=${finder} llm=${llmEnabled() ? 'on' : 'rule-based'} db=${dbEnabled() && !args.dryRun ? 'on' : (args.dryRun ? 'dry-run' : 'OFF')}`);
   console.log(`[smb] ${cfg.queries.length} trades × ${cfg.metros.length} metro(s) · target ${args.limit} leads\n`);
 
   const stats = { seen: 0, noWebsite: 0, noEmail: 0, invalid: 0, belowScore: 0, sourced: 0, updated: 0, byTier: { A: 0, B: 0, C: 0 } };
@@ -121,20 +121,30 @@ async function main() {
 
           if (!biz.domain) { stats.noWebsite += 1; noWebsite.push({ name: biz.name, phone: biz.phone, trade }); continue; }
 
-          // 1. domain → email (capture Hunter's confidence — a FREE deliverability signal)
-          let email = null; let hunterConf = null;
-          if (hunterEnabled()) { const h = await findEmail(biz.domain); if (h.ok && h.data) { email = h.data.email; hunterConf = h.data.confidence; } }
+          // 1. find a VERIFIED email. Primary: pattern-guess + Findymail verify (works for local
+          //    SMBs, which B2B databases miss). Fallback: Hunter domain-crawl if configured.
+          let email = null; let verifyStatus = 'unverified';
+          if (finderEnabled()) {
+            const f = await findBusinessEmail(biz.domain);
+            if (!f.ok && /402|429/.test(f.error || '')) {
+              console.error('\n[smb] ⚠ Findymail is out of verifier credits — stopping here. Top up credits and re-run.\n');
+              break outer;
+            }
+            if (f.ok && f.data) { email = f.data.email; verifyStatus = `findymail-verified${f.data.provider ? '(' + f.data.provider + ')' : ''}`; }
+          }
+          if (!email && hunterEnabled()) {
+            const h = await findEmail(biz.domain);
+            if (h.ok && h.data && (h.data.confidence == null || h.data.confidence >= MIN_HUNTER_CONFIDENCE)) {
+              email = h.data.email; verifyStatus = `hunter-${h.data.confidence}`;
+            }
+          }
           if (!email) { stats.noEmail += 1; continue; }
 
-          // 2. deliverability gate. Prefer a paid verifier (ZeroBounce) if configured; otherwise
-          // fall back to Hunter's confidence score (FREE — already paid for) so we still drop
-          // low-quality addresses without any extra subscription.
-          let verifyStatus = hunterConf != null ? `hunter-${hunterConf}` : 'unverified';
+          // 2. optional second-pass verify (ZeroBounce) if a key is set — otherwise the email is
+          // already Findymail-verified above.
           if (args.verify && verifyEnabled()) {
             const v = await verifyEmail(email);
             if (v.ok) { verifyStatus = v.data.status; if (!v.data.deliverable) { stats.invalid += 1; continue; } }
-          } else if (hunterConf != null && hunterConf < MIN_HUNTER_CONFIDENCE) {
-            stats.invalid += 1; continue; // free gate: skip risky low-confidence emails
           }
 
           // 3. closeability score + AI-front-desk opener
