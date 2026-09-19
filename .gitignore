@@ -24,3 +24,6 @@ assets/shots/home-*.png
 assets/shots/docs-*.png
 scratchpad/
 backups/
+
+.env
+.env.local
