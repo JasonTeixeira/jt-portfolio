@@ -39,7 +39,8 @@
     "outbound:smb": "node scripts/source-smb.mjs",
     "outbound:export": "node scripts/export-leads.mjs",
     "outbound:push": "node scripts/outbound-push.mjs",
-    "outbound:send-now": "node scripts/send-now.mjs"
+    "outbound:send-now": "node scripts/send-now.mjs",
+    "outbound:launch": "node scripts/outbound-launch.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
