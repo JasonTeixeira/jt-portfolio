@@ -36,7 +36,8 @@
     "build:i18n": "node scripts/build-i18n-manifest.mjs",
     "outbound:preflight": "node scripts/deliverability-preflight.mjs",
     "outbound:source": "node scripts/source-leads.mjs",
-    "outbound:smb": "node scripts/source-smb.mjs"
+    "outbound:smb": "node scripts/source-smb.mjs",
+    "outbound:export": "node scripts/export-leads.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
