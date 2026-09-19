@@ -27,6 +27,10 @@ import { isEnabled as verifyEnabled, verifyEmail } from '../lib/lead-verify.mjs'
 import { isEnabled as llmEnabled, scoreBusiness } from '../lib/lead-score.mjs';
 import { isEnabled as dbEnabled, upsertOutboundProspect } from '../lib/scope-db.mjs';
 
+// When no paid verifier is configured, drop emails Hunter is less confident about than this
+// (0-100). Keeps deliverability safe for free. Tune via HUNTER_MIN_CONFIDENCE.
+const MIN_HUNTER_CONFIDENCE = Number(process.env.HUNTER_MIN_CONFIDENCE) || 40;
+
 // The AI front desk is delivered remotely, so geography is irrelevant to fulfillment — we
 // source by VERTICAL nationwide. These are high-density US metros for maximum match volume;
 // --metros "all" (or "nationwide") sweeps all of them, biggest markets first.
@@ -86,7 +90,9 @@ async function main() {
     console.error('[smb] need queries + metros (via --vertical <name> / --config <path> and --metros).');
     process.exit(1);
   }
-  console.log(`[smb] places=on hunter=${hunterEnabled() ? 'on' : 'OFF (no emails)'} verify=${args.verify && verifyEnabled() ? 'on' : 'off'} llm=${llmEnabled() ? 'on' : 'rule-based'} db=${dbEnabled() && !args.dryRun ? 'on' : (args.dryRun ? 'dry-run' : 'OFF')}`);
+  const verifyMode = args.verify && verifyEnabled() ? 'zerobounce'
+    : (hunterEnabled() ? `hunter-confidence≥${MIN_HUNTER_CONFIDENCE} (free)` : 'off');
+  console.log(`[smb] places=on hunter=${hunterEnabled() ? 'on' : 'OFF (no emails)'} verify=${verifyMode} llm=${llmEnabled() ? 'on' : 'rule-based'} db=${dbEnabled() && !args.dryRun ? 'on' : (args.dryRun ? 'dry-run' : 'OFF')}`);
   console.log(`[smb] ${cfg.queries.length} trades × ${cfg.metros.length} metro(s) · target ${args.limit} leads\n`);
 
   const stats = { seen: 0, noWebsite: 0, noEmail: 0, invalid: 0, belowScore: 0, sourced: 0, updated: 0, byTier: { A: 0, B: 0, C: 0 } };
@@ -107,16 +113,20 @@ async function main() {
 
           if (!biz.domain) { stats.noWebsite += 1; noWebsite.push({ name: biz.name, phone: biz.phone, trade }); continue; }
 
-          // 1. domain → email
-          let email = null;
-          if (hunterEnabled()) { const h = await findEmail(biz.domain); if (h.ok && h.data) email = h.data.email; }
+          // 1. domain → email (capture Hunter's confidence — a FREE deliverability signal)
+          let email = null; let hunterConf = null;
+          if (hunterEnabled()) { const h = await findEmail(biz.domain); if (h.ok && h.data) { email = h.data.email; hunterConf = h.data.confidence; } }
           if (!email) { stats.noEmail += 1; continue; }
 
-          // 2. verify deliverability
-          let verifyStatus = 'unverified';
+          // 2. deliverability gate. Prefer a paid verifier (ZeroBounce) if configured; otherwise
+          // fall back to Hunter's confidence score (FREE — already paid for) so we still drop
+          // low-quality addresses without any extra subscription.
+          let verifyStatus = hunterConf != null ? `hunter-${hunterConf}` : 'unverified';
           if (args.verify && verifyEnabled()) {
             const v = await verifyEmail(email);
             if (v.ok) { verifyStatus = v.data.status; if (!v.data.deliverable) { stats.invalid += 1; continue; } }
+          } else if (hunterConf != null && hunterConf < MIN_HUNTER_CONFIDENCE) {
+            stats.invalid += 1; continue; // free gate: skip risky low-confidence emails
           }
 
           // 3. closeability score + AI-front-desk opener
