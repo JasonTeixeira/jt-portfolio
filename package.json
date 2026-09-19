@@ -37,7 +37,8 @@
     "outbound:preflight": "node scripts/deliverability-preflight.mjs",
     "outbound:source": "node scripts/source-leads.mjs",
     "outbound:smb": "node scripts/source-smb.mjs",
-    "outbound:export": "node scripts/export-leads.mjs"
+    "outbound:export": "node scripts/export-leads.mjs",
+    "outbound:push": "node scripts/outbound-push.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
