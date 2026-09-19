@@ -1,0 +1,15 @@
+{
+  "lane": "smb",
+  "note": "Widest net across the highest-closeability verticals. Default metros US-nationwide; pass --metros global for worldwide (US + UK/Canada/Australia/etc). --limit caps total leads so cost stays bounded.",
+  "queries": [
+    "plumber", "HVAC contractor", "electrician", "roofing contractor", "garage door repair",
+    "water damage restoration", "pest control", "general contractor", "remodeling contractor",
+    "personal injury attorney", "family law firm", "criminal defense attorney", "immigration lawyer",
+    "real estate agency", "insurance agency", "mortgage broker",
+    "med spa", "cosmetic dentist", "dental clinic", "veterinary clinic",
+    "property management company", "accounting firm", "tax service",
+    "marketing agency", "web design agency", "financial advisor", "car dealership",
+    "home care agency", "auto repair shop", "cleaning service", "moving company", "landscaping company"
+  ],
+  "metros": ["nationwide"]
+}
