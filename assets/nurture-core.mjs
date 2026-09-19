@@ -207,43 +207,56 @@ function outboundOpener(prospect) {
   return `Hi${first ? ' ' + first : ''} — I help teams shipping AI features prove they actually work: LLM evals, adversarial safety testing, CI quality gates.`;
 }
 
+// Recommended automations the sourcer stored, as a short readable list (else '').
+function outboundAutomationList(prospect) {
+  const q = prospect && prospect.qualification;
+  const arr = q && Array.isArray(q.automations) ? q.automations : [];
+  return arr.map((a) => a && a.name).filter(Boolean).slice(0, 3).join(', ');
+}
+
+// Touch 1 — the tailored proposal + a push into the Scope funnel for a semi-custom plan.
 export function outbound1Email({ prospect, siteUrl, unsubscribeUrl }) {
-  const subject = 'proving your AI features actually work';
-  const heading = 'Do your AI features have proof, or just a demo?';
+  const first = firstName(prospect);
+  const autos = outboundAutomationList(prospect);
+  const subject = 'an AI setup idea for your business';
+  const heading = 'AI that catches the calls, texts & follow-ups you\'re missing';
   const paras = [
     _esc(outboundOpener(prospect)),
-    "Most AI ships on a demo and a prayer — looks great in the meeting, then a real user finds the one thing it gets wrong. I close that gap: evals, tests, and a gate that catches bad output before it ships. My own site runs its quality checks in public.",
-    "Want a free evaluation of one live AI feature? Reply with a URL and I'll send back real findings — verbatim transcripts, no cherry-picking, no call required.",
+    autos ? _esc(`For a business like yours I'd start with: ${autos}. It plugs into what you already use and runs in the background.`) : 'It plugs into what you already use and runs in the background — no new software for your team to learn.',
+    `Want to see a custom plan built for your business? It takes about 2 minutes and there's no cost and no call — you'll get an itemized breakdown on the spot. Or just reply and I'll walk you through it.`,
   ];
-  const text = `${outboundOpener(prospect)}\n\nMost AI ships on a demo and a prayer — looks great in the meeting, then a real user finds the one thing it gets wrong. I close that gap: evals, safety tests, and a CI gate that catches bad output before it ships.\n\nWant a free evaluation of one live AI feature? Reply with a URL and I'll send back real findings — no call required. Or see the method: ${siteUrl}/sample-report.html` + footer(unsubscribeUrl);
-  const html = htmlEmail({ preheader: 'A free evaluation of one live AI feature — real findings, no call.', heading, paras, ctaText: 'See a sample report', ctaUrl: `${siteUrl}/sample-report.html`, altText: 'Or scope a build:', altUrl: `${siteUrl}/build.html`, unsubscribeUrl });
+  const text = `${outboundOpener(prospect)}\n\n${autos ? `For a business like yours I'd start with: ${autos}. ` : ''}It plugs into what you already use and runs in the background.\n\nSee a custom plan for your business (2 min, no cost, no call): ${siteUrl}/build.html\n\nOr just reply and I'll walk you through it.` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'A custom AI-automation plan for your business — 2 minutes, no cost.', heading, paras, ctaText: 'See my custom plan', ctaUrl: `${siteUrl}/build.html`, altText: 'Or just reply to this email.', altUrl: `${siteUrl}/build.html`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }
 
+// Touch 2 — the cost of doing nothing + the funnel link again.
 export function outbound2Email({ prospect, siteUrl, unsubscribeUrl }) {
   const first = firstName(prospect);
-  const subject = 'the difference between shipped and proven';
-  const heading = 'Shipped is not the same as proven';
+  const autos = outboundAutomationList(prospect);
+  const subject = 'the leads slipping through the cracks';
+  const heading = 'Every missed call and slow reply is a lost customer';
   const paras = [
-    `${first ? first + ', a' : 'A'} quick, concrete example of what I mean by "proof."`,
-    "On one feature: hallucination rate on a golden set went from ~10% to under 1% after two assertions and a CI gate — every number backed by a test you can re-run, not a claim. That's the whole method: build the AI, then prove it with evidence a skeptic can check.",
-    "If you're shipping anything LLM-powered, a free evaluation of one live feature is the fastest way to see where it actually breaks. Reply with a URL.",
+    `${first ? first + ', f' : 'F'}ollowing up on my note. The businesses that win right now aren't the ones with the best ad — they're the ones that answer first and never let a lead go cold.`,
+    autos ? _esc(`That's exactly what the setup I'd build does for you: ${autos}. It works 24/7 so nothing slips through while you're on a job or after hours.`) : 'That\'s exactly what AI automation does — answers every call and text, follows up instantly, and books the work, 24/7, so nothing slips through while you\'re busy.',
+    'The fastest way to see it: build your custom plan in 2 minutes and you\'ll get an itemized breakdown for your business. No cost, no call.',
   ];
-  const text = `${paras.map((p) => p).join('\n\n')}\n\nThe method + a sample report: ${siteUrl}/sample-report.html\nScope a build: ${siteUrl}/build.html` + footer(unsubscribeUrl);
-  const html = htmlEmail({ preheader: 'Proof a skeptic can check — not a claim.', heading, paras, ctaText: 'See the method', ctaUrl: `${siteUrl}/sample-report.html`, altText: 'Or scope a project:', altUrl: `${siteUrl}/build.html`, unsubscribeUrl });
+  const text = `${paras.join('\n\n')}\n\nBuild your custom plan (2 min, no cost): ${siteUrl}/build.html\n\nOr just reply here.` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'Answer first, never let a lead go cold.', heading, paras, ctaText: 'Build my custom plan', ctaUrl: `${siteUrl}/build.html`, altText: 'Or just reply here.', altUrl: `${siteUrl}/build.html`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }
 
+// Touch 3 — soft close; the funnel + a reply are both one click away.
 export function outbound3Email({ prospect, siteUrl, unsubscribeUrl }) {
   const first = firstName(prospect);
-  const subject = "I'll leave you be — but the offer stands";
-  const heading = 'Last note — the free evaluation offer stands';
+  const subject = 'last note';
+  const heading = 'Last note — your custom plan is one click away';
   const paras = [
     `${first ? first + ", I" : 'I'}'ll stop here so I'm not cluttering your inbox.`,
-    "If proving your AI features is ever on your plate — before a launch, after an incident, or when a customer finds the one thing it gets wrong — the free evaluation offer is open. One live feature, real findings, no call required.",
-    "Either way, good luck with what you're building.",
+    'If getting more done without hiring — answering every lead, booking the work, following up automatically — is ever on your plate, your custom plan is ready whenever you want it. Two minutes, no cost, no call.',
+    'Either way, wishing you a great rest of the year.',
   ];
-  const text = `${paras.join('\n\n')}\n\nWhenever it's useful: ${siteUrl}/book.html` + footer(unsubscribeUrl);
-  const html = htmlEmail({ preheader: 'One live feature, real findings, no call required.', heading, paras, ctaText: 'Grab 15 minutes', ctaUrl: `${siteUrl}/book.html`, altText: 'Or see the method:', altUrl: `${siteUrl}/sample-report.html`, unsubscribeUrl });
+  const text = `${paras.join('\n\n')}\n\nBuild your custom plan whenever it's useful: ${siteUrl}/build.html\n\nOr just reply here.` + footer(unsubscribeUrl);
+  const html = htmlEmail({ preheader: 'Your custom plan is ready whenever you want it.', heading, paras, ctaText: 'Build my custom plan', ctaUrl: `${siteUrl}/build.html`, altText: 'Or just reply here.', altUrl: `${siteUrl}/build.html`, unsubscribeUrl });
   return { subject, text, html, headers: listUnsubHeaders(unsubscribeUrl) };
 }

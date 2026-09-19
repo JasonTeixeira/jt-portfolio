@@ -40,6 +40,14 @@ const TOP_METROS = [
   'Charlotte, NC', 'Denver, CO', 'Las Vegas, NV', 'Nashville, TN', 'Austin, TX',
   'Jacksonville, FL', 'Columbus, OH', 'Indianapolis, IN', 'San Diego, CA', 'Sacramento, CA',
 ];
+// International, English-speaking first (outreach is in English). --metros "global" sweeps
+// TOP_METROS + these for worldwide reach. Places works in every one (proven: London).
+const INTL_METROS = [
+  'London, UK', 'Manchester, UK', 'Birmingham, UK', 'Toronto, Canada', 'Vancouver, Canada',
+  'Calgary, Canada', 'Sydney, Australia', 'Melbourne, Australia', 'Brisbane, Australia',
+  'Perth, Australia', 'Auckland, New Zealand', 'Dublin, Ireland', 'Singapore',
+];
+const GLOBAL_METROS = [...TOP_METROS, ...INTL_METROS];
 
 function parseArgs(argv) {
   const a = { vertical: null, config: null, metros: null, limit: 50, minScore: 0, dryRun: false, verify: true };
@@ -63,14 +71,14 @@ function loadConfig(args) {
     try { cfg = { ...cfg, ...JSON.parse(readFileSync(path, 'utf8')) }; }
     catch (e) { console.error(`[smb] could not read ${path}: ${e.message}`); }
   }
+  const expand = (name) => (/^global|worldwide|international$/i.test(name) ? GLOBAL_METROS
+    : /^(all|nationwide|us)$/i.test(name) ? TOP_METROS : null);
   if (args.metros) {
-    const m = args.metros.trim().toLowerCase();
-    cfg.metros = (m === 'all' || m === 'nationwide')
-      ? TOP_METROS
-      : args.metros.split(';').map((s) => s.trim()).filter(Boolean);
+    const one = expand(args.metros.trim());
+    cfg.metros = one || args.metros.split(';').map((s) => s.trim()).filter(Boolean);
   }
-  // Config metros of ["nationwide"] / ["all"] also expand to the full metro sweep.
-  if (cfg.metros.length === 1 && /^(all|nationwide)$/i.test(cfg.metros[0])) cfg.metros = TOP_METROS;
+  // A config metros of ["global"] / ["nationwide"] / ["all"] also expands to the full sweep.
+  if (cfg.metros.length === 1) { const one = expand(cfg.metros[0]); if (one) cfg.metros = one; }
   return cfg;
 }
 
